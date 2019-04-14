@@ -1,0 +1,7 @@
+group 'com.zhufu.opencraft'
+version '1.0-SNAPSHOT'
+
+dependencies {
+    implementation project(':pluginBase')
+    implementation project(':playerManagment')
+}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<div class="container" style="height: 100%;">
+    <div id="error">
+        <a class="mdi mdi-comment-processing mdi-dark" style="font-size: 160px"></a>
+        <p style="font-size: 22px" id="error-message"></p>
+    </div>
+    <div id="contents">
+        <div class="s12 m6" style="display: none" id="system-msg">
+            <div class="card">
+                <div class="card-content">
+
+                </div>
+            </div>
+        </div>
+        <div class="s12 m6" style="display: none" id="public-msg">
+            <div class="card">
+                <div class="card-content">
+                    <span>公共消息</span>
+                    <ul class="collection" style="margin-top: 20px;margin-bottom: -2px;border: transparent"
+                        id="public-collection">
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="s12 m6" style="display: none" id="read-box">
+            <div class="card">
+                <div class="card-content">
+                    <span>已读消息</span>
+                    <ul class="collection" style="margin-top: 20px;margin-bottom: -2px;border: transparent"
+                        id="read-collection">
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script id="onload">
+    function init(data) {
+        console.info(data);
+
+        let showSystem = false, showPublic = false, showRead = false;
+        let publicCollection = $('#public-collection'), readCollection = $('#read-collection'),
+            publicCount = 0, systemCount = 0, readCount = 0;
+        publicCollection.empty();readCollection.empty();
+
+        function getItemHTML(text, index, id, secondLine) {
+            let border = index === 0 ? 'transparent' : '1px solid #e0e0e0';
+            let r = '<li class="collection-item avatar" id="msg-' + id + '" style="border-top: ' + border + ';"' + '>' +
+                '<i class="mdi mdi-bell mdi-light circle blue"></i>' +
+                '<span class="title">' +
+                '<p>' +
+                getCustomizedText(text);
+            if (secondLine !== undefined) r += '<br/>' + secondLine;
+            r += '</p>' +
+                '</span>' +
+                '<a class="secondary-content mdi mdi-close mdi-dark waves-effect" style="font-size: 20px" id="dismiss-' + id + '"></a> ' +
+                '</li>';
+            return r
+        }
+        function unread(one, index) {
+            let ele = document.getElementById('content');
+            fadeOut(ele,20,()=>{
+                $.ajax({
+                    url: 'user?request=change&which=unread&what=p' + one.id,
+                    success: function (r) {
+                        let json = JSON.parse(r);
+                        if (json.r === 0) {
+                            M.toast({html: '已撤销标记'});
+                            data.messages[index].read = false;
+                            init(data);
+                        } else {
+                            M.toast({html: '无法撤销[' + json.r + ']'})
+                        }
+                    },
+                    error: () => M.toast({html: '无法连接到服务器'}),
+                    async: false
+                });
+                fadeIn(ele,20);
+            })
+        }
+        function read(one, index) {
+            let undo = () => {
+                unread(one,index);
+            };
+            $.ajax({
+                url: 'user?request=change&which=read&what=p' + one.id,
+                success: function (r) {
+                    let json = JSON.parse(r);
+                    if (json.r === 0) {
+                        let t = M.toast({html: '<span>已将目标标记为已读</span><a class="btn-flat toast-action" id="undo">撤销</a>'});
+                        data.messages[index].read = true;
+                        fadeOut(document.getElementById('content'),20,()=>{
+                            init(data);
+                            fadeIn(document.getElementById('content'),20);
+                        });
+                        $('#undo').click(() => {
+                            undo();
+                            t.dismiss();
+                        });
+                    } else
+                        M.toast({html: '无法将目标标记为已读[' + json.r + ']'});
+                },
+                error: () => M.toast({html: '无法连接到服务器'}),
+                async: false
+            })
+        }
+
+        for (let i in data.messages) {
+            if (data.messages.hasOwnProperty(i)) {
+                let one = data.messages[i];
+                if (one.read !== true) {
+                    if (one.type === 'system') {
+                        if (!showSystem) {
+                            $('#system-msg').show();
+                            showSystem = true;
+                        }
+                    } else if (one.type === 'public') {
+                        if (!showPublic) {
+                            $('#public-msg').show();
+                            showPublic = true;
+                        }
+                        publicCollection.append(getItemHTML(one.text, publicCount, i));
+
+                        $('#dismiss-' + i).click(function () {
+                            read(one,i);
+                        });
+                        publicCount++;
+                    }
+                } else {
+                    if (!showRead) {
+                        $('#read-box').show();
+                        showRead = true;
+                    }
+                    let type = '公共消息';
+                    if (one.type === 'system') type = '系统消息';
+                    else if (one.type === 'friend') type = '好友消息';
+                    readCollection.append(getItemHTML(one.text, readCount, i, type));
+                    $('#dismiss-'+i).click(function () {
+                        unread(one,i)
+                    });
+                    readCount++;
+                }
+            }
+        }
+        if (!showSystem) $('#system-msg').hide();
+        if (!showRead) $('#read-box').hide();
+        if (!showPublic) $('#public-msg').hide();
+    }
+
+    function errorMessage(msg) {
+        $('#error').show();
+        $('#contents').hide();
+        $('#error-message').empty().append(msg);
+    }
+
+    function hideError() {
+        $('#error').hide();
+        $('#contents').show();
+    }
+
+    if (userData.r === 0) {
+        hideError();
+        $('#prgs').show();
+        $.ajax({
+            url: 'user?request=check&check=message',
+            success: function (r) {
+                $('#prgs').hide();
+                let json = JSON.parse(r);
+                if (json.r === 0 && json.messages) {
+                    init(json);
+                } else {
+                    errorMessage('无法获取消息');
+                }
+            }
+        });
+    } else {
+        errorMessage('您必须登录才能接收消息');
+        document.querySelector('html').style.height = '100%';
+        document.querySelector('body').style.height = '100%';
+        document.querySelector('.container').style.textAlign = 'center';
+        onDisable = () => {
+            document.querySelector('html').style.height = null;
+            document.querySelector('body').style.height = null
+        }
+    }
+</script>

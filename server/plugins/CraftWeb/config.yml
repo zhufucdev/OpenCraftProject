@@ -1,0 +1,12 @@
+root: plugins/CraftWeb/web
+keyPath: plugins/CraftWeb/key.jks
+httpPort: 2019
+httpsPort: 2018
+key: zhufu13246512
+uiWhiteList:
+- navbar
+- user
+- login
+- server
+- message
+hostName: localhost:2020

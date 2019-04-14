@@ -1,0 +1,13 @@
+name: ChunkWall
+main: com.zhufu.opencraft.ChunkWall
+author: zhufucomcom
+version: 1.0
+softdepend: [ServerCore]
+api-version: 1.13
+commands:
+  cw:
+    usage: /cw join
+    description: 加入区块战墙
+  cw join:
+      usage: /cw join
+      description: 加入区块战墙

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head id="head">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script>
+        $('#head').load('header');
+    </script>
+</head>
+<body>
+<header id="nav"></header>
+<main id="content"></main>
+
+<script>
+    $('#nav').load('ui?request=navbar');
+    $('#content').load('ui?request=main');
+    $(document).ready(function () {
+        $('#onload');
+
+        let imgDone = 0;
+        for (let i = 1;i <= 3;i++) {
+            let element = document.getElementById('img-'+i);
+            element.style.opacity = '0';
+            $('#img-'+i).on('load',function () {
+                fadeIn(element,20);
+                imgDone ++;
+                if (imgDone >= 3) {
+                    fadeOut(document.getElementById('prgs'),20)
+                }
+            });
+        }
+    })
+</script>
+<!--JavaScript at end of body for optimized loading-->
+<script type="text/javascript" src="js/materialize.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+name: OperationFinder
+author: zhufucomcom
+main: com.zhufu.opencraft.OperationFinder
+version: 1.0
+api-version: 1.13
+commands:
+  of:
+    usage: /of <玩家>
+    description: 查询某玩家的所有服务器操作
+    permission: op
+  of list:
+    usage: /of list [<日期> .. <日期>]
+    description: 列出某时间段内所有记录的玩家操作

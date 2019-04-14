@@ -1,0 +1,13 @@
+rootProject.name = 'OpenCraft'
+file('base').listFiles().each {
+    include it.name
+    project(':'+it.name).projectDir = it
+}
+
+rootDir.listFiles().each {
+    if (it.name.charAt(0).isUpperCase()){
+        include it.name
+    }
+}
+include 'languages'
+

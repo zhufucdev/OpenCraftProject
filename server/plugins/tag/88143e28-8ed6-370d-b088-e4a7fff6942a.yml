@@ -1,0 +1,32 @@
+name: zhufu2
+lang: en
+password: '233'
+address: localhost
+isSurveyPassed: true
+gameTime: 364000
+isSurvivor: true
+surviveSpawn:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: 754.6879978239265
+  y: 82.0
+  z: -563.2897320334013
+  pitch: 63.450024
+  yaw: -93.90003
+territoryID: 0
+isTerritoryInMessageShown: true
+isTerritoryOutMessageShown: false
+isTradeTutorialShown: true
+isInChunk: true
+lastDeath:
+  location:
+    ==: org.bukkit.Location
+    world: world_trade
+    x: -15.906038328500678
+    y: 63.0
+    z: -14.699999988079071
+    pitch: 82.04994
+    yaw: 3.5021322
+  reason: zhufu2 fell from a high place
+  time: 1550394618038
+nickname: zhufu2

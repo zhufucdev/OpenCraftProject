@@ -1,0 +1,197 @@
+{
+  "creator": "a69df45d-0d92-33e8-889d-d32bebff1091",
+  "name": "Welcome",
+  "id": 0,
+  "triggerMethod": "NONE",
+  "triggerArgs": {},
+  "isDraft": false,
+  "steps": [
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -281.359408985663,
+        "y": 260.6267066641193,
+        "z": 147.07947552475306,
+        "pitch": 38.814377,
+        "yaw": -44.293186
+      },
+      "type": "Teleport",
+      "time": 4000,
+      "title": "$red${welcome.1.title}",
+      "subtitle": "$aqua${welcome.1.subtitle}"
+    },
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -261.4176247754346,
+        "y": 273.7352643063481,
+        "z": 169.6287613804647,
+        "pitch": 90.0,
+        "yaw": 0.06821254
+      },
+      "type": "Teleport",
+      "time": 3700,
+      "title": "$aqua${welcome.2.title}",
+      "subtitle": "$yellow${welcome.2.subtitle}"
+    },
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -260.23638272802754,
+        "y": 238.5023824528655,
+        "z": 180.4470095018955,
+        "pitch": -4.567951E-5,
+        "yaw": 0.023095213
+      },
+      "type": "Linear",
+      "time": 1700,
+      "title": "",
+      "subtitle": ""
+    },
+    {
+      "type": "Teleport",
+      "time": 3400,
+      "title": "$aqua${welcome.3.title}",
+      "subtitle": "$yellow${welcome.3.subtitle}"
+    },
+    {
+      "type": "Teleport",
+      "time": 3200,
+      "title": "$aqua${welcome.4.title}",
+      "subtitle": "$yellow${welcome.4.subtitle}"
+    },
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -245.50902621626253,
+        "y": 237.0081742539498,
+        "z": 181.46361471566448,
+        "pitch": 8.477272,
+        "yaw": -0.0026859418
+      },
+      "type": "Linear",
+      "time": 1400,
+      "title": "",
+      "subtitle": ""
+    },
+    {
+      "type": "Teleport",
+      "time": 3400,
+      "title": "$aqua${welcome.5.title}",
+      "subtitle": "$yellow${welcome.5.subtitle}"
+    },
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -249.53906221483103,
+        "y": 237.0081742539498,
+        "z": 181.46361471566448,
+        "pitch": 8.477272,
+        "yaw": -0.0026859418
+      },
+      "type": "Linear",
+      "time": 3200,
+      "title": "$aqua${welcome.6.title}",
+      "subtitle": "$yellow${welcome.6.subtitle}"
+    },
+    {
+      "type": "Teleport",
+      "time": 400,
+      "title": "",
+      "subtitle": ""
+    },
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -271.1339061249022,
+        "y": 238.50014912267562,
+        "z": 155.11366662574082,
+        "pitch": -0.025766931,
+        "yaw": 90.07809
+      },
+      "type": "Linear",
+      "time": 1700,
+      "title": "",
+      "subtitle": ""
+    },
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -271.1339061249022,
+        "y": 238.50014912267562,
+        "z": 155.11366662574082,
+        "pitch": -0.025766931,
+        "yaw": 90.07809
+      },
+      "type": "Teleport",
+      "time": 3400,
+      "title": "$aqua${welcome.7.title}",
+      "subtitle": "$yellow${welcome.7.subtitle}"
+    },
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -272.7094109317414,
+        "y": 237.39078853017259,
+        "z": 157.30853033909318,
+        "pitch": 1.4061768,
+        "yaw": 90.06882
+      },
+      "type": "Linear",
+      "time": 500,
+      "title": "",
+      "subtitle": ""
+    },
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -288.9795042638926,
+        "y": 237.39078853017259,
+        "z": 157.3069706643097,
+        "pitch": -1.6206597,
+        "yaw": 90.059425
+      },
+      "type": "Linear",
+      "time": 1600,
+      "title": "",
+      "subtitle": ""
+    },
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -288.9795042638926,
+        "y": 237.39078853017259,
+        "z": 157.3069706643097,
+        "pitch": 90.0,
+        "yaw": 90.059425
+      },
+      "type": "Linear",
+      "time": 3000,
+      "title": "$aqua${welcome.8.title}",
+      "subtitle": "$yellow${welcome.8.subtitle}"
+    },
+    {
+      "location": {
+        "world": "56b24b23-ab1f-4fa3-987f-66fa4945e3ab",
+        "x": -260.0557085907274,
+        "y": 237.00078851467538,
+        "z": 171.99368491927456,
+        "pitch": 10.800009,
+        "yaw": -0.6214901
+      },
+      "type": "Linear",
+      "time": 1700,
+      "title": "",
+      "subtitle": ""
+    },
+    {
+      "type": "Teleport",
+      "time": 2200,
+      "title": "$red${welcome.9.title}",
+      "subtitle": ""
+    }
+  ],
+  "played": [
+    "zhufucomcom"
+  ]
+}

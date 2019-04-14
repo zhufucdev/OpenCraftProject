@@ -1,0 +1,11 @@
+group 'com.zhufu.opencraft'
+version '1.0-SNAPSHOT'
+
+repositories {
+    maven { url "http://repo.dmulloy2.net/nexus/repository/public/" }
+}
+
+dependencies {
+    compile project(':playerManagment')
+    compileOnly 'com.comphenix.protocol:ProtocolLib:4.4.0'
+}

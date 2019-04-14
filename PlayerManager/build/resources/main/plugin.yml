@@ -1,0 +1,9 @@
+name: PlayerManager
+author: zhufucomcom
+main: com.zhufu.opencraft.PlayerManagerPlugin
+version: 1.0
+api-version: 1.13
+commands:
+  pm:
+    usage: /<command> <表达式>
+    description: 对于某个单行表达式，求其结果

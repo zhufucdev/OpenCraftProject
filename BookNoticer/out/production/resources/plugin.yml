@@ -1,0 +1,13 @@
+name: BookNoticer
+author: zhufucomcom
+main: com.zhufu.opencraft.BookNoticer
+version: 1.0
+softdepend: [ProtocolLib]
+api-version: 1.13
+commands:
+  notice:
+    usage: /server notice <append|preview|remove|clear> [...]
+    description: 管理员指令，给予玩家每日须知
+  notice update:
+    usage: /server update <消息>
+    description: 通知玩家服务器更新，并重载服务器

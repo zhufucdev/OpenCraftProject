@@ -1,0 +1,23 @@
+name: zhufucomcom
+lang: zh
+password: '233'
+address: localhost
+isSurveyPassed: true
+gameTime: 242000
+isSurvivor: true
+surviveSpawn:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: 6315.0
+  y: 99.0
+  z: -3671.0
+  pitch: 0.0
+  yaw: 0.0
+isOutOfSpawn: true
+territoryID: 1
+isTerritoryInMessageShown: false
+isTerritoryOutMessageShown: true
+isTradeTutorialShown: true
+isInChunk: false
+currency: 0
+nickname: zhufucomcom

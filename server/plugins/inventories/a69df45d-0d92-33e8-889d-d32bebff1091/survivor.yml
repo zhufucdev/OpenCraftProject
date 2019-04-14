@@ -1,0 +1,24 @@
+gameMode: SURVIVAL
+health: 9.0
+foodLevel: 11
+walkSpeed: 0.2
+flySpeed: 0.1
+exp: 0
+location:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: -1442.9765641580668
+  y: 66.0
+  z: 8632.74159364692
+  pitch: 25.954702
+  yaw: -147.93236
+potion: {}
+inventory:
+  '0':
+    ==: org.bukkit.inventory.ItemStack
+    v: 1631
+    type: WOODEN_AXE
+  '8':
+    ==: org.bukkit.inventory.ItemStack
+    v: 1631
+    type: QUARTZ_BLOCK

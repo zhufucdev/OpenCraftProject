@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<div class="container">
+    <div class="row">
+        <div class="col s12 m12">
+            <div class="progress" id="prgs-server" style="margin-bottom: -12px;z-index: 100">
+                <div class="indeterminate"></div>
+            </div>
+            <div class="card horizontal">
+                <div class="card-image" style="padding-left: 16px;margin: auto">
+                    <i class="mdi mdi-server mdi-48px mdi-dark"></i>
+                </div>
+                <div class="card-stacked">
+                    <div class="card-content">
+                        <div class="card-title">
+                            服务器信息
+                            <i class="mdi mdi-refresh mdi-24px mdi-dark right waves-effect"
+                               id="refresh"></i>
+                        </div>
+                        <p id="address">地址: open-craft.cn</p>
+                        <p id="delay">延时: 正在测试</p>
+                        <p id="dps">每秒响应次数: 正在测试</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 m12">
+            <div class="progress" id="prgs-player" style="margin-bottom: -12px;z-index: 100">
+                <div class="indeterminate"></div>
+            </div>
+            <div class="card horizontal">
+                <div class="card-image" style="padding-left: 16px;margin: auto">
+                    <i class="mdi mdi-account mdi-48px mdi-dark"></i>
+                </div>
+                <div class="card-stacked">
+                    <div class="card-content">
+                        <div class="card-title">
+                            玩家
+                            <i class="mdi mdi-refresh mdi-24px mdi-dark right waves-effect"
+                               id="refresh2"></i>
+                        </div>
+                        <p id="online">在线情况: 正在获取</p>
+                        <p id="total">注册玩家数: 正在获取</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="onload">
+    function refresh() {
+        $('#address').empty().append('地址: ' + window.location.hostname);
+
+        let delayed = false;
+        let dpsed = false;
+        let a = new Date().getTime();
+        let delay = $('#delay');
+        let dps = $('#dps');
+        let prgsServer = document.getElementById('prgs-server');
+        setTimeout(() => {
+            if (!delayed) delay.empty().append('延时: 正在测试');
+            if (!dpsed) dps.empty().append('每秒响应次数: 正在测试')
+        }, 100);
+        $('#prgs-server').show();
+        fadeIn(prgsServer,20);
+
+        function testToHide(){
+            if (delayed && dpsed){
+                fadeOut(prgsServer,20,()=>$('#prgs-server').hide())
+            }
+        }
+        $.ajax({
+            url: 'ping',
+            success: function () {
+                delayed = true;
+                testToHide();
+                delay.empty().append('延时: ' + (new Date().getTime() - a) + 'ms')
+            }
+        });
+        $.ajax({
+            url: 'ping?which=dps',
+            success: function (r) {
+                let json = JSON.parse(r);
+                let result;
+                dpsed = true;
+                testToHide();
+                if (json.r === 0) {
+                    result = json.dps + '次'
+                } else if (json.r === 504){
+                    result = '无法获取: 操作过于频繁'
+                } else {
+                    result = '无法获取'
+                }
+                dps.empty().append('每秒响应次数: '+result)
+            }
+        })
+    }
+    function refresh2(){
+        let online = $('#online');
+        let total = $('#total');
+        let done = false;
+        let prgsPlayer = document.getElementById('prgs-player');
+        setTimeout(() => {
+            if (!done) {
+                online.empty().append('在线情况: 正在获取');
+                total.empty().append('注册玩家数: 正在获取')
+            }
+        },100);
+        $('#prgs-player').show();
+        fadeIn(prgsPlayer,20);
+        $.ajax({
+            url: 'ping?which=player',
+            success: function (r) {
+                done = true;
+                let json = JSON.parse(r);
+                setTimeout(() => fadeOut(prgsPlayer,20,()=>$('#prgs-player').hide()),250);
+                online.empty().append('在线情况: '+json.online + '<span class="grey-text">|</span>'+json.maxOnline)
+                total.empty().append('注册玩家数: '+json.totalPlayers)
+            },
+            failed: function () {
+                online.empty().append('在线情况: 无法获取');
+                total.empty().append('注册玩家数: 无法获取')
+            }
+        })
+    }
+
+    $(document).ready(() => {
+        refresh();
+        refresh2()
+    });
+    $('#refresh').click(refresh);
+    $('#refresh2').click(refresh2);
+</script>

@@ -1,0 +1,22 @@
+name: CustomTutorial
+author: zhufucomcom
+main: com.zhufu.opencraft.CustomTutorial
+version: 1.0
+softdepend: [ServerCore]
+api-version: 1.13
+commands:
+  ct:
+    usage: /ct
+    description: 自定义教程核心指令, 用于触发GUI
+  ct save:
+    usage: /ct save <名称>
+    description: 保存当前的教程, 用于编辑模式(名称不包括空格)
+  ct saveas:
+    usage: /ct saveas <名称>
+    description: 另存当前但教程, 用于编辑模式(名称不包括空格)
+  ct exit:
+    usage: /ct exit
+    description: 不保存当前教程, 用于编辑模式
+  ct trigger:
+    usage: /ct trigger <none|block|territory|enter_world|register> <...>
+    description: 设置当前教程的触发方式，用于编辑模式

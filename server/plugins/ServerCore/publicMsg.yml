@@ -1,0 +1,26 @@
+'1':
+  msg: Hello2
+  read: false
+  type: Public
+'2':
+  msg: HelloThere
+  read: false
+  type: Public
+'3':
+  msg: $green${welcome.1.title}
+  read: false
+  type: Public
+  extra:
+    zhufucomcom: R
+'4':
+  msg: $redTestRed$blueTestBlue
+  read: false
+  type: Public
+  extra:
+    zhufucomcom: R
+'5':
+  msg: Test3
+  read: false
+  type: Public
+  extra:
+    zhufucomcom: R

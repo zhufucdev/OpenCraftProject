@@ -1,0 +1,19 @@
+name: WorldTeleporter
+main: com.zhufu.opencraft.WorldTeleporter
+author: zhufucomcom
+version: 1.0
+api-version: 1.13
+softdepend: [ServerCore]
+commands:
+  wt:
+    description: 跨世界传送
+    usage: /<command> <世界名>
+  wt list:
+    description: 列出所有可能的世界
+    usage: /<command>
+  wt set:
+    description: 设置世界属性
+    usage: /<command> <世界名> <public(所有人可加入) | private(仅op可加入) | protected(所有人不可加入)>
+  wt des:
+    description: 设置世界介绍
+    usage: /<command> <世界名> <介绍>

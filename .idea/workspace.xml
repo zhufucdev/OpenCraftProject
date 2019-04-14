@@ -1,0 +1,1163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="6e25b5eb-585d-48af-aa94-1a0ceef8f169" name="Default Changelist" comment="" />
+    <ignored path="$PROJECT_DIR$/out/" />
+    <ignored path="$PROJECT_DIR$/.gradle/" />
+    <ignored path="$PROJECT_DIR$/build/" />
+    <ignored path="$PROJECT_DIR$/item1/.gradle/" />
+    <ignored path="$PROJECT_DIR$/item1/build/" />
+    <ignored path="$PROJECT_DIR$/item1/out/" />
+    <ignored path="$PROJECT_DIR$/base/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/build/" />
+    <ignored path="$PROJECT_DIR$/base/out/" />
+    <ignored path="$PROJECT_DIR$/blockManagment/.gradle/" />
+    <ignored path="$PROJECT_DIR$/blockManagment/build/" />
+    <ignored path="$PROJECT_DIR$/blockManagment/out/" />
+    <ignored path="$PROJECT_DIR$/pluginBase/.gradle/" />
+    <ignored path="$PROJECT_DIR$/pluginBase/build/" />
+    <ignored path="$PROJECT_DIR$/pluginBase/out/" />
+    <ignored path="$PROJECT_DIR$/playerManagment/.gradle/" />
+    <ignored path="$PROJECT_DIR$/playerManagment/build/" />
+    <ignored path="$PROJECT_DIR$/playerManagment/out/" />
+    <ignored path="$PROJECT_DIR$/tradeBase/.gradle/" />
+    <ignored path="$PROJECT_DIR$/tradeBase/build/" />
+    <ignored path="$PROJECT_DIR$/tradeBase/out/" />
+    <ignored path="$PROJECT_DIR$/inventoryBase/.gradle/" />
+    <ignored path="$PROJECT_DIR$/inventoryBase/build/" />
+    <ignored path="$PROJECT_DIR$/inventoryBase/out/" />
+    <ignored path="$PROJECT_DIR$/listeners/.gradle/" />
+    <ignored path="$PROJECT_DIR$/listeners/build/" />
+    <ignored path="$PROJECT_DIR$/listeners/out/" />
+    <ignored path="$PROJECT_DIR$/miniGameBase/.gradle/" />
+    <ignored path="$PROJECT_DIR$/miniGameBase/build/" />
+    <ignored path="$PROJECT_DIR$/miniGameBase/out/" />
+    <ignored path="$PROJECT_DIR$/utils/.gradle/" />
+    <ignored path="$PROJECT_DIR$/utils/build/" />
+    <ignored path="$PROJECT_DIR$/utils/out/" />
+    <ignored path="$PROJECT_DIR$/webBase/.gradle/" />
+    <ignored path="$PROJECT_DIR$/webBase/build/" />
+    <ignored path="$PROJECT_DIR$/webBase/out/" />
+    <ignored path="$PROJECT_DIR$/BlockLocker/.gradle/" />
+    <ignored path="$PROJECT_DIR$/BlockLocker/build/" />
+    <ignored path="$PROJECT_DIR$/BlockLocker/out/" />
+    <ignored path="$PROJECT_DIR$/BookNoticer/.gradle/" />
+    <ignored path="$PROJECT_DIR$/BookNoticer/build/" />
+    <ignored path="$PROJECT_DIR$/BookNoticer/out/" />
+    <ignored path="$PROJECT_DIR$/ChunkWall/.gradle/" />
+    <ignored path="$PROJECT_DIR$/ChunkWall/build/" />
+    <ignored path="$PROJECT_DIR$/ChunkWall/out/" />
+    <ignored path="$PROJECT_DIR$/CurrencySystem/.gradle/" />
+    <ignored path="$PROJECT_DIR$/CurrencySystem/build/" />
+    <ignored path="$PROJECT_DIR$/CurrencySystem/out/" />
+    <ignored path="$PROJECT_DIR$/CustomTutorial/.gradle/" />
+    <ignored path="$PROJECT_DIR$/CustomTutorial/build/" />
+    <ignored path="$PROJECT_DIR$/CustomTutorial/out/" />
+    <ignored path="$PROJECT_DIR$/ItemManager/.gradle/" />
+    <ignored path="$PROJECT_DIR$/ItemManager/build/" />
+    <ignored path="$PROJECT_DIR$/ItemManager/out/" />
+    <ignored path="$PROJECT_DIR$/OpenTranslator/.gradle/" />
+    <ignored path="$PROJECT_DIR$/OpenTranslator/build/" />
+    <ignored path="$PROJECT_DIR$/OpenTranslator/out/" />
+    <ignored path="$PROJECT_DIR$/CraftWeb/.gradle/" />
+    <ignored path="$PROJECT_DIR$/CraftWeb/build/" />
+    <ignored path="$PROJECT_DIR$/CraftWeb/out/" />
+    <ignored path="$PROJECT_DIR$/OperationFinder/.gradle/" />
+    <ignored path="$PROJECT_DIR$/OperationFinder/build/" />
+    <ignored path="$PROJECT_DIR$/OperationFinder/out/" />
+    <ignored path="$PROJECT_DIR$/PlayerManager/.gradle/" />
+    <ignored path="$PROJECT_DIR$/PlayerManager/build/" />
+    <ignored path="$PROJECT_DIR$/PlayerManager/out/" />
+    <ignored path="$PROJECT_DIR$/PlayerUtils/.gradle/" />
+    <ignored path="$PROJECT_DIR$/PlayerUtils/build/" />
+    <ignored path="$PROJECT_DIR$/PlayerUtils/out/" />
+    <ignored path="$PROJECT_DIR$/PrevHacking/.gradle/" />
+    <ignored path="$PROJECT_DIR$/PrevHacking/build/" />
+    <ignored path="$PROJECT_DIR$/PrevHacking/out/" />
+    <ignored path="$PROJECT_DIR$/ServerCore/.gradle/" />
+    <ignored path="$PROJECT_DIR$/ServerCore/build/" />
+    <ignored path="$PROJECT_DIR$/ServerCore/out/" />
+    <ignored path="$PROJECT_DIR$/SkinnyRemix/.gradle/" />
+    <ignored path="$PROJECT_DIR$/SkinnyRemix/build/" />
+    <ignored path="$PROJECT_DIR$/SkinnyRemix/out/" />
+    <ignored path="$PROJECT_DIR$/TenMinSur/.gradle/" />
+    <ignored path="$PROJECT_DIR$/TenMinSur/build/" />
+    <ignored path="$PROJECT_DIR$/TenMinSur/out/" />
+    <ignored path="$PROJECT_DIR$/UserManager/.gradle/" />
+    <ignored path="$PROJECT_DIR$/UserManager/build/" />
+    <ignored path="$PROJECT_DIR$/UserManager/out/" />
+    <ignored path="$PROJECT_DIR$/WorldTeleporter/.gradle/" />
+    <ignored path="$PROJECT_DIR$/WorldTeleporter/build/" />
+    <ignored path="$PROJECT_DIR$/WorldTeleporter/out/" />
+    <ignored path="$PROJECT_DIR$/base/tradeBase/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/tradeBase/build/" />
+    <ignored path="$PROJECT_DIR$/base/tradeBase/out/" />
+    <ignored path="$PROJECT_DIR$/base/blockManagment/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/blockManagment/build/" />
+    <ignored path="$PROJECT_DIR$/base/blockManagment/out/" />
+    <ignored path="$PROJECT_DIR$/base/inventoryBase/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/inventoryBase/build/" />
+    <ignored path="$PROJECT_DIR$/base/inventoryBase/out/" />
+    <ignored path="$PROJECT_DIR$/base/ItemManager/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/ItemManager/build/" />
+    <ignored path="$PROJECT_DIR$/base/ItemManager/out/" />
+    <ignored path="$PROJECT_DIR$/base/listeners/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/listeners/build/" />
+    <ignored path="$PROJECT_DIR$/base/listeners/out/" />
+    <ignored path="$PROJECT_DIR$/base/miniGameBase/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/miniGameBase/build/" />
+    <ignored path="$PROJECT_DIR$/base/miniGameBase/out/" />
+    <ignored path="$PROJECT_DIR$/base/playerManagment/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/playerManagment/build/" />
+    <ignored path="$PROJECT_DIR$/base/playerManagment/out/" />
+    <ignored path="$PROJECT_DIR$/base/pluginBase/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/pluginBase/build/" />
+    <ignored path="$PROJECT_DIR$/base/pluginBase/out/" />
+    <ignored path="$PROJECT_DIR$/base/utils/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/utils/build/" />
+    <ignored path="$PROJECT_DIR$/base/utils/out/" />
+    <ignored path="$PROJECT_DIR$/base/webBase/.gradle/" />
+    <ignored path="$PROJECT_DIR$/base/webBase/build/" />
+    <ignored path="$PROJECT_DIR$/base/webBase/out/" />
+    <ignored path="$PROJECT_DIR$/languages/.gradle/" />
+    <ignored path="$PROJECT_DIR$/languages/build/" />
+    <ignored path="$PROJECT_DIR$/languages/out/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="testRunner" value="GRADLE" />
+    <option name="delegatedBuild" value="true" />
+  </component>
+  <component name="ErrorTreeViewConfiguration">
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideWarnings" value="true" />
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="true" />
+    <option name="HIDE_WARNINGS" value="true" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/item1">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/blockManagment">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/BlockLocker">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/languages">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/BookNoticer">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="OpenCraft" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="OpenCraft" type="f1a62948:ProjectNode" />
+                <item name=":BookNoticer" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="OpenCraft" type="f1a62948:ProjectNode" />
+                <item name=":BookNoticer" type="2d1252cf:ModuleNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="OpenCraft" type="f1a62948:ProjectNode" />
+                <item name=":BookNoticer" type="2d1252cf:ModuleNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+                <item name="main" type="396b929e:GradleViewContributor$SourceSetNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="OpenCraft" type="f1a62948:ProjectNode" />
+                <item name=":BookNoticer" type="2d1252cf:ModuleNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+                <item name="main" type="396b929e:GradleViewContributor$SourceSetNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="OpenCraft" type="f1a62948:ProjectNode" />
+                <item name=":BookNoticer" type="2d1252cf:ModuleNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+                <item name="main" type="396b929e:GradleViewContributor$SourceSetNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="pluginBase:main" type="ce49adb6:ExternalSystemViewDefaultContributor$ModuleDependencyDataExternalSystemNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="OpenCraft" type="f1a62948:ProjectNode" />
+                <item name=":BookNoticer" type="2d1252cf:ModuleNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+                <item name="main" type="396b929e:GradleViewContributor$SourceSetNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="pluginBase:main" type="ce49adb6:ExternalSystemViewDefaultContributor$ModuleDependencyDataExternalSystemNode" />
+                <item name="com.mojang:brigadier:1.0.15" type="cfea851d:ExternalSystemViewDefaultContributor$LibraryDependencyDataExternalSystemNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/CraftWeb/src/main/kotlin/com.zhufu.opencraft/SimpleHandler.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-9">
+              <caret line="200" column="76" lean-forward="true" selection-start-line="200" selection-start-column="76" selection-end-line="200" selection-end-column="76" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/Base.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="510">
+              <caret line="40" column="39" selection-start-line="40" selection-start-column="39" selection-end-line="40" selection-end-column="39" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/player_intract/MessagePool.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="459">
+              <caret line="35" column="12" selection-start-line="35" selection-start-column="12" selection-end-line="35" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin File" />
+        <option value="Kotlin Object" />
+        <option value="Class" />
+        <option value="Kotlin Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>implementation</find>
+      <find>setS</find>
+      <find>deser</find>
+      <find>specialItems.</find>
+      <find>cancel</find>
+      <find>Trade</find>
+      <find>getInt</find>
+      <find>BlockPla</find>
+      <find>spawn</find>
+      <find>transfer</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>compile</replace>
+      <replace>speical_items.</replace>
+      <replace>getLong</replace>
+    </replaceStrings>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/TradeInfo.kt" />
+        <option value="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/TradeManager.kt" />
+        <option value="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/TradeValidateInventory.kt" />
+        <option value="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/inventory/PaymentDialog.kt" />
+        <option value="$PROJECT_DIR$/BlockLocker/src/main/kotlin/com.zhufu.opencraft/BlockListener.kt" />
+        <option value="$PROJECT_DIR$/BlockLocker/src/main/kotlin/com.zhufu.opencraft/BlockLocker.kt" />
+        <option value="$PROJECT_DIR$/BookNoticer/src/main/kotlin/com.zhufu.opencraft/BookNoticer.kt" />
+        <option value="$PROJECT_DIR$/base/miniGameBase/src/main/kotlin/com.zhufu.opencraft/GameBase.kt" />
+        <option value="$PROJECT_DIR$/base/miniGameBase/src/main/kotlin/com.zhufu.opencraft/ResultRuler.kt" />
+        <option value="$PROJECT_DIR$/base/miniGameBase/src/main/kotlin/com.zhufu.opencraft/GameRuler.kt" />
+        <option value="$PROJECT_DIR$/base/miniGameBase/src/main/kotlin/com.zhufu.opencraft/games/CW.kt" />
+        <option value="$PROJECT_DIR$/base/miniGameBase/src/main/kotlin/com.zhufu.opencraft/games/TMS.kt" />
+        <option value="$PROJECT_DIR$/ChunkWall/src/main/kotlin/com.zhufu.opencraft/ChunkWall.kt" />
+        <option value="$PROJECT_DIR$/CraftWeb/src/main/kotlin/com.zhufu.opencraft/CraftWeb.kt" />
+        <option value="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/CurrencySystem.kt" />
+        <option value="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/EveryThing.kt" />
+        <option value="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/ImageRender.kt" />
+        <option value="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/QRUtil.kt" />
+        <option value="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/TradeWorldGenerator.kt" />
+        <option value="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/FlyWandInventory.kt" />
+        <option value="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/SetUpValidateInventory.kt" />
+        <option value="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/TraderInventory.kt" />
+        <option value="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/VisitorInventory.kt" />
+        <option value="$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/CustomTutorial.kt" />
+        <option value="$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/TutorialListener.kt" />
+        <option value="$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/TutorialManager.kt" />
+        <option value="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/CheckpointUI.kt" />
+        <option value="$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/ui/EditorUI.kt" />
+        <option value="$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/ui/TriggerUI.kt" />
+        <option value="$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/ui/TutorialExp.kt" />
+        <option value="$PROJECT_DIR$/base/ItemManager/src/main/kotlin/com.zhufu.opencraft/ItemManager.kt" />
+        <option value="$PROJECT_DIR$/OpenTranslator/src/main/kotlin/com/zhufu/opencraft/OpenTranslator.kt" />
+        <option value="$PROJECT_DIR$/OperationFinder/src/main/kotlin/com.zhufu.opencraft/OperationFinder.kt" />
+        <option value="$PROJECT_DIR$/PlayerManager/src/main/kotlin/com.zhufu.opencraft/PlayerManagerPlugin.kt" />
+        <option value="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/Everything.kt" />
+        <option value="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/PlayerUtil.kt" />
+        <option value="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/PortalHandler.kt" />
+        <option value="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/TextUtil.kt" />
+        <option value="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/BlockController.kt" />
+        <option value="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/BlockGroupingUI.kt" />
+        <option value="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/BlockUI.kt" />
+        <option value="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/MenuInterface.kt" />
+        <option value="$PROJECT_DIR$/PrevHacking/src/main/kotlin/com.zhufu.opencraft/Listener.kt" />
+        <option value="$PROJECT_DIR$/PrevHacking/src/main/kotlin/com.zhufu.opencraft/PrevHacking.kt" />
+        <option value="$PROJECT_DIR$/ServerCore/src/main/kotlin/com.zhufu.opencraft/Core.kt" />
+        <option value="$PROJECT_DIR$/SkinnyRemix/src/main/kotlin/tw.davy.minecraft.skinny/Skinny.kt" />
+        <option value="$PROJECT_DIR$/TenMinSur/src/main/kotlin/com.zhufu.opencraft/TenMinSur.kt" />
+        <option value="$PROJECT_DIR$/UserManager/src/main/kotlin/com.zhufu.opencraft/UserManager.kt" />
+        <option value="$PROJECT_DIR$/WorldTeleporter/src/main/kotlin/com.zhufu.opencraft/WorldTeleporter.kt" />
+        <option value="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/player_intract/MessagePool.kt" />
+        <option value="$PROJECT_DIR$/CraftWeb/src/main/kotlin/com.zhufu.opencraft/SimpleHandler.kt" />
+      </list>
+    </option>
+  </component>
+  <component name="JsbtTreeLayoutManager">
+    <layout place="tools.popupGrunt">
+      <scroll-view-position x="0" y="0" />
+    </layout>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="y" value="23" />
+    <option name="width" value="1920" />
+    <option name="height" value="980" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="OpenCraft" type="58d84e3e:PackageViewProjectNode" />
+              <item name="com.zhufu.opencraft" type="eaaa3913:PackageViewModuleGroupNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="ProjectPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1552703103323" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.28735632" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.language.Kotlin" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/dir" />
+      <recent name="$PROJECT_DIR$/base" />
+      <recent name="$PROJECT_DIR$/BookNoticer/src/main/resources" />
+      <recent name="$PROJECT_DIR$/pluginBase/src/main/kotlin/com/zhufu/opencraft" />
+    </key>
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.zhufu.opencraft.player_intract" />
+      <recent name="com.zhufu.opencraft" />
+      <recent name="com.zhufu.opencraft.player_friendship" />
+      <recent name="com.zhufu.opencraft.specialItems" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.zhufu.opencraft" />
+      <recent name="com.baidu.translate" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/server/plugins/CraftWeb" />
+      <recent name="$PROJECT_DIR$/languages/src" />
+      <recent name="$PROJECT_DIR$/OpenTranslator/src/main/resources" />
+      <recent name="$PROJECT_DIR$/WorldTeleporter/src/main/resources" />
+      <recent name="$PROJECT_DIR$/UserManager/src/main/resources" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="JAR Application.Server">
+    <configuration name="OpenCraftGradle [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="OpenCraftGradle [clean]" type="GradleRunConfiguration" factoryName="Gradle">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="clean" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="OpenCraftGradle [copyJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="copyJar" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="Server" type="JarApplication">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/server/spigot.jar" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/server" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+      <method v="2">
+        <option name="Gradle.BeforeRunTask" enabled="true" tasks="copyJar" externalProjectPath="$PROJECT_DIR$" vmOptions="" scriptParameters="" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Gradle.OpenCraftGradle [clean]" />
+      <item itemvalue="Gradle.OpenCraftGradle [copyJar]" />
+      <item itemvalue="Gradle.OpenCraftGradle [build]" />
+      <item itemvalue="JAR Application.Server" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.OpenCraftGradle [copyJar]" />
+        <item itemvalue="Gradle.OpenCraftGradle [build]" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6e25b5eb-585d-48af-aa94-1a0ceef8f169" name="Default Changelist" comment="" />
+      <created>1549018687633</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1549018687633</updated>
+      <workItem from="1549018692203" duration="3065000" />
+      <workItem from="1549022001468" duration="32000" />
+      <workItem from="1549022053224" duration="1968000" />
+      <workItem from="1549065103270" duration="2327000" />
+      <workItem from="1549067542299" duration="17347000" />
+      <workItem from="1549153139574" duration="16588000" />
+      <workItem from="1549763442564" duration="44000" />
+      <workItem from="1549763509434" duration="26195000" />
+      <workItem from="1549850560536" duration="14788000" />
+      <workItem from="1549965844211" duration="431000" />
+      <workItem from="1550112736426" duration="279000" />
+      <workItem from="1550201843711" duration="5542000" />
+      <workItem from="1550288097069" duration="6168000" />
+      <workItem from="1550317915145" duration="1047000" />
+      <workItem from="1550391010747" duration="6293000" />
+      <workItem from="1550835057661" duration="676000" />
+      <workItem from="1550880671935" duration="4126000" />
+      <workItem from="1551006699899" duration="555000" />
+      <workItem from="1551436140549" duration="543000" />
+      <workItem from="1551436725096" duration="3740000" />
+      <workItem from="1551499852394" duration="6003000" />
+      <workItem from="1551514632783" duration="302000" />
+      <workItem from="1551528928819" duration="1512000" />
+      <workItem from="1551578751036" duration="12956000" />
+      <workItem from="1552039031418" duration="6599000" />
+      <workItem from="1552103861643" duration="15729000" />
+      <workItem from="1552209918171" duration="1309000" />
+      <workItem from="1552645517564" duration="872000" />
+      <workItem from="1552646582987" duration="5631000" />
+      <workItem from="1552695520718" duration="5174000" />
+      <workItem from="1552735711649" duration="417000" />
+      <workItem from="1552803441569" duration="360000" />
+      <workItem from="1553946787618" duration="48000" />
+      <workItem from="1553946871519" duration="3000" />
+      <workItem from="1554424170107" duration="124000" />
+      <workItem from="1554424391225" duration="141000" />
+      <workItem from="1554424555039" duration="29000" />
+      <workItem from="1554424647966" duration="150000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="169113000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="23" width="1920" height="980" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20766774" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="Capture Tool" order="4" />
+      <window_info id="UI Designer" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32970297" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49946752" weight="0.46039605" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.45643565" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32970297" />
+      <window_info anchor="bottom" id="Build" order="7" weight="0.2891089" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32970297" />
+      <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5005325" side_tool="true" weight="0.4059406" />
+      <window_info anchor="bottom" id="Database Changes" order="11" />
+      <window_info anchor="bottom" id="Version Control" order="12" />
+      <window_info anchor="bottom" id="Messages" order="13" weight="0.32970297" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.24977778" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Maven" order="3" />
+      <window_info anchor="right" id="Palette" order="4" />
+      <window_info anchor="right" id="Capture Analysis" order="5" />
+      <window_info anchor="right" id="Gradle" order="6" weight="0.22736955" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="8" />
+      <window_info anchor="right" id="Database" order="9" weight="0.32960597" />
+    </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20234291" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="Capture Tool" order="4" />
+      <window_info id="UI Designer" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32970297" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49946752" weight="0.46039605" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.45643565" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32970297" />
+      <window_info anchor="bottom" id="Build" order="7" weight="0.2891089" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32970297" />
+      <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5005325" side_tool="true" weight="0.4059406" />
+      <window_info anchor="bottom" id="Database Changes" order="11" />
+      <window_info anchor="bottom" id="Version Control" order="12" />
+      <window_info anchor="bottom" id="Messages" order="13" weight="0.32970297" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.24977778" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Maven" order="3" />
+      <window_info anchor="right" id="Palette" order="4" />
+      <window_info anchor="right" id="Capture Analysis" order="5" />
+      <window_info anchor="right" id="Gradle" order="6" weight="0.22736955" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="8" />
+      <window_info anchor="right" id="Database" order="9" weight="0.32960597" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/CraftWeb/src/main/kotlin/com.zhufu.opencraft/SimpleHandler.kt</url>
+          <line>331</line>
+          <properties />
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateCodeFragment">
+      <expression>
+        <expression-string>config.get(&quot;inventory.0&quot;)</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>config.set(&quot;inventory.0&quot;,FlyWand(player.lang()))</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>val config = YamlConfiguration()
+    config.set(&quot;t&quot;, FlyWand(player.lang()).serialize())
+config.get(&quot;t&quot;)</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+    </expressions>
+    <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>Base.publicMsgPool[0]</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>Base.publicMsgPool[1]</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>Base.publicMsgPool.get(1)</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>it.extra</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>it.extra?.getKeys(false)</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>it.extra?.contains(find.name!!) == true</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>Base.publicMsgPool.get(index.first!!).extra!!.getKeys(false)</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>Base.publicMsgPool.get(index.first!!)</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>Base.publicMsgPool.markAsRead(index.first!!,info)</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/base/miniGameBase/src/main/kotlin/com.zhufu.opencraft/games/CW.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-199">
+          <caret line="251" column="22" lean-forward="true" selection-start-line="251" selection-start-column="22" selection-end-line="251" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/miniGameBase/src/main/kotlin/com.zhufu.opencraft/games/TMS.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="201" column="22" selection-start-line="201" selection-start-column="22" selection-end-line="201" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ChunkWall/src/main/kotlin/com.zhufu.opencraft/ChunkWall.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="251">
+          <caret line="65" column="25" selection-start-line="65" selection-start-column="25" selection-end-line="65" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CraftWeb/src/main/kotlin/com.zhufu.opencraft/CraftWeb.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="326">
+          <caret line="73" column="66" selection-start-line="73" selection-start-column="66" selection-end-line="73" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/CurrencySystem.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="100" column="117" selection-start-line="100" selection-start-column="117" selection-end-line="100" selection-end-column="117" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/TradeManager.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="29" column="20" selection-start-line="29" selection-start-column="20" selection-end-line="29" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/EveryThing.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-7">
+          <caret line="60" selection-start-line="60" selection-end-line="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/ImageRender.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="19" column="74" selection-start-line="19" selection-start-column="74" selection-end-line="19" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/QRUtil.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="328">
+          <caret line="97" column="51" selection-start-line="97" selection-start-column="51" selection-end-line="97" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/TradeWorldGenerator.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="173">
+          <caret line="16" column="67" selection-start-line="16" selection-start-column="67" selection-end-line="16" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/FlyWandInventory.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="60" column="27" selection-start-line="60" selection-start-column="27" selection-end-line="60" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/SetUpValidateInventory.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="63" column="109" selection-start-line="63" selection-start-column="109" selection-end-line="63" selection-end-column="109" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/TraderInventory.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="266" column="9" selection-start-line="266" selection-start-column="9" selection-end-line="266" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/VisitorInventory.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="578">
+          <caret line="69" column="70" selection-start-line="69" selection-start-column="70" selection-end-line="69" selection-end-column="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/CustomTutorial.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="364">
+          <caret line="305" column="47" selection-start-line="305" selection-start-column="47" selection-end-line="305" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/TutorialListener.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="129" selection-start-line="129" selection-end-line="129" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/TutorialManager.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="251">
+          <caret line="207" column="17" selection-start-line="207" selection-start-column="17" selection-end-line="207" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/inventoryBase/src/main/kotlin/com/zhufu/opencraft/PageInventory.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="15" column="4" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/CheckpointUI.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="12" column="23" selection-start-line="12" selection-start-column="23" selection-end-line="12" selection-end-column="23" />
+          <folding>
+            <element signature="e#32#437#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/ui/EditorUI.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="24" column="107" selection-start-line="24" selection-start-column="107" selection-end-line="24" selection-end-column="107" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.spigotmc/spigot-api/1.13.2-R0.1-SNAPSHOT/6a39d7f825cc1657cf1c4a0e6fec164609a54f1f/spigot-api-1.13.2-R0.1-SNAPSHOT-sources.jar!/org/bukkit/inventory/Inventory.java" />
+    <entry file="file://$PROJECT_DIR$/base/inventoryBase/src/main/kotlin/com/zhufu/opencraft/ClickableInventory.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="33" column="17" selection-start-line="33" selection-start-column="17" selection-end-line="33" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/inventoryBase/src/main/kotlin/com/zhufu/opencraft/Widgets.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="8" column="11" selection-start-line="8" selection-start-column="11" selection-end-line="8" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/ui/TriggerUI.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="141">
+          <caret line="28" column="35" selection-start-line="28" selection-start-column="35" selection-end-line="28" selection-end-column="35" />
+          <folding>
+            <element signature="e#32#329#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CustomTutorial/src/main/kotlin/com.zhufu.opencraft/ui/TutorialExp.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="48" column="13" selection-start-line="48" selection-start-column="13" selection-end-line="48" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/ItemManager/src/main/kotlin/com.zhufu.opencraft/ItemManager.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="175">
+          <caret line="120" column="57" selection-start-line="120" selection-start-column="57" selection-end-line="120" selection-end-column="57" />
+          <folding>
+            <element signature="e#29#448#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/OpenTranslator/src/main/kotlin/com/zhufu/opencraft/OpenTranslator.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="66" column="8" selection-start-line="66" selection-start-column="8" selection-end-line="66" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/OperationFinder/src/main/kotlin/com.zhufu.opencraft/OperationFinder.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-195">
+          <caret line="165" column="21" selection-start-line="165" selection-start-column="21" selection-end-line="165" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerManager/src/main/kotlin/com.zhufu.opencraft/PlayerManagerPlugin.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="11" column="9" selection-start-line="11" selection-start-column="9" selection-end-line="11" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/PlayerUtil.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="120" column="4" selection-start-line="120" selection-start-column="4" selection-end-line="120" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/Everything.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5270">
+          <caret line="338" column="51" selection-start-line="338" selection-start-column="51" selection-end-line="338" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/PortalHandler.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3400">
+          <caret line="223" column="22" selection-start-line="223" selection-start-column="22" selection-end-line="223" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/BlockController.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="28" column="28" selection-start-line="28" selection-start-column="28" selection-end-line="28" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/BlockGroupingUI.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1683">
+          <caret line="104" column="74" selection-start-line="104" selection-start-column="74" selection-end-line="104" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/BlockUI.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2550">
+          <caret line="157" column="68" selection-start-line="157" selection-start-column="68" selection-end-line="157" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/MenuInterface.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3757">
+          <caret line="234" column="19" selection-start-line="234" selection-start-column="19" selection-end-line="234" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PrevHacking/src/main/kotlin/com.zhufu.opencraft/Listener.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="27" column="116" selection-start-line="27" selection-start-column="116" selection-end-line="27" selection-end-column="116" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PrevHacking/src/main/kotlin/com.zhufu.opencraft/PrevHacking.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1853">
+          <caret line="120" selection-start-line="120" selection-end-line="120" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/TextUtil.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2380">
+          <caret line="140" column="5" selection-start-line="140" selection-start-column="5" selection-end-line="140" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/ServerPlayer.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="17" column="64" selection-start-line="17" selection-start-column="64" selection-end-line="17" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ServerCore/src/main/kotlin/com.zhufu.opencraft/Core.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="41" column="19" selection-start-line="41" selection-start-column="19" selection-end-line="41" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SkinnyRemix/src/main/kotlin/tw.davy.minecraft.skinny/Skinny.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="25" column="27" selection-start-line="25" selection-start-column="27" selection-end-line="25" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TenMinSur/src/main/kotlin/com.zhufu.opencraft/TenMinSur.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.spigotmc/spigot-api/1.13.2-R0.1-SNAPSHOT/6a39d7f825cc1657cf1c4a0e6fec164609a54f1f/spigot-api-1.13.2-R0.1-SNAPSHOT-sources.jar!/org/bukkit/event/player/PlayerQuitEvent.java" />
+    <entry file="file://$PROJECT_DIR$/UserManager/src/main/kotlin/com.zhufu.opencraft/UserManager.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="175">
+          <caret line="872" column="94" selection-start-line="872" selection-start-column="94" selection-end-line="872" selection-end-column="94" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WorldTeleporter/src/main/kotlin/com.zhufu.opencraft/WorldTeleporter.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="217">
+          <caret line="55" column="68" selection-start-line="55" selection-start-column="68" selection-end-line="55" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Downloads/dex2jar-2.0/com/stub/StubApp.class" />
+    <entry file="file://$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/Base.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="40" column="39" selection-start-line="40" selection-start-column="39" selection-end-line="40" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/player_intract/MessagePool.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="35" column="12" selection-start-line="35" selection-start-column="12" selection-end-line="35" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/idea.vmoptions">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="42" lean-forward="true" selection-start-line="19" selection-start-column="42" selection-end-line="19" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CraftWeb/src/main/kotlin/com.zhufu.opencraft/SimpleHandler.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="200" column="76" lean-forward="true" selection-start-line="200" selection-start-column="76" selection-end-line="200" selection-end-column="76" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>Kotlin</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>webBase|opencraft</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.28735632" />
+                <option value="0.6" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Gradle: junit:junit:4.12</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

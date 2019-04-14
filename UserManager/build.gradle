@@ -1,0 +1,10 @@
+group 'com.zhufu.opencraft'
+version '1.0-SNAPSHOT'
+
+dependencies {
+    compile project(':playerManagment')
+    compile project(':listeners')
+    compile project(':tradeBase')
+    compile project(':inventoryBase')
+    compile project(':blockManagment')
+}

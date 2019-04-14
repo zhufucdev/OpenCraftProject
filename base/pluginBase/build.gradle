@@ -1,0 +1,7 @@
+group 'com.zhufu.opencraft'
+version '1.0-SNAPSHOT'
+
+dependencies {
+    compileOnly fileTree(rootDir.path + '/libs/server_api.jar')
+    implementation 'com.mojang:brigadier:1.0.15'
+}

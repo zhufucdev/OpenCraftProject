@@ -1,0 +1,10 @@
+group 'com.zhufu.opencraft'
+version '1.0-SNAPSHOT'
+
+dependencies {
+    compile project(':pluginBase')
+    compile project(':inventoryBase')
+    compile project(':listeners')
+    compile project(':playerManagment')
+    compile 'net.citizensnpcs:citizensapi:2.0.23-SNAPSHOT'
+}

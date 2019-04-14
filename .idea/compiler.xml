@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="base.item1.main" target="1.8" />
+      <module name="base.item1.test" target="1.8" />
+      <module name="com.zhufu.opencraft.base.main" target="1.8" />
+      <module name="com.zhufu.opencraft.base.test" target="1.8" />
+      <module name="com.zhufu.opencraft.OpenCraftGradle.main" target="1.8" />
+      <module name="com.zhufu.opencraft.OpenCraftGradle.test" target="1.8" />
+      <module name="com.zhufu.opencraft.webBase.main" target="1.8" />
+      <module name="com.zhufu.opencraft.webBase.test" target="1.8" />
+      <module name="OpenCraft.base.main" target="1.8" />
+      <module name="OpenCraft.base.test" target="1.8" />
+      <module name="OpenCraft.item1.main" target="1.8" />
+      <module name="OpenCraft.item1.test" target="1.8" />
+      <module name="OpenCraft.webBase.main" target="1.8" />
+      <module name="OpenCraft.webBase.test" target="1.8" />
+      <module name="OpenCraftGradle.item1.main" target="1.8" />
+      <module name="OpenCraftGradle.item1.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

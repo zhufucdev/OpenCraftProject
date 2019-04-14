@@ -1,0 +1,43 @@
+name: ServerCore
+main: com.zhufu.opencraft.Core
+author: zhufucomcom
+version: 1.0
+softdepend: [HolographicDisplays,Citizens]
+api-version: 1.13
+commands:
+  server:
+    usage: /server <feedback|about|stop|reload|set|notice> ...
+    description: 服务器指令集合
+  server feedback:
+    usage: /server feedback <文本>
+    description: 给予服务器管理员一段反馈，将会被保存在服务器文件中(字数 <= 300)
+  server about:
+    usage: /server about [编码格式(UTF-8)]
+    description: 以某种查看服务器自述文件
+  server stop:
+    usage: /server stop <消息>
+    description: 在 (消息字数*0.2)s 内停止服务器，并给予所有在线玩家此消息提示
+  server reload:
+    usage: /server reload <notice|game|npc...>
+    description: 重载指定服务器模块
+  server set:
+    usage: /server set <reloadDelay|inventorySaveDelay|...>
+    description: 设置服务器环境变量
+  survey:
+    usage: /survey
+    description: 参加服务器调查以成为正式会员
+  survey pass:
+    usage: /usrvey pass <玩家>
+    description: 管理员操作，使一名玩家通过服务器调查
+  survey rollback:
+    usage: /usrvey rollback <玩家>
+    description: 管理员操作，使一名通过服务器调查的玩家回到解放前
+  builder:
+    usage: /builder
+    description: 切换游戏模式，用于建筑者
+  builder pass:
+    usage: /builder pass <玩家>
+    description: 给予玩家建筑者身份，用于管理员
+  builder rollback:
+    usage: /builder rollback <玩家>
+    description: 夺取玩家建筑者身份，用于管理员
