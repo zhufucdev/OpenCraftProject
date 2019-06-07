@@ -3,20 +3,17 @@ package com.zhufu.opencraft
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
-import net.minecraft.server.v1_13_R2.MinecraftKey
-import net.minecraft.server.v1_13_R2.Packet
-import net.minecraft.server.v1_13_R2.PacketDataSerializer
-import net.minecraft.server.v1_13_R2.PacketPlayOutCustomPayload
+import net.minecraft.server.v1_14_R1.MinecraftKey
+import net.minecraft.server.v1_14_R1.PacketDataSerializer
+import net.minecraft.server.v1_14_R1.PacketPlayOutCustomPayload
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import kotlin.collections.ArrayList
 import java.io.StringWriter
-import java.nio.ByteBuffer
 
 
 class MyBook : ItemStack {

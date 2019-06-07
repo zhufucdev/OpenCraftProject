@@ -354,7 +354,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             }
         }
         val isNetherPortal = targets.any { it.block.type == Material.NETHER_PORTAL }
-        event.useTravelAgent(isNetherPortal)
+        //event.useTravelAgent(isNetherPortal)
         print("${event.player.name} entered a ${if (isNetherPortal) "nether" else "end"} portal")
         when (event.player.world){
             surviveWorld -> {
@@ -385,8 +385,9 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 return
             }
         }
-        if (isNetherPortal)
-            location = event.portalTravelAgent.findOrCreate(location)
+
+        //if (isNetherPortal)
+        //    location = event.portalTravelAgent.findOrCreate(location)
         event.setTo(location)
     }
 }

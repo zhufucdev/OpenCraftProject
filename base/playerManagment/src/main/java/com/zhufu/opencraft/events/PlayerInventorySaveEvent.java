@@ -6,7 +6,7 @@ import org.bukkit.event.server.ServerEvent;
 public class PlayerInventorySaveEvent extends ServerEvent {
     private static HandlerList handlerList = new HandlerList();
     public PlayerInventorySaveEvent(){
-
+        super(true);
     }
 
     @Override

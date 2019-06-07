@@ -1660,3 +1660,10 @@
 {"time":1552736212054,"player":"zhufucomcom","type":"BLOCK","data":{"type":"PLACE","block":{"type":"WALL_SIGN","location":{"x":-1443,"y":66,"z":8645,"world":"world_survive"}}}}
 {"time":1552736215184,"player":"zhufucomcom","type":"OPEN_INVENTORY","data":{}}
 {"time":1552736220174,"player":"zhufucomcom","type":"OPEN_INVENTORY","data":{}}
+{"time":1559904797191,"player":"zhufucomcom","type":"MOVE","data":{"x":6314.635573565781,"y":99.0,"z":-3673.2230624396475,"world":"world_survive"}}
+{"time":1559904840684,"player":"zhufucomcom","type":"OPEN_INVENTORY","data":{}}
+{"time":1559904847808,"player":"zhufucomcom","type":"OPEN_INVENTORY","data":{}}
+{"time":1559904857190,"player":"zhufucomcom","type":"MOVE","data":{"x":6315.6702253754165,"y":99.0,"z":-3666.3497067887192,"world":"world_survive"}}
+{"time":1559904917190,"player":"zhufucomcom","type":"MOVE","data":{"x":6315.567686643961,"y":99.0,"z":-3661.9017737449594,"world":"world_survive"}}
+{"time":1559904977190,"player":"zhufucomcom","type":"MOVE","data":{"x":6317.8360508475025,"y":99.0,"z":-3672.8887778670933,"world":"world_survive"}}
+{"time":1559905042885,"player":"zhufucomcom","type":"MOVE","data":{"x":6317.8360508475025,"y":99.0,"z":-3672.8887778670933,"world":"world_survive"}}

@@ -98,7 +98,7 @@ class CurrencySystem : JavaPlugin(), PluginBase {
                                 .setDirection(Vector(0, -90, 0)),
                         5 * 1000L)
                 player.sendTitle(TextUtil.error(getter["trade.tutorial.1.title"]),
-                        TextUtil.getColoredText(getter["trade.tutorial.1.subtitle"], TextUtil.TextColor.AQUA, false, false),
+                        TextUtil.getColoredText(getter["trade.tutorial.1.subtitle"], TextUtil.TextColor.AQUA),
                         7, 5 * 20, 7)
                 Thread.sleep(5 * 1000L + 50)
 
@@ -106,7 +106,7 @@ class CurrencySystem : JavaPlugin(), PluginBase {
                         .setDirection(Vector(0, 0, -90))
                 player.tplock(l1, 7 * 1000L)
                 player.sendTitle(TextUtil.tip(getter["trade.tutorial.2.title"]),
-                        TextUtil.getColoredText(getter["trade.tutorial.2.subtitle"], TextUtil.TextColor.AQUA, false, false),
+                        TextUtil.getColoredText(getter["trade.tutorial.2.subtitle"], TextUtil.TextColor.AQUA),
                         7, 7 * 20, 7)
                 Thread.sleep(7 * 1000L + 50)
 
@@ -119,11 +119,11 @@ class CurrencySystem : JavaPlugin(), PluginBase {
                             .setDirection(Vector(0, -90, 0))
                     player.tplock(L2, 7 * 1000L)
                     player.sendTitle(TextUtil.tip(getter["trade.tutorial.3.title"]),
-                            TextUtil.getColoredText(getter["trade.tutorial.3.subtitle"], TextUtil.TextColor.AQUA, false, false),
+                            TextUtil.getColoredText(getter["trade.tutorial.3.subtitle"], TextUtil.TextColor.AQUA),
                             7, 3 * 20, 0)
                     Thread.sleep(3 * 1000L)
                     player.sendTitle(TextUtil.tip(getter["trade.tutorial.3.title"]),
-                            TextUtil.getColoredText(getter["trade.tutorial.4.subtitle"], TextUtil.TextColor.AQUA, false, false),
+                            TextUtil.getColoredText(getter["trade.tutorial.4.subtitle"], TextUtil.TextColor.AQUA),
                             0, 4 * 20, 7)
                     Thread.sleep(4 * 1000L + 50)
                 }
@@ -133,21 +133,21 @@ class CurrencySystem : JavaPlugin(), PluginBase {
                 val l3Bottom = l3Top.clone().add(Vector(0.0, -15.0, 0.0))
                 player.teleport(l3Top)
                 player.sendTitle(TextUtil.tip(getter["trade.tutorial.5.title"]),
-                        TextUtil.getColoredText(getter["trade.tutorial.5.subtitle"], TextUtil.TextColor.AQUA, false, false), 7, 4 * 20, 0)
+                        TextUtil.getColoredText(getter["trade.tutorial.5.subtitle"], TextUtil.TextColor.AQUA), 7, 4 * 20, 0)
                 player.linearTo(l3Bottom, 13 * 1000L, 20)
                 Thread.sleep(4 * 1000L + 50)
                 player.sendTitle(TextUtil.tip(getter["trade.tutorial.5.title"]),
-                        TextUtil.getColoredText(getter["trade.tutorial.6.subtitle"], TextUtil.TextColor.AQUA, false, false), 0, 4 * 20, 0)
+                        TextUtil.getColoredText(getter["trade.tutorial.6.subtitle"], TextUtil.TextColor.AQUA), 0, 4 * 20, 0)
                 Thread.sleep(4 * 1000L + 50)
                 player.sendTitle(TextUtil.tip(getter["trade.tutorial.5.title"]),
-                        TextUtil.getColoredText(getter["trade.tutorial.7.subtitle"], TextUtil.TextColor.AQUA, false, false), 0, 6 * 20, 7)
+                        TextUtil.getColoredText(getter["trade.tutorial.7.subtitle"], TextUtil.TextColor.AQUA), 0, 6 * 20, 7)
                 Thread.sleep(6 * 1000L + 50)
 
                 player.linearTo(tradeWorld.spawnLocation, 1500L)
                 Thread.sleep(1500L)
 
                 player.gmd(GameMode.ADVENTURE)
-                player.sendTitle(TextUtil.getColoredText(getter["tutorial.begin"], TextUtil.TextColor.RED, true, false), "", 7, 60, 7)
+                player.sendTitle(TextUtil.getColoredText(getter["tutorial.begin"], TextUtil.TextColor.RED, true), "", 7, 60, 7)
 
                 PlayerManager.findInfoByPlayer(player)
                         ?.also { it.status = Info.GameStatus.Surviving }
@@ -288,10 +288,12 @@ class CurrencySystem : JavaPlugin(), PluginBase {
         if (command.name == "trade") {
             val commands = mutableListOf("back", "center", "help", "donation")
             if (sender.isOp) commands.addAll(arrayOf("give", "set"))
-            if (args.size in 1..2 && (args.first() == "give" || args.first() == "set")) {
+            if (args.isEmpty()){
+                return commands
+            } else if (args.size in 1..2 && (args.first() == "give" || args.first() == "set")) {
                 val players = ArrayList<String>()
                 server.onlinePlayers.forEach { players.add(it.name) }
-                if (args[1].isNotEmpty()) {
+                if (args.size > 1 && args[1].isNotEmpty()) {
                     val r = ArrayList<String>()
                     players.forEach { if (it.startsWith(args[1])) r.add(it) }
                     return r.toMutableList()
@@ -304,7 +306,6 @@ class CurrencySystem : JavaPlugin(), PluginBase {
                 }
                 return r.toMutableList()
             }
-            return commands
         }
         return mutableListOf()
     }

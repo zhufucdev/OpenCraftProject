@@ -1,1 +1,1 @@
-/Volumes/workspace/IdeaProjects/OpenCraftGradle/TenMinSur/build/classes/kotlin/main/com/zhufu/opencraft/TenMinSur.class
+/Volumes/storage/IdeaProjects/OpenCraftGradle/TenMinSur/build/classes/kotlin/main/com/zhufu/opencraft/TenMinSur.class

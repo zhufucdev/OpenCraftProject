@@ -84,13 +84,13 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
     private fun giveSign() {
         player.closeInventory()
         inventory.clear(inventory.size - 2)
-        player.inventory.addItem(ItemStack(Material.SIGN))
+        player.inventory.addItem(ItemStack(Material.ACACIA_SIGN))
     }
 
     override fun cancel(player: HumanEntity?) {
         player?.inventory?.addItem(items.item.clone().also { it.amount = items.amount })
         signPossible.forEach {
-            if (it.block.type == Material.WALL_SIGN) {
+            if (it.block.type.name.contains("wall_sign",true)) {
                 it.block.type = Material.AIR
             }
         }
@@ -112,7 +112,7 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
         )
 
     private fun confirm(): Boolean {
-        val block = signPossible.firstOrNull { it.block.type == Material.WALL_SIGN }?.block
+        val block = signPossible.firstOrNull { it.block.type.name.contains("wall_sign",true) }?.block
         if (block == null) {
             player.closeInventory()
             player.sendMessage(TextUtil.error("未在白色玻璃周围发现告示牌，请放置告示牌并在首行写入单价(整数)"))

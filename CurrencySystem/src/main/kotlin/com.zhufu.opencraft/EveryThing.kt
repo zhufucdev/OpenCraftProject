@@ -34,7 +34,7 @@ import java.io.File
 import java.util.*
 
 object EveryThing : Listener,PluginBase {
-    val traderInventoryName = TextUtil.getColoredText("服务器商人 server trader", TextUtil.TextColor.AQUA, true, false)
+    val traderInventoryName = TextUtil.getColoredText("服务器商人", TextUtil.TextColor.AQUA, true, false)
 
     /**
      * Reload Event
@@ -253,7 +253,7 @@ object EveryThing : Listener,PluginBase {
 
     @EventHandler
     fun onInventoryClose(event: InventoryCloseEvent) {
-        if (validateNPCInventory(event.inventory)) {
+        if (inventoryMap.any { it.player == event.player }) {
             val info = PlayerManager.findInfoByPlayer(event.player.uniqueId)
             if (info == null){
                 event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
@@ -264,34 +264,31 @@ object EveryThing : Listener,PluginBase {
         }
     }
 
-    private fun validateNPCInventory(inventory: Inventory) = inventory.name == traderInventoryName && inventory.location == null
     @EventHandler
     fun onInventoryClickItem(event: InventoryClickEvent) {
-        if (event.whoClicked.location.world != Base.tradeWorld)
+        if (event.whoClicked.location.world != tradeWorld)
             return
-        if (validateNPCInventory(event.inventory)) {
-            val inventory = inventoryMap.firstOrNull{ it.player.uniqueId == event.whoClicked.uniqueId } ?: return
-            event.currentItem?:return
-            event.isCancelled = true
-            if (event.slot <= 9 && transMap.containsKey(event.currentItem!!.type)) {
-                inventory.select(event.currentItem!!)
-            } else {
-                when (event.slot) {
-                    getPositionForLine(2) -> {
-                        inventory.subtractOne()
-                    }
-                    getPositionForLine(6) -> {
-                        inventory.plusOne()
-                    }
-                    getPositionForLine(4) -> {
-                        if (inventory.selectedItem == null) {
-                            event.whoClicked.printTradeError("找不到所选物品", TradeManager.getNewID())
-                            return
-                        }
-                        inventory.confirm()
-                    }
-                    else -> inventory.selectSpecialItem(event.currentItem!!)
+        val inventory = inventoryMap.firstOrNull{ it.player.uniqueId == event.whoClicked.uniqueId } ?: return
+        event.currentItem?:return
+        event.isCancelled = true
+        if (event.slot <= 9 && transMap.containsKey(event.currentItem!!.type)) {
+            inventory.select(event.currentItem!!)
+        } else {
+            when (event.slot) {
+                getPositionForLine(2) -> {
+                    inventory.subtractOne()
                 }
+                getPositionForLine(6) -> {
+                    inventory.plusOne()
+                }
+                getPositionForLine(4) -> {
+                    if (inventory.selectedItem == null) {
+                        event.whoClicked.printTradeError("找不到所选物品", TradeManager.getNewID())
+                        return
+                    }
+                    inventory.confirm()
+                }
+                else -> inventory.selectSpecialItem(event.currentItem!!)
             }
         }
     }

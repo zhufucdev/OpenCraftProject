@@ -17,6 +17,7 @@ import com.zhufu.opencraft.chunkgenerator.VoidGenerator
 import com.zhufu.opencraft.listener.*
 import com.zhufu.opencraft.survey.SurveyManager
 import com.zhufu.opencraft.WorldUtil.peace
+import com.zhufu.opencraft.events.PlayerInventorySaveEvent
 import com.zhufu.opencraft.player_intract.MessagePool
 import com.zhufu.opencraft.player_intract.PlayerStatics
 import com.zhufu.opencraft.special_items.FlyWand
@@ -143,7 +144,7 @@ class Core : JavaPlugin(), Listener, PluginBase {
             env.set("url", "https://www.open-craft.cn")
         env.save(File(dataFolder, "env"))
         saveTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, Runnable {
-            Bukkit.getPluginManager().callEvent(com.zhufu.opencraft.events.PlayerInventorySaveEvent())
+            Bukkit.getPluginManager().callEvent(PlayerInventorySaveEvent())
             PlayerManager.forEachPlayer {
                 if (it.status == Info.GameStatus.Surviving) {
                     val successful = try {

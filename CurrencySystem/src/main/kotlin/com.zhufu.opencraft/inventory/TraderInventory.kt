@@ -22,12 +22,12 @@ class TraderInventory(val player: Player) : PluginBase {
         }
     }
     private val itemPortal = Portal(getter)
-    private val inventory = Bukkit.createInventory(null, 36, EveryThing.traderInventoryName)
+    val inventory = Bukkit.createInventory(null, 36, EveryThing.traderInventoryName)
         .apply {
             setItem(size - 9, itemFlyWand)
             setItem(size - 8, itemPortal)
             setItem(size - 7, donater)
-        }!!
+        }
     lateinit var modeSwitcher: ItemStack
     var mode: Short = 0
 
@@ -267,6 +267,5 @@ class TraderInventory(val player: Player) : PluginBase {
         )
 
         player.closeInventory()
-        inventoryMap.removeIf { it.player == this.player }
     }
 }

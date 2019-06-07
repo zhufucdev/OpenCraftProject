@@ -80,7 +80,7 @@ abstract class NPCItemInventory(var baseLocation: Location, private val item: It
 
     @EventHandler
     fun onPlayerClickItem(event: InventoryClickEvent){
-        if (event.inventory.name == inventory.name){
+        if (event.inventory == inventory){
             event.isCancelled = onItemClick(event)
         }
     }
@@ -101,7 +101,7 @@ abstract class NPCItemInventory(var baseLocation: Location, private val item: It
         }
     }
 
-    fun validateInventory(inventory: Inventory): Boolean = inventory.name == this.inventoryName && inventory.location == null
+    fun validateInventory(inventory: Inventory): Boolean = inventory == this.inventory && inventory.location == null
 
     abstract fun onItemClick(event: InventoryClickEvent): Boolean
     open fun onInventoryOpen(player: HumanEntity){}

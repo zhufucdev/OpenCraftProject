@@ -7,13 +7,13 @@ object Widgets {
     val confirm
         get() = ItemStack(Material.LIME_DYE)
     val cancel
-        get() = ItemStack(Material.ROSE_RED)
+        get() = ItemStack(Material.RED_DYE)
     val group
         get() = ItemStack(Material.CHEST)
     val back
         get() = ItemStack(Material.ARROW)
     val rename
-        get() = ItemStack(Material.SIGN)
+        get() = ItemStack(Material.ACACIA_SIGN)
     val close
         get() = ItemStack(Material.BARRIER)
 }

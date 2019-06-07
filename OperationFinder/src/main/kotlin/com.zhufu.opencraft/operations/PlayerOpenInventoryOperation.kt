@@ -12,7 +12,7 @@ import java.util.*
 class PlayerOpenInventoryOperation(player: String,time: Long, inventory: Inventory? = null) : OperationChecker.PlayerOperation(player, time) {
     var inventory: Location? = inventory?.location
     var type: InventoryType? = inventory?.type
-    var name: String? = inventory?.name
+    var name: String? = inventory?.holder?.javaClass?.simpleName
     override val data: JsonObject
         get() = JsonObject()
                 .also {

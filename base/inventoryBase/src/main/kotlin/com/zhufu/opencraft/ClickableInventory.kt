@@ -26,7 +26,7 @@ abstract class ClickableInventory(val plugin: Plugin) : Listener {
 
     @EventHandler
     fun onInventoryClick(event: InventoryClickEvent){
-        if (event.inventory.name == this.inventory.name){
+        if (event.inventory == this.inventory){
             event.isCancelled = true
             onClick(event)
         }
@@ -38,7 +38,7 @@ abstract class ClickableInventory(val plugin: Plugin) : Listener {
     }
     @EventHandler
     fun onInventoryClose(event: InventoryCloseEvent){
-        if (event.inventory.name == this.inventory.name){
+        if (event.inventory == this.inventory){
             onClose(event.player)
             isShowing = false
             HandlerList.unregisterAll(this)

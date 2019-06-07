@@ -19,5 +19,9 @@ isTerritoryInMessageShown: false
 isTerritoryOutMessageShown: true
 isTradeTutorialShown: true
 isInChunk: false
-currency: 0
+currency: 2333
 nickname: zhufucomcom
+territoryLocation:
+  ==: com.zhufu.opencraft.BlockLockManager$XZ
+  x: 1
+  z: -1
