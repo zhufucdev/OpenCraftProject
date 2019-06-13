@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.util.logging.Logger
 
-class CustomTutorial : JavaPlugin(), PluginBase {
+class CustomTutorial : JavaPlugin() {
     companion object {
         fun getFile(name: String) = File(saveDir, "$name.json").also { if (!it.exists()) it.createNewFile() }
         val saveDir = File("plugins${File.separatorChar}tutorials").also { if (!it.exists()) it.mkdirs() }

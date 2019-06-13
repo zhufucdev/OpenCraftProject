@@ -16,7 +16,7 @@ import java.math.BigDecimal
 import java.math.MathContext
 
 class MenuInterface(plugin: Plugin, private val player: Player, private val isOnLobby: Boolean = false) :
-    ClickableInventory(plugin), PluginBase {
+    ClickableInventory(plugin) {
     companion object {
         var id = 0
     }

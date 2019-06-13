@@ -31,6 +31,7 @@
             <option value="$PROJECT_DIR$/base/miniGameBase" />
             <option value="$PROJECT_DIR$/base/playerManagment" />
             <option value="$PROJECT_DIR$/base/pluginBase" />
+            <option value="$PROJECT_DIR$/base/scripting" />
             <option value="$PROJECT_DIR$/base/tradeBase" />
             <option value="$PROJECT_DIR$/base/utils" />
             <option value="$PROJECT_DIR$/languages" />

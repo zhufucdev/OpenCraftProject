@@ -1,7 +1,7 @@
 package com.zhufu.opencraft.special_items
 
 import com.zhufu.opencraft.Language
-import com.zhufu.opencraft.PluginBase
+import com.zhufu.opencraft.lang
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
@@ -13,7 +13,7 @@ abstract class SpecialItem(m: Material) : ItemStack(m) {
         FlyingWand, Portal
     }
 
-    companion object: PluginBase {
+    companion object {
         fun isSpecial(config: ConfigurationSection?): Boolean {
             return config?.getBoolean("isSpecialItem", false) ?: false
         }

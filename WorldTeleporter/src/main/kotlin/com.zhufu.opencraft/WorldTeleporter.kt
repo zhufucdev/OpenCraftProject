@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import kotlin.collections.ArrayList
 
-class WorldTeleporter : JavaPlugin(), PluginBase {
+class WorldTeleporter : JavaPlugin() {
     private val customizedWorlds = ArrayList<String>()
 
     override fun onEnable() {

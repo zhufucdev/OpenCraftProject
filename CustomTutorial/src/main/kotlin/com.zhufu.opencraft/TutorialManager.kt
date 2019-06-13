@@ -21,7 +21,7 @@ import java.io.StringReader
 import java.util.*
 import kotlin.collections.ArrayList
 
-object TutorialManager : PluginBase {
+object TutorialManager {
     private val mList = ArrayList<Tutorial>()
     fun add(tutorial: Tutorial) = mList.add(tutorial.also { it.id = getNewID() })
     fun addAsDraft(tutorial: Tutorial) = mList.add(tutorial.also { it.id = getNewID() })

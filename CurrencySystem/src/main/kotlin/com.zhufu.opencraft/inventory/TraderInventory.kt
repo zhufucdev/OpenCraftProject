@@ -12,7 +12,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
-class TraderInventory(val player: Player) : PluginBase {
+class TraderInventory(val player: Player) {
     private val getter = player.lang()
     private val itemFlyWand: ItemStack = FlyWand(getter)
     private val donater: ItemStack = ItemStack(Material.GOLDEN_APPLE).apply {

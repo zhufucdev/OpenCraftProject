@@ -8,7 +8,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.plugin.java.JavaPlugin
 
-class OpenTranslator : JavaPlugin(), Listener, PluginBase {
+class OpenTranslator : JavaPlugin(), Listener {
 
     override fun onEnable() {
         server.pluginManager.registerEvents(this, this)

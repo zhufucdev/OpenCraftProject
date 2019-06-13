@@ -33,7 +33,7 @@ import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.util.*
 
-object EveryThing : Listener,PluginBase {
+object EveryThing : Listener {
     val traderInventoryName = TextUtil.getColoredText("服务器商人", TextUtil.TextColor.AQUA, true, false)
 
     /**

@@ -1,6 +1,6 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.Info.Companion.mList
+import com.zhufu.opencraft.Info.Companion.infoList
 import com.zhufu.opencraft.OfflineInfo.Companion.offlineList
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.special_items.SpecialItem
@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 import kotlin.collections.ArrayList
 
-object PlayerManager : Listener, PluginBase {
+object PlayerManager : Listener {
     private val chatters = ArrayList<ChatInfo>()
     private lateinit var plugin: JavaPlugin
     val isInit: Boolean
@@ -35,7 +35,7 @@ object PlayerManager : Listener, PluginBase {
 
     fun findInfoByPlayer(player: Player) = Info.findByPlayer(player)
     fun findInfoByPlayer(uuid: UUID) = Info.findByPlayer(uuid)
-    fun findOfflinePlayer(uuid: UUID): OfflineInfo? = mList.firstOrNull { it.uuid == uuid }
+    fun findOfflinePlayer(uuid: UUID): OfflineInfo? = infoList.firstOrNull { it.uuid == uuid }
             ?: offlineList.firstOrNull { it.uuid == uuid }
             ?: try {
                 OfflineInfo(uuid).also { offlineList.add(it) }
@@ -45,15 +45,15 @@ object PlayerManager : Listener, PluginBase {
     fun createOfflinePlayer(uuid: UUID) = findOfflinePlayer(uuid)
             ?: OfflineInfo(uuid, true).also { offlineList.add(it) }
 
-    fun forEachPlayer(l: (Info) -> Unit) = mList.forEach(l)
+    fun forEachPlayer(l: (Info) -> Unit) = infoList.forEach(l)
     fun forEachChatter(l: (ChatInfo) -> Unit) {
-        mList.forEach(l)
+        infoList.forEach(l)
         chatters.forEach(l)
     }
     fun forEachOffline(l: (OfflineInfo) -> Unit) = offlineList.forEach(l)
 
     fun addOffline(info: OfflineInfo) = offlineList.add(info)
-    fun add(info: Info) = mList.add(info)
+    fun add(info: Info) = infoList.add(info)
     fun remove(p: Player) = forEachPlayer {
         if (it.uuid == p.uniqueId){
             it.destroy()

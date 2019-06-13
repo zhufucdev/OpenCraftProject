@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import java.util.*
 
-object BlockListener : Listener, PluginBase {
+object BlockListener : Listener {
     @EventHandler
     fun onBreakBlock(event: BlockBreakEvent) {
         val block = event.block

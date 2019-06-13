@@ -1,3 +1,0 @@
-providers:
-  - tw.davy.minecraft.skinny.providers.LegacyProvider
-  - tw.davy.minecraft.skinny.providers.MojangProvider

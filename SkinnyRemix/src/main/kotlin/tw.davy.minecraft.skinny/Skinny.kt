@@ -4,8 +4,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile
 import com.comphenix.protocol.wrappers.WrappedSignedProperty
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
-import com.zhufu.opencraft.PluginBase
-import com.zhufu.opencraft.TextUtil
+import com.zhufu.opencraft.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -25,7 +24,7 @@ import tw.davy.minecraft.skinny.providers.ProviderManager
  * The origin file is under MIT license<url>https://github.com/david50407/Skinny/blob/master/LICENSE</url>
  * --zhufucomcom 07/13/2018
  */
-class Skinny : JavaPlugin(), Listener, PluginBase {
+class Skinny : JavaPlugin(), Listener {
 
     lateinit var providerManager: ProviderManager
         private set

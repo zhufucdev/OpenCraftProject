@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import com.destroystokyo.paper.utils.PaperPluginLogger
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.HumanEntity
 import java.io.File
@@ -25,6 +26,7 @@ object Language {
     val default: YamlConfiguration
         get() = languages.firstOrNull { it.getBoolean("info.default", false) } ?: languages.firstOrNull()
         ?: throw LanguageNotFoundException("Default language not found!")
+    val defaultLangCode get() = default.getString("info.code", LANG_ZH)!!
 
     init {
         init()
@@ -47,18 +49,25 @@ object Language {
     const val LANG_ZH = "zh"
     const val LANG_EN = "en"
     fun got(lang: String, value: String, replaceWith: Array<out Any?>?): String {
-        var raw: String = getConf(lang)?.getString(value) ?: "ERROR: ${got(lang,"user.error.translationNotFound", arrayOf(value))}"
-        ?: throw LangNotFoundException(value)
-        replaceWith?.forEachIndexed { i, any ->
-            if (any != null) {
-                val index = "%${i + 1}"
-                raw =
+        val conf = getConf(lang) ?: throw LangNotFoundException(lang)
+        val found = conf.isSet(value)
+        var raw: String
+        if (found) {
+            raw = conf.getString(value)!!
+            replaceWith?.forEachIndexed { i, any ->
+                if (any != null) {
+                    val index = "%${i + 1}"
+                    raw =
                         if (raw.contains(index)) {
                             raw.replace(index, any.toString())
                         } else {
                             raw.replaceFirst("%s", any.toString())
                         }
+                }
             }
+        } else {
+            raw = "ERROR: ${get(lang, "user.error.translationNotFound")}"
+            PaperPluginLogger.getGlobal().warning("Translation not found: $value in language $lang")
         }
         return raw
     }
@@ -67,7 +76,7 @@ object Language {
     fun byChat(player: ChatInfo, value: String, vararg replaceWith: Any?) = got(lang = player.targetLang,value = value,replaceWith = replaceWith)
     operator fun get(player: OfflineInfo, value: String, vararg replaceWith: Any?): String = got(lang = player.userLanguage, value = value, replaceWith = replaceWith)
     operator fun get(player: HumanEntity, value: String, vararg replaceWith: Any?): String {
-        val info = OfflineInfo.findOfflinePlayer(player.uniqueId)
+        val info = OfflineInfo.findByUUID(player.uniqueId)
                 ?: return got(LANG_ZH, "player.error.unknown", null)
         return got(info.userLanguage, value, replaceWith)
     }
@@ -95,18 +104,24 @@ object Language {
         constructor(info: OfflineInfo) : this(info.userLanguage)
 
         operator fun get(value: String, vararg replaceWith: Any?): String {
-            var raw: String = conf.getString(value) ?: "ERROR: ${get("user.error.translationNotFound", value)}"
-            ?: throw LangNotFoundException(value)
-            replaceWith.forEachIndexed { i, any ->
-                if (any != null) {
-                    val index = "%${i + 1}"
-                    raw =
+            val found = conf.isSet(value)
+            var raw: String
+            if (found) {
+                raw = conf.getString(value)!!
+                replaceWith.forEachIndexed { i, any ->
+                    if (any != null) {
+                        val index = "%${i + 1}"
+                        raw =
                             if (raw.contains(index)) {
                                 raw.replace(index, any.toString())
                             } else {
                                 raw.replaceFirst("%s", any.toString())
                             }
+                    }
                 }
+            } else {
+                raw = "ERROR: ${get("user.error.translationNotFound", value)}"
+                PaperPluginLogger.getGlobal().warning("Translation not found: $value in language $lang")
             }
             return raw
         }

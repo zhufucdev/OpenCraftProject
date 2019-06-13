@@ -21,7 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 
-class UserManager : JavaPlugin(), Listener, PluginBase {
+class UserManager : JavaPlugin(), Listener{
     private lateinit var boardLocation: Location
 
     override fun onEnable() {
@@ -202,12 +202,12 @@ class UserManager : JavaPlugin(), Listener, PluginBase {
         label: String,
         args: Array<out String>
     ): Boolean {
-        if (command!!.name == "user") {
+        if (command.name == "user") {
             if (sender !is Player) {
-                sender!!.error(Language.getDefault("command.error.playerOnly"))
+                sender.error(Language.getDefault("command.error.playerOnly"))
                 return true
             }
-            if (args!!.isEmpty())
+            if (args.isEmpty())
                 return false
             val getter = getLangGetter(PlayerManager.findInfoByPlayer(sender))
 
@@ -389,7 +389,7 @@ class UserManager : JavaPlugin(), Listener, PluginBase {
                     }
 
                     fun gotoCheckpoint(id: String): Boolean {
-                        val point = info.checkpoints.firstOrNull { it.id == id } ?: return false
+                        val point = info.checkpoints.firstOrNull { it.name == id } ?: return false
                         PaymentDialog(
                             sender,
                             SellingItemInfo(
@@ -596,7 +596,7 @@ class UserManager : JavaPlugin(), Listener, PluginBase {
                     }
 
                     val id = args[1]
-                    if (info.checkpoints.any { it.id == id }) {
+                    if (info.checkpoints.any { it.name == id }) {
                         sender.error(getter["user.checkpoint.alreadyExist", id])
                     } else {
                         val point = OfflineInfo.CheckpointInfo(sender.location, id)
@@ -615,7 +615,7 @@ class UserManager : JavaPlugin(), Listener, PluginBase {
                         sender.error(getter["player.error.unknown"])
                         return true
                     }
-                    if (!info.checkpoints.removeIf { it.id == args[1] }) {
+                    if (!info.checkpoints.removeIf { it.name == args[1] }) {
                         sender.error(getter["user.checkpoint.notFound"])
                     } else {
                         sender.info(getter["user.checkpoint.del", args[1]])
@@ -797,11 +797,11 @@ class UserManager : JavaPlugin(), Listener, PluginBase {
                                 result.add(it.name)
                         }
                         info.checkpoints.forEach {
-                            val index = result.indexOf(it.id)
+                            val index = result.indexOf(it.name)
                             if (index != -1) {
-                                result[index] = "player/${it.id}"
-                                result.add("checkpoint/${it.id}")
-                            } else result.add(it.id)
+                                result[index] = "player/${it.name}"
+                                result.add("checkpoint/${it.name}")
+                            } else result.add(it.name)
                         }
                         if (args.size == 2) {
                             if (args[1].isEmpty()) {
@@ -856,7 +856,7 @@ class UserManager : JavaPlugin(), Listener, PluginBase {
                             return mutableListOf()
                         }
                         val r = ArrayList<String>()
-                        info.checkpoints.forEach { r.add(it.id) }
+                        info.checkpoints.forEach { r.add(it.name) }
                         if (args.size == 2) {
                             return if (args[1].isEmpty()) {
                                 r

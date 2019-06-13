@@ -16,8 +16,6 @@ game:
   teamScore: '队伍分数'
   timeRemainingInSec: '%s时间剩余%s'
 
-tutorial.begin: '那么，我们开始吧！'
-
 user:
   toSelectLang: '请选择您的语言(在聊天栏输入以选择)。Please choose the language you use through the chat:'
   loginWithIP: '使用上一次的IP地址自动登录'
@@ -107,7 +105,8 @@ survey:
 player:
   joinGame: '%s加入了游戏'
   leftGame: '%s离开了游戏'
-  warn.badNet: '%s正在登陆，然而由于网络问题，这可能需要几秒钟'
+  warn:
+    badNet: '%s正在登陆，然而由于网络问题，这可能需要几秒钟'
   error:
     unknown: "抱歉，但我们无法确定你是谁。您的游戏出现问题，请联系服务器管理员。Sorry, but we can't make sure that who you are. Your game seemed to go wrong, please contact the server operator."
 
@@ -122,6 +121,7 @@ command:
     unknown: '未知'
     failed: '失败'
     tooFewArgs: '缺少参数(需要%s个)'
+    noSuchItem: '没有这样的物品: %s'
   done: '完成'
 
 server:
@@ -302,6 +302,7 @@ welcome:
 
 tutorial:
   incoming: '即将向您播放名为%s的教程'
+  begin: '那么，我们开始吧！'
 
 block:
   block: '区块'
@@ -399,7 +400,8 @@ web:
     unknownArg: '未知参数: %s'
     illegalArg: '非法参数: %s (需要%s)'
     notConnected: '服务器未连接'
-
+si:
+  given: '您已被给予%s×%s'
 wand:
   name: '飞行权杖'
   title: '一支让您飞行的权杖'
@@ -420,3 +422,17 @@ msg:
   clickToRead: '点击标记为已读'
   markAsRead: '已标记为已读'
   alreadyRead: '目标以被标记为已读'
+
+scripting:
+  toRun:
+    1: '-------ServerScript 执行器-------'
+    2: '版本: %s, 执行者: %s'
+    3: '== 输出流:'
+  returnNull: '在%s秒内完成。返还空对象。'
+  returnSomething: '在%s秒内完成。返还: %s'
+  error:
+    offline: '指定玩家必须在线!'
+    nullValue: '%s 不能为空!'
+    log: '无法保存日志'
+    executionOutOfBound: '您仅有权执行%s次循环。'
+    parWhenOffline: '参数[%s]必须给出，因为您不在服务器。'

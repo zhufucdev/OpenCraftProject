@@ -19,7 +19,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BookNoticer : JavaPlugin(), Listener, PluginBase {
+class BookNoticer : JavaPlugin(), Listener {
     override fun onEnable() {
         initBookEntries()
         server.pluginManager.registerEvents(this, this)

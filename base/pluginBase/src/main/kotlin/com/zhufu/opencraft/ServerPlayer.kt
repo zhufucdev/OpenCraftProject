@@ -1,21 +1,21 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.player_intract.Friend
-import com.zhufu.opencraft.player_intract.MessagePool
-import com.zhufu.opencraft.player_intract.PlayerStatics
+import com.zhufu.opencraft.player_community.Friend
+import com.zhufu.opencraft.player_community.MessagePool
+import com.zhufu.opencraft.player_community.PlayerStatics
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.permissions.ServerOperator
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.Reader
-import java.io.StringReader
 import java.nio.file.Paths
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = null) {
+abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = null) : ServerOperator {
     companion object {
         val memory = HashMap<UUID, YamlConfiguration>()
 
@@ -24,7 +24,7 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
                 var r = 0
                 Paths.get("plugins", "tag").toFile().listFiles().forEach {
                     if (!it.isHidden && !it.isDirectory) {
-                        if (YamlConfiguration.loadConfiguration(it)?.isSet("password") == true) r++
+                        if (YamlConfiguration.loadConfiguration(it).isSet("password")) r++
                     }
                 }
                 r += Paths.get("plugins", "tag", "preregister").toFile().listFiles()?.size ?: 0
@@ -33,6 +33,7 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
     }
 
     abstract val tagFile: File
+    abstract val playerDir: File
     private var privateTag: YamlConfiguration? = null
     var tag: YamlConfiguration
         get() = if (uuid != null) {
@@ -83,18 +84,9 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
         if (!file.exists()) {
             if (createNew) {
                 file.createNewFile()
-                return file.reader()
             } else throw FileNotFoundException("Cannot locate tag file at ${file.absolutePath}.")
         }
-        var text = file.readText()
-        val old = listOf("com.zhufu.opencraft.manager.BlockLockManager\$XZ")
-        val new = listOf("com.zhufu.opencraft.BlockLockManager\$XZ")
-        old.forEachIndexed { index, s ->
-            if (text.contains(s)) {
-                text = text.replace(s, new[index])
-            }
-        }
-        return StringReader(text)
+        return file.reader()
     }
 
     open fun saveTag() {
@@ -129,9 +121,11 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
             tag.set("password", value)
             saveTag()
         }
+    val inventoriesFile
+        get() = Paths.get("plugins", "inventories", uuid.toString()).toFile()
 
     var currency: Long
-        get() = tag.getLong("currency")
+        get() = tag.getLong("currency", 0)
         set(value) = tag.set("currency", value)
     val isOnline: Boolean
         get() = Bukkit.getOnlinePlayers().any { it.uniqueId == uuid }
@@ -160,7 +154,9 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
         set(value) = tag.set("nickname", value)
 
     val offlinePlayer: OfflinePlayer
-        get() = if (uuid != null) Bukkit.getOfflinePlayer(uuid?:throw IllegalStateException()) else throw IllegalStateException("Cannot read offline player for an info with uuid null.")
+        get() = if (uuid != null) Bukkit.getOfflinePlayer(
+            uuid ?: throw IllegalStateException()
+        ) else throw IllegalStateException("Cannot read offline player for an info with uuid null.")
 
     var name: String?
         get() = tag.getString("name")
@@ -183,7 +179,20 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
             )
         }
     val isBuilder get() = builderLevel > 0
+    override fun isOp(): Boolean = try {
+        offlinePlayer.isOp
+    } catch (e: Exception) {
+        false
+    }
+
+    override fun setOp(value: Boolean) {
+        offlinePlayer.isOp = value
+    }
 
     val statics get() = PlayerStatics.from(this)
     val messagePool = MessagePool.from(tag)
+
+    var maxLoopExecution
+        get() = tag.getLong("maxLoopExecution",1000)
+        set(value) = tag.set("maxLoopExecution", value)
 }

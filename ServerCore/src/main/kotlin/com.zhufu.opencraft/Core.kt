@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import com.destroystokyo.paper.event.server.PaperServerListPingEvent
 import com.gmail.filoghost.holographicdisplays.api.Hologram
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI
 import com.zhufu.opencraft.Base.spawnWorld
@@ -16,10 +17,9 @@ import com.zhufu.opencraft.Base.netherWorld
 import com.zhufu.opencraft.chunkgenerator.VoidGenerator
 import com.zhufu.opencraft.listener.*
 import com.zhufu.opencraft.survey.SurveyManager
-import com.zhufu.opencraft.WorldUtil.peace
 import com.zhufu.opencraft.events.PlayerInventorySaveEvent
-import com.zhufu.opencraft.player_intract.MessagePool
-import com.zhufu.opencraft.player_intract.PlayerStatics
+import com.zhufu.opencraft.player_community.MessagePool
+import com.zhufu.opencraft.player_community.PlayerStatics
 import com.zhufu.opencraft.special_items.FlyWand
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.SpawnReason
@@ -40,6 +40,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.util.Vector
+import org.graalvm.polyglot.Context
 import java.io.File
 import java.nio.charset.Charset
 import java.nio.file.Paths
@@ -49,7 +50,7 @@ import javax.imageio.ImageIO
 import kotlin.collections.ArrayList
 import kotlin.math.roundToLong
 
-class Core : JavaPlugin(), Listener, PluginBase {
+class Core : JavaPlugin(), Listener {
     companion object {
         var npc = ArrayList<NPC>()
     }
@@ -83,7 +84,7 @@ class Core : JavaPlugin(), Listener, PluginBase {
             }
         handleTasks()
 
-        Bukkit.getPluginManager().apply {
+        with(Bukkit.getPluginManager()) {
             val self = this@Core
             registerEvents(self, self)
             registerEvents(NPCListener, self)
@@ -91,6 +92,7 @@ class Core : JavaPlugin(), Listener, PluginBase {
             registerEvents(SurviveListener(self), self)
             registerEvents(PlayerObserverListener(self), self)
         }
+        if (!dataFolder.exists()) dataFolder.mkdirs()
         SurveyManager.init(File(dataFolder, "survey.json"), this)
         GameManager.init(this)
         PlayerManager.init(this)
@@ -123,6 +125,7 @@ class Core : JavaPlugin(), Listener, PluginBase {
         BuilderListener.onServerClose()
         PlayerStatics.cleanUp()
         Base.publicMsgPool.serialize().save(Base.msgPoolFile)
+        Scripting.cleanUp()
     }
 
     private var urlLooper = 0
@@ -631,6 +634,36 @@ class Core : JavaPlugin(), Listener, PluginBase {
                         "broadcast" -> PlayerManager.forEachChatter { Base.publicMsgPool.sendUnreadTo(it) }
                     }
                 }
+                args.first() == "script" -> {
+                    val getter = sender.lang()
+                    if (!sender.isOp) {
+                        sender.error(getter["command.error.permission"])
+                        return true
+                    }
+                    if (args.size < 2 || args[1].isEmpty()) {
+                        sender.error(getter["command.error.usage"])
+                        return true
+                    }
+                    val src = buildString {
+                        for (i in 1 until args.size) {
+                            append(args[i] + ' ')
+                        }
+                        if (isNotEmpty()) {
+                            deleteCharAt(lastIndex)
+                        }
+                    }
+                    Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
+                        val timeBegin = System.currentTimeMillis()
+                        val result =
+                            Scripting.evalLineAsServer(src, if (sender is Player) sender.info()?.playerStream else null)
+                        val timeEnd = System.currentTimeMillis()
+                        if (result == null) {
+                            sender.error(getter["scripting.returnNull", (timeEnd - timeBegin) / 1000.0])
+                        } else {
+                            sender.success(getter["scripting.returnSomething",(timeEnd - timeBegin)/1000.0 , result.toString()])
+                        }
+                    }
+                }
             }
         } else if (command.name == "survey") {
             if (args.isNotEmpty()) {
@@ -684,7 +717,7 @@ class Core : JavaPlugin(), Listener, PluginBase {
                 }
             } else {
                 if (sender !is Player) {
-                    sender!!.sendMessage(TextUtil.error("只有玩家才能使用此命令"))
+                    sender.sendMessage(TextUtil.error("只有玩家才能使用此命令"))
                     return true
                 }
                 SurveyManager.startSurvey(sender)
@@ -717,10 +750,6 @@ class Core : JavaPlugin(), Listener, PluginBase {
                     return true
                 }
                 val player = Bukkit.getOfflinePlayer(args[1])
-                if (player == null) {
-                    sender.sendMessage(TextUtil.error("玩家不存在"))
-                    return true
-                }
                 when (args.first()) {
                     "pass" -> {
                         if (player.offlineInfo()?.isBuilder != true) {
@@ -765,67 +794,68 @@ class Core : JavaPlugin(), Listener, PluginBase {
     ): MutableList<String> {
         if (command.name == "server") {
             val first = args.first()
-            val commands = listOf("feedback", "about", "stop", "reload", "set", "notice")
-            val r = ArrayList<String>()
-            commands.forEach {
-                if ((sender.isOp && it != "feedback") || (it == "feedback"))
-                    if (it.startsWith(first))
-                        r.add(it)
-            }
-            when {
-                args.isEmpty() -> {
-                    return r.toMutableList()
+
+            if (args.size == 1) {
+                val commands = mutableListOf("feedback", "about")
+                if (sender.isOp) commands.addAll(listOf("stop", "reload", "set", "notice", "script"))
+                return if (first.isEmpty()) {
+                    commands
+                } else {
+                    commands.filter { it.startsWith(first) }.toMutableList()
                 }
-                args.isNotEmpty() -> {
-                    when (first) {
-                        "about" -> {
-                            val sets = listOf(
-                                Charsets.UTF_8.name(),
-                                Charsets.UTF_16.name(),
-                                Charsets.US_ASCII.name(),
-                                Charsets.ISO_8859_1.name()
-                            )
-                            if (args.size == 1)
-                                return sets.toMutableList()
-                            else if (args.size == 2) {
-                                val result = ArrayList<String>()
-                                sets.forEach {
-                                    if (it.startsWith(args[1])) result.add(it)
-                                }
-                                return result.toMutableList()
+            } else {
+                when (first) {
+                    "about" -> {
+                        val sets = listOf(
+                            Charsets.UTF_8.name(),
+                            Charsets.UTF_16.name(),
+                            Charsets.US_ASCII.name(),
+                            Charsets.ISO_8859_1.name()
+                        )
+                        if (args.size == 1)
+                            return sets.toMutableList()
+                        else if (args.size == 2) {
+                            val result = ArrayList<String>()
+                            sets.forEach {
+                                if (it.startsWith(args[1])) result.add(it)
                             }
+                            return result.toMutableList()
                         }
-                        "reload" -> {
-                            if (!sender.isOp) {
-                                return mutableListOf()
-                            }
-                            val models = listOf("game", "notice", "npc", "survey")
-                            if (args.size == 1)
-                                return models.toMutableList()
-                            else if (args.size >= 2) {
-                                val result = ArrayList<String>()
-                                models.forEach { if (it.startsWith(args.last())) result.add(it) }
-                                return result.toMutableList()
-                            }
+                    }
+                    "reload" -> {
+                        if (!sender.isOp) {
+                            return mutableListOf()
                         }
-                        "set" -> {
-                            if (!sender.isOp) {
-                                return mutableListOf()
-                            }
-                            if (args.size == 1)
-                                return varNames.toMutableList()
-                            else if (args.size == 2) {
-                                val result = ArrayList<String>()
-                                varNames.forEach { if (it.startsWith(args[1])) result.add(it) }
-                                return result.toMutableList()
-                            }
+                        val models = listOf("game", "notice", "npc", "survey")
+                        if (args.size == 1)
+                            return models.toMutableList()
+                        else if (args.size >= 2) {
+                            val result = ArrayList<String>()
+                            models.forEach { if (it.startsWith(args.last())) result.add(it) }
+                            return result.toMutableList()
                         }
-                        else -> {
-                            if (args.size == 1) {
-                                val result = ArrayList<String>()
-                                r.forEach { if (it.startsWith(first)) result.add(it) }
-                                return if (result.isNotEmpty()) result.toMutableList() else r.toMutableList()
-                            }
+                    }
+                    "set" -> {
+                        if (!sender.isOp) {
+                            return mutableListOf()
+                        }
+                        if (args.size == 1)
+                            return varNames.toMutableList()
+                        else if (args.size == 2) {
+                            val result = ArrayList<String>()
+                            varNames.forEach { if (it.startsWith(args[1])) result.add(it) }
+                            return result.toMutableList()
+                        }
+                    }
+                    "notice" -> {
+                        if (!sender.isOp)
+                            return mutableListOf()
+                        val commands = mutableListOf("append", "remove", "broadcast")
+                        if (args.size == 1) {
+                            return if (args.first().isEmpty())
+                                commands
+                            else
+                                commands.filter { it.startsWith(args.first()) }.toMutableList()
                         }
                     }
                 }
@@ -859,7 +889,7 @@ class Core : JavaPlugin(), Listener, PluginBase {
                 }
             }
         } else if (command.name == "builder") {
-            if (args.size == 1 && sender!!.isOp) {
+            if (args.size == 1 && sender.isOp) {
                 val commands = mutableListOf("pass", "rollback", "set")
                 return if (args.first().isEmpty()) {
                     commands
@@ -930,10 +960,10 @@ class Core : JavaPlugin(), Listener, PluginBase {
     }
 
     @EventHandler
-    fun onServerListPing(event: ServerListPingEvent) {
+    fun onServerListPing(event: PaperServerListPingEvent) {
         val logo = File(dataFolder, "logo.png")
         if (logo.exists()) {
-            event.setServerIcon(server.loadServerIcon(ImageIO.read(logo.inputStream())))
+            event.serverIcon = server.loadServerIcon(ImageIO.read(logo.inputStream()))
         }
         val motd = File(dataFolder, "motd.txt")
         if (!motd.exists()) motd.createNewFile()

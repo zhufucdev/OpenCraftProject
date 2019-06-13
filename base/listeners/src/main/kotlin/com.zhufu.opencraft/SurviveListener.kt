@@ -7,7 +7,10 @@ import com.zhufu.opencraft.Base.surviveWorld
 import com.zhufu.opencraft.DualInventory.Companion.RESET
 import com.zhufu.opencraft.Info.GameStatus.*
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.GameMode
+import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -27,7 +30,7 @@ import org.bukkit.util.Vector
 import java.io.File
 
 class SurviveListener(private val plugin: JavaPlugin) : Listener {
-    companion object: PluginBase {
+    companion object {
         lateinit var mInstance: SurviveListener
 
         fun getHelpDoc(lang: String): File = File("plugins/UserManager","help-$lang.txt").also {
@@ -167,10 +170,10 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         val info = PlayerManager.findInfoByPlayer(event.player)
         if (!validateInfo(info))
             return
-
         when (info!!.status){
             InLobby -> {
                 info.inventory.create(RESET).load()
+                event.respawnLocation = lobby.spawnLocation
             }
             Surviving -> {
                 event.respawnLocation = info.tag.getSerializable("surviveSpawn",Location::class.java,null) ?: Base.lobby.spawnLocation
@@ -178,7 +181,9 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             InTutorial -> {
                 info.inventory.create(RESET).load()
             }
-            else -> {}
+            else -> {
+                event.respawnLocation = lobby.spawnLocation
+            }
         }
     }
 
@@ -187,12 +192,12 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         val info = PlayerManager.findInfoByPlayer(event.entity)
         if (validateInfo(info))
             info!!.tag
-                    .also {
+                    .apply {
                         if (info.status != Surviving)
                             return
-                        it.set("lastDeath.location", event.entity.location)
-                        it.set("lastDeath.reason", event.deathMessage)
-                        it.set("lastDeath.time", System.currentTimeMillis())
+                        set("lastDeath.location", event.entity.location)
+                        set("lastDeath.reason", event.deathMessage)
+                        set("lastDeath.time", System.currentTimeMillis())
                     }
     }
 
@@ -203,9 +208,9 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             return
         info!!
         val isSurvivor = info.tag.getBoolean("isSurvivor", false)
-        if (event.to!!.world == lobby && event.to!!.y <= lobby.spawnLocation.y - 30) {
+        if (event.to.world == lobby && event.to.y <= lobby.spawnLocation.y - 30) {
             event.player.solveSurvivorRequest(info)
-        } else if (!isSurvivor && event.to!!.world == Base.surviveWorld && event.to!!.clone().add(Vector(0, -1, 0)).block.type != Material.AIR) {
+        } else if (!isSurvivor && event.to.world == Base.surviveWorld && event.to.clone().add(Vector(0, -1, 0)).block.type != Material.AIR) {
             info.tag.set("isSurvivor", true)
             info.saveServerID()
 
@@ -221,9 +226,9 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             }, 3 * 20)
         }
         if (info.status == Surviving && !info.isSurveyPassed){
-            if (event.to!!.world != surviveWorld)
+            if (event.to.world != surviveWorld)
                 return
-            val distance = event.to!!.distance(info.tag.getSerializable("surviveSpawn",Location::class.java)?:return)
+            val distance = event.to.distance(info.tag.getSerializable("surviveSpawn",Location::class.java)?:return)
             if (distance >= 100) {
                 if (!info.tag.getBoolean("isOutOfSpawn",false)) {
                     info.tag.set("isOutOfSpawn", true)
@@ -247,10 +252,11 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             event.player.error(getter["player.error.unknown"])
             return
         }
+        event.isCancelled = true
         if (info.isSurveyPassed || !info.tag.getBoolean("isOutOfSpawn",false)){
-            event.isCancelled = true
             event.player.success(getter["user.spawnpoint.saved"])
             info.tag.set("surviveSpawn",event.bed.location)
+            event.player.bedSpawnLocation = event.bed.location
         } else sendPlayerOutOfSpawnMessage(event.player)
     }
 

@@ -1,0 +1,10 @@
+group 'com.zhufu.opencraft'
+version '1.0-SNAPSHOT'
+
+dependencies {
+    compile project(':pluginBase')
+    compile project(':playerManagment')
+    compile 'org.graalvm:graal-sdk:1.0.0-rc7'
+    compile 'org.graalvm.truffle:truffle-api:1.0.0-rc8'
+    compile 'org.graalvm.truffle:truffle-dsl-processor:1.0.0-rc8'
+}

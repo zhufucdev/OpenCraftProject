@@ -10,7 +10,6 @@ import com.zhufu.opencraft.CurrencySystem.TradeTerritoryInfo.Direction.*
 import com.zhufu.opencraft.inventory.TraderInventory
 import com.zhufu.opencraft.Base.Extend.isDigit
 import com.zhufu.opencraft.Game.env
-import com.zhufu.opencraft.WorldUtil.peace
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
@@ -34,7 +33,7 @@ import java.util.concurrent.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class CurrencySystem : JavaPlugin(), PluginBase {
+class CurrencySystem : JavaPlugin() {
     companion object {
         var npc: NPC? = null
         val transMap = HashMap<Material, Long>()
@@ -83,7 +82,7 @@ class CurrencySystem : JavaPlugin(), PluginBase {
         lateinit var mInstance: CurrencySystem
 
         fun showTutorial(player: Player) {
-            Bukkit.getScheduler().runTaskAsynchronously(Base.TutorialUtil.mPlugin, Runnable{
+            Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore, Runnable{
                 val info = PlayerManager.findInfoByPlayer(player)
                 if (info == null){
                     player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))

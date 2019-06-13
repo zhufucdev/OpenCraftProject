@@ -15,7 +15,7 @@ class BlockController(
         private val info: BlockLockManager.BlockInfo,
         item: ItemStack,
         private val player: Player
-) : ClickableInventory(plugin),Backable,PluginBase {
+) : ClickableInventory(plugin),Backable {
 
     private val getter = getLangGetter(player.info())
     override val inventory: Inventory = Bukkit.createInventory(null,9,TextUtil.info(info.name))

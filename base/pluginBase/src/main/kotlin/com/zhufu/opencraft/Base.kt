@@ -2,7 +2,7 @@ package com.zhufu.opencraft
 
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import com.zhufu.opencraft.player_intract.MessagePool
+import com.zhufu.opencraft.player_community.MessagePool
 import org.bukkit.*
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -97,14 +97,15 @@ object Base {
         }
     }
 
+    val pluginCore: Plugin = Bukkit.getPluginManager().getPlugin("ServerCore")!!
+
     object TutorialUtil{
-        val mPlugin: Plugin = Bukkit.getPluginManager().getPlugin("ServerCore")!!
         fun Entity.tplock(location: Location,time: Long){
             var i = 0L
             val scheduler = Bukkit.getScheduler()
             fixedRateTimer("lockTask",period = 100L){
                 if (this@tplock.location != location) {
-                    scheduler.runTask(mPlugin) { _ ->
+                    scheduler.runTask(pluginCore) { _ ->
                         teleport(location)
                     }
                 }
@@ -115,7 +116,7 @@ object Base {
             }
         }
         fun Player.gmd(mode: GameMode){
-            Bukkit.getScheduler().runTask(mPlugin){ _ ->
+            Bukkit.getScheduler().runTask(pluginCore){ _ ->
                 gameMode = mode
             }
         }
@@ -148,7 +149,7 @@ object Base {
             var i = 1L
             val scheduler = Bukkit.getScheduler()
             fixedRateTimer("linearTask",period = period){
-                scheduler.runTask(mPlugin){ _ ->
+                scheduler.runTask(pluginCore){ _ ->
                     teleport(this@linearTo.location.clone().add(locationOnce).apply {
                         pitch += pitchOnce
                         if (!ignoreYaw)
@@ -156,7 +157,7 @@ object Base {
                     })
                 }
                 if (i >= times){
-                    scheduler.runTask(mPlugin){ _ ->
+                    scheduler.runTask(pluginCore){ _ ->
                         teleport(location)
                         done?.invoke()
                     }

@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpExchange
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.CraftWeb.Companion.logger
 import com.zhufu.opencraft.Game.env
-import com.zhufu.opencraft.player_intract.MessagePool
+import com.zhufu.opencraft.player_community.MessagePool
 import okhttp3.HttpUrl
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.FileConfiguration

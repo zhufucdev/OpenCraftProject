@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import java.io.File
 
-class DualInventory(val player: Player, private val parent: OfflineInfo) : PluginBase {
+class DualInventory(val player: Player? = null, private val parent: ServerPlayer) {
     private val files: List<File>
         get() = parent.inventoriesFile
             .also { if (!it.exists()) it.mkdirs() }
@@ -32,13 +32,12 @@ class DualInventory(val player: Player, private val parent: OfflineInfo) : Plugi
     }
 
     init {
-        for (it in files) {
+        files.forEach {
             try {
                 val t = InventoryInfo(player, it.nameWithoutExtension, it, this)
                 mList.add(t)
             } catch (e: Exception) {
                 e.printStackTrace()
-                continue
             }
         }
 
@@ -84,12 +83,11 @@ class DualInventory(val player: Player, private val parent: OfflineInfo) : Plugi
                 player,
                 name,
                 File(
-                    File("plugins${File.separatorChar}inventories${File.separatorChar}${player.uniqueId}").also { if (!it.exists()) it.mkdirs() },
+                    File("plugins${File.separatorChar}inventories${File.separatorChar}${parent.uuid}").also { if (!it.exists()) it.mkdirs() },
                     "$name.yml"
                 ),
                 this
             )
-            resetPlayer(player)
             mList.add(element)
             return element
         }
@@ -108,7 +106,7 @@ class DualInventory(val player: Player, private val parent: OfflineInfo) : Plugi
     fun forEach(l: (InventoryInfo) -> Unit) = mList.forEach(l)
     class InventoryNotFoundException(which: String, msg: String) : Exception(msg)
 
-    class InventoryInfo(val player: Player, val name: String, val file: File, val parent: DualInventory) : PluginBase {
+    class InventoryInfo(val player: Player?, val name: String, val file: File, val parent: DualInventory) {
         var inventoryOnly: Boolean = false
 
         private val config: YamlConfiguration
@@ -138,11 +136,13 @@ class DualInventory(val player: Player, private val parent: OfflineInfo) : Plugi
 
         fun save() {
             if (isDestroyed)
-                throw IllegalAccessException("The object must not be destroyed!")
+                throw IllegalAccessException("This object must not be destroyed!")
+            if (player == null)
+                throw IllegalStateException("Can't read player's info when it doesn't exist!")
 
             if (name == RESET || name == NOTHING) return
 
-            println("Saving inventory named $name for player ${player.name}${if (inventoryOnly) "[InventoryOnly]" else ""}")
+            Bukkit.getLogger().info("Saving inventory named $name for player ${player.name}${if (inventoryOnly) "[InventoryOnly]" else ""}")
             player.inventory.forEachIndexed { index, itemStack ->
                 val path = "inventory.$index"
                 config.set(path, null)
@@ -185,7 +185,9 @@ class DualInventory(val player: Player, private val parent: OfflineInfo) : Plugi
 
         fun load(savePresent: Boolean = true, inventoryOnly: Boolean = false) {
             if (isDestroyed)
-                throw IllegalAccessException("The object must not be destroyed!")
+                throw IllegalAccessException("This object must not be destroyed!")
+            if (player == null)
+                throw IllegalStateException("Can't read player's info when it doesn't exist!")
 
             this.inventoryOnly = inventoryOnly
             if (savePresent)
@@ -311,7 +313,7 @@ class DualInventory(val player: Player, private val parent: OfflineInfo) : Plugi
             val max = inventory.getKeys(false).maxBy { key -> key.toInt() }?.toIntOrNull()
             fun msg(i: Int) {
                 config.set("inventory", inventory)
-                this.player.sendMessage(TextUtil.success("物品已添加至您的${name}物品栏第${i + 1}格"))
+                this.player?.sendMessage(TextUtil.success("物品已添加至您的${name}物品栏第${i + 1}格"))
             }
             if (max == null) {
                 inventory.set("0", itemStack)
@@ -328,6 +330,7 @@ class DualInventory(val player: Player, private val parent: OfflineInfo) : Plugi
             }
             return false
         }
+        fun setItem(index: Int, item: ItemStack?) = config.set("inventory.$index",item)
 
         fun any(l: (ConfigurationSection) -> Boolean): Boolean =
             config.getConfigurationSection("inventory")
@@ -337,7 +340,16 @@ class DualInventory(val player: Player, private val parent: OfflineInfo) : Plugi
                     l(section ?: return@any false)
                 }
                 ?: false
-
+        fun items(): List<ItemStack?> {
+            val result = arrayListOf<ItemStack?>()
+            val config = config.getConfigurationSection("inventory") ?: YamlConfiguration()
+            (0 .. 35).forEach {
+                config.getItemStack(it.toString()).apply {
+                    result.add(this?.clone())
+                }
+            }
+            return result
+        }
         override fun equals(other: Any?): Boolean {
             return other is InventoryInfo
                     && other.name == this.name

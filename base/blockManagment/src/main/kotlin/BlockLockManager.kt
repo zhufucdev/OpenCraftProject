@@ -39,9 +39,9 @@ object BlockLockManager {
         }
     }
 
-    fun Location.toXZ(): BlockLockManager.XZ = BlockLockManager.XZ(this.blockX,this.blockZ)
+    fun Location.toXZ(): XZ = XZ(this.blockX,this.blockZ)
 
-    abstract class BaseInfo(var name: String){
+    abstract class BaseInfo(override var name: String): Nameable{
         abstract val fullPath: String
 
         var accessMap = HashMap<Date,UUID>()
@@ -90,7 +90,7 @@ object BlockLockManager {
             r.addProperty("owner",owner)
             r.add("accessible",JsonArray().also { accessible.forEach { acc -> it.add(acc.toString()) } })
             val accesses = JsonObject()
-            accessMap.forEach { t, u ->
+            accessMap.forEach { (t, u) ->
                 accesses.addProperty(t.time.toString(),u.toString())
             }
             r.add("accessMap",accesses)

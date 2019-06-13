@@ -16,7 +16,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class BlockLocker : JavaPlugin(), Listener, PluginBase {
+class BlockLocker : JavaPlugin(), Listener{
     override fun onEnable() {
         BlockLockManager.loadFromFile(dataFolder)
         server.pluginManager.registerEvents(BlockListener, this)
@@ -68,10 +68,6 @@ class BlockLocker : JavaPlugin(), Listener, PluginBase {
                         }
                     }
                     val player = Bukkit.getOfflinePlayer(args[1])
-                    if (player == null) {
-                        sender.error(getter["command.error.playerNotFound"])
-                        return false
-                    }
                     val name = if (selected) BlockLockManager.selected[sender]!!.name else args[2]
 
                     val info = if (selected) BlockLockManager.selected[sender] else BlockLockManager[name]
@@ -196,7 +192,7 @@ class BlockLocker : JavaPlugin(), Listener, PluginBase {
                         sender.error(getter["block.error.notOwnBlock"])
                     }
                 }
-                "formatLore" -> {
+                "rename" -> {
                     (if (selected) 2 else 3).apply {
                         if (args.size < this){
                             sender.error(getter["command.error.tooFewArgs",this])
@@ -212,11 +208,12 @@ class BlockLocker : JavaPlugin(), Listener, PluginBase {
                     val newName = args.last()
                     val oldName = info.name
                     info.name = newName
-                    sender.success(getter["block.formatLore.done",oldName,newName])
+                    sender.success(getter["block.rename.done",oldName,newName])
                 }
                 else -> {
                     when {
                         BlockLockManager.contains(args.first()) -> {
+                            // Grouping
                             val blocks = ArrayList<BlockLockManager.BlockInfo>()
                             val warn = ArrayList<IllegalArgumentException>()
                             var group: BlockLockManager.GroupBlockInfo? = null
@@ -298,6 +295,7 @@ class BlockLocker : JavaPlugin(), Listener, PluginBase {
                             sender.success(getter["block.grouping.done"])
                         }
                         args.size in 5 .. 7 -> {
+                            // Creating a new territory
                             val nondigit = ArrayList<String>()
                             if (sender !is Player){
                                 sender.error(getter["command.error.playerOnly"])
@@ -364,10 +362,6 @@ class BlockLocker : JavaPlugin(), Listener, PluginBase {
 
                                         val block = BlockLockManager.BlockInfo(from, to, sender.location.world!!.name, args[4])
                                         val owner = if (args.size > 5) Bukkit.getOfflinePlayer(args[5]) else sender
-                                        if (owner == null){
-                                            sender.error(getter["block.error.playerNotFound",args[4]])
-                                            return@setOnConfirmListener
-                                        }
                                         block.owner = owner.uniqueId.toString()
                                         BlockLockManager.add(block)
 

@@ -9,7 +9,7 @@ import SimpleExecutor
 import java.io.File
 import java.util.logging.Logger
 
-class CraftWeb : JavaPlugin(), PluginBase {
+class CraftWeb : JavaPlugin() {
     private val instance = HttpsServer()
     private val http = HttpServer()
 

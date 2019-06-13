@@ -1,20 +1,21 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.player_intract.PlayerStatics
-import org.bukkit.Bukkit
+import com.zhufu.opencraft.player_community.PlayerStatics
 import org.bukkit.Location
 import java.io.File
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import javax.security.auth.DestroyFailedException
 import javax.security.auth.Destroyable
 
-open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(createNew,uuid), Destroyable {
+open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(createNew, uuid), Destroyable {
     companion object {
-        fun forEach(l: (OfflineInfo) -> Unit) = Paths.get("plugins","tag").toFile().also { if (!it.exists()) it.mkdirs() }.listFiles().forEach {
-            if (!it.isHidden && !it.isDirectory)
-                l(OfflineInfo(UUID.fromString(it.nameWithoutExtension)))
-        }
+        fun forEach(l: (OfflineInfo) -> Unit) =
+            Paths.get("plugins", "tag").toFile().also { if (!it.exists()) it.mkdirs() }.listFiles().forEach {
+                if (!it.isHidden && !it.isDirectory)
+                    l(OfflineInfo(UUID.fromString(it.nameWithoutExtension)))
+            }
 
         fun listPlayers(): List<OfflineInfo> {
             val r = ArrayList<OfflineInfo>()
@@ -28,24 +29,28 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
             return r
         }
 
-        fun findOfflinePlayer(uuid: UUID): OfflineInfo? =
-                offlineList.firstOrNull { it.uuid == uuid }
-                        ?: try {
-                            OfflineInfo(uuid).also { offlineList.add(it) }
-                        } catch (e: Exception) {
-                            null
-                        }
+        fun findByUUID(uuid: UUID): OfflineInfo? =
+            offlineList.firstOrNull { it.uuid == uuid }
+                ?: try {
+                    OfflineInfo(uuid).also { offlineList.add(it) }
+                } catch (e: Exception) {
+                    null
+                }
 
         val offlineList = ArrayList<OfflineInfo>()
     }
 
-    val inventoriesFile
-        get() = File("plugins${File.separatorChar}inventories${File.separatorChar}$uuid")
     override val tagFile: File
-        get() = File(File("plugins${File.separatorChar}tag").also { if (!it.exists()) it.mkdirs() }, "$uuid.yml").also { register ->
-            if (!register.exists()){
-                val preregister = File(register.parentFile,"preregister${File.separatorChar}${offlinePlayer.name}.yml")
-                if (preregister.exists()){
+        get() = File(
+            File("plugins${File.separatorChar}tag")
+                .also { if (!it.exists()) it.mkdirs() }, "$uuid.yml"
+        ).also { register ->
+            if (!register.exists()) {
+                val preregister = File(
+                    register.parentFile,
+                    "preregister${File.separatorChar}${offlinePlayer.name}.yml"
+                )
+                if (preregister.exists()) {
                     preregister.apply {
                         renameTo(register)
                         delete()
@@ -53,6 +58,17 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
                 }
             }
         }
+    override val playerDir: File
+        get() = Paths.get("plugins", "playerDir", uuid.toString()).toFile()
+            .also {
+                val preregister = File(it.parentFile,uuid.toString())
+                if (preregister.exists()){
+                    if (it.exists()) it.deleteRecursively()
+                    preregister.renameTo(it)
+                } else {
+                    if (!it.exists()) it.mkdirs()
+                }
+            }
 
     override fun isDestroyed(): Boolean = !memory.containsKey(uuid)
     override fun destroy() {
@@ -65,23 +81,23 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
     }
 
     override fun saveTag() {
-        tag.set("checkpoints",null)
+        tag.set("checkpoints", null)
         checkpoints.forEach {
-            tag.set("checkpoints.${it.id}", it.location)
+            tag.set("checkpoints.${it.name}", it.location)
         }
         super.saveTag()
     }
 
-    class CheckpointInfo(val location: Location, var id: String) {
+    class CheckpointInfo(val location: Location, override var name: String) : Nameable {
         override fun equals(other: Any?): Boolean {
             return other is CheckpointInfo
                     && other.location == this.location
-                    && other.id == this.id
+                    && other.name == this.name
         }
 
         override fun hashCode(): Int {
             var result = location.hashCode()
-            result = 31 * result + id.hashCode()
+            result = 31 * result + name.hashCode()
             return result
         }
     }
@@ -92,17 +108,22 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
     init {
         try {
             tag.set("name", offlinePlayer.name)
-        } catch (e: Exception){
+        } catch (e: Exception) {
 
         }
 
         val checkpoints = tag.getConfigurationSection("checkpoints")
         checkpoints?.getKeys(false)?.forEach {
             try {
-                this.checkpoints.add(CheckpointInfo(location = checkpoints.getSerializable(it, Location::class.java)!!, id = it))
+                this.checkpoints.add(
+                    CheckpointInfo(
+                        location = checkpoints.getSerializable(it, Location::class.java)!!,
+                        name = it
+                    )
+                )
             } catch (e: Exception) {
                 e.printStackTrace()
-            } as Unit
+            }
         }
     }
 

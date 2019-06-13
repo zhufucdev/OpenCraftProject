@@ -1,16 +1,16 @@
 name: zhufucomcom
-lang: zh
+lang: en
 password: '233'
 address: localhost
 isSurveyPassed: true
-gameTime: 242000
+gameTime: 9724000
 isSurvivor: true
 surviveSpawn:
   ==: org.bukkit.Location
   world: world_survive
-  x: 6315.0
-  y: 99.0
-  z: -3671.0
+  x: 6379.0
+  y: 88.0
+  z: -3649.0
   pitch: 0.0
   yaw: 0.0
 isOutOfSpawn: true
@@ -19,9 +19,26 @@ isTerritoryInMessageShown: false
 isTerritoryOutMessageShown: true
 isTradeTutorialShown: true
 isInChunk: false
-currency: 2333
+currency: 2330
 nickname: zhufucomcom
-territoryLocation:
-  ==: com.zhufu.opencraft.BlockLockManager$XZ
-  x: 1
-  z: -1
+maxLoopExecution: 1000
+lastDeath:
+  location:
+    ==: org.bukkit.Location
+    world: world_survive
+    x: 55.85374617944887
+    y: 106.0
+    z: -691.4746572180038
+    pitch: 22.965658
+    yaw: 6.825613
+  reason: zhufucomcom fell out of the world
+  time: 1560398678009
+checkpoints:
+  hello:
+    ==: org.bukkit.Location
+    world: world_survive
+    x: -1470.0684455962157
+    y: 69.0
+    z: 8642.201012394313
+    pitch: 33.093277
+    yaw: -193.44284

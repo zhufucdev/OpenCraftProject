@@ -9,12 +9,12 @@ import org.bukkit.plugin.Plugin
 
 class BlockGroupingUI(private val player: Player, plugin: Plugin, override val parentInventory: ClickableInventory)
     : PageInventory<BlockGroupingUI.Adapter>(TextUtil.info(Language[player, "ui.block.grouping.title"]),
-        Adapter(player), 36, plugin), Backable, PluginBase {
+        Adapter(player), 36, plugin), Backable {
 
     private val selected
         get() = adapter.selected
 
-    class Adapter(private val player: Player) : PageInventory.Adapter(), PluginBase {
+    class Adapter(private val player: Player) : PageInventory.Adapter() {
         var blocks: ArrayList<BlockLockManager.BaseInfo> = ArrayList()
 
         init {

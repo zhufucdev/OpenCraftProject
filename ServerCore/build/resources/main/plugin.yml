@@ -1,9 +1,9 @@
 name: ServerCore
 main: com.zhufu.opencraft.Core
 author: zhufucomcom
-version: 1.0
+version: '1.0'
 softdepend: [HolographicDisplays,Citizens]
-api-version: 1.13
+api-version: '1.14'
 commands:
   server:
     usage: /server <feedback|about|stop|reload|set|notice> ...

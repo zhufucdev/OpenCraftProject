@@ -1,24 +1,32 @@
-gameMode: SURVIVAL
-health: 9.0
-foodLevel: 11
+gameMode: CREATIVE
+health: 20.0
+foodLevel: 20
 walkSpeed: 0.2
 flySpeed: 0.1
 exp: 0
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: -1442.9765641580668
-  y: 66.0
-  z: 8632.74159364692
-  pitch: 25.954702
-  yaw: -147.93236
+  x: 6342.294439707056
+  y: 106.11813584628717
+  z: -3742.9022612822973
+  pitch: 28.339756
+  yaw: 168.72353
 potion: {}
 inventory:
-  '0':
+  '57':
     ==: org.bukkit.inventory.ItemStack
-    v: 1631
-    type: WOODEN_AXE
-  '8':
+    v: 1963
+    type: GRASS_BLOCK
+  '58':
     ==: org.bukkit.inventory.ItemStack
-    v: 1631
-    type: QUARTZ_BLOCK
+    v: 1963
+    type: GRASS_BLOCK
+  '59':
+    ==: org.bukkit.inventory.ItemStack
+    v: 1963
+    type: GRASS_BLOCK
+  '56':
+    ==: org.bukkit.inventory.ItemStack
+    v: 1963
+    type: GRASS_BLOCK

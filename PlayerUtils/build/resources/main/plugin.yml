@@ -1,9 +1,9 @@
 name: PlayerUtil
 author: zhufucomcom
 main: com.zhufu.opencraft.PlayerUtil
-version: 1.0
+version: '1.0'
 softdepend: [ServerCore]
-api-version: 1.13
+api-version: '1.13'
 commands:
   lu:
     usage: /lu <DTWB|RP|TP>

@@ -13,11 +13,11 @@ class BlockUI(plugin: Plugin, player: Player, private val root: BlockLockManager
     : PageInventory<BlockUI.Adapter>(
         TextUtil.info(Language[player, "ui.blockTitle"]),
         { Adapter(player, root?.children, root != null) },
-        36, plugin), PluginBase, Backable {
+        36, plugin), Backable {
 
     private val getter = getLangGetter(player.info())
 
-    class Adapter(player: Player, root: List<BlockLockManager.BaseInfo>?, val showDelete: Boolean) : PageInventory.Adapter(), PluginBase {
+    class Adapter(player: Player, root: List<BlockLockManager.BaseInfo>?, val showDelete: Boolean) : PageInventory.Adapter() {
         val blocks =
                 root
                         ?: ArrayList<BlockLockManager.BaseInfo>().apply {

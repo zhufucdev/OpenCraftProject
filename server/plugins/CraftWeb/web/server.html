@@ -55,7 +55,7 @@
 
         let delayed = false;
         let dpsed = false;
-        let a = new Date().getTime();
+        let a = new Date().getTimeBegin();
         let delay = $('#delay');
         let dps = $('#dps');
         let prgsServer = document.getElementById('prgs-server');
@@ -76,7 +76,7 @@
             success: function () {
                 delayed = true;
                 testToHide();
-                delay.empty().append('延时: ' + (new Date().getTime() - a) + 'ms')
+                delay.empty().append('延时: ' + (new Date().getTimeBegin() - a) + 'ms')
             }
         });
         $.ajax({

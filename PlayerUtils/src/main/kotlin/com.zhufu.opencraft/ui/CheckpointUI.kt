@@ -12,7 +12,7 @@ import org.bukkit.plugin.Plugin
 
 class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory: ClickableInventory)
     : PageInventory<CheckpointUI.Adapter>(Language[info.userLanguage, "ui.checkpoint.title"],
-        Adapter(info.checkpoints, Language.LangGetter(info)), 36, plugin), PluginBase, Backable {
+        Adapter(info.checkpoints, Language.LangGetter(info)), 36, plugin), Backable {
     private val tasks
         get() = adapter.tasks
     class Adapter(val checkopints: ArrayList<CheckpointInfo>, val getter: Language.LangGetter) : PageInventory.Adapter() {
@@ -36,7 +36,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                 val selected = tasks.containsKey(info)
                 ItemStack(if (!selected) Material.ENDER_PEARL else Material.ENDER_EYE).apply {
                     itemMeta = itemMeta!!.apply {
-                        val rename = TextUtil.formatLore(info.id)
+                        val rename = TextUtil.formatLore(info.name)
                         setDisplayName(TextUtil.getColoredText(rename.first(), TextUtil.TextColor.AQUA))
                         val newLore = ArrayList<String>()
                         for (i in 1 until rename.size) {
@@ -52,7 +52,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                                         else
                                             "ui.checkpoint.delete.do"
                                     } else if (isRenaming){
-                                        "ui.checkpoint.formatLore.do"
+                                        "ui.checkpoint.rename.do"
                                     } else "ui.checkpoint.toManage"
                                 }
                         ]))
@@ -78,7 +78,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                     if (isManaging && !isDeleting && !isRenaming){
                         Widgets.rename.apply {
                             itemMeta = itemMeta!!.apply {
-                                setDisplayName(TextUtil.tip(getter["ui.formatLore"]))
+                                setDisplayName(TextUtil.tip(getter["ui.rename"]))
                             }
                         }
                     } else
@@ -155,8 +155,8 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                         }
                         refresh(index)
                     } else if (adapter.isRenaming){
-                        PlayerUtil.selected[info.player] = index
-                        info.player.tip(adapter.getter["ui.checkpoint.formatLore.tip"])
+                        PlayerUtil.selected[info.player] = info.checkpoints[index]
+                        info.player.tip(adapter.getter["ui.checkpoint.rename.tip"])
                         close()
                     }
                 }
@@ -164,8 +164,8 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                 val prefix = adapter.getter["ui.checkpoint.new.title"]
                 var max = 0
                 adapter.checkopints.forEach {
-                    if (it.id.startsWith(prefix)) {
-                        it.id.substring(prefix.length).toIntOrNull()?.apply {
+                    if (it.name.startsWith(prefix)) {
+                        it.name.substring(prefix.length).toIntOrNull()?.apply {
                             if (this > max)
                                 max = this
                         }

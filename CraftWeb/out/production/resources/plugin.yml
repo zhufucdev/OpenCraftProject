@@ -1,9 +1,0 @@
-name: 'CraftWeb'
-main: com.zhufu.opencraft.CraftWeb
-version: 1.0
-api-version: 1.13
-commands:
-  web:
-    usage: /web [<start|stop|reload|set>] <...>
-    description: 修改或查看网页服务器状态
-    permission: op

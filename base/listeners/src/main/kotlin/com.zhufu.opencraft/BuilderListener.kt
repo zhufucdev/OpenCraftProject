@@ -1,8 +1,5 @@
 package com.zhufu.opencraft
 
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonWriter
-import com.zhufu.opencraft.DualInventory.Companion.RESET
 import org.bukkit.*
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
@@ -16,9 +13,8 @@ import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.plugin.Plugin
-import java.io.File
 
-object BuilderListener : Listener, PluginBase {
+object BuilderListener : Listener {
     private var mPlugin: Plugin? = null
     private val blocks = ArrayList<Location>()
 

@@ -3,29 +3,24 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.Base.TutorialUtil.linearTo
 import com.zhufu.opencraft.Everything.mPlugin
 import com.zhufu.opencraft.Everything.near
-import com.zhufu.opencraft.Everything.sendActionText
-import com.zhufu.opencraft.PortalHandler.lang
-import com.zhufu.opencraft.PortalHandler.owns
-import com.zhufu.opencraft.PortalHandler.warn
 import com.zhufu.opencraft.special_items.Portal
 import org.bukkit.*
-import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.inventory.InventoryDragEvent
-import org.bukkit.event.inventory.InventoryInteractEvent
-import org.bukkit.event.player.*
+import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 import kotlin.math.pow
 
-object PortalHandler : Listener, PluginBase {
+object PortalHandler : Listener {
     class FallbackInfo(val location: Location, val held: Int, val amount: Int)
 
     val portalMap = HashMap<Player, FallbackInfo>()

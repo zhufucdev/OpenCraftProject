@@ -7,4 +7,5 @@ dependencies {
     compile project(':inventoryBase')
     compile project(':tradeBase')
     compile project(':miniGameBase')
+    compile project(':scripting')
 }

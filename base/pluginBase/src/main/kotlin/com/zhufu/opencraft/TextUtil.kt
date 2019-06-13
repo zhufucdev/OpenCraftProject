@@ -56,7 +56,7 @@ object TextUtil {
         return sb.toString()
     }
 
-    fun getCustomizedText(t: String, showTo: ChatInfo? = null): String {
+    fun getCustomizedText(t: String, getter: Language.LangGetter): String {
         var result = t
         TextUtil.TextColor.values().forEach {
             result = result.replace("\$${it.name}", it.getCode(), true)
@@ -71,12 +71,14 @@ object TextUtil {
             result = result.replaceRange(
                 index,
                 end + 1,
-                if (showTo == null) Language.getDefault(value) else Language.byChat(showTo, value)
+                getter[value]
             )
             index = result.indexOf("\${")
         }
         return result
     }
+
+    fun getCustomizedText(t: String, showTo: ChatInfo? = null): String = getCustomizedText(t, showTo.lang())
 
     fun error(t: String): String {
         return getColoredText(t, TextUtil.TextColor.RED, true, underlined = false)
@@ -155,11 +157,18 @@ object TextUtil {
     }
     fun detectString(string: String): StringDetectResult {
         return if (string.isDigit()) {
-            if (string.contains('.')) {
-                TextUtil.StringDetectResult.Double
-            } else if (string.toLong() > Int.MAX_VALUE) {
-                TextUtil.StringDetectResult.Long
-            } else TextUtil.StringDetectResult.Int
+            when {
+                string.contains('.') -> TextUtil.StringDetectResult.Double
+                string.toLong() > Int.MAX_VALUE -> TextUtil.StringDetectResult.Long
+                else -> TextUtil.StringDetectResult.Int
+            }
         } else TextUtil.StringDetectResult.String
     }
 }
+
+fun String.toInfoMessage() = TextUtil.info(this)
+fun String.toWarnMessage() = TextUtil.warn(this)
+fun String.toSuccessMessage() = TextUtil.success(this)
+fun String.toErrorMessage() = TextUtil.error(this)
+fun String.toCustomizedMessage(info: ChatInfo?) = TextUtil.getCustomizedText(this,info)
+fun String.toCustomizedMessage(getter: Language.LangGetter) = TextUtil.getCustomizedText(this,getter)

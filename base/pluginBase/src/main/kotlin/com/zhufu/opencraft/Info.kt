@@ -12,13 +12,14 @@ import java.io.File
 import java.util.*
 import kotlin.concurrent.timer
 
-class Info(val player: Player) : OfflineInfo(player.uniqueId,true), PluginBase, ChatInfo {
+class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
     companion object {
-        val mList = ArrayList<Info>()
+        val infoList = ArrayList<Info>()
         lateinit var plugin: Plugin
 
-        fun findByPlayer(player: Player) = mList.firstOrNull { it.player == player }
-        fun findByPlayer(uuid: UUID) = mList.firstOrNull { it.player.uniqueId == uuid }
+        fun findByName(name: String) = infoList.firstOrNull { it.name == name }
+        fun findByPlayer(player: Player) = infoList.firstOrNull { it.player == player }
+        fun findByPlayer(uuid: UUID) = infoList.firstOrNull { it.player.uniqueId == uuid }
     }
     class GotoRequest(val requester: Player, val timeLimit: Long) {
         init {
@@ -47,7 +48,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), PluginBase, 
     }
 
     enum class GameStatus {
-        MiniGaming, InLobby, Surviving, Observing, InTutorial, Building
+        MiniGaming, InLobby, Surviving, Observing, InTutorial, Building, Offline
     }
 
     var status: GameStatus = GameStatus.InLobby
@@ -186,6 +187,6 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), PluginBase, 
 
     override fun destroy() {
         super.destroy()
-        mList.removeAll { it.uuid == uuid }
+        infoList.removeAll { it.uuid == uuid }
     }
 }

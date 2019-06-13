@@ -1,36 +1,35 @@
 package com.zhufu.opencraft
 
 import com.google.gson.GsonBuilder
-import com.zhufu.opencraft.Base.Extend.appendToJson
-import com.zhufu.opencraft.Base.TutorialUtil.linearTo
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import com.zhufu.opencraft.Base.Extend.appendToJson
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.ui.MenuInterface
-import org.bukkit.*
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
-import org.bukkit.util.Vector
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
+import org.bukkit.util.Vector
 import java.io.File
 import java.io.StringReader
-import java.math.BigDecimal
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.pow
 import kotlin.math.roundToLong
 
-object Everything : Listener, PluginBase {
+object Everything : Listener {
     var mPlugin: Plugin? = null
     val cubes = ArrayList<Cube>()
     val file: File
@@ -52,6 +51,7 @@ object Everything : Listener, PluginBase {
             reader.endArray()
         } catch (e: Exception) {
             print("[PlayerUtil] Unable to load configurations: ${e.message}: ${e.cause}")
+            e.printStackTrace()
         }
     }
 
@@ -302,6 +302,8 @@ object Everything : Listener, PluginBase {
     @EventHandler
     fun onPlayerClick(event: PlayerInteractEvent) {
         fun plus() {
+            event.setUseInteractedBlock(Event.Result.ALLOW)
+            event.setUseItemInHand(Event.Result.DENY)
             val player = event.player
             if (player.info()?.status != Info.GameStatus.Surviving)
                 return
@@ -328,8 +330,6 @@ object Everything : Listener, PluginBase {
                 MenuInterface(mPlugin!!, player, true).show(player)
             }
         }
-
-        event.setUseInteractedBlock(Event.Result.ALLOW)
         if (event.action == Action.LEFT_CLICK_BLOCK) {
             val game = index(event.clickedBlock!!.location)
             if (game?.type == "DTWB") {
@@ -342,7 +342,7 @@ object Everything : Listener, PluginBase {
                 plus()
                 compass()
             }
-        } else if (event.action == Action.LEFT_CLICK_AIR) {
+        } else if (event.action == Action.LEFT_CLICK_AIR || event.action == Action.LEFT_CLICK_BLOCK) {
             plus()
             compass()
         } else if (event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK) {

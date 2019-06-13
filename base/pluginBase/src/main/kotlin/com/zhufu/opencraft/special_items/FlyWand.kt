@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack
 
 class FlyWand : SpecialItem {
     private val getter: Language.LangGetter
-    constructor(getter: Language.LangGetter, updateTime: Boolean = true): super(Material.STICK){
+    constructor(getter: Language.LangGetter, initializeTime: Boolean = true): super(Material.STICK){
         this.getter = getter
         itemMeta = itemMeta!!.apply {
             setDisplayName(TextUtil.getColoredText(getter["wand.name"], TextUtil.TextColor.RED))
@@ -18,7 +18,7 @@ class FlyWand : SpecialItem {
             addItemFlags(ItemFlag.HIDE_ENCHANTS)
             addEnchant(Enchantment.DURABILITY,1,true)
         }
-        if (updateTime)
+        if (initializeTime)
             updateTime(MAX_TIME_REMAINING)
     }
     constructor(itemStack: ItemStack, getter: Language.LangGetter) : this(getter,false){

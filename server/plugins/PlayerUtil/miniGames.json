@@ -1,178 +1,18 @@
 [
   {
     "from": {
-      "world": "f41bcfcd-0736-4e53-a4b0-ff6a60982c4a",
-      "x": 12.0,
-      "y": 76.0,
-      "z": 9.0,
-      "pitch": 50.550064,
-      "yaw": 283.65
-    },
-    "to": {
-      "world": "f41bcfcd-0736-4e53-a4b0-ff6a60982c4a",
-      "x": 19.0,
-      "y": 72.0,
-      "z": 20.0,
-      "pitch": 58.650063,
-      "yaw": 316.19995
-    },
-    "type": "TP",
-    "data": {"owner":"zhufucomcom"}
-  },
-  {
-    "from": {
-      "world": "f41bcfcd-0736-4e53-a4b0-ff6a60982c4a",
-      "x": -2.0,
-      "y": 74.0,
-      "z": 5.0,
-      "pitch": 64.33441,
-      "yaw": 89.177345
-    },
-    "to": {
-      "world": "f41bcfcd-0736-4e53-a4b0-ff6a60982c4a",
-      "x": -84.0,
-      "y": 96.0,
-      "z": -32.0,
-      "pitch": 50.834404,
-      "yaw": 86.32735
-    },
-    "type": "TP",
-    "data": {"owner":"zhufucomcom"}
-  },
-  {
-    "from": {
-      "world": "f41bcfcd-0736-4e53-a4b0-ff6a60982c4a",
-      "x": 2.0,
-      "y": 75.0,
-      "z": 21.0,
-      "pitch": 76.28402,
-      "yaw": 1.6132202
-    },
-    "to": {
-      "world": "f41bcfcd-0736-4e53-a4b0-ff6a60982c4a",
-      "x": 58.0,
-      "y": 75.0,
-      "z": 29.0,
-      "pitch": 69.983955,
-      "yaw": 343.6131
-    },
-    "type": "TP",
-    "data": {"owner":"zhufucomcom"}
-  },
-  {
-    "from": {
       "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": 20.0,
-      "y": 78.0,
-      "z": -111.0,
-      "pitch": 24.042665,
-      "yaw": 180.6241
-    },
-    "to": {
-      "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": 46.0,
-      "y": 67.0,
-      "z": 103.0,
-      "pitch": 21.192675,
-      "yaw": 323.7241
-    },
-    "type": "TP",
-    "data": {"owner":"zhufucomcom"}
-  },
-  {
-    "from": {
-      "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": 46.0,
-      "y": 66.0,
-      "z": 100.0,
-      "pitch": 45.49271,
-      "yaw": 19.974209
-    },
-    "to": {
-      "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": 46.0,
-      "y": 68.0,
-      "z": 94.0,
-      "pitch": 0.0,
-      "yaw": 0.0
-    },
-    "type": "TP",
-    "data": {"owner":"zhufucomcom"}
-  },
-  {
-    "from": {
-      "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": 34.0,
-      "y": 70.0,
-      "z": 92.0,
+      "x": 40.0,
+      "y": 84.0,
+      "z": -281.0,
       "pitch": 0.0,
       "yaw": 0.0
     },
     "to": {
       "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": 34.0,
-      "y": 70.0,
-      "z": 92.0,
-      "pitch": 0.0,
-      "yaw": 0.0
-    },
-    "type": "TP",
-    "data": {"owner":"zhufucomcom"}
-  },
-  {
-    "from": {
-      "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": 36.0,
-      "y": 65.0,
-      "z": 196.0,
-      "pitch": 0.0,
-      "yaw": 0.0
-    },
-    "to": {
-      "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": 33.0,
-      "y": 65.0,
-      "z": 189.0,
-      "pitch": 0.0,
-      "yaw": 0.0
-    },
-    "type": "TP",
-    "data": {"owner":"zhufucomcom"}
-  },
-  {
-    "from": {
-      "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": 12.0,
-      "y": 67.0,
-      "z": 141.0,
-      "pitch": 0.0,
-      "yaw": 0.0
-    },
-    "to": {
-      "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": 31.0,
-      "y": 65.0,
-      "z": 134.0,
-      "pitch": 0.0,
-      "yaw": 0.0
-    },
-    "type": "TP",
-    "data": {"owner":"zhufucomcom"}
-  },
-  {
-    "from": {
-      "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": -220.0,
-      "y": 74.0,
-      "z": 199.0,
-      "pitch": 0.0,
-      "yaw": 0.0
-    },
-    "to": {
-      "world": "a4d7421a-f266-44b2-9fbd-e2ea8d3301fe",
-      "x": -219.0,
-      "y": 75.0,
-      "z": 195.0,
+      "x": 73.0,
+      "y": 80.0,
+      "z": -49.0,
       "pitch": 0.0,
       "yaw": 0.0
     },

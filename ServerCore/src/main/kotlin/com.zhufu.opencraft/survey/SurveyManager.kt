@@ -15,7 +15,7 @@ import java.io.File
 import java.util.concurrent.TimeoutException
 import kotlin.concurrent.timer
 
-object SurveyManager : Listener, PluginBase {
+object SurveyManager : Listener {
     enum class QuestionType {
         SingleChoice, MultiChoice, Text;
         fun getChineseName(): String{

@@ -16,7 +16,7 @@ import java.util.concurrent.Executors
 import kotlin.collections.HashMap
 import kotlin.math.roundToLong
 
-object QRUtil : Listener,PluginBase {
+object QRUtil : Listener {
     private val threadPool = Executors.newCachedThreadPool()
     fun init(plugin: Plugin){
         plugin.server.pluginManager.registerEvents(this,plugin)

@@ -1,8 +1,8 @@
 package tw.davy.minecraft.skinny.listener
 
 import com.zhufu.opencraft.PlayerManager
-import com.zhufu.opencraft.PluginBase
 import com.zhufu.opencraft.TextUtil
+import com.zhufu.opencraft.getLang
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -13,7 +13,7 @@ import tw.davy.minecraft.skinny.Skinny
 /**
  * @author Davy
  */
-class AsyncPlayerPreLoginListener(private val mPlugin: Skinny) : Listener,PluginBase {
+class AsyncPlayerPreLoginListener(private val mPlugin: Skinny) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onAsyncPlayerPreLogin(preLoginEvent: AsyncPlayerPreLoginEvent) {
