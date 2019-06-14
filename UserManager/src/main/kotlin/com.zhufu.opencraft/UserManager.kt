@@ -128,7 +128,7 @@ class UserManager : JavaPlugin(), Listener{
         val info = PlayerManager.findInfoByPlayer(p)
         if (info?.isLogin == true) {
             event.quitMessage = ""
-            broadcast(TextUtil.info("player.leftGame"), TextUtil.TextColor.YELLOW, info.player.name)
+            broadcast("player.left", TextUtil.TextColor.YELLOW, info.player.name)
             info.saveServerID()
             info.destroy()
         } else {
@@ -140,7 +140,7 @@ class UserManager : JavaPlugin(), Listener{
     fun onPlayerLogin(event: PlayerLoginEvent) {
         server.onlinePlayers.forEach {
             if (event.player != it)
-                broadcast("player.joinGame", TextUtil.TextColor.AQUA, event.player.displayName)
+                broadcast("player.join", TextUtil.TextColor.AQUA, event.player.displayName)
         }
     }
 

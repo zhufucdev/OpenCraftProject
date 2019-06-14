@@ -1,4 +1,4 @@
-gameMode: CREATIVE
+gameMode: SURVIVAL
 health: 20.0
 foodLevel: 20
 walkSpeed: 0.2
@@ -7,11 +7,11 @@ exp: 0
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: 6342.294439707056
-  y: 106.11813584628717
-  z: -3742.9022612822973
-  pitch: 28.339756
-  yaw: 168.72353
+  x: 6380.229504843669
+  y: 88.0
+  z: -3650.9156924088993
+  pitch: 20.17992
+  yaw: -227.93689
 potion: {}
 inventory:
   '57':

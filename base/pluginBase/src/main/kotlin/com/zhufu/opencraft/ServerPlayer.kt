@@ -193,6 +193,7 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
     val messagePool = MessagePool.from(tag)
 
     var maxLoopExecution
-        get() = tag.getLong("maxLoopExecution",1000)
+        get() = tag.getLong("maxLoopExecution", 1000)
         set(value) = tag.set("maxLoopExecution", value)
+    val scriptDir get() = File(playerDir,"script").also { if (!it.exists()) it.mkdirs() }
 }

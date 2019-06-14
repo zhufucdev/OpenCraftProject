@@ -61,7 +61,7 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
     override val playerDir: File
         get() = Paths.get("plugins", "playerDir", uuid.toString()).toFile()
             .also {
-                val preregister = File(it.parentFile,uuid.toString())
+                val preregister = Paths.get(it.parentFile.path,"preregister",uuid.toString()).toFile()
                 if (preregister.exists()){
                     if (it.exists()) it.deleteRecursively()
                     preregister.renameTo(it)

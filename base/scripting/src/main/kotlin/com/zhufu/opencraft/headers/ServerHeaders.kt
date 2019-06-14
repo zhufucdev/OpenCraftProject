@@ -3,6 +3,7 @@ package com.zhufu.opencraft.headers
 import com.zhufu.opencraft.Header
 import com.zhufu.opencraft.Info
 import com.zhufu.opencraft.OfflineInfo
+import com.zhufu.opencraft.headers.server_wrap.ServerSelf
 import com.zhufu.opencraft.headers.util.LocationUtils
 import com.zhufu.opencraft.headers.util.PlayerUtils
 import com.zhufu.opencraft.headers.util.UUIDUtils
@@ -10,7 +11,8 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import java.util.function.Function
 
-object ServerHeader : Header {
+object ServerHeaders : Header {
+    val serverSelf = ServerSelf()
     override val members: List<Pair<String, Any?>>
         get() = listOf(
             "info" to Info.Companion,
@@ -23,6 +25,7 @@ object ServerHeader : Header {
             },
             "OfflinePlayer" to Function<String, OfflinePlayer?> {
                 PlayerUtils.findOfflineByName(it)
-            }
+            },
+            "server" to serverSelf
         )
 }

@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.Base.Extend.appendToJson
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.ui.MenuInterface
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -18,8 +19,11 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerEditBookEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import java.io.File
@@ -151,7 +155,7 @@ object Everything : Listener {
                 val r = Cube(from, to)
                 if (obj.has("type"))
                     r.type = obj["type"].asString
-                if (obj.has("data")){
+                if (obj.has("data")) {
                     r.savedData = obj["data"].asJsonObject
                 }
                 return r
@@ -294,7 +298,7 @@ object Everything : Listener {
     fun createTP(from: Location, to: Location, owner: String? = "op") {
         val cube = Cube(from, to)
         cube.type = "TP"
-        cube.savedData.addProperty("owner",owner)
+        cube.savedData.addProperty("owner", owner)
         cubes.add(cube)
     }
 
@@ -357,7 +361,10 @@ object Everything : Listener {
     }
 
     fun Location.near(b: Location): Boolean {
-        val d = (x.toFloat() - b.x.toFloat()).pow(2) + (y.toFloat() - b.y.toFloat()).pow(2) + (z.toFloat() - b.z.toFloat()).pow(2)
+        val d =
+            (x.toFloat() - b.x.toFloat()).pow(2) + (y.toFloat() - b.y.toFloat()).pow(2) + (z.toFloat() - b.z.toFloat()).pow(
+                2
+            )
         return b.world == this.world && d < 1
     }
 
@@ -368,5 +375,57 @@ object Everything : Listener {
                 it.contains(event.block.location)
             else false
         }
+    }
+
+    @EventHandler
+    fun onBookEdit(event: PlayerEditBookEvent) {
+        if (originItemMap.containsKey(event.player.uniqueId)) {
+            val pair = originItemMap[event.player.uniqueId]!!
+            pair.second(
+                buildString {
+                    for (i in 0 until event.newBookMeta.pageCount) {
+                        val text = event.newBookMeta.pages[i]
+                        var index = 0
+                        while (index < text.length){
+                            val c = text[index]
+                            if (c != TextUtil.KEY || (index < text.length && !text[index + 1].isDigit())){
+                                append(c)
+                            } else {
+                                index++
+                            }
+                            index++
+                        }
+                    }
+                }
+            )
+            Bukkit.getScheduler().runTaskLater(mPlugin!!, { _ ->
+                event.player.inventory.setItemInMainHand(pair.first)
+            }, 5)
+        }
+    }
+
+    @EventHandler
+    fun onDropItem(event: PlayerDropItemEvent){
+        if (event.itemDrop.itemStack.itemMeta!!.displayName == event.player.info().lang()["scripting.ui.new"].toInfoMessage()
+            && originItemMap.containsKey(event.player.uniqueId)){
+            event.isCancelled = true
+
+            val pair = originItemMap[event.player.uniqueId]!!
+            pair.second(null)
+            Bukkit.getScheduler().runTaskLater(mPlugin!!, { _ ->
+                event.player.inventory.setItemInMainHand(pair.first)
+            }, 5)
+        }
+    }
+
+    private val originItemMap = HashMap<UUID, Pair<ItemStack, (String?) -> Unit>>()
+    fun openBookEditFor(player: Player, origin: String = "", onFinish: (String?) -> Unit) {
+        originItemMap[player.uniqueId] = player.inventory.itemInMainHand.clone() to onFinish
+        player.inventory.setItemInMainHand(
+            ItemStack(Material.WRITABLE_BOOK).updateItemMeta<BookMeta> {
+                addPage(origin)
+                setDisplayName(player.info().lang()["scripting.ui.new"].toInfoMessage())
+            }
+        )
     }
 }

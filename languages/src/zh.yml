@@ -103,8 +103,8 @@ survey:
   toPlaceBlock: '要放置方块，请使用/survey 参加服务器调查以成为正式会员'
 
 player:
-  joinGame: '%s加入了游戏'
-  leftGame: '%s离开了游戏'
+  join: '%s加入了游戏'
+  left: '%s离开了游戏'
   warn:
     badNet: '%s正在登陆，然而由于网络问题，这可能需要几秒钟'
   error:
@@ -196,6 +196,9 @@ ui:
   back: '返回'
   puTitle: '玩家实用工具'
   blockTitle: '区块实用工具'
+  clickToDelete: '点击以删除'
+  clickToRename: '点击以重命名'
+  renamed: '已将%s重命名为%s.'
   block:
     nobodyAccessible: '无他人'
     accessible: '%s可访问'
@@ -238,7 +241,6 @@ ui:
       done: '已删除%s个记录点'
     rename:
       do: '点击重命名'
-      done: '已将%s重命名为%s'
       tip: '使用/pu rename <新ID> 来为记录点重命名'
   time:
     day: '天'
@@ -280,25 +282,43 @@ ui:
       title: '皮肤'
       subtitle: '您目前的皮肤是%s'
       click: '使用/sc <正版ID> 来更换'
+    cb:
+      title: 'Server Script'
+      subtitle: '给玩家和管理员助力 是 ServerScript 的目标。ServerScript, 即 SS, 是一个基于JavaScript的, 应用于OpenCraft服务器, 为每个成员提供服务的脚本语言。有了它, 你可以仅用几行代码完成许多麻烦和无聊的工作。'
+      click: '点击查看、创建和管理'
+      edit:
+        title: '编辑'
+        click: '点击编辑该脚本'
+      rename:
+        tip: '使用/pu rename <新名称> 来为脚本命名'
 
 welcome:
-  1.title: '欢迎来到OpenCraft!'
-  1.subtitle: '此向导将会向您介绍此服务器'
-  2.title: '这是主城'
-  2.subtitle: '您将在此开始游戏'
-  3.title: '这是服务器公告栏'
-  3.subtitle: '此处展示服务器各项须知及要求'
-  4.title: '此外'
-  4.subtitle: '还有服每日须知作为书在物品栏中，用于关注服务器最新动向'
-  5.title: '这是游戏选择器'
-  5.subtitle: '右键NPC以开始小游戏'
-  6.title: '这是交易世界传送者'
-  6.subtitle: '右键以进入交易世界'
-  7.title: '这是"别踩白块"小游戏'
-  7.subtitle: '左键内容方块以开始'
-  8.title: '要开始生存'
-  8.subtitle: '直接跳下主城即可'
-  9.title: '那么，我们开始吧！'
+  1:
+    title: '欢迎来到OpenCraft!'
+    subtitle: '此向导将会向您介绍此服务器'
+  2:
+    title: '这是主城'
+    subtitle: '您将在此开始游戏'
+  3:
+    title: '这是服务器公告栏'
+    subtitle: '此处展示服务器各项须知及要求'
+  4:
+    title: '此外'
+    subtitle: '还有服每日须知作为书在物品栏中，用于关注服务器最新动向'
+  5:
+    title: '这是游戏选择器'
+    subtitle: '右键NPC以开始小游戏'
+  6:
+    title: '这是交易世界传送者'
+    subtitle: '右键以进入交易世界'
+  7:
+    title: '这是"别踩白块"小游戏'
+    subtitle: '左键内容方块以开始'
+  8:
+    title: '要开始生存'
+    subtitle: '直接跳下主城即可'
+  9:
+    title: '那么，我们开始吧！'
 
 tutorial:
   incoming: '即将向您播放名为%s的教程'
@@ -426,13 +446,20 @@ msg:
 scripting:
   toRun:
     1: '-------ServerScript 执行器-------'
-    2: '版本: %s, 执行者: %s'
+    2: '版本: %s, 执行者: %s, 脚本名称: %s'
     3: '== 输出流:'
   returnNull: '在%s秒内完成。返还空对象。'
   returnSomething: '在%s秒内完成。返还: %s'
+  unnamed: '未命名'
   error:
     offline: '指定玩家必须在线!'
     nullValue: '%s 不能为空!'
     log: '无法保存日志'
     executionOutOfBound: '您仅有权执行%s次循环。'
     parWhenOffline: '参数[%s]必须给出，因为您不在服务器。'
+  ui:
+    title: '服务器脚本'
+    new: '新建脚本'
+    clickToExec: '点击执行'
+    tip:
+      editBook: '编辑手中的书，其内容将被写入脚本。要取消，丢弃该物品。'

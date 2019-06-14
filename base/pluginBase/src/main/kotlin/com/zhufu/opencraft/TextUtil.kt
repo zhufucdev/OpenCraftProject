@@ -167,6 +167,7 @@ object TextUtil {
 }
 
 fun String.toInfoMessage() = TextUtil.info(this)
+fun String.toTipMessage() = TextUtil.tip(this)
 fun String.toWarnMessage() = TextUtil.warn(this)
 fun String.toSuccessMessage() = TextUtil.success(this)
 fun String.toErrorMessage() = TextUtil.error(this)

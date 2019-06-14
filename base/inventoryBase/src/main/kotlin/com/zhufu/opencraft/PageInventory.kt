@@ -69,13 +69,13 @@ open class PageInventory<T: PageInventory.Adapter>: ClickableInventory {
         }
         inventory.setItem(itemsOnePage-9,
                 ItemStack(Material.NETHER_STAR).also {
-                    it.itemMeta = it.itemMeta!!.apply { setDisplayName(TextUtil.info("上一页")) }
+                    it.itemMeta = it.itemMeta!!.apply { setDisplayName(TextUtil.info("<")) }
                     itemPeriodPage = it
                 }
         )
         inventory.setItem(itemsOnePage-1,
                 ItemStack(Material.NETHER_STAR).also {
-                    it.itemMeta = it.itemMeta!!.apply { setDisplayName(TextUtil.info("下一页")) }
+                    it.itemMeta = it.itemMeta!!.apply { setDisplayName(TextUtil.info(">")) }
                     itemNextPage = it
                 }
         )

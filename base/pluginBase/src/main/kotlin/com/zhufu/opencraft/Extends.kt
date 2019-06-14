@@ -6,6 +6,8 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 
 fun getLang(lang: String, value: String, vararg replaceWith: Any?): String = Language.got(lang, value, replaceWith)
 fun getLang(player: ServerPlayer, value: String, vararg replaceWith: Any?): String =
@@ -69,8 +71,15 @@ fun broadcast(value: String, color: TextUtil.TextColor, vararg replaceWith: Stri
         it.sendMessage(langMap[lang]!!)
     }
 }
+
 fun runSync(l: () -> Unit) {
     Bukkit.getScheduler().runTask(Base.pluginCore) { _ ->
         l()
     }
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T : ItemMeta> ItemStack.updateItemMeta(block: T.() -> Unit): ItemStack {
+    itemMeta = (itemMeta as T).apply(block)
+    return this
 }

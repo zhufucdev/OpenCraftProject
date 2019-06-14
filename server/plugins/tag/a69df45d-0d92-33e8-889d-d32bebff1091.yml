@@ -1,9 +1,9 @@
 name: zhufucomcom
-lang: en
+lang: zh
 password: '233'
 address: localhost
 isSurveyPassed: true
-gameTime: 9724000
+gameTime: 10904000
 isSurvivor: true
 surviveSpawn:
   ==: org.bukkit.Location
@@ -26,13 +26,13 @@ lastDeath:
   location:
     ==: org.bukkit.Location
     world: world_survive
-    x: 55.85374617944887
-    y: 106.0
-    z: -691.4746572180038
-    pitch: 22.965658
-    yaw: 6.825613
-  reason: zhufucomcom fell out of the world
-  time: 1560398678009
+    x: 71.0
+    y: 69.0
+    z: 0.0
+    pitch: 83.032196
+    yaw: 6.5251145
+  reason: zhufucomcom fell from a high place
+  time: 1560512640882
 checkpoints:
   hello:
     ==: org.bukkit.Location

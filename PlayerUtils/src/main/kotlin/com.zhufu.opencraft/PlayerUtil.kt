@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.script.PlayerScript
 import com.zhufu.opencraft.special_items.FlyWand
 import com.zhufu.opencraft.special_items.Portal
 import com.zhufu.opencraft.special_items.SpecialItem
@@ -97,7 +98,7 @@ class PlayerUtil : JavaPlugin() {
                                 val oldName = checkpoint.name
                                 val newName = args[1]
                                 checkpoint.name = newName
-                                sender.success(getter["ui.checkpoint.rename.done", oldName, newName])
+                                sender.success(getter["ui.renamed", oldName, newName])
                             }
                         }
                     }
@@ -179,13 +180,10 @@ class PlayerUtil : JavaPlugin() {
                             sender.error(getter["command.error.unknown"])
                             return@runTaskAsynchronously
                         }
-                        val timeBegin = System.currentTimeMillis()
-                        val result = Scripting.evalLineAs(info, src, "Chat")
-                        val timeEnd = System.currentTimeMillis()
-                        if (result == null) {
-                            sender.error(getter["scripting.returnNull", (timeEnd - timeBegin) / 1000.0])
-                        } else {
-                            sender.success(getter["scripting.returnSomething", (timeEnd - timeBegin) / 1000.0, result.toString()])
+                        with(PlayerScript(info,name = "Console")){
+                            this.src = src
+                            call()
+                            close()
                         }
                     }
                 }

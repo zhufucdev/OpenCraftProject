@@ -13,11 +13,11 @@ class SimpleItemStack private constructor(private val wrap: ItemStack) {
     fun getDisplayName() = wrap.itemMeta?.displayName
 
     fun hasEnchant() = wrap.enchantments.isNotEmpty()
-    fun hasEnchant(name: String) = wrap.enchantments.keys.any { it.key.namespace == name }
-    fun listEnchant(): List<String> {
+    fun hasEnchant(name: String) = wrap.enchantments.keys.any { it.key.key == name }
+    fun getEnchants(): List<String> {
         val r = arrayListOf<String>()
         wrap.enchantments.keys.forEach {
-            r.add(it.key.namespace)
+            r.add(it.key.key)
         }
         return r
     }

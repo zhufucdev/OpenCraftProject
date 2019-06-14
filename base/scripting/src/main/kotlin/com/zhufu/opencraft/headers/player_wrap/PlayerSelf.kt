@@ -6,11 +6,11 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent
 
-class PlayerSelf private constructor(private val serverInfo: ServerPlayer) {
+class PlayerSelf private constructor(private val serverInfo: ServerPlayer,private val executor: Scripting.Executor) {
     companion object {
         val cache = CacheBuilder.newBuilder().maximumSize(50).build<ServerPlayer, PlayerSelf>()!!
-        fun from(src: ServerPlayer) = cache.get(src) {
-            PlayerSelf(src)
+        fun from(src: ServerPlayer,executor: Scripting.Executor) = cache.get(src) {
+            PlayerSelf(src,executor)
         }!!
     }
 
@@ -85,16 +85,13 @@ class PlayerSelf private constructor(private val serverInfo: ServerPlayer) {
     val spawnpoint get() = serverInfo.tag.getSerializable("surviveSpawn",Location::class.java,null)
     val currency get() = serverInfo.currency
     val info
-        get() = if (serverInfo.isOp) {
-            if (serverInfo is Info)
-                serverInfo as Info
-            else
-                serverInfo
+        get() = if (executor == Scripting.Executor.Operator) {
+            serverInfo
         } else {
             throw IllegalAccessError(getter["command.error.permission"])
         }
     val player
-        get() = if (serverInfo.isOp) {
+        get() = if (executor == Scripting.Executor.Operator) {
             if (serverInfo is Info)
                 serverInfo.player
             else

@@ -11,7 +11,7 @@ class PreregisteredInfo(val id: String) : WebInfo(true) {
     override val tagFile: File
         get() = File(File("plugins/tag/preregister").also { if (!it.exists()) it.mkdirs() },"$id.yml")
     override val playerDir: File
-        get() = Paths.get("plugins","playerDir","preregister").toFile().also { if (!it.exists()) it.mkdirs() }
+        get() = Paths.get("plugins","playerDir","preregister",name).toFile().also { if (!it.exists()) it.mkdirs() }
     override val face: File
         get() = File("plugins/faces/$id.png")
 }

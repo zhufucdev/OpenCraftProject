@@ -10,6 +10,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.plugin.Plugin
 import java.math.BigDecimal
@@ -213,6 +214,19 @@ class MenuInterface(plugin: Plugin, private val player: Player, private val isOn
                     }
                 }
             )
+            setItem(
+                30,
+                ItemStack(Material.CHAIN_COMMAND_BLOCK).updateItemMeta<ItemMeta> {
+                    setDisplayName(TextUtil.getColoredText(getter["ui.others.cb.title"], AQUA))
+                    val rename = TextUtil.formatLore(getter["ui.others.cb.subtitle"])
+                    val r = arrayListOf<String>()
+                    rename.forEach {
+                        r.add(it.toInfoMessage())
+                    }
+                    r.add(getter["ui.others.cb.click"].toTipMessage())
+                    lore = r
+                }
+            )
         }
     }
 
@@ -226,8 +240,9 @@ class MenuInterface(plugin: Plugin, private val player: Player, private val isOn
                 val info = player.info()
                 if (info == null) {
                     close()
-
-                } else CheckpointUI(info, plugin, this).show(player)
+                } else {
+                    CheckpointUI(info, plugin, this).show(player)
+                }
             }
             28 -> {
                 ServerCaller["showTutorialUI"]?.invoke(listOf(player))
@@ -235,6 +250,14 @@ class MenuInterface(plugin: Plugin, private val player: Player, private val isOn
             29 -> {
                 player.tip(getter["ui.others.armor.click"])
                 close()
+            }
+            30 -> {
+                val info = player.info()
+                if (info == null){
+                    close()
+                } else {
+                    ServerScriptUI(info,plugin,this).show(player)
+                }
             }
         }
     }

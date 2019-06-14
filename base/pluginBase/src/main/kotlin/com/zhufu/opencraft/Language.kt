@@ -101,7 +101,7 @@ object Language {
             conf = lang
         }
 
-        constructor(info: OfflineInfo) : this(info.userLanguage)
+        constructor(info: ServerPlayer) : this(info.userLanguage)
 
         operator fun get(value: String, vararg replaceWith: Any?): String {
             val found = conf.isSet(value)

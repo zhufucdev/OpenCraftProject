@@ -20,6 +20,7 @@ import com.zhufu.opencraft.survey.SurveyManager
 import com.zhufu.opencraft.events.PlayerInventorySaveEvent
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
+import com.zhufu.opencraft.script.ServerScript
 import com.zhufu.opencraft.special_items.FlyWand
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.SpawnReason
@@ -98,6 +99,12 @@ class Core : JavaPlugin(), Listener {
         PlayerManager.init(this)
         TradeManager.init(this)
         BuilderListener.init(this)
+        try {
+            ServerScript.INSTANCE.call()
+        } catch (e: Exception) {
+            logger.warning("Failed to execute AutoExec script.")
+            e.printStackTrace()
+        }
 
         if (!server.pluginManager.isPluginEnabled("HolographicDisplays")) {
             logger.warning("HolographicDisplays is not enabled.")
@@ -654,13 +661,15 @@ class Core : JavaPlugin(), Listener {
                     }
                     Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
                         val timeBegin = System.currentTimeMillis()
-                        val result =
-                            Scripting.evalLineAsServer(src, if (sender is Player) sender.info()?.playerStream else null)
+                        val result = ServerScript.INSTANCE.runLine(
+                            src,
+                            if (sender is Player) sender.info()?.playerStream else null
+                        )
                         val timeEnd = System.currentTimeMillis()
                         if (result == null) {
                             sender.error(getter["scripting.returnNull", (timeEnd - timeBegin) / 1000.0])
                         } else {
-                            sender.success(getter["scripting.returnSomething",(timeEnd - timeBegin)/1000.0 , result.toString()])
+                            sender.success(getter["scripting.returnSomething", (timeEnd - timeBegin) / 1000.0, result.toString()])
                         }
                     }
                 }

@@ -15,7 +15,7 @@ print('Hello World!')
 ```
 You should see ``Hello World!`` in the chat.  
 In this example, ``print`` is a **function**, which means printing the content inside the following parenthesis into the output stream.  
-``'Hello World!'`` is a **string** constant. **string** is a set of characters. it can be carved up, merged, cut off freely using some functions. We will introduce them later.  
+``'Hello World!'`` is a **string** constant. String is a set of characters. it can be carved up, merged, cut off freely using some functions. We will introduce them later.  
 ##### Lesson Two: Meet text-processing
 The following program will make two lines of output.
 ```js
@@ -46,7 +46,7 @@ The following program will output **number** ``2019``.
 print(2019)
 ```
 You can see that what in the parentheses is different from what we've done, as there is no ``'`` between ``(`` and ``)``.  
-This is because ``2019`` is a **number** constant, which can be joined into arithmetic.  
+This is because ``2019`` is a number constant, which can be joined into arithmetic.  
 For example:
 ```js
 print(1 + 3)
@@ -78,7 +78,7 @@ Here are some basis operational symbols:
 |     /      |   divide  |
 |     %      | remainder |
 They all follow the order of four fundamental operations of arithmetic. For example:
-```text
+```js
 2 * 3 + 4; // => 10
 2 * (3 + 4) // => 14
 ```
@@ -186,7 +186,7 @@ which equals to
 ```js
 if (i > 100)
 ```
-You can also see that when ``A`` is ``true``, ``!A`` is false. ``!`` is called **not**.
+You can also see that when ``A`` is ``true``, ``!A`` is ``false``. ``!`` is called **not**.
 ##### Lesson Six: FOR-statement
 Some people think the **WHILE-statement** is confusing, so they've invented the **FOR-statement** especially for loop. For example:
 ```js
@@ -196,7 +196,7 @@ for (let i = 1; i <= 100; i++)
 print(s)
 ```
 You should get ``5050`` as a result. This example gets the summation of 1 to 100.  
-In it, the computer would first let a variable be named ``s`` and valued ``0``, then enter the **FOR-statement**. In the statement, variable ``i`` is let and valued ``1``. Firstly, computer would do the following statement ``s += i``, turning ``s`` into ``1``. Then it would execute ``i++``, turning ``i`` into ``2``. Thirdly, computer would check whether the condition ``i <= 100`` is satisfied. Obviously it wouldn't be, so it would go this way until ``i <= 100`` is not satisfied, when ``s`` is ``5050`` and ``i`` is ``101``.  
+In it, the computer would first let a variable be named ``s`` and valued ``0``, then enter the **FOR-statement**. In the statement, variable ``i`` is let and valued ``1``. Firstly, computer would do the following statement ``s += i``, turning ``s`` into ``1``. Then it would execute ``i++``, turning ``i`` into ``2``. Thirdly, computer would check whether the condition ``i <= 100`` is satisfied. Obviously it would be, so it would go this way until ``i <= 100`` is not satisfied, when ``s`` is ``5050`` and ``i`` is ``101``.  
 ***
 Compare to using **WHILE-statement**:
 ```js
@@ -337,7 +337,7 @@ let jobs = {
 };
 print(jobs.lastName)
 ```
-You should have ``Jobs`` in chat. This example uses an **Object Literal**.  
+You should have ``Jobs`` in chat. This example uses an **Object Literal Constructor**.  
 You can also define objects using  **Object Constructor**. For example:
 ```js
 function Person(firstName, lastName, dateOfBirth, age){
@@ -405,7 +405,7 @@ let corporations = new Array("Apple", "Google", "Microsoft");
 print(corporations[1])
 ```
 You should get ``Google`` in the chat.  
-You may get confused, because "Google" is the second item in the **Array** ``corporations``, however, the **index** number is ``1``. Then you can see the index of an item in an array is **one less** than its order. In the case, you should get ``Apple`` with ``corporations[0]`` and ``Microsoft`` with ``corporations[2]``.
+You may get confused, because "Google" is the second item in the array ``corporations``, however, the **index** number is ``1``. Then you can see the index of an item in an array is **one less** than its order. In the case, you should get ``Apple`` with ``corporations[0]`` and ``Microsoft`` with ``corporations[2]``.
 ***
 Just like what you've done to an object, you can look through an array as well. For example:
 ```js
@@ -625,7 +625,7 @@ It's used to check out and control some of the information of executor of the cu
 #### void setYaw(Number yaw)
 ##### Parameter ``yaw``
 > Yaw to set for the executor if it is in server.  
-> Notice: Call [setYawAndPitch](#void-seryawandpitchnumber-yaw-number-pitch) if you would like to set both of them together.
+> Notice: Call [setYawAndPitch](#void-setyawandpitchnumber-yaw-number-pitch) if you would like to set both of them together.
 ##### Throws
 > **java.lang.IllegalArgumentException** if the executor isn't in server.
 #### Number getPitch()
@@ -736,7 +736,7 @@ It's used to create UUIDs for unique symbol of each player.
 ### Player Player(String name)
 It's used to get the instance of an online player by its name.
 ##### Source
-> com.zhufu.opencraft.headers.ServerHeader
+> com.zhufu.opencraft.headers.ServerHeaders
 ##### Permission
 > Operator, Server
 ##### Parameter ``name``
@@ -746,7 +746,7 @@ It's used to get the instance of an online player by its name.
 ### OfflinePlayer OfflinePlayer(String name)
 It's used to get the instance of an offline player by its name.
 ##### Source
-> com.zhufu.opencraft.headers.ServerHeader
+> com.zhufu.opencraft.headers.ServerHeaders
 ##### Permission
 > Operator, Server
 ##### Parameter ``name``

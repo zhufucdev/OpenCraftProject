@@ -105,9 +105,6 @@ builder.error:
   dropItem: "You can't throw anything here."
   inventory: "You can't see your inventory here."
 
-ui.tpToSpawn: "Teleport back to spawn point."
-ui.teleport: "Teleport"
-
 gameWarn: "§cHere’s some problem in your game，this may affect your gaming experience，please reconnect to this server，or contact the owner"
 game:
   waiting: "The game will start in %s"
@@ -123,12 +120,9 @@ game:
     timeRemainingInSec: "%sTIME%s"
 tutorial.begin: "So, let’s play in OpenCraft the Server!"
 
-ui.confirm: "Sure!"
-ui.cancel: "No way!"
-
 player:
-  joinGame: "%s joined the game."
-  leftGame: "%s left the game."
+  join: "%s joined the game."
+  left: "%s left the game."
   error:
     unknown: "抱歉，但我们无法确定你是谁。您的游戏出现问题，请联系服务器管理员。Sorry, but we can't make sure that who you are. Your game seemed to go wrong, please contact the server operator."
 
@@ -170,6 +164,9 @@ ui:
   back: "Back"
   puTitle: "Player Util"
   blockTitle: "Chunk Util"
+  clickToDelete: 'Click to delete.'
+  clickToRename: 'Click to rename.'
+  renamed: 'Renamed %s as %s.'
   block:
     nobodyAccessible: "No one else"
     accessible: "%s can access"
@@ -212,7 +209,6 @@ ui:
       done: "Deleted %s checkpoints."
     rename:
       do: "Click to rename"
-      done: "Renamed %s to %s"
       tip: "Rename the checkpoint by /pu rename <new ID>."
   time:
     day: "day"
@@ -254,21 +250,37 @@ ui:
       title: "Skin"
       subtitle: "You are now using the skin of %s."
       click: "Change skin by /sc <online ID>."
+    cb:
+      title: "Server Script"
+      subtitle: "To empower both players and operators is the goal of ServerScript. ServerScript, or SS, is a script language extended on JavaScript, used in OpenCraft Server, for every member. With it, you can easily finish troublesome and boring jobs using a few lines of code."
+      click: "Click to view, create and manage"
+      edit:
+        title: 'Edit'
+        click: 'Click to edit this script.'
+      rename:
+        tip: "Use /pu rename <new name> to give the script a name."
 
 
 trade:
   tutorial:
-    1.title: "Welcome to trading world!"
-    1.subtitle: "You can trade something with other players."
-    2.title: "These shopper will stay in this world."
-    2.subtitle: "Take your mineral to them, and you will get coin."
-    3.title: "This is your territory"
-    3.subtitle: "You can build here"
-    4.subtitle: "So, you can build your shop here"
-    5.title: "About commands…"
-    5.subtitle: "Go back to your shop using /trade back "
-    6.subtitle: "And go back to the center using/trade center "
-    7.subtitle: "Check out /trade help for more information!"
+    1:
+      title: "Welcome to trading world!"
+      subtitle: "You can trade something with other players."
+    2:
+      title: "These shopper will stay in this world."
+      subtitle: "Take your mineral to them, and you will get coin."
+    3:
+      title: "This is your territory"
+      subtitle: "You can build here"
+    4:
+      subtitle: "So, you can build your shop here"
+    5:
+      title: "About commands…"
+      subtitle: "Go back to your shop using /trade back "
+    6:
+      subtitle: "And go back to the center using/trade center "
+    7:
+      subtitle: "Check out /trade help for more information!"
   help.title: "Guide to trading system"
   error:
     chunkNotFound: "Sorry，But we can’t found your territory "
@@ -411,7 +423,7 @@ msg:
 scripting:
   toRun:
     1: '-----ServerScript Executor-----'
-    2: 'version: %s, executor: %s'
+    2: 'version: %s, executor: %s, script name: %s'
     3: '== Output Stream:'
   returnNull: 'Finished in %s second(s) with nothing returned.'
   returnSomething: 'Finished in %s second(s) with %s returned.'
@@ -420,3 +432,11 @@ scripting:
     nullValue: '%s must not be null!'
     log: 'Failed to save log file.'
     executionOutOfBound: 'You can only execute loops for %s times.'
+    parWhenOffline: "Parameter [%s] must be given when you're not in server."
+  unnamed: 'Unnamed'
+  ui:
+    title: 'ServerScripts'
+    new: 'Create script'
+    clickToExec: 'Click to execute'
+    tip:
+      editBook: 'Please edit the book in hand to tell what is the script. To cancel, drop the item.'
