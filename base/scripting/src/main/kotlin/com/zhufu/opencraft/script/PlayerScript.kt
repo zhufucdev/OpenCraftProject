@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.Scripting.Executor
 import com.zhufu.opencraft.headers.PlayerHeaders
+import com.zhufu.opencraft.headers.PublicHeaders
 import com.zhufu.opencraft.headers.ServerHeaders
 import org.bukkit.Bukkit
 import org.graalvm.polyglot.Context
@@ -37,6 +38,8 @@ class PlayerScript : AbstractScript {
     val player: ServerPlayer
     val logger: ServerLogger
     val out: OutputStream
+    override val language: String
+        get() = player.userLanguage
     override var context: Context
     private var mName = ""
     override var name: String
@@ -53,7 +56,7 @@ class PlayerScript : AbstractScript {
         name = getLang(player, "scripting.unnamed")
         logger = player.newLogger(Level.SEVERE)
         out = if (player is ChatInfo) (player as ChatInfo).playerStream else logger.stream()
-        context = Context.newBuilder().out(out).allowHostAccess(true).build()
+        context = buildNewContext()
     }
 
     constructor(player: ServerPlayer, srcFile: File? = null, name: String) : this(player) {
@@ -66,12 +69,17 @@ class PlayerScript : AbstractScript {
         this.src = src
     }
 
+    private fun buildNewContext() = Context.newBuilder().out(out).allowHostAccess(true).build()
+
     override val executor: Executor
         get() = if (player.isOp) Scripting.Executor.Operator else Executor.Player
     override fun call(): Value? {
-        super.call()
-        val execID = Scripting.id++
         beforeRun(out)
+        with(context.getBindings("js")) {
+            PublicHeaders(language,player).members.forEach {
+                putMember(it.first, it.second)
+            }
+        }
         with(context.getBindings("js")) {
             PlayerHeaders(player, executor).members.forEach {
                 putMember(it.first, it.second)
@@ -89,8 +97,8 @@ class PlayerScript : AbstractScript {
             threadPool.submit<Value> {
                 context.eval(
                     "js",
-                    rewriteSrc(execID).also { Bukkit.getLogger().info("${player.name}'s actual execution: $it") })
-            }[Scripting.timeOut, TimeUnit.MILLISECONDS]
+                    rewriteSrc().also { Bukkit.getLogger().info("${player.name}'s actual execution: $it") })
+            }.get()//Scripting.timeOut, TimeUnit.MILLISECONDS]
         } catch (e: Exception) {
             printException(src, e, out)
             null
@@ -113,7 +121,7 @@ class PlayerScript : AbstractScript {
         if (player !is ChatInfo)
             logger.save(name)
 
-        Scripting.loopExecutions.remove(execID)
+        Scripting.loopExecutions.remove(player.uuid)
         return result
     }
 
@@ -127,7 +135,7 @@ class PlayerScript : AbstractScript {
 
     fun reset() {
         close()
-        context = Context.newBuilder().out(out).allowHostAccess(true).build()
+        context = buildNewContext()
         isClosed = false
     }
 
@@ -151,8 +159,8 @@ class PlayerScript : AbstractScript {
         }
     }
 
-    private fun rewriteSrc(execID: Int): String {
-        val item = "util.loopBump($execID,'${player.uuid.toString()}');"
+    private fun rewriteSrc(): String {
+        val item = "util.loopBump('${player.uuid.toString()}');"
         return buildString {
             append(src)
             fun findClose(startIndex: Int, openChar: Char, closeChar: Char, src: String): Int {

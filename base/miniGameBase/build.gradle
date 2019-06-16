@@ -5,5 +5,6 @@ dependencies {
     implementation project(':pluginBase')
     implementation project(':utils')
     implementation project(':playerManagment')
+    compileOnly fileTree(rootDir.path + '/libs/server_api.jar')
     implementation 'com.scireum:parsii:4.0'
 }

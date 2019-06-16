@@ -41,11 +41,11 @@ class CW : GameBase() {
             }
         }
 
-        fun getLocationByTeam(team: GameBase.Team, world: World) = when (team) {
-            GameBase.Team.RED -> Location(world, (-8).toDouble(), 129.toDouble(), (-8).toDouble())
-            GameBase.Team.BLUE -> Location(world, (-8).toDouble(), 129.toDouble(), 8.toDouble())
-            GameBase.Team.GREEN -> Location(world, 8.toDouble(), 129.toDouble(), 8.toDouble())
-            GameBase.Team.YELLOW -> Location(world, 8.toDouble(), 129.toDouble(), (-8).toDouble())
+        fun getLocationByTeam(team: Team, world: World) = when (team) {
+            Team.RED -> Location(world, (-8).toDouble(), 129.toDouble(), (-8).toDouble())
+            Team.BLUE -> Location(world, (-8).toDouble(), 129.toDouble(), 8.toDouble())
+            Team.GREEN -> Location(world, 8.toDouble(), 129.toDouble(), 8.toDouble())
+            Team.YELLOW -> Location(world, 8.toDouble(), 129.toDouble(), (-8).toDouble())
             else -> Location(world, 0.toDouble(), 0.toDouble(), 0.toDouble())
         }
 

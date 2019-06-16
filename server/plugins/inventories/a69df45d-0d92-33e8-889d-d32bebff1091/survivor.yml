@@ -1,4 +1,4 @@
-gameMode: SURVIVAL
+gameMode: CREATIVE
 health: 20.0
 foodLevel: 20
 walkSpeed: 0.2
@@ -7,11 +7,11 @@ exp: 0
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: 6380.229504843669
-  y: 88.0
-  z: -3650.9156924088993
-  pitch: 20.17992
-  yaw: -227.93689
+  x: 4521.150428462209
+  y: 75.0
+  z: 1077.1707951212582
+  pitch: 24.992695
+  yaw: 88.9564
 potion: {}
 inventory:
   '57':
@@ -30,3 +30,7 @@ inventory:
     ==: org.bukkit.inventory.ItemStack
     v: 1963
     type: GRASS_BLOCK
+  '0':
+    ==: org.bukkit.inventory.ItemStack
+    v: 1963
+    type: FOX_SPAWN_EGG

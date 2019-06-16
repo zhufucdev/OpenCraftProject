@@ -8,5 +8,5 @@ dependencies {
     compile project(':utils')
     compile project(':blockManagment')
     compile project(':listeners')
-    implementation 'net.citizensnpcs:citizensapi:2.0.23-SNAPSHOT'
+    implementation 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
 }

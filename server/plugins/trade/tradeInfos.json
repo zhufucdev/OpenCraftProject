@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "uuid": 1,
+    "buyer": "a69df45d-0d92-33e8-889d-d32bebff1091",
+    "seller": "server",
+    "item": {
+      "item": "YAML:\n  ==: org.bukkit.inventory.ItemStack\n  v: 1963\n  type: DIAMOND\n",
+      "prise": 60,
+      "amount": 64
+    }
+  },
+  {
+    "uuid": 2,
+    "buyer": "a69df45d-0d92-33e8-889d-d32bebff1091",
+    "seller": "server",
+    "item": {
+      "item": "YAML:\n  ==: org.bukkit.inventory.ItemStack\n  v: 1963\n  type: DIAMOND\n",
+      "prise": 60,
+      "amount": -3
+    }
+  },
+  {
+    "uuid": 3,
+    "buyer": "a69df45d-0d92-33e8-889d-d32bebff1091",
+    "seller": "server",
+    "item": {
+      "item": "YAML:\n  ==: org.bukkit.inventory.ItemStack\n  v: 1963\n  type: DIAMOND\n",
+      "prise": 60,
+      "amount": 3
+    }
+  }
+]

@@ -1,4 +1,154 @@
 # Citizens NPC Storage
 
-last-created-npc-id: 352
-npc: {}
+last-created-npc-id: 536
+npc:
+  '521':
+    metadata:
+      player-skin-textures: eyJ0aW1lc3RhbXAiOjE1NjA2NDgzNjQ0MDksInByb2ZpbGVJZCI6IjYyNzZiNjhkMjM3YzRmZjM4N2ZhMzBiYzQ4M2ZkNWMxIiwicHJvZmlsZU5hbWUiOiJ6aHVmdWNvbWNvbSIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzViOTAzODNkZjUwNGZiMDZiMTIzZDgzZjM2ZDA4ODkzNmJlOTk0NTZlNTY1Yzc4M2Y4MzU2YzViMWU5OGRlMSJ9fX0=
+      cached-skin-uuid-name: zhufucomcom
+      cached-skin-uuid: 6276b68d-237c-4ff3-87fa-30bc483fd5c1
+      player-skin-signature: mxH+QZEtlIHluwjd0X38CjVg6qjqtc/5lnmnOFTCJJUZZt2MTebRIuzb1I5aWRSCrzZOOQuKIfHIDKY2OR6gfUMMiTG7oDp3kLx6HbLVyYbHXQj7SBQLyziJf+t6+020l6/VsP6e33O1jUHmy4aPDCUxxn/EQWh2wUZM2hpE4Tl4+bWXhUaWX+xXmworYfS5L7po8i6s1A5XF3/IdYx+xpTFx+IRv15dUgF8AtKFUKeL3pFIKodI889tRXDHccy6WBw8Ti81ttZR0GVT/zKZPQKVRQHDYi8Zr07JxwNVfYgVwzEfOBajo58PoZVaGwEZJfv0Nr4zWMKniY2+oQMvGX2uUiYjcMQDDcR+gJMCk/klVvwREayuA8qqXQvdI1THZaL9fB4X1kfkkKtFte5L8gLB7uufG15CTg9KJAXWLiF5LY3kGR0od8zW65NHKN8pWNv3VoItIRnToexzhjRpqTezSdre0PV5cjcKpBwy3RrrlL9McgR/Tx+mKEEDnUy0lRANZT1dW5rjvq18olTWRlyE1D1ANLavH5cDeFUw18Q/MrSkxJv83vpu2U80I8TIg8NbC877MXJF+2gVA6xv9lWRZDOoS/IMPWzscxiXC8tt2xQKaPgYkgvMoDl9qAhqXs4Rn3MkAT9eIyXe/gjtPBHjz39xi9N8GJhprv3Wm0s=
+    name: zhufucomcom
+    uuid: 59f1227f-f072-4dfb-b0c0-d2eec33b9a78
+    traits:
+      location:
+        world: world
+        x: '-250.0'
+        y: '68.0'
+        z: '-64.0'
+        yaw: '0.6088841557502747'
+        pitch: '-17.71330451965332'
+      spawned: true
+      type: PLAYER
+      gravity:
+        enabled: false
+    traitnames: type,gravity,inventory,equipment,spawned,mounttrait,location
+    navigator:
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '524':
+    metadata:
+      player-skin-textures: eyJ0aW1lc3RhbXAiOjE1NjA2NTIwODIyMDYsInByb2ZpbGVJZCI6IjYyNzZiNjhkMjM3YzRmZjM4N2ZhMzBiYzQ4M2ZkNWMxIiwicHJvZmlsZU5hbWUiOiJ6aHVmdWNvbWNvbSIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzViOTAzODNkZjUwNGZiMDZiMTIzZDgzZjM2ZDA4ODkzNmJlOTk0NTZlNTY1Yzc4M2Y4MzU2YzViMWU5OGRlMSJ9fX0=
+      cached-skin-uuid-name: zhufucomcom
+      cached-skin-uuid: 6276b68d-237c-4ff3-87fa-30bc483fd5c1
+      player-skin-signature: fZPgkUTrn7+9WXWLL4qFb2RXJ3Ms7Mcz1UtWCGiGbrJpJqEK2tr4WaIR/iXfoa3cBwLX6tcOz+zRE+PEkq3CehF3VQs1FDW3AErNMCKzGYgFW6l+cZ+XXnPnqgbPT4ZkCeJg1swTZah5j+fiTWMwUWBPKfeeZexJ8Hl3vnPelTy9kduln1HnozdFDll4Y7GcpteNgKKgVXVqkxlik9mAk4NzpSsvb/LmFlYpLLsEz00H8YSuq+eQIjP1JVDXhxPsbXai9ahQdP9u2r1xJm+Uq8WERt8ayr8xuugWduxRsaLSVvXPf9uuLOM4G3m0am8nxr0Xnd6FeT1ectsYIeF2XaT69rxLHat2KKSrZ/jBSSRB7AaP/vn8BsUyH4qdIM0aOPl6QWbS40ixJt77VK9vrRwhrZ5H2PFz/s7awnXbIjGJHrU1ZmVl6uZGUhYdntjKj5ESXri5DigeiMQZ/uL+43ovoDYaUv/CirzkuSMMVyw7HdTFOmFzs5bvhnJIC0tLDF4DG+liUUF1lWIf0JO0SFfGcUgV9RT8I+yWTmF9yi0zQ4v4WESPHwvEtJRM2iAg25GJreWxQzsJAJ6BhJ4ghB8+P5dycxgg2npE1K2i2mQNTLDIoTZ2TfTW1NkZ1D89NZ/gvCkxhMsGDaiuUNeXC7OtABMUB1McBoOMNtDuLGA=
+    name: zhufucomcom
+    uuid: 46696f7d-9e68-4762-b195-999d50980a43
+    traits:
+      gravity:
+        enabled: false
+      type: PLAYER
+      location:
+        world: world
+        x: '-250.0'
+        y: '68.0'
+        z: '-64.0'
+        yaw: '2.086862802505493'
+        pitch: '-5.864015102386475'
+      spawned: true
+    traitnames: type,gravity,inventory,equipment,spawned,mounttrait,location
+    navigator:
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '527':
+    metadata:
+      player-skin-textures: eyJ0aW1lc3RhbXAiOjE1NjA2NTMwNTM2OTMsInByb2ZpbGVJZCI6IjYyNzZiNjhkMjM3YzRmZjM4N2ZhMzBiYzQ4M2ZkNWMxIiwicHJvZmlsZU5hbWUiOiJ6aHVmdWNvbWNvbSIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzViOTAzODNkZjUwNGZiMDZiMTIzZDgzZjM2ZDA4ODkzNmJlOTk0NTZlNTY1Yzc4M2Y4MzU2YzViMWU5OGRlMSJ9fX0=
+      cached-skin-uuid-name: zhufucomcom
+      cached-skin-uuid: 6276b68d-237c-4ff3-87fa-30bc483fd5c1
+      player-skin-signature: QxUF1K8T/Im296Pp96dWBXzJNng7xjQQJnUofwvyNpsasOFJVtDLDiJtRhmiXU9QUKvPtg8iV9NPovW+6gj+3quAmXAF/fgGs4/vkA971im7JilH5YpQ8htU4v9a7rhUZr7E/gljyB7TqqLXCRdoj5Z5M0q9BKPVa+ZRxNLOTtCe4l7DKztTiK3lx4PhEKcyJdGp6/npI4yekYHDTTkfU7PX9PGSU1rT9hunxxIsxHpJ2YRVvBaRl70WiuwyjHJniPf2EzzxpFhCiebwVr9MTHVnPIFa2IkyQsdbnXTuXHPAX6ftkgAMqvF9a4Yl5f34uE4xHOxbvdz7KnKkD1Ar9Bxa1Fyc+IRYXKitKJ0BSx+Xdottfo2m3Q3eEqXRrSZUZ0LRAz+u2RqvKfBKvXQHjnlL9OgvDdK6141FMKIuoM+OecXxxp0PkyFQPfbCrHXdP2UeOR6d8z3BXf0tV//pk5vUmQppXROImYKEz+hR2n3ATeYwQgU6X+XB7SeJZiQ+6Lt/xjnRz8yF6s/k+vPdazRdWI3TnaYxN4nUzg1fh8WXBv5mC+Is61UoE567dSK0VcVIECdFnVx9t+I8prSUQr4KVblRVhCp9qEScyrxrfnfaO/nZKheAcPuiM8j5NzrAxgK8GbpXg5kN4sFmeb6Ahn96DgJ2LLQJv9f4canfzY=
+    name: zhufucomcom
+    uuid: f0f3151a-0fb6-47ef-b1a0-16053d3b574e
+    traits:
+      spawned: true
+      type: PLAYER
+      location:
+        world: world
+        x: '-250.0'
+        y: '68.0'
+        z: '-64.0'
+        yaw: '0.40865570306777954'
+        pitch: '-9.011138916015625'
+      gravity:
+        enabled: false
+    traitnames: type,gravity,inventory,equipment,spawned,mounttrait,location
+    navigator:
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '530':
+    metadata:
+      player-skin-textures: eyJ0aW1lc3RhbXAiOjE1NjA2NTU5OTE1MDUsInByb2ZpbGVJZCI6IjYyNzZiNjhkMjM3YzRmZjM4N2ZhMzBiYzQ4M2ZkNWMxIiwicHJvZmlsZU5hbWUiOiJ6aHVmdWNvbWNvbSIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzViOTAzODNkZjUwNGZiMDZiMTIzZDgzZjM2ZDA4ODkzNmJlOTk0NTZlNTY1Yzc4M2Y4MzU2YzViMWU5OGRlMSJ9fX0=
+      cached-skin-uuid-name: zhufucomcom
+      cached-skin-uuid: 6276b68d-237c-4ff3-87fa-30bc483fd5c1
+      player-skin-signature: THRLGFvOdSpULf58loUKbE3FSiTmt+9BCthbkpEYU0o43gOv7TjmUUJr49vTWLGmQKWDa1KaNLkwtvj6hSk/CHQCeLpzDEhTKZaWh+b9cJab5/7fwsY3Jzat/nDYnF4f+1Wpg8jRDpch6kPjYMsS7yfQLqs2aNqryCAye8jo5292xVoCTKvCjsI8Y56QBM2bR8Clfh+0WLcGPM+i6WoGCyvS4Nz7jnH/4FgpjH2TzMzykfgdrNlhjFKgSgyCX7nBerX4Jg6YaDXcgEhnsAntLCa1P0VTYWEnmVuUEBItQhkx5nqSjpTX9hrR9W7NEy1A5J0i0nCVzXOPbhHTasiYDOBYDMGQkM1CiDovkwDOGrsE/uB3X8LGDU5wCmcMiXVuqtqy12liQMZC3BoNBSSbOHCNk1pzVJFas31C1SmWTEUevN7Vmt3D3qk09hx3jNIjE9bot6KRJ/PNWP66qHUOiyK5GGRMfGF8quTQaQ111J6gSpdCOzRzvhn6us9LA9KfWMDlmx0vB9A6YTXY3GartggJFp5fEynmoerRle8U41wx/qICCJS2YxprssxWxFOZ6Eq3ubUpZvgKnRpMZRaH5GHisOzEzGmqi4Eh6GVyJyZB2Z0yc+HIVaa5mO7EAlJ2OBMRxfwFGVM8jsY9QMHZNMiLOtfeoDRqQ3UEGTikwDA=
+    name: zhufucomcom
+    uuid: 70833f23-2b85-4840-bd7b-56785cd42b3e
+    traits:
+      location:
+        world: world
+        x: '-250.0'
+        y: '68.0'
+        z: '-64.0'
+        yaw: '-0.9450432062149048'
+        pitch: '-23.990720748901367'
+      spawned: true
+      gravity:
+        enabled: false
+      type: PLAYER
+    traitnames: type,gravity,inventory,equipment,spawned,mounttrait,location
+    navigator:
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '533':
+    metadata:
+      player-skin-textures: eyJ0aW1lc3RhbXAiOjE1NjA2NTYwNjk0ODksInByb2ZpbGVJZCI6IjYyNzZiNjhkMjM3YzRmZjM4N2ZhMzBiYzQ4M2ZkNWMxIiwicHJvZmlsZU5hbWUiOiJ6aHVmdWNvbWNvbSIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzViOTAzODNkZjUwNGZiMDZiMTIzZDgzZjM2ZDA4ODkzNmJlOTk0NTZlNTY1Yzc4M2Y4MzU2YzViMWU5OGRlMSJ9fX0=
+      cached-skin-uuid-name: zhufucomcom
+      cached-skin-uuid: 6276b68d-237c-4ff3-87fa-30bc483fd5c1
+      player-skin-signature: EUr0HJAx7F33BcI2QXUhPOVTLz4MTjZytMLAOaiCMGW/pY0ZV760FDfaLVtkh9X36cQBGFDOYyB3sIBkOvb8Hkz8nuwlwEeabHn5JIiex/YngH9do68d6tjntSjq1IZAKAOCv8vU8jfTzkhD+YEPfxhc3OPlYm/U9PvDuV7ZxXDb9TvVApGN0fpTiRw8gYP+7/MKrBbu+wdxjU7+0y9s0+m9AIepFXA9JBQIcMSE7Di4nnvhsXov34rwVwFMeps0872HOl0rN8CY1asjQGIY/mxoZAa5GUvoLr9DhmMqMkrLnQ35ZJQflzthzVRjHopeA8icgtLDavcW8sgYJCbLnqlxGKuR09mYVDqsqpfahjGxXh44QQEYWw2olZ5Lyg6nfol4cAZSLPduMbRoXXE8kyv03obz8ppvI/kwvgg6MrzFiRp6kMVJ9XkPEEz4dUmgsowIzk/OQYThEWM6BLbYE7zE1VdMzfCex+Ibri9XBIUt8DftmJf4hIBGZLgdIryzrKvzlLOMQonp4WWf5MyGEIPg02y2bnHcCpdySIFvNRVfTfVoHU16aBS5k2N3XJT2BLltRY2wbpVRAbPfMKtBkL9UbQO3YJ/pCINdm+GRCMDQ4OSbKUurdVDQ7oOqJYWkdAqpQQ5ynXKTo/Y2frjvKdmoPzPnv9mmZgSA6zxVI48=
+    name: zhufucomcom
+    uuid: 71ab496d-37cb-4f2e-b745-7f443aba874d
+    traits:
+      type: PLAYER
+      location:
+        world: world
+        x: '-250.0'
+        y: '68.0'
+        z: '-64.0'
+        yaw: '3.314124584197998'
+        pitch: '-26.512998580932617'
+      spawned: true
+      gravity:
+        enabled: false
+    traitnames: type,gravity,inventory,equipment,spawned,mounttrait,location
+    navigator:
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '536':
+    metadata:
+      player-skin-textures: eyJ0aW1lc3RhbXAiOjE1NjA2NTYzMjQ5MjUsInByb2ZpbGVJZCI6IjYyNzZiNjhkMjM3YzRmZjM4N2ZhMzBiYzQ4M2ZkNWMxIiwicHJvZmlsZU5hbWUiOiJ6aHVmdWNvbWNvbSIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzViOTAzODNkZjUwNGZiMDZiMTIzZDgzZjM2ZDA4ODkzNmJlOTk0NTZlNTY1Yzc4M2Y4MzU2YzViMWU5OGRlMSJ9fX0=
+      cached-skin-uuid-name: zhufucomcom
+      cached-skin-uuid: 6276b68d-237c-4ff3-87fa-30bc483fd5c1
+      player-skin-signature: pFl6GYI/M3D3aiDmbXJ+Kd0eQB8LrQUUJh3FSB3P13pw8DoksBFep1FU5BsuU25HJI//kJehdvwrVbwdFBP0yoB01ahlzPh6gcLdigVtaRHnkjnCAfAbovZ0ccpdN66pwwuZ2ameNGoiAK0RPRWhe42pENuRYWWFf0uckAeU4RMgRGm5VaJe9E7prz8baCAa9Cub8zWqn6DKmPDg/KSRb7KzIkdb4jq4eD7u5o0+gD/sGDd1HeGQZtfFoGkSnyCd176wTvtSxNUtFu/rcA9CKATvIKuGFn1I12q+eYn1N2YscY2D7b0un8HI5CwvhxoCeQBY5/rU50fQrJ+pOAsOmjTzIK4sKyA2A2MYa8oYtlS6QOrHXdP/q7MySWitrw7Xt8Fvh4jkaBW+EIP/IGcLOdVA5UtsTDjof9XdGznhLUckEZybwDfXplpjZEFi2F4Iqs2B7oNiFgfL6aSX2AH6Q4IVYoGRi+NhUKMtDASxaOlB6fOCJG43Uqi1qQGwmmHbOPTsNbS8juZqOHoCvCJyVfGFDpEiquL5sKKq8yiDTVSOvLArWBBRSaey1faIVrXSwI4qTQ0zwDNbB4bQF+P1E740ebhkZvOzabVmVc/KGsLr2sXdi/mAcH7lejbFKRrCMIEEBth0PTFHtVuWQXehi8t46ug8X4NK3NQRFXkOLOA=
+    name: zhufucomcom
+    uuid: 076d57fc-4aef-4ced-94d6-2b2c422dd12f
+    traits:
+      type: PLAYER
+      gravity:
+        enabled: false
+      spawned: true
+      location:
+        world: world
+        x: '-250.0'
+        y: '68.0'
+        z: '-64.0'
+        yaw: '1.3839057683944702'
+        pitch: '-19.253427505493164'
+    traitnames: type,simple_trait,gravity,inventory,equipment,spawned,mounttrait,location
+    navigator:
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true

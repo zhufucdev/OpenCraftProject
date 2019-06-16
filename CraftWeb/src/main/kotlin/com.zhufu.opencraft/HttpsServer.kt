@@ -67,7 +67,7 @@ class HttpsServer {
 
     private fun check(){
         if (!isInitialized)
-            throw IllegalStateException("Server hasn't been initialized yet! Call #init first.")
+            throw IllegalStateException("Server hasn't been initialized yet! Call [init] first.")
     }
     fun start() {
         check()

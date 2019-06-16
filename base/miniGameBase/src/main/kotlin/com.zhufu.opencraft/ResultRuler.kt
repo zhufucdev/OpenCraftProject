@@ -1,7 +1,7 @@
 package com.zhufu.opencraft
 
 import org.bukkit.*
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftFirework
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftFirework
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin

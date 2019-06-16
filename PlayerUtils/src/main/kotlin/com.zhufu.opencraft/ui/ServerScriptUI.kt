@@ -84,10 +84,10 @@ class ServerScriptUI(private val who: Info, plugin: Plugin, private val parent: 
                     close()
                     if (index < list.size) {
                         val script = list[index]
-                        if (script.isClosed)
-                            script.reset()
-                        script.call()
-                        script.close()
+                        script.reset()
+                        Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
+                            script.call()
+                        }
                     } else {
                         who.player.sendMessage(adapter.getter["scripting.ui.tip.editBook"].toTipMessage())
                         Everything.openBookEditFor(who.player) {

@@ -8,26 +8,30 @@ import com.zhufu.opencraft.lang
 import org.bukkit.Bukkit
 import java.util.*
 import java.util.function.Function
+import java.util.function.Supplier
 import kotlin.concurrent.fixedRateTimer
 
+@Suppress("unused")
 object Utils {
-    fun getJavaType(i: Any?) = (i?.javaClass?.name) ?: "null"
-    fun runSync(f: Function<Array<Any?>, Any?>) {
+    fun getJavaClass(i: Any?) = (i?.javaClass?.name) ?: "null"
+    fun runSync(f: Supplier<Any?>) {
         Bukkit.getScheduler().runTask(Base.pluginCore) { _ ->
-            f.apply(arrayOf(null))
+            f.get()
         }
     }
 
-    fun loopBump(id: Int, uuid: String) {
-        val times = (loopExecutions[id] ?: 0) + 1
+    fun loopBump(uuid: String) {
+        val uuid1 = UUID.fromString(uuid)
+        val times = (loopExecutions[uuid1] ?: 0) + 1
         val info = Info.findByPlayer(UUID.fromString(uuid)) ?: throw IllegalStateException()
         if (times > info.maxLoopExecution){
             Bukkit.getLogger().warning("${info.name} was thrown loop execution out of bound error for more than ${info.maxLoopExecution} call.")
             throw LoopExecutionOutOfBoundError(info.lang()["scripting.error.executionOutOfBound",info.maxLoopExecution])
         }
-        loopExecutions[id] = times
+        loopExecutions[uuid1] = times
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun runTaskTimer(f: Function<Array<Any?>, Any?>, duration: Long, period: Long) {
         if (duration > 5000) {
             throw IllegalArgumentException("The duration is too long!(maximum is 5000)")

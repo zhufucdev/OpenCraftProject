@@ -9,6 +9,6 @@ dependencies {
     compile project(':miniGameBase')
     compile project(':listeners')
     compile project(':scripting')
-    compile 'net.citizensnpcs:citizensapi:2.0.23-SNAPSHOT'
+    compile 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
     compile 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.2.7-SNAPSHOT'
 }

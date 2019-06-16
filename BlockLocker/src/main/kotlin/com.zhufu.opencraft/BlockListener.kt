@@ -46,7 +46,7 @@ object BlockListener : Listener {
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent){
         val l = event.to
-        val info = BlockLockManager[l!!]
+        val info = BlockLockManager[l]
         val playerInfo = PlayerManager.findInfoByPlayer(event.player)?:return
 
         if (info != null && info.name != "Lobby"){

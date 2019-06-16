@@ -1,5 +1,6 @@
 package tw.davy.minecraft.skinny.listener
 
+import com.destroystokyo.paper.profile.ProfileProperty
 import com.zhufu.opencraft.PlayerManager
 import com.zhufu.opencraft.TextUtil
 import com.zhufu.opencraft.getLang
@@ -38,6 +39,7 @@ class AsyncPlayerPreLoginListener(private val mPlugin: Skinny) : Listener {
             if (skin.isCustomize && info != null)
                 MessagePool.instance.sendMessageToPlayer(preLoginEvent.uniqueId, TextUtil.info(getLang(info,"skinny.working")))
             mPlugin.cache[playerName] = skin
+            preLoginEvent.playerProfile.setProperty(ProfileProperty("textures", skin.value, skin.signature))
         } else if (info != null){
             MessagePool.instance.sendMessageToPlayer(preLoginEvent.uniqueId, TextUtil.error(getLang(info,"skinny.error.load")))
         }

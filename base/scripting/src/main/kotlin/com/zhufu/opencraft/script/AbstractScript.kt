@@ -14,6 +14,7 @@ import java.io.OutputStream
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.concurrent.Callable
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 abstract class AbstractScript : Callable<Value?>, Nameable {
@@ -22,8 +23,8 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
         Language.LANG_ZH, "scripting.unnamed"
     )
     protected abstract var context: Context
+    protected abstract val language: String
     var srcFile: File? = null
-    @Suppress("LeakingThis")
     var src = ""
 
     protected fun beforeRun(out: OutputStream? = null) {
@@ -38,16 +39,7 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
         }
     }
 
-    fun renewSrc() {
-        src = srcFile?.readText()?:throw IllegalStateException("[srcFile] must not be null.")
-    }
-
     override fun call(): Value? {
-        with(context.getBindings("js")) {
-            PublicHeaders.members.forEach {
-                putMember(it.first, it.second)
-            }
-        }
         return null
     }
 
@@ -90,10 +82,11 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
                     val sw = StringWriter()
                     if (exception.isHostException)
                         with(exception.asHostException()) {
-                            append("${this::class.simpleName}: ${message}")
+                            append("${this::class.simpleName}: $message")
                         }
                     else
                         e.printStackTrace(PrintWriter(sw))
+                    e.printStackTrace()
                     out.write(sw.toString().toByteArray())
                 }
             } else {
@@ -107,6 +100,6 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
     }
 
     companion object {
-        val threadPool = Executors.newCachedThreadPool()
+        lateinit var threadPool: ExecutorService
     }
 }

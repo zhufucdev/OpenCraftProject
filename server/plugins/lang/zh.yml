@@ -457,9 +457,16 @@ scripting:
     log: '无法保存日志'
     executionOutOfBound: '您仅有权执行%s次循环。'
     parWhenOffline: '参数[%s]必须给出，因为您不在服务器。'
+    scriptNotFound: '没有找到名为%s的脚本'
   ui:
     title: '服务器脚本'
     new: '新建脚本'
     clickToExec: '点击执行'
     tip:
       editBook: '编辑手中的书，其内容将被写入脚本。要取消，丢弃该物品。'
+npc:
+  error:
+    parNotFound: '参数必须包含%s'
+    wrongClass: '参数%s 类型错误'
+    spawnTooFar: '出生点距离太远。离玩家不应超过7个方块'
+    parConflit: '参数冲突: %s'

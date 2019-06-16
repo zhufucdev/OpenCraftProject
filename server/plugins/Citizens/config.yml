@@ -31,10 +31,13 @@ npc:
     new-finder-open-doors: false
     attack-range: 3.0625
     use-new-finder: false
+    default-path-distance-margin: 1
   default:
     look-close:
       enabled: false
       range: 5
+      random-look-enabled: false
+      random-look-delay: 60
     pathfinding:
       range: 25.0
     random-talker: true

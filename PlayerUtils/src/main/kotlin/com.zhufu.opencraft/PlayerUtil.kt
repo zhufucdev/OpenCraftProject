@@ -22,7 +22,6 @@ class PlayerUtil : JavaPlugin() {
     override fun onEnable() {
         Everything.init(this)
         PortalHandler.init(this)
-
     }
 
     override fun onDisable() {
@@ -183,7 +182,10 @@ class PlayerUtil : JavaPlugin() {
                         with(PlayerScript(info,name = "Console")){
                             this.src = src
                             call()
-                            close()
+
+                            Bukkit.getScheduler().runTaskLater(this@PlayerUtil,{ _ ->
+                                close()
+                            },100)
                         }
                     }
                 }

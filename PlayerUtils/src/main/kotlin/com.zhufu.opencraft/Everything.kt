@@ -303,11 +303,10 @@ object Everything : Listener {
     }
 
     private val clickMap = HashMap<Player, Pair<Int, Long>>()
+
     @EventHandler
     fun onPlayerClick(event: PlayerInteractEvent) {
         fun plus() {
-            event.setUseInteractedBlock(Event.Result.ALLOW)
-            event.setUseItemInHand(Event.Result.DENY)
             val player = event.player
             if (player.info()?.status != Info.GameStatus.Surviving)
                 return
@@ -353,8 +352,10 @@ object Everything : Listener {
             val player = event.player
             val value = clickMap[player]
             if (value != null && value.first >= 3) {
-                if (System.currentTimeMillis() - value.second <= 1200)
+                if (System.currentTimeMillis() - value.second <= 1200) {
                     MenuInterface(mPlugin!!, player).show(player)
+                    event.isCancelled = true
+                }
                 clickMap.remove(player)
             }
         }

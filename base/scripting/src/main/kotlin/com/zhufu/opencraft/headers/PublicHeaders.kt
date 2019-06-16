@@ -1,15 +1,30 @@
 package com.zhufu.opencraft.headers
 
 import com.zhufu.opencraft.Header
+import com.zhufu.opencraft.Language
+import com.zhufu.opencraft.ServerPlayer
+import com.zhufu.opencraft.headers.npc_wrap.NPCUtils
 import com.zhufu.opencraft.headers.util.Utils
 import org.bukkit.ChatColor
 import java.util.function.Function
+import java.util.function.LongFunction
+import java.util.function.Supplier
 
-object PublicHeaders : Header {
+class PublicHeaders (private val lang: String, private val player: ServerPlayer? = null) : Header {
     override val members: List<Pair<String, Any?>>
         get() = listOf(
             "util" to Utils,
             "getColor" to Function<String, String> { name -> ChatColor.valueOf(name.toUpperCase()).toString() },
-            "allColors" to Function<Nothing, Array<ChatColor>> { ChatColor.values() }
+            "getColors" to Supplier { ChatColor.values() },
+            "delay" to LongFunction<Any?> { Thread.sleep(it) },
+            "npc" to NPCUtils(Language.LangGetter(lang),player)
         )
+
+    override fun equals(other: Any?): Boolean =
+        other is PublicHeaders
+                && (other.lang == this.lang
+                    && ((this.player == null) || (this.player.uuid == other.player?.uuid)))
+    override fun hashCode(): Int {
+        return lang.hashCode()*31 + (player?.uuid?.hashCode() ?: 0)
+    }
 }

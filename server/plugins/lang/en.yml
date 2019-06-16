@@ -433,6 +433,7 @@ scripting:
     log: 'Failed to save log file.'
     executionOutOfBound: 'You can only execute loops for %s times.'
     parWhenOffline: "Parameter [%s] must be given when you're not in server."
+    scriptNotFound: "No script named %s was found."
   unnamed: 'Unnamed'
   ui:
     title: 'ServerScripts'
@@ -440,3 +441,9 @@ scripting:
     clickToExec: 'Click to execute'
     tip:
       editBook: 'Please edit the book in hand to tell what is the script. To cancel, drop the item.'
+npc:
+  error:
+    parNotFound: "Parameters must contain %s."
+    wrongClass: "Parameter %s is of a wrong type."
+    spawnTooFar: "Spawnpoint is too far. The distance to player mustn't be greater than 7 blocks."
+    parConflict: "Parameter conflict: %s."

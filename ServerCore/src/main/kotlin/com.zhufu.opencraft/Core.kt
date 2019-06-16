@@ -18,13 +18,17 @@ import com.zhufu.opencraft.chunkgenerator.VoidGenerator
 import com.zhufu.opencraft.listener.*
 import com.zhufu.opencraft.survey.SurveyManager
 import com.zhufu.opencraft.events.PlayerInventorySaveEvent
+import com.zhufu.opencraft.headers.ServerHeaders
+import com.zhufu.opencraft.headers.server_wrap.SimpleServerListPingEvent
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
+import com.zhufu.opencraft.script.AbstractScript
 import com.zhufu.opencraft.script.ServerScript
 import com.zhufu.opencraft.special_items.FlyWand
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.SpawnReason
 import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.api.trait.trait.Equipment
 import org.bukkit.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -35,19 +39,17 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.server.ServerListPingEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.util.Vector
-import org.graalvm.polyglot.Context
 import java.io.File
 import java.nio.charset.Charset
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.imageio.ImageIO
+import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.math.roundToLong
 
@@ -99,8 +101,12 @@ class Core : JavaPlugin(), Listener {
         PlayerManager.init(this)
         TradeManager.init(this)
         BuilderListener.init(this)
+        AbstractScript.threadPool = Executors.newCachedThreadPool()
         try {
             ServerScript.INSTANCE.call()
+            ServerHeaders.serverSelf.onServerBoot.forEach {
+                it.apply(null)
+            }
         } catch (e: Exception) {
             logger.warning("Failed to execute AutoExec script.")
             e.printStackTrace()
@@ -329,40 +335,37 @@ class Core : JavaPlugin(), Listener {
             val click = conf.getString("click", "none")
             val near = conf.getString("near", "none")
 
-            val r = registry.createNPC(type, name)
-            r.data().set("click", click)
-            r.data().set("near", near)
-            r.spawn(
+            val npc = registry.createNPC(type, name)
+            npc.data().set("click", click)
+            npc.data().set("near", near)
+            npc.spawn(
                 Location(world, x, y, z)
                     .setDirection(Vector(faceX, faceY, faceZ)),
                 SpawnReason.PLUGIN
             )
+            val trait = npc.getTrait(Equipment::class.java)
+
             Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
                 try {
                     if (type == EntityType.PLAYER) {
-                        val start = System.currentTimeMillis()
-                        while (!r.isSpawned) {
-                            if (System.currentTimeMillis() - start >= 5000) {
-                                throw IllegalStateException("Waited too long for NPC $name spawning.")
-                            }
+                        val player = npc.entity as Player
+                        with(trait) {
+                            if (helmet != null) set(Equipment.EquipmentSlot.HELMET, ItemStack(helmet))
+                            if (chest != null) set(Equipment.EquipmentSlot.CHESTPLATE, ItemStack(chest))
+                            if (leggings != null) set(Equipment.EquipmentSlot.LEGGINGS, ItemStack(leggings))
+                            if (boots != null) set(Equipment.EquipmentSlot.BOOTS, ItemStack(boots))
                         }
-
-                        logger.info("NPC $name has spawned.")
-                        val player = r.entity as Player
-                        if (helmet != null) player.inventory.helmet = ItemStack(helmet)
-                        if (chest != null) player.inventory.chestplate = ItemStack(chest)
-                        if (leggings != null) player.inventory.leggings = ItemStack(leggings)
-                        if (boots != null) player.inventory.boots = ItemStack(boots)
-
-                        if (leftHand != null) player.inventory.setItemInMainHand(ItemStack(leftHand))
-                        if (rightHand != null) player.inventory.setItemInMainHand(ItemStack(rightHand))
+                        with(player.inventory) {
+                            if (leftHand != null) setItemInMainHand(ItemStack(leftHand))
+                            if (rightHand != null)setItemInOffHand(ItemStack(rightHand))
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
 
-            return r
+            return npc
         } catch (e: Exception) {
             throw IllegalStateException("Unable to load ${file.nameWithoutExtension}: ${e.message}", e.cause)
         }
@@ -528,6 +531,18 @@ class Core : JavaPlugin(), Listener {
                                     true
                                 } catch (e: Exception) {
                                     sender.sendMessage(TextUtil.error("${e.javaClass.simpleName}: ${e.message}"))
+                                    e.printStackTrace()
+                                    false
+                                }
+                            }
+                            "ss" -> {
+                                sender.info("正在重载脚本")
+                                result = try {
+                                    ServerScript.reload()
+                                    ServerScript.INSTANCE.call()
+                                    true
+                                } catch (e: Exception) {
+                                    sender.error("${e.javaClass.simpleName}: ${e.message}")
                                     e.printStackTrace()
                                     false
                                 }
@@ -970,6 +985,7 @@ class Core : JavaPlugin(), Listener {
 
     @EventHandler
     fun onServerListPing(event: PaperServerListPingEvent) {
+        /*
         val logo = File(dataFolder, "logo.png")
         if (logo.exists()) {
             event.serverIcon = server.loadServerIcon(ImageIO.read(logo.inputStream()))
@@ -988,5 +1004,9 @@ class Core : JavaPlugin(), Listener {
             sb.deleteCharAt(sb.lastIndex)
         }
         event.motd = sb.toString()
+        */
+        ServerHeaders.serverSelf.onServerPing.forEach {
+            it.apply(arrayOf(SimpleServerListPingEvent(event)))
+        }
     }
 }
