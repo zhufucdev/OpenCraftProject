@@ -2,7 +2,7 @@ lang: zh
 password: '233'
 address: localhost
 isSurveyPassed: true
-gameTime: 12588000
+gameTime: 15534000
 isSurvivor: true
 surviveSpawn:
   ==: org.bukkit.Location

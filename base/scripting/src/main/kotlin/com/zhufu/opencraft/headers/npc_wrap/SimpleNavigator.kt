@@ -1,5 +1,6 @@
 package com.zhufu.opencraft.headers.npc_wrap
 
+import com.zhufu.opencraft.headers.player_wrap.SimpleEntity
 import com.zhufu.opencraft.headers.player_wrap.SimpleLocation
 import net.citizensnpcs.api.ai.Navigator
 

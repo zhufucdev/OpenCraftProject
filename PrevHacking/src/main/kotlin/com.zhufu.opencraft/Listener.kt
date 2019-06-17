@@ -24,7 +24,7 @@ object Listener: Listener {
             return
         }
         if (!event.block.type.isOre) {
-            if (player.lastBlockBroken.world == event.player.world && player.lastOrePointed != null) {
+            if (player.lastBlockBroken.world == event.player.world && player.lastOrePointed != null && player.lastOrePointed!!.world == player.lastBlockBroken.world) {
                 val closer = player.lastBlockBroken.distance(player.lastOrePointed!!) > event.block.location.distance(player.lastOrePointed!!) && event.block.location.distance(player.lastOrePointed!!) <= 5
                 val distance = abs(player.lastBlockBroken.y - event.block.location.y) >= 2
                 if (distance) {

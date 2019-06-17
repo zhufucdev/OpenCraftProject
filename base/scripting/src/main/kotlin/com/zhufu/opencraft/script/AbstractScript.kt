@@ -26,6 +26,7 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
     protected abstract val language: String
     var srcFile: File? = null
     var src = ""
+    val schedule = ExecutionSchedule()
 
     protected fun beforeRun(out: OutputStream? = null) {
         val output = out ?: System.out
@@ -44,6 +45,7 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
     }
 
     protected fun printException(src: String, e: Exception, out: OutputStream = System.out) {
+        e.printStackTrace()
         fun append(src: String) = out.write((if (out is PlayerStream) src.toErrorMessage() else src).toByteArray())
         val exception = if (e is PolyglotException) e else if (e.cause is PolyglotException) e.cause else e
         try {
@@ -86,7 +88,6 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
                         }
                     else
                         e.printStackTrace(PrintWriter(sw))
-                    e.printStackTrace()
                     out.write(sw.toString().toByteArray())
                 }
             } else {
@@ -97,6 +98,16 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
             e.printStackTrace(PrintWriter(out))
         }
         out.flush()
+    }
+
+    override fun equals(other: Any?): Boolean = other is AbstractScript && other.name == name && other.src == src
+    override fun hashCode(): Int {
+        var result = executor.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + language.hashCode()
+        result = 31 * result + (srcFile?.hashCode() ?: 0)
+        result = 31 * result + src.hashCode()
+        return result
     }
 
     companion object {

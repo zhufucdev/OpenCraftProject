@@ -1,17 +1,17 @@
 gameMode: CREATIVE
-health: 20.0
-foodLevel: 20
+health: 10.175994873046875
+foodLevel: 14
 walkSpeed: 0.2
 flySpeed: 0.1
-exp: 0
+exp: 10
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: 4521.150428462209
-  y: 75.0
-  z: 1077.1707951212582
-  pitch: 24.992695
-  yaw: 88.9564
+  x: 4487.556037815366
+  y: 91.5324107823337
+  z: 763.6519767533528
+  pitch: 89.33717
+  yaw: -267.3164
 potion: {}
 inventory:
   '57':
@@ -33,4 +33,30 @@ inventory:
   '0':
     ==: org.bukkit.inventory.ItemStack
     v: 1963
-    type: FOX_SPAWN_EGG
+    type: HUSK_SPAWN_EGG
+    amount: 64
+  '1':
+    ==: org.bukkit.inventory.ItemStack
+    v: 1963
+    type: DIAMOND_AXE
+  '2':
+    ==: org.bukkit.inventory.ItemStack
+    v: 1963
+    type: ROTTEN_FLESH
+    amount: 2
+  '4':
+    ==: org.bukkit.inventory.ItemStack
+    v: 1963
+    type: WRITABLE_BOOK
+    meta:
+      ==: ItemMeta
+      meta-type: BOOK
+      display-name: §e§l新建脚本
+      pages:
+      - |-
+        let husks = §0self.getLocation().getEntitiesNearby('crafthusk',10);for(let§0 i = 0;i < 10; i++){§0
+        §0npc.create({§0
+        §0  name:'tester',§0
+        §0  spawnpoint: §0self.getLocation()§0,§0
+        §0  attack:()=>{return husks[§0Math.floor(Math.random()*10-(10-husks.size))]}§0
+        §0})}

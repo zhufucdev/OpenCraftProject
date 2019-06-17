@@ -447,3 +447,4 @@ npc:
     wrongClass: "Parameter %s is of a wrong type."
     spawnTooFar: "Spawnpoint is too far. The distance to player mustn't be greater than 7 blocks."
     parConflict: "Parameter conflict: %s."
+    returnWrongType: "%s's return is of a wrong type."

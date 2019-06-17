@@ -470,3 +470,4 @@ npc:
     wrongClass: '参数%s 类型错误'
     spawnTooFar: '出生点距离太远。离玩家不应超过7个方块'
     parConflit: '参数冲突: %s'
+    returnWrongType: '%s的返回值类型错误'

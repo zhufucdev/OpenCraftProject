@@ -49,7 +49,7 @@ class ServerScript private constructor() : AbstractScript() {
      */
     override fun call(): Value? {
         with(context.getBindings("js")) {
-            PublicHeaders(language).members.forEach {
+            PublicHeaders(language,this@ServerScript).members.forEach {
                 putMember(it.first, it.second)
             }
         }

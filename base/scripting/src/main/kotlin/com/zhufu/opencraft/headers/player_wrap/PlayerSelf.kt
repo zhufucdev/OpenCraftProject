@@ -2,7 +2,6 @@ package com.zhufu.opencraft.headers.player_wrap
 
 import com.google.common.cache.CacheBuilder
 import com.zhufu.opencraft.*
-import com.zhufu.opencraft.headers.npc_wrap.SimpleEntity
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent
@@ -111,4 +110,9 @@ class PlayerSelf private constructor(private val serverInfo: ServerPlayer, priva
             throw IllegalAccessError(getter["command.error.permission"])
         }
     val maxLoopExecution get() = serverInfo.maxLoopExecution
+
+    override fun toString(): String = "${this::class.simpleName}{name=$name}"
+    fun lookingAt() = ease {
+        getTargetBlock(7)?.location.let { if (it != null) SimpleLocation.from(it) else null }
+    }
 }

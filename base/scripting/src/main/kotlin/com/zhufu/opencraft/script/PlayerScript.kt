@@ -76,7 +76,7 @@ class PlayerScript : AbstractScript {
     override fun call(): Value? {
         beforeRun(out)
         with(context.getBindings("js")) {
-            PublicHeaders(language,player).members.forEach {
+            PublicHeaders(language,this@PlayerScript,player).members.forEach {
                 putMember(it.first, it.second)
             }
         }
@@ -95,9 +95,11 @@ class PlayerScript : AbstractScript {
         val result = try {
             checkRunnability()
             threadPool.submit<Value> {
-                context.eval(
+                val r = context.eval(
                     "js",
                     rewriteSrc().also { Bukkit.getLogger().info("${player.name}'s actual execution: $it") })
+                schedule.runAll()
+                r
             }.get()//Scripting.timeOut, TimeUnit.MILLISECONDS]
         } catch (e: Exception) {
             printException(src, e, out)

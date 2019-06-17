@@ -4,17 +4,17 @@ import com.zhufu.opencraft.Info
 import com.zhufu.opencraft.Language
 import com.zhufu.opencraft.ServerPlayer
 import com.zhufu.opencraft.headers.player_wrap.SimpleLocation
+import com.zhufu.opencraft.script.AbstractScript
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.util.*
 import java.util.function.Function
 
 @Suppress("unused")
-class NPCUtils(private val getter: Language.LangGetter, private val player: ServerPlayer? = null) {
+class NPCUtils(private val getter: Language.LangGetter, private val script: AbstractScript, private val player: ServerPlayer? = null) {
     private fun <T> validate(name: String, clazz: Class<T>, map: AbstractMap<*, *>) {
         val realName = if (name.contains('/')) name.substringAfterLast('/') else name
         validate(name, map)
-        Bukkit.getLogger().info("it is ${map[realName]!!::class.java.name}, clazz = ${clazz.name}")
         if (!map[realName]!!.javaClass.let {
                 it.isAssignableFrom(clazz)
                         || it == clazz
@@ -65,12 +65,17 @@ class NPCUtils(private val getter: Language.LangGetter, private val player: Serv
             val onSpawn: Function<Any?, Any?>? = if (map["onSpawn"] is Function<*, *>) {
                 map["onSpawn"]!! as Function<Any?, Any?>
             } else null
+            val target = map["target"]
+            val attack = map["attack"]
 
             return SimpleNPC.deserialize(
+                schedule = script.schedule,
                 getter = getter,
                 name = name,
                 spawnpoint = spawnpointLocation,
-                onSpawn = onSpawn
+                onSpawn = onSpawn,
+                target = target,
+                attack = attack
             )
         } else {
             throw IllegalArgumentException(getter["npc.error.parNotFound", "name, spawnpoint"])
