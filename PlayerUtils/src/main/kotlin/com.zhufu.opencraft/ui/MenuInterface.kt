@@ -16,7 +16,7 @@ import org.bukkit.plugin.Plugin
 import java.math.BigDecimal
 import java.math.MathContext
 
-class MenuInterface(plugin: Plugin, private val player: Player, private val isOnLobby: Boolean = false) :
+class MenuInterface(plugin: Plugin, private val player: Player) :
     ClickableInventory(plugin) {
     companion object {
         var id = 0
@@ -87,13 +87,6 @@ class MenuInterface(plugin: Plugin, private val player: Player, private val isOn
                 ItemStack(Material.BARRIER).apply {
                     itemMeta = itemMeta!!.apply {
                         setDisplayName(TextUtil.getColoredText(getter["ui.close"], RED))
-                        if (isOnLobby) {
-                            val newLore = ArrayList<String>()
-                            TextUtil.formatLore(getter["pu.tip"]).forEach {
-                                newLore.add(TextUtil.tip(it))
-                            }
-                            lore = newLore
-                        }
                     }
                 }
             )
@@ -159,7 +152,7 @@ class MenuInterface(plugin: Plugin, private val player: Player, private val isOn
                         setDisplayName(TextUtil.getColoredText(getter["ui.survival.grass.title"], GREEN))
                         var count = 0
                         val uuid = player.uniqueId.toString()
-                        BlockLockManager.forEachBlock {
+                        BlockLockManager.forEach {
                             if (it.owner == uuid)
                                 count++
                         }

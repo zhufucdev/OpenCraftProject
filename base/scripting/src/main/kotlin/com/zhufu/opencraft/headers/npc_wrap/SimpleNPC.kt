@@ -10,7 +10,6 @@ import net.citizensnpcs.api.npc.NPC
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
-import java.util.function.Consumer
 import java.util.function.Function
 
 @Suppress("unused")
@@ -23,13 +22,14 @@ class SimpleNPC(val name: String, val spawnpoint: Location) {
     val entity: Entity? get() = wrap.entity
 
     companion object {
-        fun deserialize(
+        fun create(
             schedule: ExecutionSchedule,
             getter: Language.LangGetter,
             name: String,
             spawnpoint: Location,
             onSpawn: Function<Any?,Any?>? = null,
             navigator: Function<Any?,Any?>? = null,
+            behavior: BehaviorCollection? = null,
             target: Any? = null,
             attack: Any? = null
         ): SimpleNPC {
@@ -43,31 +43,40 @@ class SimpleNPC(val name: String, val spawnpoint: Location) {
                     wrap.addTrait(SimpleTrait(onSpawn,schedule,npc))
                     simpleNavigator = SimpleNavigator(wrap.navigator)
                     schedule.task {
-                        navigator?.apply(simpleNavigator)
+                        navigator?.apply(arrayOf(simpleNavigator))
                     }
 
                     if (attack != null && target != null){
                         schedule.task { throw IllegalArgumentException(getter["npc.error.parConflict","attack, target"]) }
                     }
-                    if (attack == null) {
-                        if (target != null)
-                            when (target) {
-                                is SimpleLocation -> simpleNavigator.setTarget(target)
-                                is SimpleEntity -> simpleNavigator.setTarget(target)
-                                else -> schedule.task { throw IllegalArgumentException(getter["npc.error.wrongClass","navigator"]) }
-                            }
-                    } else {
-                        when (attack){
-                            is SimpleEntity -> simpleNavigator.attack(attack)
-                            is Function<*, *> -> schedule.task {
-                                val r = (attack as Function<Any?, Any?>).apply(arrayOf(this))
-                                if (r is SimpleEntity){
-                                    simpleNavigator.attack(r)
-                                } else {
-                                    throw IllegalStateException(getter["npc.error.returnWrongType","attack/[lambda]"])
+                    if (behavior == null) {
+                        if (attack == null) {
+                            if (target != null)
+                                when (target) {
+                                    is SimpleLocation -> simpleNavigator.setTarget(target)
+                                    is SimpleEntity -> simpleNavigator.setTarget(target)
+                                    else -> schedule.task { throw IllegalArgumentException(getter["npc.error.wrongClass", "navigator"]) }
                                 }
+                        } else {
+                            when (attack) {
+                                is SimpleEntity -> simpleNavigator.attack(attack)
+                                is Function<*, *> -> schedule.task {
+                                    val r = (attack as Function<Any?, Any?>).apply(arrayOf(this))
+                                    if (r is SimpleEntity) {
+                                        simpleNavigator.attack(r)
+                                    } else {
+                                        throw IllegalStateException(getter["npc.error.returnWrongType", "attack/[lambda]"])
+                                    }
+                                }
+                                else -> schedule.task { throw IllegalArgumentException(getter["npc.error.wrongClass", "attack"]) }
                             }
-                            else -> schedule.task { throw IllegalArgumentException(getter["npc.error.wrongClass","attack"]) }
+                        }
+                    } else {
+                        if (attack == null && target == null){
+                            behavior.npc = this
+
+                        } else schedule.task {
+                            throw IllegalArgumentException(getter["npc.error.parConflict","behavior to (attack,target)"])
                         }
                     }
 
@@ -80,5 +89,7 @@ class SimpleNPC(val name: String, val spawnpoint: Location) {
             }
             return npc
         }
+
+        fun recover(sn: SimpleNPC) = sn.wrap
     }
 }

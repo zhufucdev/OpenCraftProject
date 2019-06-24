@@ -18,6 +18,8 @@
       <module name="OpenCraft.PlayerManager.test" target="1.8" />
       <module name="OpenCraft.webBase.main" target="1.8" />
       <module name="OpenCraft.webBase.test" target="1.8" />
+      <module name="OpenCraft.WebInterface.main" target="1.8" />
+      <module name="OpenCraft.WebInterface.test" target="1.8" />
       <module name="OpenCraftGradle.item1.main" target="1.8" />
       <module name="OpenCraftGradle.item1.test" target="1.8" />
     </bytecodeTargetLevel>

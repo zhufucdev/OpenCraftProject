@@ -8,6 +8,8 @@
   msg: HelloThere
   read: false
   type: Public
+  extra:
+    zhufucomcom: R
 '3':
   msg: $green${welcome.1.title}
   read: false

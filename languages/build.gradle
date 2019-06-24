@@ -1,11 +1,8 @@
 group 'com.zhufu.opencraft'
 
 def langRoot = rootDir.path + '/server/plugins/lang'
-delete(langRoot)
-file(projectDir.path + '/src').listFiles().each { f ->
-    println 'Copy ' + f.name
-    copy {
-        from f.path
-        into langRoot
-    }
+copy {
+    from projectDir.path + '/src'
+    into langRoot
+    include '*.yml'
 }

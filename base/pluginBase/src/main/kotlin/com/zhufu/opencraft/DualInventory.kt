@@ -17,7 +17,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
     private val files: List<File>
         get() = parent.inventoriesFile
             .also { if (!it.exists()) it.mkdirs() }
-            .listFiles().filter { it.isFile }
+            .listFiles()!!.filter { it.isFile }
     private val mList = ArrayList<InventoryInfo>()
 
     fun delete() {
@@ -142,7 +142,8 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
 
             if (name == RESET || name == NOTHING) return
 
-            Bukkit.getLogger().info("Saving inventory named $name for player ${player.name}${if (inventoryOnly) "[InventoryOnly]" else ""}")
+            Bukkit.getLogger()
+                .info("Saving inventory named $name for player ${player.name}${if (inventoryOnly) "[InventoryOnly]" else ""}")
             player.inventory.forEachIndexed { index, itemStack ->
                 val path = "inventory.$index"
                 config.set(path, null)
@@ -203,9 +204,14 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
                 return
             else if (name == RESET) {
                 if (!inventoryOnly) {
-                    player.teleport(Base.lobby.spawnLocation)
+                    ServerCaller["SolvePlayerLobby"]!!(
+                        listOf(
+                            player.info()
+                                ?: throw IllegalStateException("Could not found ${player.name}'s info to rest.")
+                        )
+                    )
                     resetPlayer(player)
-                    player.gameMode = GameMode.SURVIVAL
+                    player.gameMode = GameMode.CREATIVE
                 } else {
                     player.inventory.clear()
                 }
@@ -330,7 +336,8 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             }
             return false
         }
-        fun setItem(index: Int, item: ItemStack?) = config.set("inventory.$index",item)
+
+        fun setItem(index: Int, item: ItemStack?) = config.set("inventory.$index", item)
 
         fun any(l: (ConfigurationSection) -> Boolean): Boolean =
             config.getConfigurationSection("inventory")
@@ -340,16 +347,18 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
                     l(section ?: return@any false)
                 }
                 ?: false
+
         fun items(): List<ItemStack?> {
             val result = arrayListOf<ItemStack?>()
             val config = config.getConfigurationSection("inventory") ?: YamlConfiguration()
-            (0 .. 35).forEach {
+            (0..35).forEach {
                 config.getItemStack(it.toString()).apply {
                     result.add(this?.clone())
                 }
             }
             return result
         }
+
         override fun equals(other: Any?): Boolean {
             return other is InventoryInfo
                     && other.name == this.name

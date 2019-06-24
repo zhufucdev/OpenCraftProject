@@ -59,19 +59,6 @@ object Everything : Listener {
         }
     }
 
-    @EventHandler
-    fun playerOnLobby(event: PlayerTeleportedEvent) {
-        if (event.to.world == Base.lobby) {
-            val getter = getLangGetter(event.player.info())
-            ItemStack(Material.COMPASS).apply {
-                itemMeta = itemMeta!!.apply {
-                    setDisplayName(TextUtil.info(getter["pu.compass"]))
-                }
-                event.player.inventory.setItem(0, this)
-            }
-        }
-    }
-
     class Cube(val from: Location, val to: Location) {
         var type = "DTWB"
         val data = YamlConfiguration()
@@ -325,14 +312,6 @@ object Everything : Listener {
             }
         }
 
-        fun compass() {
-            val player = event.player
-            if (player.location.world != Base.lobby)
-                return
-            if (player.inventory.itemInMainHand.type == Material.COMPASS) {
-                MenuInterface(mPlugin!!, player, true).show(player)
-            }
-        }
         if (event.action == Action.LEFT_CLICK_BLOCK) {
             val game = index(event.clickedBlock!!.location)
             if (game?.type == "DTWB") {
@@ -343,11 +322,9 @@ object Everything : Listener {
                 }
             } else {
                 plus()
-                compass()
             }
         } else if (event.action == Action.LEFT_CLICK_AIR || event.action == Action.LEFT_CLICK_BLOCK) {
             plus()
-            compass()
         } else if (event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK) {
             val player = event.player
             val value = clickMap[player]

@@ -22,7 +22,7 @@ class PlayerScript : AbstractScript {
         fun list(player: ServerPlayer): ArrayList<PlayerScript> =
             cache[player.uuid ?: throw IllegalArgumentException("Parameter [player.uuid] must not be null."), {
                 val r = arrayListOf<PlayerScript>()
-                player.scriptDir.listFiles().forEach {
+                player.scriptDir.listFiles()!!.forEach {
                     r.add(
                         PlayerScript(
                             player = player,
@@ -228,6 +228,11 @@ class PlayerScript : AbstractScript {
                                     insert(i, '}')
                                     insert(startIndex, "{$item")
                                 }
+                                return i
+                            }
+                            ',' -> {
+                                insert(i,'}')
+                                insert(startIndex,"{$item")
                                 return i
                             }
                         }

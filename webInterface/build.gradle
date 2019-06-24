@@ -1,0 +1,5 @@
+group 'com.zhufu.opencraft'
+copy {
+    from projectDir.path + '/src/web'
+    into rootDir.path + '/server/plugins/CraftWeb/web'
+}

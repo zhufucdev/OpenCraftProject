@@ -138,12 +138,12 @@ command:
     tooFewArgs: "Too few arguments(%s needed)."
     noSucnItem: 'No such item: %s.'
   done: "Done."
+  unnamed: "Unnamed"
   
 pu:
   error:
     unselected: "You haven't selected any items that can be renamed."
   compass: "Player Utils"
-  tip: "Tips: To open this interface, except using the compass on lobby, you can left click for 4 times and right click once when surviving."
 skinny:
   error:
     emptyTarget: "Target player ID mustn't be empty."
@@ -172,6 +172,7 @@ ui:
     accessible: "%s can access"
     located: "located at %s"
     click: "Click to view and manage."
+    new: "Pay for blocks"
     group:
       noChild: "No child chunk."
       children: "Children chunk includes %s"
@@ -259,7 +260,10 @@ ui:
         click: 'Click to edit this script.'
       rename:
         tip: "Use /pu rename <new name> to give the script a name."
-
+  visitor:
+    title: 'Lobby Visitor'
+    located: 'lobby in order of %s'
+    back: 'Go back to own lobby.'
 
 trade:
   tutorial:
@@ -313,7 +317,7 @@ block:
   delete: "Successfully deleted the %2 %1."
   deleted: "%s1 has deleted your own %3 %2"
   size: "The block contains %s blocks with %s coins needed, but you have %s."
-  success: "Successfully set the owner of %s%s to %s"
+  success: "Successfully set the owner of %s %s to %s"
   cancel: "Territory trade cancelled."
   statics:
     empty: "Record is empty."
@@ -346,8 +350,10 @@ block:
     duplicated: "Block duplicated: %s"
     playerNotFound: "Player not found: %s"
     name: "Block named %s already exists."
-    inaccessible: "You don't have the access permissions."
+    inaccessible: "You don't have the permissions to access."
+    selectNothing: "You have selected nothing. Right click a container block to select."
   tip:
+    new: "Right click on a container block to select or unselect. Left click to give up the trade. Type /bl in chat to pay for what you've selected."
     accessible: "accessible"
     inaccessible: "inaccessible"
     enter: "You are entering the %2 %1 (%3)."
@@ -448,3 +454,14 @@ npc:
     spawnTooFar: "Spawnpoint is too far. The distance to player mustn't be greater than 7 blocks."
     parConflict: "Parameter conflict: %s."
     returnWrongType: "%s's return is of a wrong type."
+lobby:
+  warn:
+    noSpawnpoint: "%s's lobby doesn't have a spawn point. Teleporting to the default location..."
+  error:
+    buildNotPermitted: 'You are not permitted to place block here.'
+    breakNotPermitted: 'You are not permitted to break the block.'
+  spawnpointSet: "Spawn point is set here. Then visitors will enter from this position."
+  speeches:
+    1: "You have woken up."
+    2: "<%s> Oh, my lovely home!"
+    3: "Tip: Go downstairs to look for a computer. Then click on the button nearby to play multiplayer mode."

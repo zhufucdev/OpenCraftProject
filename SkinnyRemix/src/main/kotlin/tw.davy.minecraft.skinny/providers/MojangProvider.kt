@@ -98,7 +98,11 @@ class MojangProvider : LegacyProvider() {
 
     private fun getUUID(name: String): String? {
         val data = readUrl("https://api.mojang.com/users/profiles/minecraft/$name")
-        val json = JsonParser().parse(data)?.asJsonObject
+        val json = try {
+            JsonParser().parse(data).asJsonObject
+        } catch (e: Exception) {
+            null
+        }
 
         if (json == null || data.contains("\"error\""))
             return null

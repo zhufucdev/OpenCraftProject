@@ -22,6 +22,7 @@
             <option value="$PROJECT_DIR$/SkinnyRemix" />
             <option value="$PROJECT_DIR$/TenMinSur" />
             <option value="$PROJECT_DIR$/UserManager" />
+            <option value="$PROJECT_DIR$/WorldGenerator" />
             <option value="$PROJECT_DIR$/WorldTeleporter" />
             <option value="$PROJECT_DIR$/base/ItemManager" />
             <option value="$PROJECT_DIR$/base/blockManagment" />
@@ -34,6 +35,7 @@
             <option value="$PROJECT_DIR$/base/tradeBase" />
             <option value="$PROJECT_DIR$/base/utils" />
             <option value="$PROJECT_DIR$/languages" />
+            <option value="$PROJECT_DIR$/webInterface" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

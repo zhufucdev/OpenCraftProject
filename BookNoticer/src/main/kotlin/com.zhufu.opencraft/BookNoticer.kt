@@ -38,9 +38,12 @@ class BookNoticer : JavaPlugin(), Listener {
                     return
                 }
             }
-        Bukkit.getScheduler().runTaskAsynchronously(this, Runnable {
-            getBook(event.player).show(event.player, true)
-        })
+        Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
+            event.player.info()?.apply {
+                messagePool.sendUnreadTo(this)
+                Base.publicMsgPool.sendUnreadTo(this)
+            }
+        }
     }
 
     @EventHandler
@@ -48,11 +51,7 @@ class BookNoticer : JavaPlugin(), Listener {
         if (event.to.world != lobby)
             return
         Bukkit.getScheduler().runTaskAsynchronously(this, Runnable {
-            getBook(event.player).show(event.player)
-            event.player.info()?.apply {
-                messagePool.sendUnreadTo(this)
-                Base.publicMsgPool.sendUnreadTo(this)
-            }
+            getBook(event.player).show(event.player,true)
         })
     }
 

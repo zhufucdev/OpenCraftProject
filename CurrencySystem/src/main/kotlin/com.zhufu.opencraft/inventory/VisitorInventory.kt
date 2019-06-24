@@ -23,7 +23,7 @@ class VisitorInventory(plugin: Plugin,val player: Player)
                 if (it.getSeller() == "server")
                     return@forEach
                 val player = Bukkit.getOfflinePlayer(UUID.fromString(it.getSeller()))
-                if (player != null && player.name != null) {
+                if (player.name != null) {
                     val element = tradeMap.firstOrNull { t -> t.first().getSeller() == player.uniqueId.toString() }
                     if (element != null){
                         element.add(it)
@@ -64,13 +64,13 @@ class VisitorInventory(plugin: Plugin,val player: Player)
         show(player)
         this.setOnItemClickListener { index, item ->
             val t = CurrencySystem.territoryMap.firstOrNull {
-                it.player.toString() == (adapter as VisitorAdapter).tradeMap[index].first().getSeller()
+                it.player.toString() == adapter.tradeMap[index].first().getSeller()
             }
             if (t == null){
                 player.sendMessage(TextUtil.error("抱歉，但我们无法找到该玩家的领地"))
                 return@setOnItemClickListener
             }
-            player.teleport(t.toBlockLocker().center.toLocation(tradeWorld,TradeWorldGenerator.base+2.0))
+            player.teleport(t.center)
         }
     }
 }

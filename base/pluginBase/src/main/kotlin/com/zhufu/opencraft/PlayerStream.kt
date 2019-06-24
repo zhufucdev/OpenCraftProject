@@ -7,7 +7,7 @@ import java.io.File
 import java.io.OutputStream
 import java.nio.charset.Charset
 
-abstract class PlayerStream() : OutputStream() {
+abstract class PlayerStream : OutputStream() {
     var bf = ArrayList<Byte>()
 
     override fun write(b: Int) {

@@ -4,6 +4,7 @@ import com.zhufu.opencraft.script.PlayerScript
 import com.zhufu.opencraft.special_items.FlyWand
 import com.zhufu.opencraft.special_items.Portal
 import com.zhufu.opencraft.special_items.SpecialItem
+import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -22,6 +23,12 @@ class PlayerUtil : JavaPlugin() {
     override fun onEnable() {
         Everything.init(this)
         PortalHandler.init(this)
+
+        ServerCaller["SolveLobbyVisitor"] = {
+            val info = (it.firstOrNull()
+                ?: throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
+            LobbyVisitor(this,info).show(info.player)
+        }
     }
 
     override fun onDisable() {
@@ -179,13 +186,13 @@ class PlayerUtil : JavaPlugin() {
                             sender.error(getter["command.error.unknown"])
                             return@runTaskAsynchronously
                         }
-                        with(PlayerScript(info,name = "Console")){
+                        with(PlayerScript(info, name = "Console")) {
                             this.src = src
                             call()
 
-                            Bukkit.getScheduler().runTaskLater(this@PlayerUtil,{ _ ->
+                            Bukkit.getScheduler().runTaskLater(this@PlayerUtil, { _ ->
                                 close()
-                            },100)
+                            }, 100)
                         }
                     }
                 }

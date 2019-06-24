@@ -199,7 +199,7 @@ class SimpleHandler(private val root: File, private val conf: FileConfiguration)
                                     if (doAll || check.contains("time"))
                                         addProperty("time", find.gameTime)
                                     if (doAll || check.contains("nickname"))
-                                        addProperty("nickname", find.nickname)
+                                        addProperty("nickname", find.nickname ?: find.name)
                                     if (doAll || check.contains("coin"))
                                         addProperty("coin", find.currency)
                                     if (doAll || check.contains("lang"))
@@ -229,12 +229,12 @@ class SimpleHandler(private val root: File, private val conf: FileConfiguration)
                                         find.messagePool.forEach {
                                             messages.add(
                                                 JsonObject().apply {
-                                                    addProperty("id",it.id)
-                                                    addProperty("text",it.text)
-                                                    addProperty("read",it.read)
-                                                    addProperty("type",it.type.name.toLowerCase())
-                                                    if (it.type == MessagePool.Type.Friend && it.extra != null){
-                                                        addProperty("sender",it.extra!!.getString("sender"))
+                                                    addProperty("id", it.id)
+                                                    addProperty("text", it.text)
+                                                    addProperty("read", it.read)
+                                                    addProperty("type", it.type.name.toLowerCase())
+                                                    if (it.type == MessagePool.Type.Friend && it.extra != null) {
+                                                        addProperty("sender", it.extra!!.getString("sender"))
                                                     }
                                                 }
                                             )
@@ -242,15 +242,15 @@ class SimpleHandler(private val root: File, private val conf: FileConfiguration)
                                         Base.publicMsgPool.forEach {
                                             messages.add(
                                                 JsonObject().apply {
-                                                    addProperty("id",it.id)
-                                                    addProperty("text",it.text)
+                                                    addProperty("id", it.id)
+                                                    addProperty("text", it.text)
                                                     if (find.name != null)
-                                                        addProperty("read",it.extra?.contains(find.name!!) == true)
-                                                    addProperty("type","public")
+                                                        addProperty("read", it.extra?.contains(find.name!!) == true)
+                                                    addProperty("type", "public")
                                                 }
                                             )
                                         }
-                                        add("messages",messages)
+                                        add("messages", messages)
                                     }
                                 } catch (e: Exception) {
                                     e.printStackTrace()
@@ -319,17 +319,17 @@ class SimpleHandler(private val root: File, private val conf: FileConfiguration)
                                     }
                                     "read" -> {
                                         val what = url.queryParameter("what")
-                                        if (what != null){
-                                            val index = if (what.startsWith('p')){
+                                        if (what != null) {
+                                            val index = if (what.startsWith('p')) {
                                                 what.removePrefix("p").toIntOrNull() to true
                                             } else {
                                                 what.toIntOrNull() to false
                                             }
-                                            if (index.first == null){
-                                                addProperty("r",-1)
+                                            if (index.first == null) {
+                                                addProperty("r", -1)
                                             } else {
-                                                val r = if (index.second){
-                                                    Base.publicMsgPool.markAsRead(index.first!!,info)
+                                                val r = if (index.second) {
+                                                    Base.publicMsgPool.markAsRead(index.first!!, info)
                                                 } else {
                                                     info.messagePool.markAsRead(index.first!!)
                                                 }
@@ -339,17 +339,17 @@ class SimpleHandler(private val root: File, private val conf: FileConfiguration)
                                     }
                                     "unread" -> {
                                         val what = url.queryParameter("what")
-                                        if (what != null){
-                                            val index = if (what.startsWith('p')){
+                                        if (what != null) {
+                                            val index = if (what.startsWith('p')) {
                                                 what.removePrefix("p").toIntOrNull() to true
                                             } else {
                                                 what.toIntOrNull() to false
                                             }
-                                            if (index.first == null){
-                                                addProperty("r",503)
+                                            if (index.first == null) {
+                                                addProperty("r", 503)
                                             } else {
-                                                val r = if (index.second){
-                                                    Base.publicMsgPool.markAsUnread(index.first!!,info)
+                                                val r = if (index.second) {
+                                                    Base.publicMsgPool.markAsUnread(index.first!!, info)
                                                 } else {
                                                     info.messagePool.markAsUnread(index.first!!)
 
@@ -374,10 +374,10 @@ class SimpleHandler(private val root: File, private val conf: FileConfiguration)
             }
             require == "lang" -> {
                 val get = url.queryParameter("get")
-                if (get != null){
+                if (get != null) {
                     val find = users[e.remoteAddress.address]
-                    if (find != null){
-                        Language[find.userLanguage,get]
+                    if (find != null) {
+                        Language[find.userLanguage, get]
                     } else {
                         Language.getDefault(get)
                     }.toByteArray()

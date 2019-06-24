@@ -12,7 +12,7 @@ import javax.security.auth.Destroyable
 open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(createNew, uuid), Destroyable {
     companion object {
         fun forEach(l: (OfflineInfo) -> Unit) =
-            Paths.get("plugins", "tag").toFile().also { if (!it.exists()) it.mkdirs() }.listFiles().forEach {
+            Paths.get("plugins", "tag").toFile().also { if (!it.exists()) it.mkdirs() }.listFiles()?.forEach {
                 if (!it.isHidden && !it.isDirectory)
                     l(OfflineInfo(UUID.fromString(it.nameWithoutExtension)))
             }
@@ -41,15 +41,16 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
     }
 
     override val tagFile: File
-        get() = File(
-            File("plugins${File.separatorChar}tag")
+        get() =
+            File(
+                Paths.get("plugins","tag").toFile()
                 .also { if (!it.exists()) it.mkdirs() }, "$uuid.yml"
         ).also { register ->
             if (!register.exists()) {
-                val preregister = File(
-                    register.parentFile,
-                    "preregister${File.separatorChar}${offlinePlayer.name}.yml"
-                )
+                val preregister =
+                    Paths.get(
+                        register.parent,"preregister","${offlinePlayer.name}.yml"
+                    ).toFile()
                 if (preregister.exists()) {
                     preregister.apply {
                         renameTo(register)
@@ -106,12 +107,6 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
         private set
 
     init {
-        try {
-            tag.set("name", offlinePlayer.name)
-        } catch (e: Exception) {
-
-        }
-
         val checkpoints = tag.getConfigurationSection("checkpoints")
         checkpoints?.getKeys(false)?.forEach {
             try {
@@ -132,4 +127,6 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
         inventoriesFile.delete()
         destroy()
     }
+
+
 }

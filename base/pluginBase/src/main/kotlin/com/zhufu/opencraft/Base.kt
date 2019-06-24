@@ -37,6 +37,41 @@ object Base {
         val r = Random().nextInt(10*n)-1
         return r in 0 until (p*10*n).toInt()
     }
+    fun getUniquePair(order: Int): Pair<Int, Int>{
+        var first = true
+        var turning = 1
+        var x = 0
+        var z = 0
+        var dir = 0
+        /**
+         * 0 => UP
+         * 1 => LEFT
+         * 2 => DOWN
+         * 3 => RIGHT
+         */
+        var direction = 0
+        for (i in 0 until order) {
+            when (direction) {
+                0 -> z++
+                1 -> x--
+                2 -> z--
+                3 -> x++
+            }
+            dir++
+            if (dir >= turning) {
+                direction++
+                if (direction > 3)
+                    direction = 0
+                first = if (!first) {
+                    turning++
+                    true
+                } else
+                    false
+                dir = 0
+            }
+        }
+        return x to z
+    }
     val msgPoolFile get() = Paths.get("plugins","ServerCore","publicMsg.yml").toFile()!!
     val publicMsgPool = MessagePool.public(msgPoolFile)
 

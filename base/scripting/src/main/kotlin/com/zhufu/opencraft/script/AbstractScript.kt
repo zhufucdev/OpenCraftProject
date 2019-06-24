@@ -33,9 +33,9 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
         val getter = if (out is PlayerStream) out.lang else Language.LangGetter(Language.defaultLangCode)
         with(output) {
             fun write(src: String) = write(src.toByteArray())
-            write(getter["scripting.toRun.1"].toInfoMessage() + System.lineSeparator())
-            write(getter["scripting.toRun.2", Scripting.version, executor.name, name].toInfoMessage() + System.lineSeparator())
-            write(getter["scripting.toRun.3"] + System.lineSeparator())
+            write(getter["scripting.toRun.1"].toInfoMessage() + '\n')
+            write(getter["scripting.toRun.2", Scripting.version, executor.name, name].toInfoMessage() + '\n')
+            write(getter["scripting.toRun.3"] + '\n')
             flush()
         }
     }

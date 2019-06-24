@@ -109,6 +109,7 @@ player:
     badNet: '%s正在登陆，然而由于网络问题，这可能需要几秒钟'
   error:
     unknown: "抱歉，但我们无法确定你是谁。您的游戏出现问题，请联系服务器管理员。Sorry, but we can't make sure that who you are. Your game seemed to go wrong, please contact the server operator."
+    unknownBy: "您的服务器信息未找到，但%s1需要该信息。很抱歉对您的游戏造成不便，请联系服务器管理员。Your info in server was not found, but was needed by %s1. Sorry for troubling your game. Please contact the server operator,"
 
 command:
   error:
@@ -123,6 +124,7 @@ command:
     tooFewArgs: '缺少参数(需要%s个)'
     noSuchItem: '没有这样的物品: %s'
   done: '完成'
+  unnamed: '未命名'
 
 server:
   saveInventory: '成功保存了您的物品栏'
@@ -175,7 +177,6 @@ pu:
   error:
     unselected: '您未选中任何可重命名的项目'
   compass: '玩家实用工具'
-  tip: '提示: 除了在主城使用指南针，您还可在生存时通过左键4次再右键1次的方法打开此界面'
 skinny:
   error:
     emptyTarget: '目标玩家不能为空'
@@ -195,7 +196,7 @@ ui:
   close: '关闭'
   back: '返回'
   puTitle: '玩家实用工具'
-  blockTitle: '区块实用工具'
+  blockTitle: '方块实用工具'
   clickToDelete: '点击以删除'
   clickToRename: '点击以重命名'
   renamed: '已将%s重命名为%s.'
@@ -204,30 +205,31 @@ ui:
     accessible: '%s可访问'
     located: '位于%s'
     click: '点击查看和管理'
+    new: '购买方块所有权'
     group:
-      noChild: '无子区块'
-      children: '子区块包括%s'
+      noChild: '无子方块'
+      children: '子方块包括%s'
       new: '新建组'
     deleteAlert: '此操作无法撤销，且不会将相应的货币退回'
-    renameTip: '在聊天栏输入/bl rename <新ID> 以命名区块'
+    renameTip: '在聊天栏输入/bl rename <新ID> 以命名方块'
     selecting:
       title: '选中'
       done: '已选中%s'
       tip:
-        1: '选中该区块或区块组后，您可以执行以下操作:'
-        2: '通过/bl rename <新ID> 以命名区块'
-        3: '通过/bl set <玩家ID> 给予某玩家该区块的访问权限'
-        4: '通过/bl unset <玩家ID> 取消某玩家对区块对访问权限'
-        5: '通过/bl check 查看该区块的访问记录'
-        6: '通过/bl del 删除该区块'
+        1: '选中该方块或方块组后，您可以执行以下操作:'
+        2: '通过/bl rename <新ID> 以命名方块'
+        3: '通过/bl set <玩家ID> 给予某玩家该方块的访问权限'
+        4: '通过/bl unset <玩家ID> 取消某玩家对方块对访问权限'
+        5: '通过/bl check 查看该方块的访问记录'
+        6: '通过/bl del 删除该方块'
     ungroup: '取消成组'
     grouping:
       title: '成组'
-      subtitle: '把若干区块组合在一起，方便管理'
+      subtitle: '把若干方块组合在一起，方便管理'
       select: '点击选中'
       cancel: '点击取消选中'
-      join: '点击将选中区块加入该组'
-      done: '已将%s个区块加入%s组中'
+      join: '点击将选中方块加入该组'
+      done: '已将%s个方块加入%s组中'
   checkpoint:
     title: '记录点'
     click: '点击传送'
@@ -265,8 +267,8 @@ ui:
   survival:
     title: '生存'
     grass:
-      title: '领地'
-      subtitle: '您拥有%s块领地'
+      title: '方块所有权'
+      subtitle: '您拥有%s个方块'
       click: '点击管理'
     pearl:
       title: '记录点'
@@ -291,6 +293,10 @@ ui:
         click: '点击编辑该脚本'
       rename:
         tip: '使用/pu rename <新名称> 来为脚本命名'
+  visitor:
+    title: '主城访问器'
+    located: '主城编号 %s'
+    back: '返回自己的主城'
 
 welcome:
   1:
@@ -325,8 +331,8 @@ tutorial:
   begin: '那么，我们开始吧！'
 
 block:
-  block: '区块'
-  group: '区块组'
+  block: '方块'
+  group: '方块组'
   accessAdded: '已为%s添加访问%s的%s的访问权限'
   addedAccess: '您被给予对名为%s的%s的访问权限'
   accessCleared: '已清除%s对%s的%s的访问权限'
@@ -359,22 +365,24 @@ block:
     notExist: '%s不存在于此组中'
     done: '完成'
   error:
-    groupNotFound: '区块或组不存在'
-    notOwnBlock: '您不是区块所有者'
+    groupNotFound: '方块或组不存在'
+    notOwnBlock: '您不是方块所有者'
     inTradeWorld: '您不能在交易世界获得额外领地'
     inLobby: '您没有权限使用此命令(小伙子想法很危险啊)'
     notDigit: '%s不是数字(整数)'
     illegalKeyword: '非法的关键词: clear'
     noEnoughCoin: '您的货币数量不足'
-    duplicated: '区块重叠: %s'
+    duplicated: '方块重叠: %s'
     playerNotFound: '玩家不存在: %s'
-    name: '名为%s的区块已存在'
-    inaccessible: '您没有权限访问此区块'
+    name: '名为%s的方块已存在'
+    inaccessible: '您没有权限访问此方块'
+    selectNothing: '您尚未选中任何方块。右键一个容器方块来选中'
   tip:
+    new: '右键容器方块来选中或取消选中。左键以放弃交易。在聊天栏输入/bl 来确认购买您所选的方块。'
     accessible: '可访问'
     inaccessible: '无权访问'
     enter: '您正在进入名为%s的%s(%s)'
-    oneEnter: '%s正在进入您的%s区块'
+    oneEnter: '%s正在进入您的%s方块'
 
 book:
   empty: '您没有未阅读的通知'
@@ -471,3 +479,14 @@ npc:
     spawnTooFar: '出生点距离太远。离玩家不应超过7个方块'
     parConflit: '参数冲突: %s'
     returnWrongType: '%s的返回值类型错误'
+lobby:
+  warn:
+    noSpawnpoint: '%s的主城没有设置出生点，传送到默认位置'
+  error:
+    buildNotPermitted: '您没有权限在此放置方块'
+    breakNotPermitted: '您没有权限破坏此方块'
+  spawnpointSet: '已将该位置设置为出色点。拜访者将从此进入。'
+  speeches:
+    1: '您醒来了'
+    2: "<%s> 哦，我可爱的家！"
+    3: "提示: 下楼寻找一台电脑，点击其附近的按钮以开始多人游戏。"

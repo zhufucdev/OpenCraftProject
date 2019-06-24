@@ -63,7 +63,8 @@ fun Player.sendActionText(msg: String) {
 fun broadcast(value: String, color: TextUtil.TextColor, vararg replaceWith: String?) {
     val langMap = HashMap<String, String>()
     Bukkit.getOnlinePlayers().forEach {
-        val info = OfflineInfo.findByUUID(it.uniqueId) ?: return@forEach
+        val info = it.info() ?: return@forEach
+        if (!info.isLogin) return@forEach
         val lang = info.userLanguage
         if (!langMap.containsKey(lang)) {
             langMap[lang] = TextUtil.getColoredText(Language.got(lang, value, replaceWith), color, false, false)

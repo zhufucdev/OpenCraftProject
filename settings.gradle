@@ -9,5 +9,6 @@ rootDir.listFiles().each {
         include it.name
     }
 }
-include 'languages'
 
+include 'languages'
+include 'webInterface'

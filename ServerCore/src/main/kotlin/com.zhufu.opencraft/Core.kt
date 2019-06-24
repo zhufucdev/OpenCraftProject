@@ -18,8 +18,11 @@ import com.zhufu.opencraft.chunkgenerator.VoidGenerator
 import com.zhufu.opencraft.listener.*
 import com.zhufu.opencraft.survey.SurveyManager
 import com.zhufu.opencraft.events.PlayerInventorySaveEvent
+import com.zhufu.opencraft.events.PlayerJoinGameEvent
+import com.zhufu.opencraft.events.PlayerRegisterEvent
 import com.zhufu.opencraft.headers.ServerHeaders
 import com.zhufu.opencraft.headers.server_wrap.SimpleServerListPingEvent
+import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
 import com.zhufu.opencraft.script.AbstractScript
@@ -52,6 +55,7 @@ import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.math.roundToLong
+import kotlin.reflect.jvm.jvmName
 
 class Core : JavaPlugin(), Listener {
     companion object {
@@ -93,23 +97,36 @@ class Core : JavaPlugin(), Listener {
             registerEvents(NPCListener, self)
             registerEvents(NPCSelectListener(npc.toTypedArray()), self)
             registerEvents(SurviveListener(self), self)
-            registerEvents(PlayerObserverListener(self), self)
         }
         if (!dataFolder.exists()) dataFolder.mkdirs()
-        SurveyManager.init(File(dataFolder, "survey.json"), this)
-        GameManager.init(this)
-        PlayerManager.init(this)
-        TradeManager.init(this)
-        BuilderListener.init(this)
-        AbstractScript.threadPool = Executors.newCachedThreadPool()
         try {
-            ServerScript.INSTANCE.call()
-            ServerHeaders.serverSelf.onServerBoot.forEach {
-                it.apply(null)
+            SurveyManager.init(File(dataFolder, "survey.json"), this)
+            GameManager.init(this)
+            PlayerManager.init(this)
+            TradeManager.init(this)
+            BuilderListener.init(this)
+            PlayerObserverListener.init(this)
+            AbstractScript.threadPool = Executors.newCachedThreadPool()
+            PlayerLobbyManager.init()
+            Scripting
+            try {
+                ServerScript.INSTANCE.call()
+                ServerHeaders.serverSelf.onServerBoot.forEach {
+                    it.apply(null)
+                }
+            } catch (e: Exception) {
+                logger.warning("Failed to execute AutoExec script.")
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            logger.warning("Failed to execute AutoExec script.")
-            e.printStackTrace()
+            ServerStatics.init()
+        } catch (e: Throwable){
+            logger.warning("Error while initializing Server Core.")
+            logger.throwing(this::class.jvmName,"onEnable",e)
+        }
+
+        ServerCaller["SolvePlayerLobby"] = {
+            val info = (it.firstOrNull()?:throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
+            PlayerLobbyManager[info].also { lobby -> if (!lobby.isInitialized) lobby.initialize() }.tpThere(info.player)
         }
 
         if (!server.pluginManager.isPluginEnabled("HolographicDisplays")) {
@@ -133,12 +150,14 @@ class Core : JavaPlugin(), Listener {
             it.despawn()
             it.destroy()
         }
-        PlayerObserverListener.mInstance.onServerStop()
+        PlayerObserverListener.onServerStop()
         PlayerManager.forEachPlayer { it.saveServerID() }
         BuilderListener.onServerClose()
         PlayerStatics.cleanUp()
         Base.publicMsgPool.serialize().save(Base.msgPoolFile)
+        PlayerLobbyManager.onServerClose()
         Scripting.cleanUp()
+        ServerStatics.save()
     }
 
     private var urlLooper = 0
@@ -187,7 +206,7 @@ class Core : JavaPlugin(), Listener {
                 if (info.status != Info.GameStatus.MiniGaming) {
                     var sub = 0
 
-                    val newBoard = Bukkit.getScoreboardManager()!!.newScoreboard
+                    val newBoard = Bukkit.getScoreboardManager().newScoreboard
                     val obj = newBoard.registerNewObjective("serverStatics", "dummy", getter["server.statics.title"])
                     obj.displaySlot = DisplaySlot.SIDEBAR
                     obj.getScore(TextUtil.info(getter["server.statics.coinCount", info.currency])).score = --sub
@@ -200,6 +219,7 @@ class Core : JavaPlugin(), Listener {
                     }
                     if (info.status != Info.GameStatus.InLobby && info.status != Info.GameStatus.InTutorial) {
                         info.gameTime += 2 * 1000L
+                        ServerStatics.onlineTime += 2 * 1000L
                     }
 
                     if (BuilderListener.isInBuilderMode(info.player)) {
@@ -230,9 +250,7 @@ class Core : JavaPlugin(), Listener {
                                     obj.getScore(
                                         TextUtil.getColoredText(
                                             getter["server.statics.flyRemaining", item.timeRemaining],
-                                            TextUtil.TextColor.RED,
-                                            false,
-                                            false
+                                            TextUtil.TextColor.RED
                                         )
                                     ).score = --sub
                                 }
@@ -357,7 +375,7 @@ class Core : JavaPlugin(), Listener {
                         }
                         with(player.inventory) {
                             if (leftHand != null) setItemInMainHand(ItemStack(leftHand))
-                            if (rightHand != null)setItemInOffHand(ItemStack(rightHand))
+                            if (rightHand != null) setItemInOffHand(ItemStack(rightHand))
                         }
                     }
                 } catch (e: Exception) {
@@ -935,7 +953,7 @@ class Core : JavaPlugin(), Listener {
                 when {
                     args.first() == "pass" -> addAllOffline()
                     args.first() == "rollback" ->
-                        OfflineInfo.forEach { if (it.isBuilder) p.add(it.nickname ?: return@forEach) }
+                        OfflineInfo.forEach { if (it.isBuilder) p.add(it.name ?: return@forEach) }
                     args.first() == "set" -> addAllOffline()
                 }
 
@@ -955,12 +973,12 @@ class Core : JavaPlugin(), Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    fun onPlayerRegister(event: com.zhufu.opencraft.events.PlayerRegisterEvent) {
-        event.info.tag.set("isSurveyPassed", false)
+    fun onPlayerRegister(event: PlayerRegisterEvent) {
+        event.info.isSurveyPassed = false
     }
 
     @EventHandler
-    fun onPlayerJoinGame(event: com.zhufu.opencraft.events.PlayerJoinGameEvent) {
+    fun onPlayerJoinGame(event: PlayerJoinGameEvent) {
         val info = PlayerManager.findInfoByPlayer(event.player)
         if (info == null) {
             event.player.error(Language.getDefault("player.error.unknown"))
@@ -985,26 +1003,6 @@ class Core : JavaPlugin(), Listener {
 
     @EventHandler
     fun onServerListPing(event: PaperServerListPingEvent) {
-        /*
-        val logo = File(dataFolder, "logo.png")
-        if (logo.exists()) {
-            event.serverIcon = server.loadServerIcon(ImageIO.read(logo.inputStream()))
-        }
-        val motd = File(dataFolder, "motd.txt")
-        if (!motd.exists()) motd.createNewFile()
-        val sb = StringBuilder()
-        val lineSeparator = System.lineSeparator()
-        motd.bufferedReader().forEachLine {
-            sb.append(TextUtil.getCustomizedText(it))
-            sb.append(lineSeparator)
-        }
-        if (sb.isEmpty()) {
-            logger.warning("Motd file is empty. Write in ${motd.path}")
-        } else {
-            sb.deleteCharAt(sb.lastIndex)
-        }
-        event.motd = sb.toString()
-        */
         ServerHeaders.serverSelf.onServerPing.forEach {
             it.apply(arrayOf(SimpleServerListPingEvent(event)))
         }

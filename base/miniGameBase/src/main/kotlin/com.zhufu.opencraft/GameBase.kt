@@ -210,7 +210,7 @@ abstract class GameBase : Listener {
                         it.player.sendMessage(TextUtil.info(Language[it,"game.reset"]))
                         it.status = Info.GameStatus.InLobby
                     }
-                    ?.inventory?.create(DualInventory.RESET)?.load()
+                    ?.inventory?.create(RESET)?.load()
         }
         gaming.clear()
 

@@ -11,6 +11,7 @@ import org.bukkit.potion.PotionEffectType
 import java.io.File
 import java.util.*
 import kotlin.concurrent.timer
+import kotlin.math.pow
 
 class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
     companion object {
@@ -53,7 +54,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
 
     var status: GameStatus = GameStatus.InLobby
     override var doNotTranslate = false
-    override val displayName: String = player.displayName
+    override val displayName: String = player.name + if (nickname != null) ", $nickname" else ""
     override val targetLang: String
         get() = userLanguage
     override val playerStream: PlayerStream
@@ -114,18 +115,13 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
         val getter = getLangGetter(this as ChatInfo)
         when {
             pwd == password -> try {
-                inventory.create(DualInventory.RESET).load()
-                player.removePotionEffect(PotionEffectType.BLINDNESS)
-                player.isInvulnerable = false
-                Bukkit.getOnlinePlayers().forEach { it.showPlayer(plugin, player) }
-
-                player.info(getter["user.login.success"])
+                login()
             } catch (e: Exception) {
                 player.sendMessage(TextUtil.printException(e))
 
                 isLogin = false
                 isRegistered = false
-                player.tip(getter["user.error.toRegister", plugin?.server?.getPluginCommand("user reg")?.usage]);
+                player.tip(getter["user.error.toRegister", plugin.server.getPluginCommand("user reg")?.usage]);
             }
             password == null -> {
                 isLogin = false
@@ -135,10 +131,6 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
                 isLogin = false
                 player.error(getter["user.login.failed"])
             }
-        }
-        if (isLogin) {
-            savedAddress = player.address!!.hostName
-            player.resetTitle()
         }
     }
 
@@ -155,10 +147,15 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
         savedAddress = player.address!!.hostName
         isLogin = true
         player.resetTitle()
+
+        ServerCaller["SolvePlayerSurvive"]!!(listOf(player))
+        Bukkit.getOnlinePlayers().forEach { it.showPlayer(plugin, player) }
+
+        player.info(lang()["user.login.success"])
     }
 
     fun logout(borderLocation: Location) {
-        player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, Math.pow(10.toDouble(), 10.toDouble()).toInt(), 128, false, false))
+        player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 10.toDouble().pow(10.toDouble()).toInt(), 128, false, false))
         player.inventory.clear()
         player.walkSpeed = 0f
         player.exp = 0f
@@ -169,6 +166,13 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
 
         plugin.server.onlinePlayers.forEach { it.hidePlayer(plugin, player) }
 
+        isLogin = false
+    }
+
+    fun logout(){
+        inventory.create(DualInventory.RESET).load()
+        status = GameStatus.InLobby
+        plugin.server.onlinePlayers.forEach { it.hidePlayer(plugin, player) }
         isLogin = false
     }
 

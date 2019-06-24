@@ -2,13 +2,13 @@ group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    compile project(':playerManagment')
-    compile project(':blockManagment')
-    compile project(':tradeBase')
-    compile project(':utils')
-    compile project(':miniGameBase')
-    compile project(':listeners')
-    compile project(':scripting')
+    implementation project(':playerManagment')
+    implementation project(':blockManagment')
+    implementation project(':tradeBase')
+    implementation project(':utils')
+    implementation project(':miniGameBase')
+    implementation project(':listeners')
+    implementation project(':scripting')
     compile 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
     compile 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.2.7-SNAPSHOT'
 }

@@ -8,22 +8,20 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.plugin.Plugin
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
 
-class PlayerObserverListener(private val plugin: JavaPlugin) : Listener {
-    init {
-        mInstance = this
-    }
-    companion object {
-        lateinit var mInstance: PlayerObserverListener
+object PlayerObserverListener : Listener {
+    private lateinit var mPlugin: Plugin
+    fun init(plugin: Plugin){
+        mPlugin = plugin
     }
     class ObservablePlayer(val player: Player,val observingPlayers: ArrayList<Player> = ArrayList()){
         var lockTask: Timer = timer( name = "observerLockTask",period = 200L) {
             observingPlayers.forEach {
-                Bukkit.getScheduler().runTask(mInstance.plugin) { _ ->
+                Bukkit.getScheduler().runTask(mPlugin) { _ ->
                     if (PlayerManager.findInfoByPlayer(it)?.status == Info.GameStatus.Observing){
                         if (it.gameMode != GameMode.SPECTATOR)
                             it.gameMode = GameMode.SPECTATOR
@@ -53,7 +51,7 @@ class PlayerObserverListener(private val plugin: JavaPlugin) : Listener {
         }
         info.inventory.create(DualInventory.RESET).load(inventoryOnly = true)
         event.player.sendTitle(TextUtil.getColoredText("推荐使用第三人称进行观战", TextUtil.TextColor.AQUA,true,false)
-                , TextUtil.getColoredText("同时，若需要退出，使用${TextUtil.tip(plugin.server.getPluginCommand("user deobserve")!!.usage)}", TextUtil.TextColor.GOLD,false,false),7,50,7)
+                , TextUtil.getColoredText("同时，若需要退出，使用${TextUtil.tip(mPlugin.server.getPluginCommand("user deobserve")!!.usage)}", TextUtil.TextColor.GOLD,false,false),7,50,7)
         event.onObserver.sendMessage(TextUtil.info("${event.player.name}正在对您进行观战"))
 
         info.status = Info.GameStatus.Observing
@@ -105,9 +103,6 @@ class PlayerObserverListener(private val plugin: JavaPlugin) : Listener {
     }
 
     fun onServerStop(){
-        PlayerManager.forEachPlayer {
-            it.inventory.create(DualInventory.RESET).load()
-        }
         mList.forEach {
             it.lockTask.cancel()
         }

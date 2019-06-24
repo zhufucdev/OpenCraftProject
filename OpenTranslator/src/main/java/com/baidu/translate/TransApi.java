@@ -41,12 +41,9 @@ public class TransApi {
     }
 
     private HttpUrl buildParams(String query, String from, String to) {
-        // 随机数
         String salt = String.valueOf(System.currentTimeMillis());
-        // 签名
-        String src = appid + query + salt + securityKey; // 加密前的原文
-
-        HttpUrl url = new HttpUrl.Builder()
+        String src = appid + query + salt + securityKey;
+        return new HttpUrl.Builder()
                 .scheme("https")
                 .host(TRANS_API_HOST)
                 .addEncodedPathSegments(TRANS_API_PATHS)
@@ -57,7 +54,6 @@ public class TransApi {
                 .addQueryParameter("salt",salt)
                 .addQueryParameter("sign",MD5.md5(src))
                 .build();
-        return url;
     }
 
 }

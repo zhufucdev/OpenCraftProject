@@ -4,9 +4,7 @@ import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import io.netty.buffer.Unpooled
-import net.minecraft.server.v1_14_R1.MinecraftKey
-import net.minecraft.server.v1_14_R1.PacketDataSerializer
-import net.minecraft.server.v1_14_R1.PacketPlayOutCustomPayload
+import net.minecraft.server.v1_14_R1.*
 import org.bukkit.Material
 import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer
 import org.bukkit.entity.Player
@@ -86,19 +84,12 @@ class MyBook : ItemStack {
         val writer = JsonWriter(sw)
         this.toJson(writer).flush()
 
-        player.inventory.setItem(1,this)
+        player.inventory.setItem(0,this)
         if (!open) return
 
-        player.inventory.heldItemSlot = 1
+        player.inventory.heldItemSlot = 0
 
-        val buf = Unpooled.buffer(256).apply {
-            setByte(0,0)
-            writerIndex(1)
-        }
-        val pds = PacketDataSerializer(buf)
-        val key = MinecraftKey("minecraft:book_open")
-        val payload = PacketPlayOutCustomPayload(key,pds)
-
+        val payload = PacketPlayOutOpenBook(EnumHand.MAIN_HAND)
         (player as CraftPlayer).handle.playerConnection.sendPacket(payload)
     }
 

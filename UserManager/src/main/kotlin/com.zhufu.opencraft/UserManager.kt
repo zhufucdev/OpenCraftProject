@@ -5,8 +5,10 @@ import com.zhufu.opencraft.inventory.PaymentDialog
 import com.zhufu.opencraft.Base.spawnWorld
 import com.zhufu.opencraft.Base.Extend.toPrettyString
 import com.zhufu.opencraft.events.PlayerLoginEvent
+import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerRegisterEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
+import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import org.bukkit.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -21,7 +23,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 
-class UserManager : JavaPlugin(), Listener{
+class UserManager : JavaPlugin(), Listener {
     private lateinit var boardLocation: Location
 
     override fun onEnable() {
@@ -56,6 +58,20 @@ class UserManager : JavaPlugin(), Listener{
 
             logger.info("Chunk created.")
         }
+
+        ServerCaller["SolvePlayerLogin"] = {
+            val info = (it.firstOrNull()
+                ?: throw IllegalArgumentException("This call must be given at least one Info parameter.")) as Info
+            if (info.isUserLanguageSelected)
+                Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
+                    showLoginMsg(info)
+                }
+            else {
+                info.logout(boardLocation)
+                info.player.info(Language.getDefault("user.toSelectLang"))
+                Language.printLanguages(info.player)
+            }
+        }
     }
 
     private fun showLoginMsg(info: Info) {
@@ -67,7 +83,6 @@ class UserManager : JavaPlugin(), Listener{
                 info.login(info.password!!)
                 server.pluginManager.apply {
                     callEvent(PlayerLoginEvent(player))
-                    callEvent(PlayerTeleportedEvent(player, player.location, Base.lobby.spawnLocation))
                 }
             }
             player.resetTitle()
@@ -91,9 +106,10 @@ class UserManager : JavaPlugin(), Listener{
                 )
             }
 
-            Bukkit.getScheduler().runTaskLater(this,
+            Bukkit.getScheduler().runTaskLater(
+                this,
                 { _ ->
-                    if (info.player.isOnline && !info.isLogin) {
+                    if (info.player.isOnline && !info.isLogin && info.player.world == spawnWorld) {
                         logger.info("${player.name} may be kicked because of timeout.")
                         player.kickPlayer(TextUtil.error(getter["user.login.timeout"]))
                     }
@@ -110,15 +126,12 @@ class UserManager : JavaPlugin(), Listener{
         val info = Info(event.player)
         PlayerManager.add(info)
         event.joinMessage = ""
-
-        if (info.isUserLanguageSelected)
-            Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
-                showLoginMsg(info)
-            }
-        else {
+        if (!info.isUserLanguageSelected) {
             info.logout(boardLocation)
-            event.player.info(Language.getDefault("user.toSelectLang"))
-            Language.printLanguages(event.player)
+            info.player.info(Language.getDefault("user.toSelectLang"))
+            Language.printLanguages(info.player)
+        } else {
+            info.logout()
         }
     }
 
@@ -134,6 +147,11 @@ class UserManager : JavaPlugin(), Listener{
         } else {
             event.quitMessage = ""
         }
+    }
+
+    @EventHandler
+    fun onPlayerLogout(event: PlayerLogoutEvent) {
+        broadcast("player.left", TextUtil.TextColor.YELLOW, event.info.player.name)
     }
 
     @EventHandler
@@ -166,7 +184,9 @@ class UserManager : JavaPlugin(), Listener{
                 ) else null
             if (code != null) {
                 info.userLanguage = code
-                showLoginMsg(info)
+                Bukkit.getScheduler().runTask(this) { _ ->
+                    info.inventory.create(DualInventory.RESET).load()
+                }
             } else {
                 event.player.error(Language.getDefault("user.error.langNotFound"))
                 Language.printLanguages(event.player)

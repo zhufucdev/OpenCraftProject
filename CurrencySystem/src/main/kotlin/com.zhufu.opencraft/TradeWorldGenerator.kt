@@ -13,7 +13,7 @@ class TradeWorldGenerator : ChunkGenerator() {
             get() = 60
     }
     private val stoneSlab
-        get() = Material.AIR
+        get() = Material.STONE_SLAB
     override fun getFixedSpawnLocation(world: World, random: Random): Location = Location(world, 7.5, base + 2.toDouble(), 7.5)
 
     override fun generateChunkData(world: World, random: Random, x: Int, z: Int, biome: BiomeGrid): ChunkData {

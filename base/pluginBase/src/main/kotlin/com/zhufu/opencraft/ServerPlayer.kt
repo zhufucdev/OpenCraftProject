@@ -22,15 +22,17 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
         val size: Int
             get() {
                 var r = 0
-                Paths.get("plugins", "tag").toFile().listFiles().forEach {
+                Paths.get("plugins", "tag").toFile().listFiles()?.forEach {
                     if (!it.isHidden && !it.isDirectory) {
-                        if (YamlConfiguration.loadConfiguration(it).isSet("password")) r++
+                        r++
                     }
                 }
                 r += Paths.get("plugins", "tag", "preregister").toFile().listFiles()?.size ?: 0
                 return r
             }
     }
+
+    override fun equals(other: Any?): Boolean = other is ServerPlayer && other.tagFile == this.tagFile
 
     abstract val tagFile: File
     abstract val playerDir: File
@@ -70,11 +72,15 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
     }
 
     private fun initTag(createNew: Boolean) = try {
-        YamlConfiguration.loadConfiguration(
-            fixTag(
-                tagFile, createNew
-            )
-        )
+        if (tagFile.exists())
+            YamlConfiguration.loadConfiguration(tagFile)
+        else {
+            ServerStatics.playerNumber++
+            if (createNew) {
+                tagFile.createNewFile()
+            }
+            YamlConfiguration()
+        }
     } catch (e: Throwable) {
         println("Could not load tag for player $uuid")
         throw e
@@ -122,11 +128,23 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
             saveTag()
         }
     val inventoriesFile
-        get() = Paths.get("plugins", "inventories", uuid.toString()).toFile()
+        get() = Paths.get("plugins", "inventories", uuid.toString()).toFile()!!
 
     var currency: Long
         get() = tag.getLong("currency", 0)
         set(value) = tag.set("currency", value)
+    var territoryID: Int
+        get() = tag.getInt("territoryID", -1).let {
+            if (it == -1) {
+                val r = ServerStatics.playerNumber - 1
+                territoryID = r
+                r
+            } else
+                it
+        }
+        set(value) {
+            tag.set("territoryID", value)
+        }
     val isOnline: Boolean
         get() = Bukkit.getOnlinePlayers().any { it.uniqueId == uuid }
     val onlinePlayerInfo: Info?
@@ -149,14 +167,14 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
         set(value) = tag.set("lang", value)
     val isUserLanguageSelected: Boolean
         get() = tag.contains("lang")
-    var nickname: String
-        get() = tag.getString("nickname", name)!!
+    var nickname: String?
+        get() = tag.getString("nickname", null)
         set(value) = tag.set("nickname", value)
 
     val offlinePlayer: OfflinePlayer
-        get() = if (uuid != null) Bukkit.getOfflinePlayer(
-            uuid ?: throw IllegalStateException()
-        ) else throw IllegalStateException("Cannot read offline player for an info with uuid null.")
+        get() =
+            if (uuid != null) Bukkit.getOfflinePlayer(uuid!!)
+            else throw IllegalStateException("Cannot read offline player for an info with uuid null.")
 
     var name: String?
         get() = tag.getString("name")
@@ -179,6 +197,12 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
             )
         }
     val isBuilder get() = builderLevel > 0
+    var isSurvivor
+        get() = tag.getBoolean("isSurvivor", false)
+        set(value) {
+            tag.set("isSurvivor", value)
+        }
+
     override fun isOp(): Boolean = try {
         offlinePlayer.isOp
     } catch (e: Exception) {
@@ -189,11 +213,22 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
         offlinePlayer.isOp = value
     }
 
+    override fun hashCode(): Int {
+        var result = createNew.hashCode()
+        result = 31 * result + (uuid?.hashCode() ?: 0)
+        result = 31 * result + tagFile.hashCode()
+        result = 31 * result + playerDir.hashCode()
+        result = 31 * result + (privateTag?.hashCode() ?: 0)
+        result = 31 * result + friendship.hashCode()
+        result = 31 * result + messagePool.hashCode()
+        return result
+    }
+
     val statics get() = PlayerStatics.from(this)
     val messagePool = MessagePool.from(tag)
 
     var maxLoopExecution
         get() = tag.getLong("maxLoopExecution", 1000)
         set(value) = tag.set("maxLoopExecution", value)
-    val scriptDir get() = File(playerDir,"script").also { if (!it.exists()) it.mkdirs() }
+    val scriptDir get() = File(playerDir, "script").also { if (!it.exists()) it.mkdirs() }
 }

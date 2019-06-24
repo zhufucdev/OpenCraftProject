@@ -11,44 +11,50 @@ import java.util.*
 import java.util.function.Function
 
 @Suppress("unused")
-class NPCUtils(private val getter: Language.LangGetter, private val script: AbstractScript, private val player: ServerPlayer? = null) {
-    private fun <T> validate(name: String, clazz: Class<T>, map: AbstractMap<*, *>) {
-        val realName = if (name.contains('/')) name.substringAfterLast('/') else name
-        validate(name, map)
-        if (!map[realName]!!.javaClass.let {
-                it.isAssignableFrom(clazz)
-                        || it == clazz
-                        || (clazz == Number::class.java && (
-                        it == Integer::class.java
-                                || it == Long::class.java
-                                || it == Double::class.java
-                        ))
-            }) {
-            throw IllegalStateException(getter["npc.error.wrongClass", name])
+class NPCUtils(
+    private val getter: Language.LangGetter,
+    private val script: AbstractScript,
+    private val player: ServerPlayer? = null
+) {
+    companion object {
+        fun <T> validate(name: String, clazz: Class<T>, map: AbstractMap<*, *>, getter: Language.LangGetter) {
+            val realName = if (name.contains('/')) name.substringAfterLast('/') else name
+            validate(name, map, getter)
+            if (!map[realName]!!.javaClass.let {
+                    it.isAssignableFrom(clazz)
+                            || it == clazz
+                            || (clazz == Number::class.java && (
+                            it == Integer::class.java
+                                    || it == Long::class.java
+                                    || it == Double::class.java
+                            ))
+                }) {
+                throw IllegalStateException(getter["npc.error.wrongClass", name])
+            }
+        }
+
+        fun validate(name: String, map: AbstractMap<*, *>, getter: Language.LangGetter) {
+            val realName = if (name.contains('/')) name.substringAfterLast('/') else name
+            if (!map.containsKey(realName))
+                throw IllegalArgumentException(getter["npc.error.parNotFound", name])
         }
     }
 
-    private fun validate(name: String, map: AbstractMap<*, *>) {
-        val realName = if (name.contains('/')) name.substringAfterLast('/') else name
-        if (!map.containsKey(realName))
-            throw IllegalArgumentException(getter["npc.error.parNotFound", name])
-    }
-
-    fun create(map: Any?): SimpleNPC {
+    fun deserialize(map: Any?): SimpleNPC {
         if (map is AbstractMap<*, *>) {
-            validate("name", String::class.java, map)
+            validate("name", String::class.java, map, getter)
             val name = map["name"]!! as String
-            validate("spawnpoint", map)
+            validate("spawnpoint", map, getter)
             val spawnpointLocation: Location =
                 when (val spawnpoint = map["spawnpoint"]) {
                     is AbstractMap<*, *> -> {
-                        validate("spawnpoint/x", Number::class.java, spawnpoint)
-                        validate("spawnpoint/y", Number::class.java, spawnpoint)
-                        validate("spawnpoint/z", Number::class.java, spawnpoint)
+                        validate("spawnpoint/x", Number::class.java, spawnpoint, getter)
+                        validate("spawnpoint/y", Number::class.java, spawnpoint, getter)
+                        validate("spawnpoint/z", Number::class.java, spawnpoint, getter)
                         val world = if (player is Info) {
                             player.player.world
                         } else {
-                            validate("spawnpoint/world", String::class.java, spawnpoint)
+                            validate("spawnpoint/world", String::class.java, spawnpoint, getter)
                             Bukkit.getWorld(spawnpoint["world"] as String)
                         }
                         val x = spawnpoint["x"].toString().toDouble()
@@ -67,15 +73,20 @@ class NPCUtils(private val getter: Language.LangGetter, private val script: Abst
             } else null
             val target = map["target"]
             val attack = map["attack"]
+            val behavior = map["behavior"]
+            if (behavior != null){
+                throw IllegalArgumentException(getter["npc.error.wrongClass","behavior"])
+            }
 
-            return SimpleNPC.deserialize(
+            return SimpleNPC.create(
                 schedule = script.schedule,
                 getter = getter,
                 name = name,
                 spawnpoint = spawnpointLocation,
                 onSpawn = onSpawn,
                 target = target,
-                attack = attack
+                attack = attack,
+                behavior = behavior
             )
         } else {
             throw IllegalArgumentException(getter["npc.error.parNotFound", "name, spawnpoint"])

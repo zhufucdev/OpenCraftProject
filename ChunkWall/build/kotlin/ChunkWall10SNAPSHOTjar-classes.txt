@@ -1,1 +1,1 @@
-/Volumes/storage/IdeaProjects/OpenCraftGradle/ChunkWall/build/classes/kotlin/main/com/zhufu/opencraft/ChunkWall.class
+D:\IdeaProjects\OpenCraftGradle\ChunkWall\build\classes\kotlin\main\com\zhufu\opencraft\ChunkWall.class
