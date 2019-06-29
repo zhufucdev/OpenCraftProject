@@ -35,7 +35,6 @@
             <option value="$PROJECT_DIR$/base/tradeBase" />
             <option value="$PROJECT_DIR$/base/utils" />
             <option value="$PROJECT_DIR$/languages" />
-            <option value="$PROJECT_DIR$/webInterface" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

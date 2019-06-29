@@ -5,6 +5,6 @@ import com.sun.net.httpserver.HttpHandler
 
 class HttpsDirector(private val hostName: String): HttpHandler {
     override fun handle(e: HttpExchange) {
-        SimpleHandler.redirect("https://$hostName",e)
+        MajaroHandler.redirect("https://$hostName",e)
     }
 }

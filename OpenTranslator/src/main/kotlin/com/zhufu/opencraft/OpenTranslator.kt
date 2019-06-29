@@ -36,27 +36,31 @@ class OpenTranslator : JavaPlugin(), Listener {
             sb.append(',')
         }
         sb.deleteCharAt(sb.lastIndex)
-        info.playerStream.send(TextUtil.info(sb.toString()))
-        info.playerStream.send(getter["translator.translating"])
+        info.playerOutputStream.send(TextUtil.info(sb.toString()))
+        info.playerOutputStream.send(getter["translator.translating"])
 
         val translations = HashMap<String, String>()
-        Language.languages.forEach {
-            val target = it.getString("info.code")!!
+        fun addTranslation(target: String): String {
             val translation =
-                    if (target != lang || detections.isNotEmpty())
-                        try {
-                            Translate.translate(msg, target = target)
-                        } catch (e: Exception) {
-                            e.printStackTrace();"(CouldNotTranslate)$msg"
-                        }
-                    else TextUtil.getCustomizedText(msg)
+                if (target != lang || detections.isNotEmpty())
+                    try {
+                        Translate.translate(msg, target = target)
+                    } catch (e: Exception) {
+                        e.printStackTrace();"(CouldNotTranslate)$msg"
+                    }
+                else TextUtil.getCustomizedText(msg)
             translations[target] = translation
+            return translation
         }
 
-        Bukkit.getScheduler().runTask(this) { _ ->
-            PlayerManager.forEachChatter {
-                val translation = translations[it.targetLang]!!
-                it.playerStream.sendChat(info.displayName, msg, translation, emptyList())
+        PlayerManager.forEachChatter {
+            val translation =
+                if (translations.containsKey(it.targetLang)) translations[it.targetLang]!!
+                else addTranslation(it.targetLang)
+            try {
+                it.playerOutputStream.sendChat(info, msg, translation, emptyList())
+            } catch (ignore: Exception){
+
             }
         }
         Bukkit.getConsoleSender().sendMessage("<${info.displayName}(已翻译)> $msg")
@@ -70,6 +74,9 @@ class OpenTranslator : JavaPlugin(), Listener {
             event.player.error(Language.getDefault("player.error.unknown"))
             return
         }
-        event.isCancelled = Translator.chat(event.message, info)
+        if (!info.doNotTranslate) {
+            event.isCancelled = true
+            Translator.chat(event.message, info)
+        }
     }
 }

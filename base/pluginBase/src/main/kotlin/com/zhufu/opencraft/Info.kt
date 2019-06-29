@@ -1,6 +1,7 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.util.CommonPlayerStream
+import com.zhufu.opencraft.player_community.PlayerOutputStream
+import com.zhufu.opencraft.util.CommonPlayerOutputStream
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -54,11 +55,11 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
 
     var status: GameStatus = GameStatus.InLobby
     override var doNotTranslate = false
-    override val displayName: String = player.name + if (nickname != null) ", $nickname" else ""
+    override val displayName: String
+            get() = player.name + if (nickname != null) ", $nickname" else ""
     override val targetLang: String
         get() = userLanguage
-    override val playerStream: PlayerStream
-        get() = CommonPlayerStream(player)
+    override val playerOutputStream: PlayerOutputStream = CommonPlayerOutputStream(player)
     override val id: String
         get() = name?:"unknown"
 
@@ -172,7 +173,6 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
     fun logout(){
         inventory.create(DualInventory.RESET).load()
         status = GameStatus.InLobby
-        plugin.server.onlinePlayers.forEach { it.hidePlayer(plugin, player) }
         isLogin = false
     }
 
@@ -190,7 +190,8 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
     }
 
     override fun destroy() {
+        saveServerID()
         super.destroy()
-        infoList.removeAll { it.uuid == uuid }
+        infoList.remove(this)
     }
 }

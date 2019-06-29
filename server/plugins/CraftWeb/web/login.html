@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<div class="container" style="padding-top: 10px">
+    <div class="s12 m6">
+        <div class="card white">
+            <div class="card-content">
+                <span class="card-title" id="title-card">登录</span>
+                <div class="input-field col">
+                    <input id="name-input" type="text">
+                    <label for="name-input">用户名</label>
+                    <span class="helper-text red-text" id="name-warn">用户名不能为空</span>
+                </div>
+                <div class="input-field col">
+                    <input id="password" type="password">
+                    <label for="password">密码</label>
+                    <span class="helper-text red-text" id="pwd-warn">密码不能为空</span>
+                </div>
+                <div id="sign-up-layout">
+                    <div class="input-field">
+                        <input id="pwd-repeat" type="password">
+                        <label for="pwd-repeat">重复 密码</label>
+                        <span class="helper-text red-text" id="pwd-repeat-warn">两次输入的密码不一致</span>
+                    </div>
+                    <div class="input-field">
+                        <input id="nickname" type="text">
+                        <label for="nickname">可选 昵称</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <a class="pink btn waves-effect waves-light right" id="next">下一步</a>
+                    <a class="btn-flat waves-effect pink-text" id="sign-up">注册</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script id="onload">
+    function bringToUser() {
+        updateUserData();
+        fadeSwitch(function (callback) {
+            $('#content').load('ui?request=user', callback);
+        }, document.getElementById('content'), true)
+    }
+
+    $(document).ready(function () {
+        let isSigningUp = false;
+
+        let pwdWarn = $('#pwd-warn');
+        let nameWarn = $('#name-warn');
+        let repeatWarn = $('#pwd-repeat-warn');
+        let signUp = $('#sign-up-layout');
+        pwdWarn.hide();
+        nameWarn.hide();
+        signUp.hide();
+        repeatWarn.hide();
+
+        $('#name-input').keyup(function () {
+            if (event.keyCode === 13) {
+                $('#password').focus()
+            }
+        });
+        $('#password').keyup(function () {
+            if (event.keyCode === 13) {
+                if (!isSigningUp)
+                    $('#next').click();
+                else
+                    $('#pwd-repeat').focus();
+            }
+        });
+        $('#pwd-repeat').keyup(function () {
+            if (event.keyCode === 13) {
+                $('#nickname').focus()
+            }
+        });
+        $('#nickname').keyup(function () {
+            if (event.keyCode === 13) {
+                $('#next').click()
+            }
+        });
+
+        $('#sign-up').click(function () {
+            let layout = document.getElementById('sign-up-layout');
+            if (!isSigningUp) {
+                signUp.show();
+                layout.style.opacity = '0';
+                setTimeout(() => fadeIn(layout, 20), 200);
+                col(layout, 0, 140);
+                $('#sign-up').empty().append('登录')
+            } else {
+                fadeOut(layout, 20);
+                col(layout, 140, 0, function () {
+                    signUp.hide();
+                });
+                $('#sign-up').empty().append('注册');
+            }
+            fadeSwitch(function () {
+                let t = '登录';
+                if (isSigningUp) {
+                    t = '注册'
+                }
+                $('#title-card').empty().append(t)
+            }, document.getElementById('title-card'));
+            isSigningUp = !isSigningUp;
+        });
+
+        $('#next').click(function () {
+            let pwd = document.getElementById('password');
+            let name = document.getElementById('name-input');
+            let repeat = document.getElementById('pwd-repeat');
+            let nickname = document.getElementById('nickname');
+            let toReturn = false;
+
+            if (!name.value) {
+                nameWarn.show();
+                toReturn = true;
+            } else {
+                nameWarn.hide();
+                if (isSigningUp && repeat.value !== pwd.value) {
+                    repeatWarn.show();
+                    toReturn = true
+                } else repeatWarn.hide()
+            }
+            if (!pwd.value) {
+                pwdWarn.show();
+                toReturn = true;
+            } else pwdWarn.hide();
+
+            if (toReturn) return;
+
+            let data, url;
+            if (!isSigningUp) {
+                data = {
+                    name: name.value,
+                    password: pwd.value
+                };
+                url = "user?request=login"
+            } else {
+                if (nickname.value) data = {
+                    name: name.value,
+                    password: pwd.value,
+                    nickname: nickname.value
+                };
+                else data = {
+                    name: name.value,
+                    password: pwd.value
+                };
+                url = "user?request=sign-up"
+            }
+            $.ajax({
+                url: url,
+                data: JSON.stringify(data),
+                type: "POST",
+                success: function (result) {
+                    const r = JSON.parse(result);
+                    const code = r.r;
+                    let message;
+                    if (!isSigningUp) {
+                        if (code === 1) {
+                            message = '密码错误'
+                        } else if (code === -1) {
+                            message = '没有这样的用户';
+                        } else if (code === 0) {
+                            message = '登录成功';
+                            bringToUser()
+                        } else if (code === 2) {
+                            message = '重复登录';
+                            bringToUser()
+                        }
+                    } else {
+                        if (code === 2) {
+                            message = '该用户已存在'
+                        } else if (code === -2 || code === -1) {
+                            message = '错误: 数据标签无效'
+                        } else if (code === 1) {
+                            message = '错误: 昵称超过20个字符的长度'
+                        } else if (code === 0) {
+                            message = '注册成功';
+                            $.ajax({
+                                url: "user?request=login",
+                                data: JSON.stringify({
+                                    name: name.value,
+                                    password: pwd.value
+                                }),
+                                type: 'POST',
+                                success: function () {
+                                    bringToUser()
+                                }
+                            })
+                        }
+                    }
+                    M.toast({html: '<span>' + message + '</span>'})
+                },
+                error: function (r, status) {
+                    M.toast({html: '<span>错误: ' + status + '</span>'})
+                }
+            });
+        })
+    });
+</script>

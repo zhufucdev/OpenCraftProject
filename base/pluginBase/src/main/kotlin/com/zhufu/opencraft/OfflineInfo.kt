@@ -71,14 +71,15 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
                 }
             }
 
-    override fun isDestroyed(): Boolean = !memory.containsKey(uuid)
+    private var isDestroyed = false
+    override fun isDestroyed(): Boolean = isDestroyed
     override fun destroy() {
         if (isDestroyed) {
             throw DestroyFailedException()
         }
-        memory.remove(uuid)
         PlayerStatics.remove(uuid!!)
         offlineList.removeAll { it.uuid == uuid }
+        isDestroyed = true
     }
 
     override fun saveTag() {
@@ -127,6 +128,4 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
         inventoriesFile.delete()
         destroy()
     }
-
-
 }

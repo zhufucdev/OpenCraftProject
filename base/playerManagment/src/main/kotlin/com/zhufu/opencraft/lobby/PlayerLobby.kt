@@ -18,14 +18,16 @@ import java.util.concurrent.Executors
 
 class PlayerLobby(val owner: OfflineInfo) {
     val id = owner.territoryID
-    val x : Int
-    val z : Int
+    val x: Int
+    val z: Int
+
     init {
         Base.getUniquePair(id).apply {
             x = first
             z = second
         }
     }
+
     /**
      * [fromX] is always less than [toX]
      * One's lobby is where he or she can build freely.
@@ -48,7 +50,8 @@ class PlayerLobby(val owner: OfflineInfo) {
         set(value) {
             tag.set("spawnpoint", value)
         }
-    fun contains(location: Location) = location.blockX in fromX .. toX && location.blockZ in fromZ .. toZ
+
+    fun contains(location: Location) = location.blockX in fromX..toX && location.blockZ in fromZ..toZ
 
     private var isInitializing = false
     fun initialize() {
@@ -97,11 +100,10 @@ class PlayerLobby(val owner: OfflineInfo) {
             Bukkit.getLogger().info("lowY = $lowY, highY = $highY")
 
             Bukkit.getScheduler().runTask(Base.pluginCore) { _ ->
-                val from =
-                    CuboidRegion(
+                val from = CuboidRegion(
                         BukkitWorld(Base.spawnWorld),
                         BlockVector3.at(0, lowY, 0),
-                        BlockVector3.at(256, highY, 256)
+                        BlockVector3.at(32, highY, 32)
                     )
                 val to = CuboidRegion(
                     BukkitWorld(Base.lobby),
@@ -137,7 +139,7 @@ class PlayerLobby(val owner: OfflineInfo) {
                 PlayerLobbyManager.targetMap[player] = this
                 val getter = player.lang()
                 player.info()?.apply {
-                    if (!isSurvivor && (player.info()?.territoryID?:-1) == this@PlayerLobby.id) {
+                    if (!isSurvivor && (player.info()?.territoryID ?: -1) == this@PlayerLobby.id) {
                         // To make speeches
                         var delay = 20L
                         fun speak(order: Int, arg: String? = null, block: (String) -> Unit) {
@@ -153,7 +155,7 @@ class PlayerLobby(val owner: OfflineInfo) {
                         speak(1) {
                             player.success(it)
                         }
-                        speak(2,displayName) {
+                        speak(2, displayName) {
                             player.sendMessage(it)
                         }
                         speak(3) {

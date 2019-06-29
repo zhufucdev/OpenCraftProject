@@ -1,38 +1,35 @@
 package com.zhufu.opencraft
 
-import com.google.gson.JsonElement
+import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
-import java.net.InetAddress
 import java.nio.file.Paths
 import java.util.*
 
-class RegisteredInfo(uuid: UUID) : WebInfo(false, uuid), ChatInfo {
+class RegisteredInfo(uuid: UUID) : WebInfo(false, uuid) {
+    companion object {
+        fun exists(uuid: UUID): Boolean {
+            val file = Paths.get("plugins", "tag", "$uuid.yml").toFile()
+            if (!file.exists())
+                return false
+            val data = try {
+                YamlConfiguration.loadConfiguration(file)
+            } catch (e: Exception) {
+                return false
+            }
+            return data.isSet("password")
+        }
+    }
+
     override val tagFile: File
         get() = Paths.get("plugins", "tag", "$uuid.yml").toFile()
     override val playerDir: File
-        get() = Paths.get("plugins","playerDir",uuid.toString()).toFile()
+        get() = Paths.get("plugins", "playerDir", uuid.toString()).toFile()
 
     override val id: String
-        get() = name?:"unknown"
+        get() = name ?: "unknown"
     override var doNotTranslate = false
-    override val displayName get() = name!!
+    override val displayName get() = "$name Web"
     override val targetLang: String get() = this.userLanguage
-    override val playerStream: PlayerStream = object : PlayerStream() {
-        override fun sendRaw(json: JsonElement) {
-            TODO()
-        }
-        override fun send(text: String) {
-            TODO()
-        }
-        override fun sendChat(sender: String, regularText: String, translatedText: String, images: List<File>) {
-            TODO()
-        }
-
-        override val lang: Language.LangGetter
-            get() = getLangGetter(this@RegisteredInfo)
-        override val name: String
-            get() = this@RegisteredInfo.id
-    }
     override val face: File
-        get() = File("plugins/faces/$uuid.png")
+        get() = Paths.get("plugins", "faces", "$uuid.png").toFile()
 }

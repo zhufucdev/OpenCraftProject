@@ -76,7 +76,7 @@ class UserManager : JavaPlugin(), Listener {
 
     private fun showLoginMsg(info: Info) {
         val player = info.player
-        logger.info(player.name + "login with address: ${player.address!!.hostName}")
+        logger.info("${player.name} login with address: ${player.address!!.hostName}")
         if (player.address!!.hostName == info.savedAddress) {
             player.info(getLang(info, "user.loginWithIP"))
             Bukkit.getScheduler().runTask(this) { _ ->
@@ -127,26 +127,24 @@ class UserManager : JavaPlugin(), Listener {
         PlayerManager.add(info)
         event.joinMessage = ""
         if (!info.isUserLanguageSelected) {
+            info.doNotTranslate = true
             info.logout(boardLocation)
             info.player.info(Language.getDefault("user.toSelectLang"))
             Language.printLanguages(info.player)
         } else {
             info.logout()
+            Bukkit.getPluginManager().callEvent(PlayerTeleportedEvent(event.player, null, PlayerLobbyManager[info].spawnPoint))
         }
     }
 
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        val p = event.player
-        val info = PlayerManager.findInfoByPlayer(p)
-        if (info?.isLogin == true) {
-            event.quitMessage = ""
+        event.quitMessage = ""
+        val info = PlayerManager.findInfoByPlayer(event.player) ?: return
+        if (info.isLogin) {
             broadcast("player.left", TextUtil.TextColor.YELLOW, info.player.name)
-            info.saveServerID()
-            info.destroy()
-        } else {
-            event.quitMessage = ""
         }
+        info.destroy()
     }
 
     @EventHandler
@@ -156,10 +154,7 @@ class UserManager : JavaPlugin(), Listener {
 
     @EventHandler
     fun onPlayerLogin(event: PlayerLoginEvent) {
-        server.onlinePlayers.forEach {
-            if (event.player != it)
-                broadcast("player.join", TextUtil.TextColor.AQUA, event.player.displayName)
-        }
+        broadcast("player.join", TextUtil.TextColor.AQUA, event.player.displayName)
     }
 
     @EventHandler
@@ -184,8 +179,11 @@ class UserManager : JavaPlugin(), Listener {
                 ) else null
             if (code != null) {
                 info.userLanguage = code
+                info.doNotTranslate = false
                 Bukkit.getScheduler().runTask(this) { _ ->
                     info.inventory.create(DualInventory.RESET).load()
+                    Bukkit.getPluginManager()
+                        .callEvent(PlayerTeleportedEvent(event.player, spawnWorld.spawnLocation, PlayerLobbyManager[info].spawnPoint))
                 }
             } else {
                 event.player.error(Language.getDefault("user.error.langNotFound"))
@@ -824,8 +822,8 @@ class UserManager : JavaPlugin(), Listener {
                             } else result.add(it.name)
                         }
                         if (args.size == 2) {
-                            if (args[1].isEmpty()) {
-                                return result.toMutableList()
+                            return if (args[1].isEmpty()) {
+                                result.toMutableList()
                             } else {
                                 val result2 = ArrayList<String>()
                                 result.forEach {
@@ -837,7 +835,7 @@ class UserManager : JavaPlugin(), Listener {
                                         }
                                     }
                                 }
-                                return result2.toMutableList()
+                                result2.toMutableList()
                             }
                         }
                     }

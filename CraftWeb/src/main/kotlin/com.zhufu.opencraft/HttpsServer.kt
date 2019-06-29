@@ -25,7 +25,7 @@ class HttpsServer {
             isInitialized = false
         }
         if (!key.exists()){
-            throw FileNotFoundException("Key File at ${key.path} must exist!")
+            throw FileNotFoundException("Key File at ${key.path} must exists!")
         }
 
         server = HttpsServer.create(InetSocketAddress(port),0)

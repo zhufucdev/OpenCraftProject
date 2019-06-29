@@ -225,7 +225,16 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     ServerCaller["SolvePlayerLogin"]!!(listOf(info))
                 else {
                     info.logout()
-                    Bukkit.getPluginManager().callEvent(PlayerLogoutEvent(info))
+                    with(Bukkit.getPluginManager()) {
+                        callEvent(PlayerLogoutEvent(info))
+                        callEvent(
+                            PlayerTeleportedEvent(
+                                event.player,
+                                event.player.location,
+                                PlayerLobbyManager[info].spawnPoint
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -313,7 +322,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 }
             }
         }
-        if (info.status == InLobby && event.to.world == lobby && !PlayerLobbyManager.isTargetOf(event.player)){
+        if (info.status == InLobby && event.to.world == lobby && !PlayerLobbyManager.isTargetOf(event.player)) {
             val target = PlayerLobbyManager.targetOf(event.player) ?: return
             val to = event.to
             when {
@@ -349,7 +358,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 info.tag.set("surviveSpawn", event.bed.location)
                 event.player.bedSpawnLocation = event.bed.location
             } else sendPlayerOutOfSpawnMessage(event.player)
-        } else if (info.status == InLobby && event.player.world == lobby){
+        } else if (info.status == InLobby && event.player.world == lobby) {
             event.isCancelled = true
             val own = PlayerLobbyManager[info]
             if (own.contains(event.bed.location)) {
@@ -382,8 +391,8 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         ) {
             event.isCancelled = true
             sendPlayerOutOfSpawnMessage(event.player)
-        } else if (info.status == InLobby){
-            if (!PlayerLobbyManager.isInOwnLobby(info)){
+        } else if (info.status == InLobby && event.block.world == lobby) {
+            if (!PlayerLobbyManager.isInOwnLobby(info)) {
                 event.isCancelled = true
                 event.player.error(info.lang()["lobby.error.breakNotPermitted"])
             }
@@ -405,9 +414,14 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         ) {
             event.isCancelled = true
             sendPlayerOutOfSpawnMessage(event.player)
-        } else if (info.status == InLobby){
-            if (PlayerLobbyManager[info].contains(event.blockPlaced.location)){
-                if (listOf(Material.ENDER_CHEST,Material.TNT,Material.TNT_MINECART).contains(event.blockPlaced.type)){
+        } else if (info.status == InLobby && event.blockPlaced.world == lobby) {
+            if (PlayerLobbyManager[info].contains(event.blockPlaced.location)) {
+                if (listOf(
+                        Material.ENDER_CHEST,
+                        Material.TNT,
+                        Material.TNT_MINECART
+                    ).contains(event.blockPlaced.type)
+                ) {
                     event.isCancelled = true
                 }
             } else {
@@ -441,7 +455,8 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             lobby -> {
                 PlayerManager.findInfoByPlayer(event.player)
                     ?.also {
-                        it.status = InLobby
+                        event.isCancelled = true
+                        it.logout()
                     }
                     ?.inventory?.create(RESET)?.load(savePresent = true)
             }

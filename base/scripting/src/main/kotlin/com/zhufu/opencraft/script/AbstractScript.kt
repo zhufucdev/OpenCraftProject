@@ -1,10 +1,7 @@
 package com.zhufu.opencraft.script
 
 import com.zhufu.opencraft.*
-import com.zhufu.opencraft.Scripting.Executor.*
-import com.zhufu.opencraft.headers.PlayerHeaders
-import com.zhufu.opencraft.headers.PublicHeaders
-import com.zhufu.opencraft.headers.ServerHeaders
+import com.zhufu.opencraft.player_community.PlayerOutputStream
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.PolyglotException
 import org.graalvm.polyglot.SourceSection
@@ -15,7 +12,6 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 abstract class AbstractScript : Callable<Value?>, Nameable {
     abstract val executor: Scripting.Executor
@@ -30,7 +26,7 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
 
     protected fun beforeRun(out: OutputStream? = null) {
         val output = out ?: System.out
-        val getter = if (out is PlayerStream) out.lang else Language.LangGetter(Language.defaultLangCode)
+        val getter = if (out is PlayerOutputStream) out.lang else Language.LangGetter(Language.defaultLangCode)
         with(output) {
             fun write(src: String) = write(src.toByteArray())
             write(getter["scripting.toRun.1"].toInfoMessage() + '\n')
@@ -46,7 +42,7 @@ abstract class AbstractScript : Callable<Value?>, Nameable {
 
     protected fun printException(src: String, e: Exception, out: OutputStream = System.out) {
         e.printStackTrace()
-        fun append(src: String) = out.write((if (out is PlayerStream) src.toErrorMessage() else src).toByteArray())
+        fun append(src: String) = out.write((if (out is PlayerOutputStream) src.toErrorMessage() else src).toByteArray())
         val exception = if (e is PolyglotException) e else if (e.cause is PolyglotException) e.cause else e
         try {
             if (exception is PolyglotException) {

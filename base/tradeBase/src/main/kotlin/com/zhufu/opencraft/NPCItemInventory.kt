@@ -1,6 +1,7 @@
 package com.zhufu.opencraft
 
 import net.citizensnpcs.api.CitizensAPI
+import net.citizensnpcs.api.ai.tree.Behavior
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.citizensnpcs.api.npc.NPC
 import org.bukkit.Bukkit
@@ -14,47 +15,66 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.Vector
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
-abstract class NPCItemInventory(var baseLocation: Location, private val item: ItemStack, val plugin: JavaPlugin): Listener {
+abstract class NPCItemInventory(
+    var baseLocation: Location,
+    private val faceLocation: Location? = null,
+    private val item: ItemStack,
+    val plugin: JavaPlugin
+) : Listener {
     companion object {
         var id = 314
         val npcList = ArrayList<NPC>()
     }
+
     val id: Int = ++Companion.id
     lateinit var clickableNPC: NPC
     abstract var inventory: Inventory
     abstract var inventoryName: String
     private var isOpened = false
+
     init {
         initNPC()
         Bukkit.getScheduler().runTask(plugin) { _ ->
-            Bukkit.getPluginManager().registerEvents(this,plugin)
+            Bukkit.getPluginManager().registerEvents(this, plugin)
         }
     }
 
-    private fun initNPC(){
+    private fun initNPC() {
         baseLocation = baseLocation.block.location.clone()
 
         //Clean the old one
         npcList.firstOrNull { it.id == id }?.destroy()
 
-        clickableNPC = CitizensAPI.getNPCRegistry().createNPC(EntityType.ARMOR_STAND, UUID.randomUUID(), id,id.toString())
-        clickableNPC.spawn(baseLocation.clone().add(Vector(0.5,0.0,0.5)))
+        clickableNPC =
+            CitizensAPI.getNPCRegistry().createNPC(EntityType.ARMOR_STAND, UUID.randomUUID(), id, id.toString())
+        clickableNPC.spawn(baseLocation.clone().add(Vector(0.5, 0.0, 0.5)).apply {
+            if (faceLocation != null) yaw = faceLocation.yaw - 180
+        })
         (clickableNPC.entity as ArmorStand)
-                .apply {
-                    setItemInHand(item)
-                }
+            .apply {
+                setItem(EquipmentSlot.HAND, item)
+
+            }
         npcList.add(clickableNPC)
 
+        Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
+            while (!clickableNPC.isSpawned) {
+                Thread.sleep(200)
+            }
+            if (faceLocation != null) clickableNPC.faceLocation(faceLocation)
+        }
     }
 
-    open fun cancel(player: HumanEntity?){
+    open fun cancel(player: HumanEntity?) {
         inventory.clear()
         player?.closeInventory()
         clickableNPC.destroy()
@@ -62,13 +82,13 @@ abstract class NPCItemInventory(var baseLocation: Location, private val item: It
     }
 
     @EventHandler
-    fun onNPCClick(event: NPCRightClickEvent){
-        if (event.npc == clickableNPC){
-            if (BuilderListener.isInBuilderMode(event.clicker)){
+    fun onNPCClick(event: NPCRightClickEvent) {
+        if (event.npc == clickableNPC) {
+            if (BuilderListener.isInBuilderMode(event.clicker)) {
                 event.clicker.sendMessage(TextUtil.error("抱歉，但您不能在此时购买或更改物品"))
                 return
             }
-            if (isOpened){
+            if (isOpened) {
                 event.clicker.sendMessage(TextUtil.error("该物品已经被其他玩家占用"))
                 return
             }
@@ -79,23 +99,23 @@ abstract class NPCItemInventory(var baseLocation: Location, private val item: It
     }
 
     @EventHandler
-    fun onPlayerClickItem(event: InventoryClickEvent){
-        if (event.inventory == inventory){
+    fun onPlayerClickItem(event: InventoryClickEvent) {
+        if (event.inventory == inventory) {
             event.isCancelled = onItemClick(event)
         }
     }
 
     @EventHandler
-    fun onPlayerBreakBlock(event: BlockBreakEvent){
-        if (!event.isCancelled && event.block.location == baseLocation){
+    fun onPlayerBreakBlock(event: BlockBreakEvent) {
+        if (!event.isCancelled && event.block.location == baseLocation) {
             event.isDropItems = false
             this.cancel(event.player)
         }
     }
 
     @EventHandler
-    fun onPlayerCloseInventory(event: InventoryCloseEvent){
-        if (validateInventory(event.inventory)){
+    fun onPlayerCloseInventory(event: InventoryCloseEvent) {
+        if (validateInventory(event.inventory)) {
             isOpened = false
             onInventoryClose(event.player)
         }
@@ -104,6 +124,6 @@ abstract class NPCItemInventory(var baseLocation: Location, private val item: It
     fun validateInventory(inventory: Inventory): Boolean = inventory == this.inventory && inventory.location == null
 
     abstract fun onItemClick(event: InventoryClickEvent): Boolean
-    open fun onInventoryOpen(player: HumanEntity){}
-    open fun onInventoryClose(player: HumanEntity){}
+    open fun onInventoryOpen(player: HumanEntity) {}
+    open fun onInventoryClose(player: HumanEntity) {}
 }

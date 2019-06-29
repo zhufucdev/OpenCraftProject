@@ -4,8 +4,10 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 import HttpsServer
-import SimpleHandler
+import MajaroHandler
 import SimpleExecutor
+import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.util.logging.Logger
 
@@ -37,7 +39,12 @@ class CraftWeb : JavaPlugin() {
                 set("uiWhiteList", listOf(""))
             if (!isSet("hostName"))
                 set("hostName", "open-craft.cn")
+            if (!isSet("chatPackLossThreshold"))
+                set("chatPackLossThreshold",10)
             saveConfig()
+        }
+        ServerCaller.set<ConfigurationSection>("GetWebConfig") {
+            return@set config
         }
 
         try {
@@ -61,10 +68,10 @@ class CraftWeb : JavaPlugin() {
 
     private fun init() {
         instance.init(
-            key = File(config.getString("keyPath")),
+            key = File(config.getString("keyPath")!!),
             password = config.getString("key")!!,
             port = config.getInt("httpsPort"),
-            handler = SimpleHandler(File(config.getString("root")), config),
+            handler = MajaroHandler(File(config.getString("root")!!), config),
             executor = SimpleExecutor()
         )
     }

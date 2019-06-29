@@ -20,7 +20,7 @@ class ServerLogger(val player: ServerPlayer, val level: Level) {
         timeEnd = System.currentTimeMillis()
         mLog.append(log)
         if (player is ChatInfo) {
-            player.playerStream.send(
+            player.playerOutputStream.send(
                 when (level) {
                     Level.INFO -> TextUtil.info(log)
                     Level.WARNING -> TextUtil.warn(log)
@@ -48,7 +48,7 @@ class ServerLogger(val player: ServerPlayer, val level: Level) {
             if (createNewFile())
                 writeText(log)
             else if (player is ChatInfo)
-                player.playerStream.send(player.lang()["scripting.error.log"].toErrorMessage())
+                player.playerOutputStream.send(player.lang()["scripting.error.log"].toErrorMessage())
         }
     }
 

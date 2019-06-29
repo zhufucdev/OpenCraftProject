@@ -134,7 +134,7 @@ object Language {
         }
     }
 
-    class LangNotFoundException(what: String) : Exception("Language called $what must exist!")
+    class LangNotFoundException(what: String) : Exception("Language called $what must exists!")
 
     class LanguageNotFoundException : IllegalArgumentException {
         constructor()

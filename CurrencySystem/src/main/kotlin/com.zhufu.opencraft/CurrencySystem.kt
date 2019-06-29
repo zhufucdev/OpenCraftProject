@@ -49,7 +49,7 @@ class CurrencySystem : JavaPlugin() {
         private val threadPool = Executors.newCachedThreadPool()
         val isServerReady: Boolean
             get() {
-                val connection = FutureTask<Boolean> {
+                val connection = FutureTask {
                     var result: Boolean
 
                     if (checker == null || checker!!.isClosed) {
@@ -145,7 +145,10 @@ class CurrencySystem : JavaPlugin() {
                     .add(Vector(0, 30, 0))
                     .setDirection(Vector(0, -90, 0))
                 val l3Bottom = l3Top.clone().add(Vector(0.0, -15.0, 0.0))
-                player.teleport(l3Top)
+                val scheduler = Bukkit.getScheduler()
+                scheduler.runTask(mInstance) { _ ->
+                    player.teleport(l3Top)
+                }
                 player.sendTitle(
                     TextUtil.tip(getter["trade.tutorial.5.title"]),
                     TextUtil.getColoredText(getter["trade.tutorial.5.subtitle"], TextUtil.TextColor.AQUA), 7, 4 * 20, 0
@@ -424,7 +427,7 @@ class CurrencySystem : JavaPlugin() {
         password = config.getString("serverPwd", "")!!
 
         if (!donation.exists()) {
-            logger.warning("Donation map doesn't exist! Put it at ${donation.absolutePath}")
+            logger.warning("Donation map doesn't exists! Put it at ${donation.absolutePath}")
         }
 
         Bukkit.getScheduler().runTaskLater(this, { _ ->
@@ -434,23 +437,22 @@ class CurrencySystem : JavaPlugin() {
                 npc!!.spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
                 val entity = npc!!.entity as Player
                 entity.inventory.setItemInMainHand(ItemStack(Material.EMERALD))
-            }
-            server.pluginManager.registerEvents(EveryThing, this)
+                OfflineInfo.forEach {
+                    try {
+                        it.territoryID.let { id -> territoryMap.add(TradeTerritoryInfo(it.uuid!!,id)) }
+                    } catch (e: Exception) {
+                        logger.warning("Error while loading territory for ${it.name}")
+                        e.printStackTrace()
+                    }
+                }
 
-            OfflineInfo.forEach {
                 try {
-                    it.territoryID?.let { id -> territoryMap.add(TradeTerritoryInfo(it.uuid!!,id)) }
+                    TradeManager.loadFromFile(File(tradeRoot, "tradeInfos.json"))
                 } catch (e: Exception) {
-                    logger.warning("Error while loading territory ${file.name}")
-                    logger.warning("${e::class.simpleName}: ${e.localizedMessage}, ${e.cause}")
+                    e.printStackTrace()
                 }
             }
-
-            try {
-                TradeManager.loadFromFile(File(tradeRoot, "tradeInfos.json"))
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            server.pluginManager.registerEvents(EveryThing, this)
         }, 40)
     }
 

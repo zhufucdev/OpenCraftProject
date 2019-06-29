@@ -1,17 +1,18 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.player_community.PlayerOutputStream
+import com.zhufu.opencraft.util.WebOutputStream
 import java.io.File
-import java.net.InetAddress
 import java.nio.file.Paths
 
-class PreregisteredInfo(val id: String) : WebInfo(true) {
+class PreregisteredInfo(override val id: String) : WebInfo(true, nameToExtend = id) {
     companion object {
-        fun exist(name: String) = File("plugins/tag/preregister/$name.yml").exists()
+        fun exists(name: String) = Paths.get("plugins","tag","preregister","$name.yml").toFile().exists()
     }
     override val tagFile: File
-        get() = File(File("plugins/tag/preregister").also { if (!it.exists()) it.mkdirs() },"$id.yml")
+        get() = File(Paths.get("plugins","tag","preregister").toFile().also { if (!it.exists()) it.mkdirs() },"$name.yml")
     override val playerDir: File
         get() = Paths.get("plugins","playerDir","preregister",name).toFile().also { if (!it.exists()) it.mkdirs() }
     override val face: File
-        get() = File("plugins/faces/$id.png")
+        get() = Paths.get("plugins","faces","$name.png").toFile()
 }

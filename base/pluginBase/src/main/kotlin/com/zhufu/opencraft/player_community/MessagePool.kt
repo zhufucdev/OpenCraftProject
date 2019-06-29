@@ -105,7 +105,7 @@ open class MessagePool private constructor() {
         return JsonParser().parse(sr.toString())
     }
 
-    internal fun sendTo(player: ChatInfo, msg: Message) = player.playerStream.sendRaw(getJson(msg, player))
+    internal fun sendTo(player: ChatInfo, msg: Message) = player.playerOutputStream.sendRaw(getJson(msg, player))
 
     open fun sendAllTo(player: ChatInfo) {
         Base.publicMsgPool.sendAllTo(player)

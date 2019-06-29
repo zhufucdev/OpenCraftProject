@@ -23,8 +23,13 @@ object PlayerManager : Listener {
         Info.plugin = plugin
     }
 
-    fun removeChatter(chatInfo: ChatInfo) = chatters.remove(chatInfo)
-    fun findChatter(name: String) = chatters.firstOrNull { it.id == name }
+    fun add(chatInfo: ChatInfo) {
+        if (!chatters.contains(chatInfo))
+            chatters.add(chatInfo)
+    }
+    fun remove(chatInfo: ChatInfo) = chatters.remove(chatInfo)
+    fun findChatter(name: String)
+            = chatters.firstOrNull { it.id == name } ?: infoList.firstOrNull { it.name == name }
     fun removeFirstChatter(l: (ChatInfo) -> Boolean): Boolean {
         val index = chatters.indexOfFirst(l)
         if (index == -1)

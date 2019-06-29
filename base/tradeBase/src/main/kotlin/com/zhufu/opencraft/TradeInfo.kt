@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.*
 import javax.security.auth.Destroyable
 
-class TradeInfo: Cloneable,Destroyable {
+class TradeInfo : Cloneable, Destroyable {
     constructor()
     constructor(id: Int) {
         this.id = id
@@ -27,18 +27,26 @@ class TradeInfo: Cloneable,Destroyable {
 
     private var isDestroy = false
     var items: SellingItemInfo? = null
-    var validateInventory: TradeValidateInventory? = null
+    private var validateInventory: TradeValidateInventory? = null
     private var seller: String? = null
+    private var faceLocation: Location? = null
     fun getSeller() = seller
     fun setSeller(value: String?, ignoreInventoryItem: Boolean) {
         seller = value
         if (value != null && value != "server") {
-            validateInventory = TradeValidateInventory(this)
-            val it = Bukkit.getPlayer(UUID.fromString(value))?:return
+            val it = Bukkit.getOfflinePlayer(UUID.fromString(value))
+            if (faceLocation == null && it.isOnline)
+                faceLocation = it.player!!.location
+
+            validateInventory = TradeValidateInventory(this, faceLocation)
             if (items == null)
                 throw IllegalAccessError("Items must not be null!")
-            if (!ignoreInventoryItem)
-                it.setInventory(items!!.item, -items!!.amount)
+            if (!ignoreInventoryItem) {
+                if (it.isOnline)
+                    it.player!!.setInventory(items!!.item, -items!!.amount)
+                else
+                    throw IllegalStateException("Player ${it.name} must be online because [ignoreInventoryItem] is set as [false].")
+            }
         }
     }
 
@@ -70,33 +78,33 @@ class TradeInfo: Cloneable,Destroyable {
             it.printTradeError("您没有足够的物品", id, false)
             return false
         }
-        if (howMany != this.items!!.amount){
+        if (howMany != this.items!!.amount) {
             this.items!!.amount -= howMany
         }
 
         info.currency -= prise
         if (seller != "server") {
-            val seller = PlayerManager.findOfflinePlayer(UUID.fromString(seller!!))?:return false
+            val seller = PlayerManager.findOfflinePlayer(UUID.fromString(seller!!)) ?: return false
             seller.currency += prise
-            if (seller.isOnline){
+            if (seller.isOnline) {
                 seller.onlinePlayerInfo!!.player.sendMessage(TextUtil.info("${it.name}购买了您的${items!!.item.type}×$howMany，从而使您获得了${prise}个货币"))
             }
         }
         val sellerName: String = if (seller == "server") seller!!
-                        else Bukkit.getOfflinePlayer(UUID.fromString(seller)).name?:"unknown"
+        else Bukkit.getOfflinePlayer(UUID.fromString(seller)).name ?: "unknown"
         it.sendMessage("您向${TextUtil.tip(sellerName)}以${TextUtil.tip(prise.toString())}个货币购买了${TextUtil.tip("${what.type}×$howMany")}")
         return true
     }
 
-    fun cancel(){
+    fun cancel() {
         if (seller == null || seller == "server" || items == null)
             return
-        val player = Bukkit.getPlayer(UUID.fromString(seller))?:return
+        val player = Bukkit.getPlayer(UUID.fromString(seller)) ?: return
         player.inventory.addItem(items!!.item.clone().also { it.amount = items!!.amount })
         destroy()
     }
 
-    override fun destroy(){
+    override fun destroy() {
         if (seller == null || seller == "server" || items == null)
             return
         validateInventory?.cancel(null)
@@ -142,8 +150,8 @@ class TradeInfo: Cloneable,Destroyable {
             }
         } else {
             this.inventory.addItem(
-                    type.clone()
-                            .also { it.amount = amount }
+                type.clone()
+                    .also { it.amount = amount }
             )
         }
         return true
@@ -188,18 +196,43 @@ class TradeInfo: Cloneable,Destroyable {
                                 "z" -> z = reader.nextInt()
                                 "world" -> {
                                     val text = reader.nextString()
-                                    if (text != "world_trade")
+                                    if (text != world.name)
                                         world = Bukkit.getWorld(text)!!
                                 }
                             }
                         }
                         reader.endObject()
-                        r.location = Location(world,x.toDouble(),y.toDouble(),z.toDouble())
+                        r.location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+                    }
+                    "face" -> {
+                        var x = 0.0
+                        var y = 0.0
+                        var z = 0.0
+                        var yaw = 0F
+                        var pitch = 0F
+                        var world = Base.tradeWorld
+                        reader.beginObject()
+                        while (reader.hasNext()) {
+                            when (reader.nextName()) {
+                                "x" -> x = reader.nextDouble()
+                                "y" -> y = reader.nextDouble()
+                                "z" -> z = reader.nextDouble()
+                                "yaw" -> yaw = reader.nextDouble().toFloat()
+                                "pitch" -> pitch = reader.nextDouble().toFloat()
+                                "world" -> {
+                                    val text = reader.nextString()
+                                    if (text != world.name)
+                                        world = Bukkit.getWorld(text)!!
+                                }
+                            }
+                        }
+                        reader.endObject()
+                        r.faceLocation = Location(world, x, y, z, yaw, pitch)
                     }
                 }
             }
             reader.endObject()
-            r.setSeller(r.seller,true)
+            r.setSeller(r.seller, true)
             if (r.buyer == NULL)
                 r.buyer = null
             if (r.seller == NULL)
@@ -210,10 +243,10 @@ class TradeInfo: Cloneable,Destroyable {
 
     fun appendToJson(jsonWriter: JsonWriter) {
         jsonWriter
-                .beginObject()
-                .name("uuid").value(id)
-                .name("buyer").value(buyer ?: NULL)
-                .name("seller").value(seller ?: NULL)
+            .beginObject()
+            .name("uuid").value(id)
+            .name("buyer").value(buyer ?: NULL)
+            .name("seller").value(seller ?: NULL)
         jsonWriter.name("item")
         items!!.appendToJson(jsonWriter)
         /**
@@ -221,13 +254,26 @@ class TradeInfo: Cloneable,Destroyable {
          */
         if (location != null) {
             jsonWriter
-                    .name("location")
-                    .beginObject()
-                    .name("x").value(location!!.x)
-                    .name("y").value(location!!.y)
-                    .name("z").value(location!!.z)
-                    .name("world").value(location!!.world!!.name)
-                    .endObject()
+                .name("location")
+                .beginObject()
+                .name("x").value(location!!.x)
+                .name("y").value(location!!.y)
+                .name("z").value(location!!.z)
+                .name("world").value(location!!.world!!.name)
+                .endObject()
+        }
+        if (faceLocation != null) {
+            jsonWriter
+                .name("face")
+                .beginObject()
+                .name("x").value(faceLocation!!.x)
+                .name("y").value(faceLocation!!.y)
+                .name("z").value(faceLocation!!.z)
+                .name("world").value(faceLocation!!.world!!.name)
+                .name("yaw").value(faceLocation!!.yaw)
+                .name("pitch").value(faceLocation!!.pitch)
+                .endObject()
+
         }
         jsonWriter.endObject()
     }

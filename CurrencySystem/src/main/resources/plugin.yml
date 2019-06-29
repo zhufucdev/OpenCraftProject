@@ -1,9 +1,9 @@
 name: CurrencySystem
 author: zhufucomcom
 main: com.zhufu.opencraft.CurrencySystem
-version: 1.0
+version: '1.0'
 softdepend: [ServerCore]
-api-version: 1.13
+api-version: '1.14'
 commands:
   trade:
     usage: /trade (已被抛弃)

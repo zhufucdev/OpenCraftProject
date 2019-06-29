@@ -71,11 +71,11 @@ object TradeManager {
         }
         add(
                 TradeInfo(id)
-                        .also {
-                            it.location = location
-                            it.items = SellingItemInfo(item = what, unitPrise = unitPrise, amount = amount)
-                            it.setSeller(seller, ignoreInventoryItem)
-                            it.setBuyer(buyer?.uniqueId?.toString(), it.items!!.amount)
+                        .apply {
+                            this.location = location
+                            items = SellingItemInfo(item = what, unitPrise = unitPrise, amount = amount)
+                            setSeller(seller, ignoreInventoryItem)
+                            setBuyer(buyer?.uniqueId?.toString(), items!!.amount)
                         }
         )
     }
@@ -92,14 +92,13 @@ object TradeManager {
         val amount = t.items!!.amount
 
         val r = t.setBuyer(who.uniqueId.toString(),howMany = howMany)
-        if (!r)
-            return TradeResult.FAILED
+        return if (!r)
+            TradeResult.FAILED
         else {
             if (amount == howMany) {
                 mList.remove(t)
-                return TradeResult.SUCCESSFUL
-            }
-            else return TradeResult.UPDATE
+                TradeResult.SUCCESSFUL
+            } else TradeResult.UPDATE
         }
     }
 
@@ -137,11 +136,10 @@ object TradeManager {
         val reader = JsonReader(file.reader())
         reader.beginArray()
         while (reader.hasNext()) {
-            val path = reader.path
             try {
                 mList.add(TradeInfo.fromJson(reader))
             }catch (e: IllegalArgumentException){
-                println("Could not load $path")
+                Bukkit.getLogger().warning("Could not load ${reader.path}.")
                 e.printStackTrace()
             }
         }

@@ -13,6 +13,7 @@ object Game {
         "countOfSurveyQuestion",
         "secondsPerQuestion",
         "notice",
-        "url"
+        "url",
+        "diamondExchange"
     )
 }

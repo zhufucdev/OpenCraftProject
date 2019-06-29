@@ -55,7 +55,6 @@ import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.math.roundToLong
-import kotlin.reflect.jvm.jvmName
 
 class Core : JavaPlugin(), Listener {
     companion object {
@@ -100,6 +99,7 @@ class Core : JavaPlugin(), Listener {
         }
         if (!dataFolder.exists()) dataFolder.mkdirs()
         try {
+            ServerStatics.init()
             SurveyManager.init(File(dataFolder, "survey.json"), this)
             GameManager.init(this)
             PlayerManager.init(this)
@@ -118,14 +118,14 @@ class Core : JavaPlugin(), Listener {
                 logger.warning("Failed to execute AutoExec script.")
                 e.printStackTrace()
             }
-            ServerStatics.init()
-        } catch (e: Throwable){
+        } catch (e: Throwable) {
             logger.warning("Error while initializing Server Core.")
-            logger.throwing(this::class.jvmName,"onEnable",e)
+            e.printStackTrace()
         }
 
         ServerCaller["SolvePlayerLobby"] = {
-            val info = (it.firstOrNull()?:throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
+            val info = (it.firstOrNull()
+                ?: throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
             PlayerLobbyManager[info].also { lobby -> if (!lobby.isInitialized) lobby.initialize() }.tpThere(info.player)
         }
 
@@ -449,21 +449,29 @@ class Core : JavaPlugin(), Listener {
                         return false
                     } else Charsets.UTF_8
                     Bukkit.getScheduler().runTaskAsynchronously(this, Runnable {
-                        val screenfetch = Runtime.getRuntime().exec(
-                            Paths.get(System.getenv("PATH").split(':').firstOrNull {
+                        val path = Paths.get(
+                            System.getenv("PATH").split(':').firstOrNull {
                                 Paths.get(it, "screenfetch").toFile().exists()
-                            }, "screenfetch").toString()
-                        ).inputStream.bufferedReader().readText().filter { !it.isISOControl() || it == '\n' }
-                            .replace("[1;", "[")
-                            .replace("[0m", "")
-                            .replace("[1m", ChatColor.RESET.toString())
-                            .replace("[31m", "${ChatColor.COLOR_CHAR}${ChatColor.RED.char}")
-                            .replace("[32m", "${ChatColor.COLOR_CHAR}${ChatColor.GREEN.char}")
-                            .replace("[33m", "${ChatColor.COLOR_CHAR}${ChatColor.YELLOW.char}")
-                            .replace("[34m", "${ChatColor.COLOR_CHAR}${ChatColor.BLUE.char}")
-                            .replace("[35m", "${ChatColor.COLOR_CHAR}${ChatColor.LIGHT_PURPLE.char}")
-                            .replace("[36m", "${ChatColor.COLOR_CHAR}${ChatColor.DARK_AQUA.char}")
-                            .plus(ChatColor.RESET.char)
+                            }?:"null",
+                            "screenfetch"
+                        ).toFile()
+                        val screenfetch = if (path.exists()) {
+                            Runtime.getRuntime().exec(path.absolutePath)
+                                .inputStream.bufferedReader()
+                                .readText().filter { !it.isISOControl() || it == '\n' }
+                                .replace(Regex("\\[[0-9]*;"), "[")
+                                .replace("[0m", "")
+                                .replace("[1m", ChatColor.RESET.toString())
+                                .replace("[30m", "${ChatColor.COLOR_CHAR}${ChatColor.BLACK.char}")
+                                .replace("[31m", "${ChatColor.COLOR_CHAR}${ChatColor.RED.char}")
+                                .replace("[32m", "${ChatColor.COLOR_CHAR}${ChatColor.GREEN.char}")
+                                .replace("[33m", "${ChatColor.COLOR_CHAR}${ChatColor.YELLOW.char}")
+                                .replace("[34m", "${ChatColor.COLOR_CHAR}${ChatColor.BLUE.char}")
+                                .replace("[35m", "${ChatColor.COLOR_CHAR}${ChatColor.LIGHT_PURPLE.char}")
+                                .replace("[36m", "${ChatColor.COLOR_CHAR}${ChatColor.DARK_AQUA.char}")
+                                .replace("[37m","${ChatColor.COLOR_CHAR}${ChatColor.WHITE}")
+                                .plus(ChatColor.RESET.char)
+                        } else "ERROR: no shell command screenfetch."
                         sender.sendMessage(
                             TextUtil.format(
                                 title = "自述文件",
@@ -600,7 +608,7 @@ class Core : JavaPlugin(), Listener {
                         sender.sendMessage(TextUtil.success("已将公告栏位置设置为当前位置"))
                         spawnHolographicText()
                     } else {
-                        if (args.size < 3 || !varNames.contains(args[1])) {
+                        if (args.size < 3) {
                             sender.sendMessage(TextUtil.error("用法错误"))
                             return true
                         }
@@ -696,7 +704,7 @@ class Core : JavaPlugin(), Listener {
                         val timeBegin = System.currentTimeMillis()
                         val result = ServerScript.INSTANCE.runLine(
                             src,
-                            if (sender is Player) sender.info()?.playerStream else null
+                            if (sender is Player) sender.info()?.playerOutputStream else null
                         )
                         val timeEnd = System.currentTimeMillis()
                         if (result == null) {

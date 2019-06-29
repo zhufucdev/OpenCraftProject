@@ -138,7 +138,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             if (isDestroyed)
                 throw IllegalAccessException("This object must not be destroyed!")
             if (player == null)
-                throw IllegalStateException("Can't read player's info when it doesn't exist!")
+                throw IllegalStateException("Can't read player's info when it doesn't exists!")
 
             if (name == RESET || name == NOTHING) return
 
@@ -188,7 +188,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             if (isDestroyed)
                 throw IllegalAccessException("This object must not be destroyed!")
             if (player == null)
-                throw IllegalStateException("Can't read player's info when it doesn't exist!")
+                throw IllegalStateException("Can't read player's info when it doesn't exists!")
 
             this.inventoryOnly = inventoryOnly
             if (savePresent)

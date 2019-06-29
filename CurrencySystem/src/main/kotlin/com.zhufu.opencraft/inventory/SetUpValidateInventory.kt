@@ -14,14 +14,14 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
 
 class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, private val player: Player) :
-    NPCItemInventory(baseLocation, itemSell, CurrencySystem.mInstance) {
+    NPCItemInventory(baseLocation, null, itemSell, CurrencySystem.mInstance) {
     companion object {
         val inventories = ArrayList<SetUpValidateInventory>()
     }
 
-    lateinit var confirmItem: ItemStack
-    lateinit var cancelItem: ItemStack
-    lateinit var giveSignItem: ItemStack
+    private var confirmItem: ItemStack
+    private var cancelItem: ItemStack
+    private var giveSignItem: ItemStack
     override var inventoryName: String = TextUtil.tip("确认销售[uuid:$id]")
     override var inventory: Inventory = Bukkit.createInventory(null, InventoryType.CHEST, inventoryName)
     var items = SellingItemInfo(itemSell, -1, itemSell.amount)
@@ -29,8 +29,7 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
     init {
         inventory.addItem(itemSell)
         inventory.setItem(inventory.size - 1,
-            MaterialData(Material.LEGACY_INK_SACK, 10)
-                .toItemStack(1)
+            Widgets.confirm
                 .also { itemStack ->
                     itemStack.itemMeta = itemStack.itemMeta!!.also {
                         it.setDisplayName(
@@ -46,8 +45,7 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
                 }
         )
         inventory.setItem(inventory.size - 2,
-            MaterialData(Material.LEGACY_INK_SACK, 12)
-                .toItemStack(1)
+            ItemStack(Material.BLUE_DYE)
                 .also { itemStack ->
                     itemStack.itemMeta = itemStack.itemMeta!!.also {
                         it.setDisplayName(TextUtil.getColoredText("获取告示牌", TextUtil.TextColor.RED, true, false))
@@ -57,8 +55,7 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
                 }
         )
         inventory.setItem(inventory.size - 3,
-            MaterialData(Material.LEGACY_INK_SACK, 1)
-                .toItemStack(1)
+            Widgets.cancel
                 .also { itemStack ->
                     itemStack.itemMeta = itemStack.itemMeta!!.also {
                         it.setDisplayName(TextUtil.getColoredText("取消", TextUtil.TextColor.RED, true, false))
@@ -90,7 +87,7 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
     override fun cancel(player: HumanEntity?) {
         player?.inventory?.addItem(items.item.clone().also { it.amount = items.amount })
         signPossible.forEach {
-            if (it.block.type.name.contains("wall_sign",true)) {
+            if (it.block.type.name.contains("wall_sign", true)) {
                 it.block.type = Material.AIR
             }
         }
@@ -112,7 +109,7 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
         )
 
     private fun confirm(): Boolean {
-        val block = signPossible.firstOrNull { it.block.type.name.contains("wall_sign",true) }?.block
+        val block = signPossible.firstOrNull { it.block.type.name.contains("wall_sign", true) }?.block
         if (block == null) {
             player.closeInventory()
             player.sendMessage(TextUtil.error("未在白色玻璃周围发现告示牌，请放置告示牌并在首行写入单价(整数)"))

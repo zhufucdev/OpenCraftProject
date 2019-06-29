@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import com.google.common.cache.CacheBuilder
 import com.zhufu.opencraft.player_community.Friend
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
@@ -15,9 +16,12 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = null) : ServerOperator {
+abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = null, private val nameToExtend: String? = null) : ServerOperator {
     companion object {
-        val memory = HashMap<UUID, YamlConfiguration>()
+        val memory =
+            CacheBuilder.newBuilder()
+                .maximumSize(Bukkit.getMaxPlayers().toLong())
+                .build<UUID, YamlConfiguration>()!!
 
         val size: Int
             get() {
@@ -38,14 +42,8 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
     abstract val playerDir: File
     private var privateTag: YamlConfiguration? = null
     var tag: YamlConfiguration
-        get() = if (uuid != null) {
-            memory[uuid!!].let {
-                if (it == null) {
-                    val r = initTag(createNew)
-                    tag = r
-                    r
-                } else it
-            }
+       get() = if (uuid != null) {
+            memory[uuid!!, { initTag(createNew) }]
         } else {
             privateTag.let {
                 if (it == null) {
@@ -58,7 +56,7 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
             }
         }
         set(value) {
-            if (uuid != null) memory[uuid!!] = value
+            if (uuid != null) memory.put(uuid!!, value)
             else privateTag = value
         }
     val friendship = ArrayList<Friend>().apply {
@@ -84,15 +82,6 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
     } catch (e: Throwable) {
         println("Could not load tag for player $uuid")
         throw e
-    }
-
-    private fun fixTag(file: File, createNew: Boolean): Reader {
-        if (!file.exists()) {
-            if (createNew) {
-                file.createNewFile()
-            } else throw FileNotFoundException("Cannot locate tag file at ${file.absolutePath}.")
-        }
-        return file.reader()
     }
 
     open fun saveTag() {
@@ -123,10 +112,7 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
 
     var password: String?
         get() = tag.getString("password", null)
-        set(value) {
-            tag.set("password", value)
-            saveTag()
-        }
+        set(value) = tag.set("password", value)
     val inventoriesFile
         get() = Paths.get("plugins", "inventories", uuid.toString()).toFile()!!
 
@@ -177,7 +163,8 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
             else throw IllegalStateException("Cannot read offline player for an info with uuid null.")
 
     var name: String?
-        get() = tag.getString("name")
+        get() = nameToExtend
+            ?: tag.getString("name")
             ?: try {
                 offlinePlayer.name
             } catch (e: IllegalStateException) {

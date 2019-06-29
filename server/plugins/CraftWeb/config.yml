@@ -10,3 +10,4 @@ uiWhiteList:
 - server
 - message
 hostName: localhost:2020
+chatPackLossThreshold: 10

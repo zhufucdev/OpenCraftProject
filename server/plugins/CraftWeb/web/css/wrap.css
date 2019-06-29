@@ -1,0 +1,50 @@
+.grad{
+    background: linear-gradient(rgba(0,0,0,0.3),rgba(255,255,255,0),rgba(255,255,255,0),rgba(255,255,255,0),rgba(255,255,255,0),rgba(0,0,0,0.3));
+}
+.face{
+    font-size: 36px;
+    width: 48px;
+    height: 48px;
+}
+header, main, footer {
+    margin-left: 300px;
+}
+@media only screen and (max-width: 992px){
+    header, main, footer {
+        margin-left: 0;
+    }
+}
+
+.bottom-dialog {
+    background-color: white;
+    display: none;
+    width: 100%;
+    z-index: 1001;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 61.5%;
+    margin: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+
+    overflow-y: auto;
+}
+
+.bottom-dialog .dialog-title {
+    width: 100%;
+    position: fixed;
+    margin: auto;
+    padding-top: 24px;
+    padding-bottom: 12px;
+    background-color: white
+}
+
+.bottom-dialog .dialog-actionbar {
+    position: fixed;
+    bottom: 0;
+    margin: auto;
+    padding-bottom: 10px;
+    background-color: white;
+}

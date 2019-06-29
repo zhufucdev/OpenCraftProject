@@ -51,7 +51,7 @@ object EveryThing : Listener {
     @EventHandler
     fun onBlockBreak(event: BlockBreakEvent) {
         if (event.block.world == tradeWorld) {
-            if (BlockLockManager[event.block.location]?.canAccess(event.player) != true) {
+            if (!getPlayerTerritory(event.player).contains(event.block.location)) {
                 event.isCancelled = true
                 event.player.sendMessage(TextUtil.error("您不能在此破坏方块"))
             } else {
@@ -67,7 +67,7 @@ object EveryThing : Listener {
 
     @EventHandler
     fun onBlockPlace(event: BlockPlaceEvent) {
-        if (event.block.world == tradeWorld && BlockLockManager[event.block.location]?.canAccess(event.player) != true) {
+        if (event.block.world == tradeWorld && !getPlayerTerritory(event.player).contains(event.blockPlaced.location)) {
             event.isCancelled = true
             event.player.sendMessage(TextUtil.error("您不能在此放置方块"))
         }
@@ -137,8 +137,7 @@ object EveryThing : Listener {
             val inMsgShown = info.tag.getBoolean("isTerritoryInMessageShown", false)
             val outMsgShown = info.tag.getBoolean("isTerritoryOutMessageShown", false)
             val inTerritory =
-                territoryMap.firstOrNull { it.player == event.player.uniqueId }?.contains(event.player.location)
-                    ?: false
+                getPlayerTerritory(event.player).contains(event.player.location)
             if (!inMsgShown && inTerritory) {
                 event.player.sendActionText(TextUtil.info("您已进入自己的领地"))
                 info.status = Info.GameStatus.Surviving
@@ -175,7 +174,6 @@ object EveryThing : Listener {
 
     @EventHandler
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
-        val chunkInfo = BlockLockManager[event.player.location]
         val playerInfo = PlayerManager.findInfoByPlayer(event.player)
         if (playerInfo == null) {
             event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
@@ -184,7 +182,7 @@ object EveryThing : Listener {
         if (playerInfo.status != Info.GameStatus.Surviving)
             return
         if (event.itemDrop.itemStack.type == Material.WOODEN_AXE) {
-            if (chunkInfo?.owner != event.player.uniqueId.toString()) {
+            if (!getPlayerTerritory(event.player).contains(event.itemDrop.location)) {
                 event.player.sendMessage(TextUtil.error("抱歉，但您不能在此处创建商店"))
                 return
             }
@@ -227,7 +225,7 @@ object EveryThing : Listener {
                     event.player.sendMessage(TextUtil.error("抱歉，但您的商店不能覆盖已有方块"))
                     return
                 }
-                SetUpValidateInventory(location, itemSell, event.player)
+                SetUpValidateInventory(location.apply { yaw = event.player.location.yaw - 180 }, itemSell, event.player)
                 //Clean
                 itemsAround.forEach { it.remove() }
                 event.player.inventory.addItem(ItemStack(Material.WOODEN_AXE))

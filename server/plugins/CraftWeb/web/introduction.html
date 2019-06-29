@@ -1,0 +1,121 @@
+<div class="row white-text" style="margin-top: -10px;padding-top: 100px;padding-bottom: 100px;background: #399bf3">
+    <div class="col s12 m6">
+        <p id="first-coming" style="font-size: 6vw;display: inline;margin-top: 50px">
+            一个开源且开放的
+        </p>
+        <p id="second-coming" style="font-size: 6vw;display: inline;margin-top: 50px">
+            Minecraft Java版服务器
+        </p>
+    </div>
+    <img class="col s12 m6" src="img/logo-text.png" style="padding: 50px" alt="logo"/>
+</div>
+<div class="container">
+    <div class="section">
+        <h4 class="center black-text">我们做些什么</h4>
+        <div class="row">
+            <div class="col s12 m4">
+                <h2 class="center">
+                    <a class="btn-floating btn-large z-depth-0 blue">
+                        <i class="mdi mdi-settings mdi-light mdi-36px"></i>
+                    </a>
+                </h2>
+                <h5 class="center">快速</h5>
+                <p>
+                    我们通过一定的的技术和有效的硬件来保证服务器流畅运行。服务器由Paper MC开源项目提供支持。
+                </p>
+            </div>
+            <div class="col s12 m4">
+                <h2 class="center">
+                    <a class="btn-floating btn-large z-depth-0 green">
+                        <i class="mdi mdi-security mdi-36px mdi-light"></i>
+                    </a>
+                </h2>
+                <h5 class="center">安全</h5>
+                <p>
+                    我们保护每位玩家的利益，并且检测作弊行为。您可以随时请求管理员介入事件。
+                </p>
+            </div>
+            <div class="col s12 m4">
+                <h2 class="center">
+                    <a class="btn-floating btn-large z-depth-0 red">
+                        <i class="mdi mdi-open-in-new mdi-36px mdi-light"></i>
+                    </a>
+                </h2>
+                <h5 class="center">开放</h5>
+                <p>
+                    正如你所见，我们的服务器插件(基于Paper MC和<a class="blue-text" href="#" id="gpl">GPLv3协议</a>)是完全开源的，你可以在
+                    <a href="https://github.com/zhufucdev/OpenCraftProject" class="blue-text">这里</a>
+                    找到服务器插件的源代码。我们欢迎任何人为服务器作出任何形式的贡献。
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="parallax-container">
+    <div class="section no-pad-bot">
+        <div class="container center-align">
+            <h3 class="col s12 lighten-2 white-text">
+                欢迎您的到来
+            </h3>
+        </div>
+    </div>
+    <div class="parallax"><img id="img-3" src="img/shot1.png"></div>
+</div>
+<div class="container">
+    <div class="section">
+        <h4 class="center black-text">您可以通过以下方式加入我们</h4>
+        <div class="row">
+            <div class="col s12 m4">
+                <h2 class="center">
+                    <a class="btn-floating btn-large blue waves-effect waves-light btn" onclick="github()">
+                        <i class="mdi mdi-github-face mdi-light mdi-36px"></i>
+                    </a>
+                </h2>
+                <h5 class="center grey-text">在GitHub发Pull Requests</h5>
+            </div>
+            <div class="col s12 m4">
+                <h2 class="center">
+                    <a class="btn-floating btn-large waves-effect waves-light red" onclick="window.open('http://qm.qq.com/cgi-bin/qm/qr?k=4G9zADMIFFmz__HR9OE4QdwBQRMTiXZW&authKey=KjRH+7TgXcaOhT1Uhd5wSPoI9DmrlmuzT6+EElo0ZioQzskSAA6dtdWkg/A6pONG')">
+                        <i class="mdi mdi-qqchat mdi-light mdi-36px"></i>
+                    </a>
+                </h2>
+                <h5 class="center grey-text">701039408</h5>
+            </div>
+            <div class="col s12 m4">
+                <h2 class="center">
+                    <a class="btn-floating btn-large waves-effect waves-light green" onclick="M.toast({html:'Minecraft下服务器地址: open-craft.cn'})">
+                        <i class="mdi mdi-minecraft mdi-light mdi-36px"></i>
+                    </a>
+                </h2>
+                <h5 class="center grey-text">open-craft.cn</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal">
+    <div class="modal-content">
+        <h4>GPL v3</h4>
+        <p id="gpl-content"></p>
+    </div>
+    <div class="modal-footer">
+        <a class="modal-close waves-effect btn-flat">确定</a>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.parallax').parallax();
+
+        fadeIn(document.getElementById('first-coming'),20);
+        let second = document.getElementById('second-coming',20);
+        second.style.opacity = '0';
+        setTimeout(()=>fadeIn(second,20),700);
+
+        $('.modal').modal();
+        $('#gpl').click(function () {
+            let instance = M.Modal.getInstance(document.getElementsByClassName('modal')[0]);
+            $('#gpl-content').load('license');
+            instance.open()
+        })
+    })
+</script>

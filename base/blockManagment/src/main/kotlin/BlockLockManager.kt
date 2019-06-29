@@ -192,7 +192,7 @@ object BlockLockManager {
 
         companion object {
             fun fromJson(obj: JsonObject): GroupBlockInfo? {
-                var owner = "op"
+                var owner = "unknown"
                 var name = ""
                 val accessible = ArrayList<UUID>()
                 val accesses = HashMap<Date, UUID>()
@@ -250,7 +250,7 @@ object BlockLockManager {
             val parse = JsonParser().parse(it.readText()).asJsonObject
             val r = BaseInfo.fromJson(parse)
             if (r == null) {
-                println("[BlockLockManager] Could not loading ${it.name}")
+                println("[BlockLockManager] Could not loading ${it.name}.")
                 return@forEach
             }
             add(r)
@@ -267,7 +267,7 @@ object BlockLockManager {
             file.writeText(it.toJson().toString())
         }
         dataFolder.listFiles()?.forEach { file ->
-            if (!mList.any { it.name == file.nameWithoutExtension }) {
+            if (!mList.any { "${it.name}-${it.owner}" == file.nameWithoutExtension }) {
                 file.delete()
             }
         }

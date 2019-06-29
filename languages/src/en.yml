@@ -72,7 +72,7 @@ user:
     time: "Time"
     location: "Location"
     reason: "Reason"
-    noRecordFound: "No such record."
+    noRecord: "No such record."
     last: "Your last place of death is %s"
     toGo: "Go back to last death location by using %s, but this coasts you %s."
     goTo: "Used %s coins to take you back to death location."
@@ -304,6 +304,7 @@ translator:
   containsLang: "With language reference!"
   translating: "Translating…"
   withImages: "A message with images, click to view: %s"
+  withJson: "A message with JSON data which cannot be analyzed because of its particularity: %s"
 
 block:
   block: "block"
@@ -380,6 +381,7 @@ welcome:
 
 tutorial:
   incoming: "Incoming tutorial to play: %s"
+  begin: "So let's begin!"
 
 book:
   empty: "You are catch-up."
@@ -406,6 +408,9 @@ survival:
   notRegistered:
     1: "Sorry, you have't create a survival game yet."
     2: "To begin, jump down the lobby."
+  tip:
+    1: "Welcome to survival mode!"
+    2: "Left click three times and then right click once to open Player Utils."
 
 wand:
   name: 'The Fly Wand'

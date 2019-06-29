@@ -83,7 +83,7 @@ user:
     time: '时间'
     location: '地点'
     reason: '原因'
-    noRecordFound: '未找到相关记录'
+    noRecord: '未找到相关记录'
     last: '您上次的死亡地点位于%s'
     toGo: '使用%s来确认回到上次的死亡地点，然而这会消耗您%s个货币'
     goTo: '您已使用%s个货币回到上次的死亡地点'
@@ -173,6 +173,7 @@ translator:
   containsLang: '带有语言引用'
   translating: '正在翻译'
   withImages: '这是来自Mobile的图片消息，点击查看: %s'
+  withJson: '这是带有JSON的数据，因其特殊性无法解析: %s'
 pu:
   error:
     unselected: '您未选中任何可重命名的项目'
@@ -409,6 +410,9 @@ survival:
   notRegistered:
     1: '抱歉，但您还没有创建生存存档'
     2: '请跳下主城，开始您的生存存档'
+  tip:
+    1: '欢迎来到生产模式！'
+    2: '左键三次、右键一次来打开玩家实用工具。'
 
 web:
   header: '-----Web服务器状态-----'

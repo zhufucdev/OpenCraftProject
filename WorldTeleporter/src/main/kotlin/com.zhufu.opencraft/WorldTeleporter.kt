@@ -23,7 +23,7 @@ class WorldTeleporter : JavaPlugin() {
                 val world = Bukkit.getWorld(it)
                 if (world == null) {
                     if (!File(it).exists()) {
-                        logger.warning("World named $it doesn't exist. Excepting.")
+                        logger.warning("World named $it doesn't exists. Excepting.")
                         config.set(it, null)
                     } else {
                         logger.info("World named $it isn't loaded, but exists on file. Loading...")
@@ -171,7 +171,7 @@ class WorldTeleporter : JavaPlugin() {
                 server.unloadWorld(world, true)
                 sender.success("Succeed.")
             } else if (args.isNotEmpty()) {
-                if (!(sender is Player)) {
+                if (sender !is Player) {
                     sender.sendMessage("此命令只能被玩家所运行")
                     return true
                 }
@@ -187,8 +187,8 @@ class WorldTeleporter : JavaPlugin() {
                                 p.teleport(world.spawnLocation)
                         }, 20)
                     } else {
-                        p.sendMessage(TextUtil.error("您没有访问此世界的权限"))
-                        p.sendMessage(TextUtil.tip("使用/wt list 查看可能的世界"))
+                        p.error("您没有访问此世界的权限")
+                        p.tip("使用/wt list 查看可能的世界")
                     }
                 } else {
                     sender.sendMessage(TextUtil.error("世界不存在"))

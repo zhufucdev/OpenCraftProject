@@ -12,7 +12,6 @@ import org.graalvm.polyglot.Value
 import java.io.File
 import java.io.OutputStream
 import java.util.*
-import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import kotlin.collections.ArrayList
 
@@ -55,7 +54,7 @@ class PlayerScript : AbstractScript {
         this.player = player
         name = getLang(player, "scripting.unnamed")
         logger = player.newLogger(Level.SEVERE)
-        out = if (player is ChatInfo) (player as ChatInfo).playerStream else logger.stream()
+        out = if (player is ChatInfo) (player as ChatInfo).playerOutputStream else logger.stream()
         context = buildNewContext()
     }
 
