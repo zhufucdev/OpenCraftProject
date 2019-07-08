@@ -6,19 +6,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e25b5eb-585d-48af-aa94-1a0ceef8f169" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/server/plugins/Citizens-2.0.25-b1709.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/css/codemirror.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/js/codemirror.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/js/js.cookie-2.2.0.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/mode/javascript/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/mode/javascript/javascript.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/mode/javascript/json-ld.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/mode/javascript/test.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/mode/javascript/typescript.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/playerDir.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/playerDir/2cdaaca0-1f19-39b0-b0da-6599237debb5/script/numbers.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/playerDir/2cdaaca0-1f19-39b0-b0da-6599237debb5/script/randomTp.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/plugins/playerDir/2cdaaca0-1f19-39b0-b0da-6599237debb5/script/未命名1.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.10/fileContent/annotation-processors.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10/fileContent/annotation-processors.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.10/fileContent/fileContent.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10/fileContent/fileContent.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.10/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10/fileHashes/fileHashes.bin" afterDir="false" />
@@ -33,8 +20,6 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/workspace-id.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/workspace-id.txt.lock" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BlockLocker/build/kotlin/BlockLocker10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/BlockLocker/build/kotlin/BlockLocker10SNAPSHOTjar-classes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BlockLocker/build/kotlin/compileKotlin/build-history.bin" beforeDir="false" afterPath="$PROJECT_DIR$/BlockLocker/build/kotlin/compileKotlin/build-history.bin" afterDir="false" />
@@ -165,8 +150,6 @@
       <change beforePath="$PROJECT_DIR$/CraftWeb/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab_i" beforeDir="false" afterPath="$PROJECT_DIR$/CraftWeb/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab_i" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CraftWeb/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" afterPath="$PROJECT_DIR$/CraftWeb/build/kotlin/compileKotlin/last-build.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CraftWeb/build/libs/CraftWeb-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/CraftWeb/build/libs/CraftWeb-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CraftWeb/src/main/kotlin/com.zhufu.opencraft/CraftWeb.kt" beforeDir="false" afterPath="$PROJECT_DIR$/CraftWeb/src/main/kotlin/com.zhufu.opencraft/CraftWeb.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CraftWeb/src/main/kotlin/com.zhufu.opencraft/MajaroHandler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/CraftWeb/src/main/kotlin/com.zhufu.opencraft/MajaroHandler.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/SetUpValidateInventory$cancel$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/SetUpValidateInventory$cancel$3.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/SetUpValidateInventory.class" beforeDir="false" afterPath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/SetUpValidateInventory.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/CurrencySystem10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CurrencySystem/build/kotlin/CurrencySystem10SNAPSHOTjar-classes.txt" afterDir="false" />
@@ -330,7 +313,6 @@
       <change beforePath="$PROJECT_DIR$/PlayerUtils/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab.values.at" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerUtils/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab.values.at" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerUtils/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerUtils/build/kotlin/compileKotlin/last-build.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PlayerUtils/build/libs/PlayerUtils-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerUtils/build/libs/PlayerUtils-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/PlayerUtil.kt" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/PlayerUtil.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PrevHacking/build/kotlin/PrevHacking10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/PrevHacking/build/kotlin/PrevHacking10SNAPSHOTjar-classes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PrevHacking/build/kotlin/compileKotlin/build-history.bin" beforeDir="false" afterPath="$PROJECT_DIR$/PrevHacking/build/kotlin/compileKotlin/build-history.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PrevHacking/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab" beforeDir="false" afterPath="$PROJECT_DIR$/PrevHacking/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab" afterDir="false" />
@@ -355,7 +337,6 @@
       <change beforePath="$PROJECT_DIR$/PrevHacking/build/kotlin/compileKotlin/caches-jvm/lookups/id-to-file.tab.values.at" beforeDir="false" afterPath="$PROJECT_DIR$/PrevHacking/build/kotlin/compileKotlin/caches-jvm/lookups/id-to-file.tab.values.at" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PrevHacking/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" afterPath="$PROJECT_DIR$/PrevHacking/build/kotlin/compileKotlin/last-build.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PrevHacking/build/libs/PrevHacking-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/PrevHacking/build/libs/PrevHacking-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerCore/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$Companion.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$Companion.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$handleTasks$1$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$handleTasks$1$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$handleTasks$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$handleTasks$1.class" afterDir="false" />
@@ -374,15 +355,12 @@
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$onTabComplete$11.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$onTabComplete$11.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$onTabComplete$7.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$onTabComplete$7.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$readNPCProfile$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$readNPCProfile$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core$spawnHolographicText$1.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/Core.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$PlayerAnswerer$formatLine$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$PlayerAnswerer$formatLine$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$PlayerAnswerer$sendQuestion$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$PlayerAnswerer$sendQuestion$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$PlayerAnswerer.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$PlayerAnswerer.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$Question.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$Question.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$QuestionType.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$QuestionType.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$exit$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$onPlayerAsyncChat$2.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$startSurvey$$inlined$timer$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager$startSurvey$$inlined$timer$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/classes/kotlin/main/com/zhufu/opencraft/survey/SurveyManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/kotlin/ServerCore10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/kotlin/ServerCore10SNAPSHOTjar-classes.txt" afterDir="false" />
@@ -422,8 +400,6 @@
       <change beforePath="$PROJECT_DIR$/ServerCore/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab_i.len" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab_i.len" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/kotlin/compileKotlin/last-build.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ServerCore/build/libs/ServerCore-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/build/libs/ServerCore-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerCore/src/main/kotlin/com.zhufu.opencraft/Core.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/src/main/kotlin/com.zhufu.opencraft/Core.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServerCore/src/main/kotlin/com.zhufu.opencraft/survey/SurveyManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/src/main/kotlin/com.zhufu.opencraft/survey/SurveyManager.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SkinnyRemix/build/kotlin/SkinnyRemix10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/SkinnyRemix/build/kotlin/SkinnyRemix10SNAPSHOTjar-classes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SkinnyRemix/build/kotlin/compileKotlin/build-history.bin" beforeDir="false" afterPath="$PROJECT_DIR$/SkinnyRemix/build/kotlin/compileKotlin/build-history.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SkinnyRemix/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab" beforeDir="false" afterPath="$PROJECT_DIR$/SkinnyRemix/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab" afterDir="false" />
@@ -512,8 +488,6 @@
       <change beforePath="$PROJECT_DIR$/UserManager/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" afterPath="$PROJECT_DIR$/UserManager/build/kotlin/compileKotlin/last-build.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManager/build/libs/UserManager-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/UserManager/build/libs/UserManager-1.0-SNAPSHOT.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManager/build/resources/main/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/UserManager/build/resources/main/plugin.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserManager/src/main/kotlin/com.zhufu.opencraft/UserManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/UserManager/src/main/kotlin/com.zhufu.opencraft/UserManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserManager/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/UserManager/src/main/resources/plugin.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WorldTeleporter/build/classes/kotlin/main/com/zhufu/opencraft/WorldTeleporter.class" beforeDir="false" afterPath="$PROJECT_DIR$/WorldTeleporter/build/classes/kotlin/main/com/zhufu/opencraft/WorldTeleporter.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WorldTeleporter/build/kotlin/WorldTeleporter10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/WorldTeleporter/build/kotlin/WorldTeleporter10SNAPSHOTjar-classes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WorldTeleporter/build/kotlin/compileKotlin/build-history.bin" beforeDir="false" afterPath="$PROJECT_DIR$/WorldTeleporter/build/kotlin/compileKotlin/build-history.bin" afterDir="false" />
@@ -620,8 +594,6 @@
       <change beforePath="$PROJECT_DIR$/base/inventoryBase/build/kotlin/inventoryBase10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/base/inventoryBase/build/kotlin/inventoryBase10SNAPSHOTjar-classes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/inventoryBase/build/libs/inventoryBase-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/base/inventoryBase/build/libs/inventoryBase-1.0-SNAPSHOT.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/listeners/build/classes/kotlin/main/com/zhufu/opencraft/PlayerObserverListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/base/listeners/build/classes/kotlin/main/com/zhufu/opencraft/PlayerObserverListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/listeners/build/classes/kotlin/main/com/zhufu/opencraft/SurviveListener$Companion$showHelp$1$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/listeners/build/classes/kotlin/main/com/zhufu/opencraft/SurviveListener$Companion$showHelp$1.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/base/listeners/build/classes/kotlin/main/com/zhufu/opencraft/SurviveListener$Companion$solveSurvivorRequest$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/base/listeners/build/classes/kotlin/main/com/zhufu/opencraft/SurviveListener$Companion$solveSurvivorRequest$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/listeners/build/classes/kotlin/main/com/zhufu/opencraft/SurviveListener$Companion$solveSurvivorRequest$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/base/listeners/build/classes/kotlin/main/com/zhufu/opencraft/SurviveListener$Companion$solveSurvivorRequest$2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/listeners/build/classes/kotlin/main/com/zhufu/opencraft/SurviveListener$Companion$solveSurvivorRequest$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/base/listeners/build/classes/kotlin/main/com/zhufu/opencraft/SurviveListener$Companion$solveSurvivorRequest$3.class" afterDir="false" />
@@ -664,8 +636,6 @@
       <change beforePath="$PROJECT_DIR$/base/listeners/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" afterPath="$PROJECT_DIR$/base/listeners/build/kotlin/compileKotlin/last-build.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/listeners/build/kotlin/listeners10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/base/listeners/build/kotlin/listeners10SNAPSHOTjar-classes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/listeners/build/libs/listeners-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/base/listeners/build/libs/listeners-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/listeners/src/main/kotlin/com.zhufu.opencraft/PlayerObserverListener.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/listeners/src/main/kotlin/com.zhufu.opencraft/PlayerObserverListener.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/listeners/src/main/kotlin/com.zhufu.opencraft/SurviveListener.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/listeners/src/main/kotlin/com.zhufu.opencraft/SurviveListener.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/miniGameBase/build/kotlin/compileKotlin/build-history.bin" beforeDir="false" afterPath="$PROJECT_DIR$/base/miniGameBase/build/kotlin/compileKotlin/build-history.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/miniGameBase/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab" beforeDir="false" afterPath="$PROJECT_DIR$/base/miniGameBase/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/miniGameBase/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab.keystream" beforeDir="false" afterPath="$PROJECT_DIR$/base/miniGameBase/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab.keystream" afterDir="false" />
@@ -707,8 +677,6 @@
       <change beforePath="$PROJECT_DIR$/base/playerManagment/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" afterPath="$PROJECT_DIR$/base/playerManagment/build/kotlin/compileKotlin/last-build.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/playerManagment/build/kotlin/playerManagment10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/base/playerManagment/build/kotlin/playerManagment10SNAPSHOTjar-classes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/playerManagment/build/libs/playerManagment-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/base/playerManagment/build/libs/playerManagment-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/playerManagment/src/main/java/com/zhufu/opencraft/events/PlayerLogoutEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/base/playerManagment/src/main/java/com/zhufu/opencraft/events/PlayerLogoutEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/playerManagment/src/main/kotlin/com/zhufu/opencraft/Translator.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/playerManagment/src/main/kotlin/com/zhufu/opencraft/Translator.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/pluginBase/build/classes/kotlin/main/com/zhufu/opencraft/Info$Companion.class" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/build/classes/kotlin/main/com/zhufu/opencraft/Info$Companion.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/pluginBase/build/classes/kotlin/main/com/zhufu/opencraft/Info$GotoRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/build/classes/kotlin/main/com/zhufu/opencraft/Info$GotoRequest.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/pluginBase/build/classes/kotlin/main/com/zhufu/opencraft/Info.class" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/build/classes/kotlin/main/com/zhufu/opencraft/Info.class" afterDir="false" />
@@ -761,10 +729,6 @@
       <change beforePath="$PROJECT_DIR$/base/pluginBase/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/build/kotlin/compileKotlin/last-build.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/pluginBase/build/kotlin/pluginBase10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/build/kotlin/pluginBase10SNAPSHOTjar-classes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/pluginBase/build/libs/pluginBase-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/build/libs/pluginBase-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/Extends.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/Extends.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/Info.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/Info.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/WebInfo.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/WebInfo.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/scripting/src/main/kotlin/com/zhufu/opencraft/script/PlayerScript.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/scripting/src/main/kotlin/com/zhufu/opencraft/script/PlayerScript.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/tradeBase/build/classes/kotlin/main/com/zhufu/opencraft/NPCItemInventory$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/base/tradeBase/build/classes/kotlin/main/com/zhufu/opencraft/NPCItemInventory$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/tradeBase/build/classes/kotlin/main/com/zhufu/opencraft/NPCItemInventory$Companion.class" beforeDir="false" afterPath="$PROJECT_DIR$/base/tradeBase/build/classes/kotlin/main/com/zhufu/opencraft/NPCItemInventory$Companion.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/tradeBase/build/classes/kotlin/main/com/zhufu/opencraft/NPCItemInventory.class" beforeDir="false" afterPath="$PROJECT_DIR$/base/tradeBase/build/classes/kotlin/main/com/zhufu/opencraft/NPCItemInventory.class" afterDir="false" />
@@ -822,7 +786,6 @@
       <change beforePath="$PROJECT_DIR$/base/tradeBase/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" afterPath="$PROJECT_DIR$/base/tradeBase/build/kotlin/compileKotlin/last-build.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/tradeBase/build/kotlin/tradeBase10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/base/tradeBase/build/kotlin/tradeBase10SNAPSHOTjar-classes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/tradeBase/build/libs/tradeBase-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/base/tradeBase/build/libs/tradeBase-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/TradeValidateInventory.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/TradeValidateInventory.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/utils/build/kotlin/compileKotlin/build-history.bin" beforeDir="false" afterPath="$PROJECT_DIR$/base/utils/build/kotlin/compileKotlin/build-history.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/utils/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab" beforeDir="false" afterPath="$PROJECT_DIR$/base/utils/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/utils/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab.keystream" beforeDir="false" afterPath="$PROJECT_DIR$/base/utils/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab.keystream" afterDir="false" />
@@ -848,57 +811,6 @@
       <change beforePath="$PROJECT_DIR$/base/utils/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" afterPath="$PROJECT_DIR$/base/utils/build/kotlin/compileKotlin/last-build.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/utils/build/kotlin/utils10SNAPSHOTjar-classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/base/utils/build/kotlin/utils10SNAPSHOTjar-classes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base/utils/build/libs/utils-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/base/utils/build/libs/utils-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/languages/src/zh.yml" beforeDir="false" afterPath="$PROJECT_DIR$/languages/src/zh.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/BlockLocker-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/BlockLocker-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/BookNoticer-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/BookNoticer-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/ChunkWall-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/ChunkWall-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/Citizens/lang/messages_en.properties" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/Citizens/lang/messages_en.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/CraftWeb-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/CraftWeb-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/CraftWeb/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/CraftWeb/web/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/CraftWeb/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/CraftWeb/web/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/js/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/CraftWeb/web/message.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/message.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/CraftWeb/web/navbar.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/CraftWeb/web/navbar.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/CurrencySystem-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/CurrencySystem-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/CustomTutorial-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/CustomTutorial-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/ItemManager-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/ItemManager-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/OpenTranslator-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/OpenTranslator-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/OperationFinder-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/OperationFinder-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/OperationFinder/log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/OperationFinder/log.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/PlayerUtils-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/PlayerUtils-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/PrevHacking-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/PrevHacking-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/ProtocolLib.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/ProtocolLib/lastupdate" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/ProtocolLib/lastupdate" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/ServerCore-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/ServerCore-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/Skinny/mojang_caches/6276b68d237c4ff387fa30bc483fd5c1/signature.dat" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/Skinny/mojang_caches/6276b68d237c4ff387fa30bc483fd5c1/signature.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/Skinny/mojang_caches/6276b68d237c4ff387fa30bc483fd5c1/timestamp" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/Skinny/mojang_caches/6276b68d237c4ff387fa30bc483fd5c1/timestamp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/Skinny/mojang_caches/6276b68d237c4ff387fa30bc483fd5c1/value.dat" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/Skinny/mojang_caches/6276b68d237c4ff387fa30bc483fd5c1/value.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/SkinnyRemix-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/SkinnyRemix-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/TenMinSur-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/TenMinSur-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/UserManager-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/UserManager-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/WorldGenerator-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/WorldGenerator-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/plugins/WorldTeleporter-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/WorldTeleporter-1.0-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/server.properties" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/usercache.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/usercache.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/world_trade/data/raids.dat" beforeDir="false" afterPath="$PROJECT_DIR$/server/world_trade/data/raids.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/world_trade/level.dat" beforeDir="false" afterPath="$PROJECT_DIR$/server/world_trade/level.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/world_trade/level.dat_old" beforeDir="false" afterPath="$PROJECT_DIR$/server/world_trade/level.dat_old" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/world_trade/region/r.-1.-1.mca" beforeDir="false" afterPath="$PROJECT_DIR$/server/world_trade/region/r.-1.-1.mca" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/world_trade/region/r.-1.0.mca" beforeDir="false" afterPath="$PROJECT_DIR$/server/world_trade/region/r.-1.0.mca" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/world_trade/region/r.0.-1.mca" beforeDir="false" afterPath="$PROJECT_DIR$/server/world_trade/region/r.0.-1.mca" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/world_trade/region/r.0.0.mca" beforeDir="false" afterPath="$PROJECT_DIR$/server/world_trade/region/r.0.0.mca" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/world_trade/session.lock" beforeDir="false" afterPath="$PROJECT_DIR$/server/world_trade/session.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webInterface/src/web/css/materialize.min.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webInterface/src/web/node_modules/jquery/dist/jquery.min.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webInterface/src/web/scss/_animated.scss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webInterface/src/web/scss/_core.scss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webInterface/src/web/scss/_extras.scss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webInterface/src/web/scss/_functions.scss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webInterface/src/web/scss/_icons.scss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webInterface/src/web/scss/_path.scss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webInterface/src/web/scss/_variables.scss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webInterface/src/web/scss/materialdesignicons.scss" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -3902,6 +3814,12 @@
       </list>
     </option>
   </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
   <component name="JsbtTreeLayoutManager">
     <layout place="tools.popupGrunt">
       <scroll-view-position x="0" y="0" />
@@ -4207,7 +4125,7 @@
       <workItem from="1562500438323" duration="1174000" />
       <workItem from="1562502702519" duration="757000" />
       <workItem from="1562503675557" duration="1145000" />
-      <workItem from="1562576898826" duration="2543000" />
+      <workItem from="1562576898826" duration="4056000" />
     </task>
     <task id="LOCAL-00001" summary="ServerScript Executor Beta1">
       <created>1560415289040</created>
@@ -4251,11 +4169,18 @@
       <option name="project" value="LOCAL" />
       <updated>1561795943477</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="[Web] Build PlayerDir functionality. Improve server stability.">
+      <created>1562580901057</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1562580901057</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="234780000" />
+    <option name="totallyTimeSpent" value="236293000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -4351,7 +4276,8 @@
     <MESSAGE value="New lobby functionality." />
     <MESSAGE value="Make Web support chat." />
     <MESSAGE value="Recover the trade world." />
-    <option name="LAST_COMMIT_MESSAGE" value="Recover the trade world." />
+    <MESSAGE value="[Web] Build PlayerDir functionality. Improve server stability." />
+    <option name="LAST_COMMIT_MESSAGE" value="[Web] Build PlayerDir functionality. Improve server stability." />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
