@@ -7,19 +7,26 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlayerLogoutEvent extends Event {
     private Info info;
+    private boolean showMessage;
     private HandlerList handlerList = new HandlerList();
     private static HandlerList handlers = new HandlerList();
     public static HandlerList getHandlerList(){
         return handlers;
     }
 
-    public PlayerLogoutEvent(@NotNull Info who){
+    public PlayerLogoutEvent(@NotNull Info who, @NotNull boolean showQuitMessage){
         info = who;
+        this.showMessage = showQuitMessage;
     }
 
     @NotNull
     public Info getInfo() {
         return info;
+    }
+
+    @NotNull
+    public boolean showMesage() {
+        return showMessage;
     }
 
     @NotNull

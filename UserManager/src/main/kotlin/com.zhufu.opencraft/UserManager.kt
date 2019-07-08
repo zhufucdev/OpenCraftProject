@@ -4,10 +4,7 @@ import com.zhufu.opencraft.SurviveListener.Companion.solveSurvivorRequest
 import com.zhufu.opencraft.inventory.PaymentDialog
 import com.zhufu.opencraft.Base.spawnWorld
 import com.zhufu.opencraft.Base.Extend.toPrettyString
-import com.zhufu.opencraft.events.PlayerLoginEvent
-import com.zhufu.opencraft.events.PlayerLogoutEvent
-import com.zhufu.opencraft.events.PlayerRegisterEvent
-import com.zhufu.opencraft.events.PlayerTeleportedEvent
+import com.zhufu.opencraft.events.*
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import org.bukkit.*
 import org.bukkit.command.Command
@@ -42,7 +39,6 @@ class UserManager : JavaPlugin(), Listener {
             logger.info("Creating spwan chunk blocks.")
             val chunk = spawnWorld.getChunkAt(0, 0)
             spawnWorld.loadChunk(chunk)
-            logger.info("Spawn chunk isLoaded = ${chunk.isLoaded}")
 
             for (x in 0..15) {
                 for (z in 0..15) {
@@ -149,7 +145,7 @@ class UserManager : JavaPlugin(), Listener {
 
     @EventHandler
     fun onPlayerLogout(event: PlayerLogoutEvent) {
-        broadcast("player.left", TextUtil.TextColor.YELLOW, event.info.player.name)
+        if (event.showMesage()) broadcast("player.left", TextUtil.TextColor.YELLOW, event.info.player.name)
     }
 
     @EventHandler
@@ -204,11 +200,9 @@ class UserManager : JavaPlugin(), Listener {
             return
         }
 
-        if (info.tag.getBoolean("isSurviving", false)) {
-            val thisInfo = PlayerManager.findInfoByPlayer(this) ?: return
-            thisInfo.inventory.create("survivor").set("location", player.location)
-            solveSurvivorRequest(thisInfo)
-        }
+        val thisInfo = PlayerManager.findInfoByPlayer(this) ?: return
+        thisInfo.inventory.create("survivor").set("location", player.location)
+        solveSurvivorRequest(thisInfo)
         Bukkit.getPluginManager()
             .callEvent(PlayerTeleportedEvent(this, this.location, player.location))
         teleport(player)
@@ -244,7 +238,6 @@ class UserManager : JavaPlugin(), Listener {
                         if (info.isLogin) {
                             server.pluginManager.apply {
                                 callEvent(PlayerLoginEvent(sender))
-                                callEvent(PlayerTeleportedEvent(sender, sender.location, Base.lobby.spawnLocation))
                             }
                         }
                     }
@@ -336,7 +329,7 @@ class UserManager : JavaPlugin(), Listener {
                                     return@setOnConfirmListener
                                 }
                                 val event =
-                                    com.zhufu.opencraft.events.PlayerTeleportedEvent(sender, sender.location, dest)
+                                    PlayerTeleportedEvent(sender, sender.location, dest)
                                 server.pluginManager.callEvent(event)
                                 if (!event.isCancelled) {
                                     info.currency -= 3
@@ -364,7 +357,7 @@ class UserManager : JavaPlugin(), Listener {
                         return true
                     }
 
-                    Bukkit.getPluginManager().callEvent(com.zhufu.opencraft.events.PlayerObserveEvent(sender, obPlayer))
+                    Bukkit.getPluginManager().callEvent(PlayerObserveEvent(sender, obPlayer))
                 }
                 "deobserve" -> {
                     if (PlayerManager.findInfoByPlayer(sender)?.status == Info.GameStatus.Observing)
@@ -383,7 +376,6 @@ class UserManager : JavaPlugin(), Listener {
                         sender.error(getter["player.error.unknown"])
                         return true
                     }
-
 
                     fun sendGotoRequest(player: String): Boolean {
                         if (player == sender.name) return false
@@ -423,7 +415,7 @@ class UserManager : JavaPlugin(), Listener {
                             , TradeManager.getNewID(), this
                         )
                             .setOnConfirmListener {
-                                val event = com.zhufu.opencraft.events.PlayerTeleportedEvent(
+                                val event = PlayerTeleportedEvent(
                                     sender,
                                     sender.location,
                                     point.location
@@ -587,7 +579,7 @@ class UserManager : JavaPlugin(), Listener {
                         return true
                     }
 
-                    val event = com.zhufu.opencraft.events.PlayerTeleportedEvent(sender, sender.location, t)
+                    val event = PlayerTeleportedEvent(sender, sender.location, t)
                     server.pluginManager.callEvent(event)
                     if (!event.isCancelled) {
                         sender.teleport(t)
@@ -638,15 +630,6 @@ class UserManager : JavaPlugin(), Listener {
                     } else {
                         sender.info(getter["user.checkpoint.del", args[1]])
                     }
-                }
-
-                "help" -> {
-                    val info = PlayerManager.findInfoByPlayer(sender)
-                    if (info == null) {
-                        sender.error(getter["player.error.unknown"])
-                        return true
-                    }
-                    SurviveListener.showHelp(info, true)
                 }
 
                 "lang" -> {
@@ -747,11 +730,11 @@ class UserManager : JavaPlugin(), Listener {
         alias: String,
         args: Array<out String>
     ): MutableList<String> {
-        if (command!!.name == "user") {
+        if (command.name == "user") {
             if (sender !is Player) {
                 return mutableListOf()
             }
-            if (args!!.isNotEmpty()) {
+            if (args.isNotEmpty()) {
                 val first = args.first()
                 val commands = mutableListOf(
                     "log",

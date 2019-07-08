@@ -1,6 +1,5 @@
 package com.zhufu.opencraft.script
 
-import com.google.common.cache.CacheBuilder
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.Scripting.Executor
 import com.zhufu.opencraft.headers.PlayerHeaders
@@ -11,27 +10,23 @@ import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Value
 import java.io.File
 import java.io.OutputStream
-import java.util.*
 import java.util.logging.Level
-import kotlin.collections.ArrayList
 
 class PlayerScript : AbstractScript {
     companion object {
-        private val cache = CacheBuilder.newBuilder().maximumSize(20).build<UUID, ArrayList<PlayerScript>>()
-        fun list(player: ServerPlayer): ArrayList<PlayerScript> =
-            cache[player.uuid ?: throw IllegalArgumentException("Parameter [player.uuid] must not be null."), {
-                val r = arrayListOf<PlayerScript>()
-                player.scriptDir.listFiles()!!.forEach {
-                    r.add(
-                        PlayerScript(
-                            player = player,
-                            srcFile = it,
-                            name = it.nameWithoutExtension
-                        )
+        fun list(player: ServerPlayer): ArrayList<PlayerScript> {
+            val r = arrayListOf<PlayerScript>()
+            player.scriptDir.listFiles()!!.forEach {
+                r.add(
+                    PlayerScript(
+                        player = player,
+                        srcFile = it,
+                        name = it.nameWithoutExtension
                     )
-                }
-                r
-            }]
+                )
+            }
+            return r
+        }
     }
 
     val player: ServerPlayer

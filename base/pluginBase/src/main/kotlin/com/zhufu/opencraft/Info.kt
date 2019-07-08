@@ -150,7 +150,6 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
         player.resetTitle()
 
         ServerCaller["SolvePlayerSurvive"]!!(listOf(player))
-        Bukkit.getOnlinePlayers().forEach { it.showPlayer(plugin, player) }
 
         player.info(lang()["user.login.success"])
     }

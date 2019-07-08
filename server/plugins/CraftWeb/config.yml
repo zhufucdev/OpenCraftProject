@@ -9,5 +9,7 @@ uiWhiteList:
 - login
 - server
 - message
+- playerDir
 hostName: localhost:2020
 chatPackLossThreshold: 10
+playerDirMaxSize: 52428800

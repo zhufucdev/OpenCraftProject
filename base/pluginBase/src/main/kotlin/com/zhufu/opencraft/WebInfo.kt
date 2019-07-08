@@ -30,10 +30,11 @@ abstract class WebInfo(createNew: Boolean,uuid: UUID? = null, nameToExtend: Stri
                 if (streamsReturned - exchanges
                     >= (ServerCaller["GetWebConfig"]!!(listOf())
                             as ConfigurationSection).getInt("chatPackLossThreshold")
+                    || exchanges > returned
                 ) {
-                    streamsReturned = 0
+                    streamsReturned = 1
                     exchanges = 1
-                    throw IllegalStateException("Request out of threshold. Change chatPackLossThreshold in config to a higher value.")
+                    break
                 }
             }
             return WebOutputStream(this)

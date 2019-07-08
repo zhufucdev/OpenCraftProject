@@ -10,5 +10,4 @@ dependencies {
     implementation project(':listeners')
     implementation project(':scripting')
     compile 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
-    compile 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.2.7-SNAPSHOT'
 }

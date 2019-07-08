@@ -8,6 +8,7 @@ import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import java.io.File
 
 fun getLang(lang: String, value: String, vararg replaceWith: Any?): String = Language.got(lang, value, replaceWith)
 fun getLang(player: ServerPlayer, value: String, vararg replaceWith: Any?): String =
@@ -84,3 +85,14 @@ fun <T : ItemMeta> ItemStack.updateItemMeta(block: T.() -> Unit): ItemStack {
     itemMeta = (itemMeta as T).apply(block)
     return this
 }
+
+fun File.size(): Long =
+    if (this.isDirectory) {
+        var size = 0L
+        this.listFiles()?.forEach {
+            size += it.size()
+        }
+        size
+    } else {
+        inputStream().channel.size()
+    }

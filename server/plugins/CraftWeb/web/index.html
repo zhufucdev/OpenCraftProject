@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress ALL -->
 <html lang="zh">
 <head>
     <script type="text/javascript" src="js/jquery.js"></script>
@@ -16,7 +17,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <!-- Compiled and minified JavaScript -->
-    <script src="js/materialize.min.js"></script>
     <script src="js/jquery-dateformat.min.js" type="text/javascript"></script>
 
     <!-- Icon -->
@@ -25,11 +25,17 @@
     <script src="js/index.js" type="text/javascript"></script>
     <script src="js/animator.js" type="text/javascript"></script>
     <script src="js/draw.js" type="text/javascript"></script>
+    <script src="js/js.cookie-2.2.0.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="css/codemirror.css">
+    <script src="js/codemirror.js"></script>
+    <script src="mode/javascript/javascript.js"></script>
 </head>
 <body>
 <header id="nav"></header>
 <main id="content"></main>
 
+<!--JavaScript at end of body for optimized loading-->
+<script type="text/javascript" src="js/materialize.min.js"></script>
 <script>
     $('#nav').load('ui?request=navbar', function () {
         showTopProgress();
@@ -45,7 +51,5 @@
         });
     });
 </script>
-<!--JavaScript at end of body for optimized loading-->
-<script type="text/javascript" src="js/materialize.min.js"></script>
 </body>
 </html>

@@ -34,34 +34,6 @@ import java.io.File
 class SurviveListener(private val plugin: JavaPlugin) : Listener {
     companion object {
         lateinit var INSTANCE: SurviveListener
-
-        fun getHelpDoc(lang: String): File = File("plugins/UserManager", "help-$lang.txt").also {
-            if (!it.parentFile.exists())
-                it.parentFile.mkdirs()
-        }
-
-        fun showHelp(info: Info, force: Boolean) {
-            fun show() {
-                info.player.sendMessage(TextUtil.info(">>${Language[info, "helpDoc.title"]}"))
-                val helpDoc = getHelpDoc(info.userLanguage)
-                if (!helpDoc.exists())
-                    return
-                helpDoc.forEachLine {
-                    info.player.sendMessage(TextUtil.getCustomizedText(it))
-                }
-                info.player.sendMessage(TextUtil.info(">>END"))
-
-                info.tag.set("isHelpDocShown", true)
-            }
-
-            val isShown = info.tag.getBoolean("isHelpDocShown", false)
-            if (force) {
-                show()
-            } else if (!isShown) {
-                show()
-            }
-        }
-
         fun Player.solveSurvivorRequest(info: Info) {
             isInvulnerable = true
             if (!info.isSurveyPassed && info.remainingDemoTime <= 0) {
@@ -80,9 +52,9 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 var bound = 20000
                 bound -= (File("plugins${File.separatorChar}inventories").listFiles()?.size ?: 0) * 10
                 if (bound <= 5000) bound = 5000
-                var r = Base.getRandomLocation(Base.surviveWorld, bound, y = 128)
+                var r = Base.getRandomLocation(surviveWorld, bound, y = 128)
                 while (r.block.biome.name.contains("OCEAN"))
-                    r = Base.getRandomLocation(Base.surviveWorld, bound, y = 128)
+                    r = Base.getRandomLocation(surviveWorld, bound, y = 128)
                 teleport(r)
 
                 info.status = Surviving
@@ -149,7 +121,6 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     if (!player!!.isOp && inventory.has("gameMode") && inventory.get<String>("gameMode") != GameMode.SURVIVAL.name) {
                         inventory.set("gameMode", GameMode.SURVIVAL.name)
                     }
-                    showHelp(info, false)
                     inventory.load()
                     info.status = Surviving
                     Bukkit.getScheduler().runTaskLater(INSTANCE.plugin, { _ ->
@@ -157,10 +128,14 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                         isInvulnerable = false
                     }, 4 * 20)
                 } catch (e: Exception) {
+                    Bukkit.getLogger().warning("Unable to solve $name's survival request.")
                     e.printStackTrace()
                     sendMessage(TextUtil.printException(e))
-                    teleport(Base.lobby.spawnLocation)
-                    info.tag.set("isSurvivor", false)
+                    info.apply {
+                        this.inventory.create(RESET).load(false)
+                        status = InLobby
+                        tag.set("isSurvivor", false)
+                    }
                 }
             } else {
                 randomSpawn(info.inventory)
@@ -226,7 +201,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 else {
                     info.logout()
                     with(Bukkit.getPluginManager()) {
-                        callEvent(PlayerLogoutEvent(info))
+                        callEvent(PlayerLogoutEvent(info, true))
                         callEvent(
                             PlayerTeleportedEvent(
                                 event.player,
@@ -302,8 +277,6 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 info.inventory.create("survivor").save()
                 player.isInvulnerable = false
                 player.sendTitle(TextUtil.info(getter["survival.loseProtect"]), getter["survival.setSpawn"], 7, 70, 7)
-
-                showHelp(info, false)
             }, 3 * 20)
         }
         if (info.status == Surviving && !info.isSurveyPassed) {
@@ -359,7 +332,6 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 event.player.bedSpawnLocation = event.bed.location
             } else sendPlayerOutOfSpawnMessage(event.player)
         } else if (info.status == InLobby && event.player.world == lobby) {
-            event.isCancelled = true
             val own = PlayerLobbyManager[info]
             if (own.contains(event.bed.location)) {
                 own.spawnPoint = event.bed.location
@@ -453,12 +425,14 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
     fun onPlayerTeleported(event: PlayerTeleportedEvent) {
         when (event.to.world) {
             lobby -> {
-                PlayerManager.findInfoByPlayer(event.player)
-                    ?.also {
-                        event.isCancelled = true
-                        it.logout()
-                    }
-                    ?.inventory?.create(RESET)?.load(savePresent = true)
+                if (event.from != null)
+                    PlayerManager.findInfoByPlayer(event.player)
+                        ?.also {
+                            event.isCancelled = true
+                            it.logout()
+                            Bukkit.getPluginManager().callEvent(PlayerLogoutEvent(it, true))
+                        }
+                        ?.inventory?.create(RESET)?.load(savePresent = true)
             }
             surviveWorld -> {
                 val info = PlayerManager.findInfoByPlayer(event.player)

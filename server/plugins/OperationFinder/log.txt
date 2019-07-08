@@ -10741,3 +10741,16 @@
 {"time":1561794812394,"player":"zhufucomcom","type":"MOVE","data":{"x":-11.506753130707786,"y":62.0,"z":45.86929310129259,"world":"world_trade"}}
 {"time":1561794872400,"player":"zhufucomcom","type":"MOVE","data":{"x":-11.506753130707786,"y":62.0,"z":45.86929310129259,"world":"world_trade"}}
 {"time":1561794932394,"player":"zhufucomcom","type":"MOVE","data":{"x":-11.506753130707786,"y":62.0,"z":45.86929310129259,"world":"world_trade"}}
+{"time":1562378644507,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562378704500,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562378764500,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562378824500,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562378884500,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562378944500,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562379004500,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562379064500,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562379124500,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562379184501,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562379244500,"player":"zhufucomcom","type":"MOVE","data":{"x":-20.224557852868013,"y":107.0,"z":51.712609259669776,"world":"world"}}
+{"time":1562384270872,"player":"zhufucomcom","type":"MOVE","data":{"x":-19.932791519866203,"y":105.79673560066871,"z":53.24917682896437,"world":"world"}}
+{"time":1562384330869,"player":"zhufucomcom","type":"MOVE","data":{"x":-26.0161182685226,"y":108.0,"z":53.13468159597262,"world":"world"}}

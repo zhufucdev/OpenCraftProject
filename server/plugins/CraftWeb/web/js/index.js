@@ -198,6 +198,7 @@ const colorHex = [
 function getCustomizedText(text) {
     colors.forEach((v, i) => {
         let value;
+
         function once() {
             let index = text.indexOf(value);
             while (index !== -1) {
@@ -205,19 +206,32 @@ function getCustomizedText(text) {
                 index = text.indexOf(value);
             }
         }
+
         value = '$' + v.toLowerCase();
         once();
         value = '§';
-        if (i <= 9){
+        if (i <= 9) {
             value += i;
         } else {
             switch (i) {
-                case 10: value += 'a';break;
-                case 11: value += 'b';break;
-                case 12: value += 'c';break;
-                case 13: value += 'd';break;
-                case 14: value += 'e';break;
-                case 15: value += 'f';break;
+                case 10:
+                    value += 'a';
+                    break;
+                case 11:
+                    value += 'b';
+                    break;
+                case 12:
+                    value += 'c';
+                    break;
+                case 13:
+                    value += 'd';
+                    break;
+                case 14:
+                    value += 'e';
+                    break;
+                case 15:
+                    value += 'f';
+                    break;
             }
         }
         once()
@@ -252,11 +266,11 @@ function BottomDialog(ele, options) {
     this.element = ele;
     ele.style.display = 'none';
 
-    this._overlay = $('<div class="modal-overlay"></div>');
+    let overlay = $('<div class="modal-overlay"></div>');
     this.isShown = false;
 
-    this._overlay.appendTo('body');
-    this._overlay.click(() => {
+    overlay.appendTo('body');
+    overlay.click(() => {
         if (this.isShown)
             this.dismiss()
     });
@@ -272,7 +286,7 @@ function BottomDialog(ele, options) {
             zIndex: 1000,
             display: 'block'
         });
-        $.extend(this.element.style,{
+        $.extend(this.element.style, {
             display: 'block',
             opacity: 0
         });
@@ -282,7 +296,7 @@ function BottomDialog(ele, options) {
             this.isShown = true
         });
 
-        setTimeout(()=>{
+        setTimeout(() => {
             this.element.style.opacity = 1;
 
             let targetHeight = this.element.clientHeight;
@@ -296,12 +310,12 @@ function BottomDialog(ele, options) {
                 },
                 -actionBar.clientHeight,
                 0,
-                300*actionBar.clientHeight/this.element.clientHeight
+                300 * actionBar.clientHeight / this.element.clientHeight
             );
 
             if (this._onShow)
                 this._onShow();
-        },10)
+        }, 10)
     };
 
     this.dismiss = () => {
@@ -321,7 +335,180 @@ function BottomDialog(ele, options) {
             },
             0,
             -actionBar.clientHeight,
-            300*actionBar.clientHeight/this.element.clientHeight
+            300 * actionBar.clientHeight / this.element.clientHeight
         )
     }
 }
+
+function renderSize(value) {
+    if (null == value || value === '') {
+        return "空文件";
+    }
+    let unitArr = ["字节", "千字节", "兆字节", "吉字节", "太字节", "拍字节", "艾字节", "泽字节", "尧字节"];
+    let index, srcsize = parseFloat(value);
+    if (srcsize === 0) {
+        return "空文件"
+    }
+    index = Math.floor(Math.log(srcsize) / Math.log(1024));
+    let size = srcsize / Math.pow(1024, index);
+    //  保留的小数位数
+    size = size.toFixed(2);
+    return size + unitArr[index];
+}
+
+function Toolbar(ele, items) {
+    this.items = {};
+    this.id = (new Date()).getTime();
+
+    this.element = ele;
+
+    $(ele).append('<div id="bar-' + this.id + '" style="display: inline"></div>');
+
+    this.push = (icon, name, priority, isActive, onClick) => {
+        if (this.items.hasOwnProperty(name)) return;
+        let bar = $('#bar-' + this.id);
+
+        let appendToBar = () => {
+            let jquery = $('<i class="mdi ' + icon + ' mdi-24px" style="display: inline; margin-right: 5px; margin-left: 5px" data-tooltip="' + name + '" data-position="top"></i>');
+            jquery.tooltip();
+            bar.append(jquery);
+            this.items[name] = {
+                name: name,
+                priority: priority,
+                jquery: jquery
+            }
+        };
+
+        let appendToMenu = () => {
+            // Check if menu exists
+            let bar = $(ele);
+            if (bar.children('.dropdown-trigger').length < 1) {
+                bar.append('<a class="dropdown-trigger mdi mdi-dots-vertical waves-effect black-text" style="margin-top: -7px" data-target="dropdown-' + this.id + '"></a>');
+                bar.append('<ul class="dropdown-content" id="dropdown-' + this.id + '"></ul>');
+                $('.dropdown-trigger').dropdown();
+            }
+            let jquery = $('<li><a href="#" class="black-text">' + name + '</a></li>');
+            $('#dropdown-' + this.id).append(jquery);
+            this.items[name] = {
+                name: name,
+                priority: priority,
+                jquery: jquery
+            }
+        };
+        switch (priority) {
+            case Toolbar.DisplayPriority.showAlways:
+                appendToBar();
+                break;
+            case Toolbar.DisplayPriority.hideAlways:
+                appendToMenu();
+                break;
+            case Toolbar.DisplayPriority.smart:
+                if (items.length > 4) {
+                    appendToMenu()
+                } else {
+                    appendToBar()
+                }
+                break;
+            default:
+                appendToBar()
+        }
+
+        let result = this.items[name];
+        result.setActive = (active, force) => {
+            if (force || isActive !== active) {
+                function animate(from, to) {
+                    let element = result.jquery.get(0);
+                    startAnimation(s => element.style.color = 'rgba(0, 0, 0, ' + s + ')', from, to, 200)
+                }
+
+                if (!active) {
+                    animate(1, 0.26);
+                } else {
+                    animate(0.26, 1)
+                }
+                isActive = active;
+            }
+        };
+        result.isActive = () => {
+            return isActive;
+        };
+        if (isActive === false) {
+            result.setActive(false, true)
+        } else {
+            result.setActive(true, true)
+        }
+
+        result.click = l => {
+            result.jquery.off('click');
+            result.jquery.click(() => {
+                if (l) l(result)
+            })
+        };
+        result.click(onClick);
+
+        return result;
+    };
+    this.remove = (names) => {
+        if (typeof names === 'string') {
+            if (this.items.hasOwnProperty(names)) {
+                this.items[names].jquery.remove();
+                this.items[names] = undefined;
+            }
+        } else if (typeof names === 'object') {
+            for (let name in names) {
+                if (names.hasOwnProperty(name)) {
+                    this.remove(name)
+                }
+            }
+        }
+    };
+
+    this.contains = (name) => {
+        return this.items.hasOwnProperty(name)
+    };
+
+    this.show = () => $(ele).show();
+    this.hide = () => $(ele).hide();
+
+    for (let i in items) {
+        if (items.hasOwnProperty(i)) {
+            let it = items[i], hasChildren = it.hasOwnProperty('children');
+            let result = this.push(it.icon, it.name, it.priority, it.active, it.onclick);;
+            if (hasChildren) {
+                let id = new Date().getTime();
+                let root = $(ele);
+
+                function addChildren(parent, children) {
+                    parent.classList.add('dropdown-trigger');
+                    parent.dataset.target = 'dropdown-'+ id;
+                    let content = $('<ul class="dropdown-content" id="dropdown-' + id + '"></ul>');
+                    root.append(content);
+                    M.Dropdown.init(parent);
+                    for (let index in children) {
+                        if (children.hasOwnProperty(index)) {
+                            let childConfig = children[index], hasChildren = childConfig.hasOwnProperty('children');
+                            if (hasChildren) id = new Date().getTime();
+                            let child = $('<li><a class="black-text center" style="padding: 10px; font-size: 16px" ' + (hasChildren ? 'data-target="dropdown-' + id + '"' : '') + '>' +
+                                '<i class="mdi ' + childConfig.icon + ' mdi-18px" style="margin-right: auto; transform: translateY(-5px)"></i>' +
+                                childConfig.name +
+                                '</a></li>');
+                            content.append(child);
+                            child.click(childConfig.onclick);
+                            if (hasChildren) {
+                                addChildren(child.get(0).firstChild, childConfig.children)
+                            }
+                        }
+                    }
+                }
+
+                addChildren(result.jquery.get(0), it.children)
+            }
+        }
+    }
+}
+
+Toolbar.DisplayPriority = {
+    showAlways: Symbol('showAlways'),
+    hideAlways: Symbol('hideAlways'),
+    smart: Symbol('smart')
+};

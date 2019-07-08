@@ -4,10 +4,8 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 import HttpsServer
-import MajaroHandler
 import SimpleExecutor
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.util.logging.Logger
 
@@ -40,7 +38,9 @@ class CraftWeb : JavaPlugin() {
             if (!isSet("hostName"))
                 set("hostName", "open-craft.cn")
             if (!isSet("chatPackLossThreshold"))
-                set("chatPackLossThreshold",10)
+                set("chatPackLossThreshold", 10)
+            if (!isSet("playerDirMaxSize"))
+                set("playerDirMaxSize", 50 * 1024 * 1024)
             saveConfig()
         }
         ServerCaller.set<ConfigurationSection>("GetWebConfig") {
@@ -75,7 +75,8 @@ class CraftWeb : JavaPlugin() {
             executor = SimpleExecutor()
         )
     }
-    private fun initHttp(){
+
+    private fun initHttp() {
         http.init(
             port = config.getInt("httpPort"),
             handler = HttpsDirector(config.getString("hostName")!!)
@@ -115,7 +116,14 @@ class CraftWeb : JavaPlugin() {
                                     http.start()
                                     true
                                 } catch (e: Exception) {
-                                    sender.error(Language.getDefault("web.error.whileInit", "HTTP", e.javaClass.simpleName, e.message))
+                                    sender.error(
+                                        Language.getDefault(
+                                            "web.error.whileInit",
+                                            "HTTP",
+                                            e.javaClass.simpleName,
+                                            e.message
+                                        )
+                                    )
                                     e.printStackTrace()
                                     false
                                 }
@@ -155,7 +163,14 @@ class CraftWeb : JavaPlugin() {
                             initHttp()
                             http.start()
                         } catch (e: Exception) {
-                            sender.error(Language.getDefault("web.error.whileInit", "HTTP", e.javaClass.simpleName, e.message))
+                            sender.error(
+                                Language.getDefault(
+                                    "web.error.whileInit",
+                                    "HTTP",
+                                    e.javaClass.simpleName,
+                                    e.message
+                                )
+                            )
                             e.printStackTrace()
                         }
                     }
@@ -170,7 +185,9 @@ class CraftWeb : JavaPlugin() {
                             return true
                         }
                         val value: Any = when {
-                            name.contains("port", true) -> {
+                            name.contains("port", true)
+                                    || name == "chatPackLossThreshold"
+                                    || name == "playerDirMaxSize" -> {
                                 val t = args[2].toIntOrNull()
                                 if (t == null) {
                                     sender.error(getter["web.error.illegalArg", args[2], Int::class.simpleName])
@@ -180,7 +197,7 @@ class CraftWeb : JavaPlugin() {
                             }
                             name == "uiWhiteList" -> {
                                 val t = ArrayList<String>()
-                                for (i in 2 until args.size){
+                                for (i in 2 until args.size) {
                                     t.add(args[i])
                                 }
                                 t.toList()

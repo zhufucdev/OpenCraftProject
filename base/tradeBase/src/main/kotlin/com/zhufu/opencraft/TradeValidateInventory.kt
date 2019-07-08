@@ -32,8 +32,10 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
         (clickableNPC.entity as ArmorStand)
             .apply {
                 setHelmet(ItemStack(Material.PLAYER_HEAD).apply {
-                    itemMeta = (itemMeta as SkullMeta).also { meta ->
-                        meta.owningPlayer = Bukkit.getOfflinePlayer(UUID.fromString(tradeInfo.getSeller()))
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
+                        itemMeta = (itemMeta as SkullMeta).also { meta ->
+                            meta.owningPlayer = Bukkit.getOfflinePlayer(UUID.fromString(tradeInfo.getSeller()))
+                        }
                     }
                 })
                 setChestplate(ItemStack(Material.LEATHER_CHESTPLATE).apply {

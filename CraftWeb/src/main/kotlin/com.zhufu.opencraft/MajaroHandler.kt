@@ -1,8 +1,9 @@
+package com.zhufu.opencraft
+
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.sun.net.httpserver.HttpExchange
-import com.zhufu.opencraft.*
 import com.zhufu.opencraft.CraftWeb.Companion.logger
 import com.zhufu.opencraft.Game.env
 import com.zhufu.opencraft.player_community.MessagePool
@@ -165,6 +166,7 @@ class MajaroHandler(private val root: File, private val conf: FileConfiguration)
                             } else {
                                 find.tagFile.deleteRecursively()
                                 users.remove(exchange.remoteAddress.address)
+                                ServerStatics.playerNumber--
                                 addProperty("r", 0)
                             }
                         }.toString().toByteArray()
@@ -175,6 +177,7 @@ class MajaroHandler(private val root: File, private val conf: FileConfiguration)
                         val find = users[exchange.remoteAddress.address]
                         obj.apply {
                             if (find == null) {
+                                /** r = -1 **/
                                 addProperty("r", -1)
                             } else {
                                 try {
@@ -197,6 +200,7 @@ class MajaroHandler(private val root: File, private val conf: FileConfiguration)
                                                     it.renameTo(this)
                                                     it.delete()
                                                 }
+                                                /** r = 0 **/
                                                 0
                                             } else -1)
                                             response(obj.toString().toByteArray(), exchange)
@@ -381,13 +385,143 @@ class MajaroHandler(private val root: File, private val conf: FileConfiguration)
                             if (find == null) {
                                 addProperty("r", -1)
                             } else {
-                                SimpleExecutor.threadPool.execute {
-                                    Translator.chat(message, find)
-                                }
+                                Translator.chat(message, find)
                                 addProperty("r", 0)
                             }
                         }.toString().toByteArray()
                     }
+
+                    "dir" -> JsonObject().apply {
+                        val find = users[exchange.remoteAddress.address]
+                        if (find == null) {
+                            addProperty("r", 503)
+                        } else {
+                            val path = url.queryParameter("path")
+                            val operation = url.queryParameter("operation") ?: "check"
+
+                            if (path == null || !path.contains("..")) {
+                                fun serialize(it: File) = JsonObject().apply {
+                                    addProperty("name", it.name)
+                                    addProperty("directory", it.isDirectory)
+                                    if (it.isDirectory) {
+                                        if (find.playerDir == it) addProperty("isRoot", true)
+                                        addProperty("children", it.listFiles()?.size ?: 0)
+                                    }
+                                    addProperty("size", it.size())
+                                }
+
+                                if (operation == "del") {
+                                    val json = JsonParser().parse(exchange.requestBody.bufferedReader())
+                                    val failure = JsonArray()
+                                    json.asJsonArray.forEach {
+                                        val file = File(find.playerDir, it.asString)
+                                        file.deleteRecursively().let { success ->
+                                            if (!success) failure.add(file.name)
+                                        }
+                                    }
+                                    addProperty("r", if (failure.size() == 0) 0 else 1)
+                                    if (failure.size() > 0)
+                                        add("failure", failure)
+                                } else {
+                                    val file = File(find.playerDir, path ?: "")
+                                    when (operation) {
+                                        "check" -> {
+                                            if (!file.exists()){
+                                                addProperty("r", 1)
+                                            } else if (file.isDirectory) {
+                                                val files = JsonArray()
+                                                file.listFiles()?.forEach {
+                                                    files.add(serialize(it))
+                                                }
+                                                add("r", files)
+                                            } else {
+                                                add("r", serialize(file))
+                                            }
+                                        }
+                                        "read" -> {
+                                            if (file.isFile) {
+                                                response(file.readBytes(), exchange)
+                                                return
+                                            } else {
+                                                addProperty("r", 1)
+                                            }
+                                        }
+                                        "write" -> {
+                                            /**
+                                             * [response].r == 0 when success
+                                             *              == 1 when request is invalid
+                                             *              == 2 when out-of-spaced
+                                             *              ==-1 when catching an exception
+                                             */
+                                            if (file.isFile || !file.exists()) {
+                                                if (!file.exists()) file.createNewFile()
+
+                                                val output = file.outputStream()
+                                                var result = 0
+                                                val input = exchange.requestBody
+                                                try {
+                                                    var size = 0
+                                                    val freeSpace =
+                                                        conf.getInt("playerDirMaxSize") - find.playerDir.size()
+                                                    var r = input.read()
+                                                    while (r >= 0) {
+                                                        if (size > freeSpace) {
+                                                            result = 2
+                                                            break
+                                                        }
+
+                                                        output.write(r)
+                                                        size++
+                                                        r = input.read()
+                                                    }
+                                                } catch (e: Exception) {
+                                                    result = -1
+                                                    logger.warning("Failed to write playerDir file at ${file.path} for player ${find.name}.")
+                                                    e.printStackTrace()
+                                                } finally {
+                                                    output.flush()
+                                                    output.channel.lock().release()
+                                                    output.close()
+                                                    input.close()
+                                                }
+                                                addProperty("r", result)
+                                            } else {
+                                                addProperty("r", 1)
+                                            }
+                                        }
+                                        "rename" -> {
+                                            if (!file.exists()) {
+                                                addProperty("r", 1)
+                                            } else {
+                                                val newName = url.queryParameter("name")
+                                                if (newName != null) {
+                                                    if (newName.contains(".."))
+                                                        addProperty("r", 503)
+                                                    else {
+                                                        file.renameTo(File(find.playerDir, newName))
+                                                        addProperty("r", 0)
+                                                    }
+                                                } else
+                                                    addProperty("r", 1)
+                                            }
+                                        }
+                                        "mkdir" -> {
+                                            if (file.isDirectory) {
+                                                addProperty("r", 1)
+                                            } else {
+                                                addProperty("r", file.mkdirs().let {
+                                                    if (it) 0
+                                                    else -1
+                                                })
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                addProperty("r", 503)
+                            }
+                        }
+                    }.toString().toByteArray()
                     else -> invalidFile.readBytes()
                 }
             }

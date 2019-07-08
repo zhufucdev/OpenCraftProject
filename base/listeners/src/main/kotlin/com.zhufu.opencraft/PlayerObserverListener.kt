@@ -42,11 +42,11 @@ object PlayerObserverListener : Listener {
             return
         }
         if (info.status == Info.GameStatus.Observing){
-            event.player.sendMessage(TextUtil.error("您已经在观战"))
+            event.player.error("您已经在观战")
             return
         }
         if (info.status == Info.GameStatus.MiniGaming){
-            event.player.sendMessage("您不能在游戏中观战")
+            event.player.error("您不能在游戏中观战")
             return
         }
         info.inventory.create(DualInventory.RESET).load(inventoryOnly = true)

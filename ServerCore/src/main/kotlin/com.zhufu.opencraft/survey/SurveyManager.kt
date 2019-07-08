@@ -18,8 +18,9 @@ import kotlin.concurrent.timer
 object SurveyManager : Listener {
     enum class QuestionType {
         SingleChoice, MultiChoice, Text;
-        fun getChineseName(): String{
-            return when (this){
+
+        fun getChineseName(): String {
+            return when (this) {
                 SingleChoice -> "单选"
                 MultiChoice -> "多选"
                 Text -> "问答"
@@ -27,53 +28,57 @@ object SurveyManager : Listener {
         }
     }
 
-    class Question(val content: String, val type: QuestionType, val answer: String,val selections: MutableList<String> = mutableListOf()) {
+    class Question(
+        val content: String,
+        val type: QuestionType,
+        val answer: String,
+        val selections: MutableList<String> = mutableListOf()
+    ) {
         var playerAnswer: String = ""
 
         val isAnswerVaild: Boolean
-        get() = when (type){
-            QuestionType.SingleChoice -> {
-                playerAnswer.length == 1 && playerAnswer.first().isLetter()
-            }
-            QuestionType.MultiChoice -> {
-                var r = true
-                playerAnswer.forEach {
-                    if (!it.isLetter() && it != ','){
-                        r = false
-                        return@forEach
+            get() {
+                when (type) {
+                    QuestionType.SingleChoice -> {
+                        return playerAnswer.length == 1 && playerAnswer.first().isLetter()
+                    }
+                    QuestionType.MultiChoice -> {
+                        var r = true
+                        playerAnswer.forEach {
+                            if (!it.isLetter() && it != ',') {
+                                return false
+                            }
+                        }
+                        return true
+                    }
+                    QuestionType.Text -> {
+                        return playerAnswer.isNotEmpty()
                     }
                 }
-                r
             }
-            QuestionType.Text -> {
-                !playerAnswer.isEmpty()
-            }
-        }
 
         val isCorrect: Boolean
-        get() =
-            if (!isAnswerVaild)
-                false
-            else if (type == QuestionType.Text) {
-                val answers = answer.split('|')
-                answers.contains(playerAnswer)
-            }
-            else if (type == QuestionType.MultiChoice) {
-                val selections = answer.split(',')
-                val split = this.playerAnswer.split(',')
-                val playerAnswerer = ArrayList<String>()
-                split.forEach { playerAnswerer.add(it.toUpperCase()) }
+            get() =
+                if (!isAnswerVaild)
+                    false
+                else if (type == QuestionType.Text) {
+                    val answers = answer.split('|')
+                    answers.contains(playerAnswer)
+                } else if (type == QuestionType.MultiChoice) {
+                    val selections = answer.split(',')
+                    val split = this.playerAnswer.split(',')
+                    val playerAnswerer = ArrayList<String>()
+                    split.forEach { playerAnswerer.add(it.toUpperCase()) }
 
-                var r = true
-                selections.forEach {
-                    if (!playerAnswer.contains(it.toUpperCase())){
-                        r = false
-                        return@forEach
+                    var r = true
+                    selections.forEach {
+                        if (!playerAnswer.contains(it.toUpperCase())) {
+                            r = false
+                            return@forEach
+                        }
                     }
-                }
-                r
-            }
-            else playerAnswer.toUpperCase() == answer.toUpperCase()
+                    r
+                } else playerAnswer.toUpperCase() == answer.toUpperCase()
 
         override fun equals(other: Any?): Boolean {
             return other is Question
@@ -97,26 +102,29 @@ object SurveyManager : Listener {
         val currentQuestion: Question
             get() = question[index]
         val hasNext: Boolean
-            get() = index+1 < Game.env.getInt("countOfSurveyQuestion")
-        fun nextQuestion(){
-            index ++
+            get() = index + 1 < Game.env.getInt("countOfSurveyQuestion")
+
+        fun nextQuestion() {
+            index++
             sendQuestion()
         }
-        fun periodQuestion(){
-            index --
+
+        fun periodQuestion() {
+            index--
             sendQuestion()
         }
-        private fun formatLine(hor: Int,args: MutableList<String>): String{
+
+        private fun formatLine(hor: Int, args: MutableList<String>): String {
             var max = args.first().length
             for (i in 1 until args.size) {
-                if (args[i].length > max){
+                if (args[i].length > max) {
                     max = args[i].length
                 }
             }
             max += 4
 
             val sb = StringBuilder()
-            fun space(i: Int){
+            fun space(i: Int) {
                 (0 until i).forEach { sb.append(' ') }
             }
             args.forEachIndexed { index, s ->
@@ -127,51 +135,69 @@ object SurveyManager : Listener {
             }
             return sb.toString()
         }
-        private fun sendQuestion(){
+
+        private fun sendQuestion() {
             val question = question[index]
-            player.sendMessage(TextUtil.getColoredText("${index + 1}.[${question.type.getChineseName()}] Q: ", TextUtil.TextColor.BLUE,false,false) + question.content)
-            fun sendSelections(){
-                player.sendMessage(formatLine(2,question.selections))
+            player.sendMessage(
+                TextUtil.getColoredText(
+                    "${index + 1}.[${question.type.getChineseName()}] Q: ",
+                    TextUtil.TextColor.BLUE,
+                    bold = false,
+                    underlined = false
+                ) + question.content
+            )
+            fun sendSelections() {
+                player.sendMessage(formatLine(2, question.selections))
             }
-            if (question.type == QuestionType.MultiChoice){
+            if (question.type == QuestionType.MultiChoice) {
                 sendSelections()
-                player.sendMessage(TextUtil.tip("提示: 多选题请使用 选项,选项... 的格式，例如: A,B,C,D 否则一律判为错误"))
-            }
-            else if (question.type == QuestionType.SingleChoice){
+                player.sendMessage(TextUtil.tip("提示: 多选题请使用 选项,选项... 的格式，例如: A,B,C,D，否则一律判为错误"))
+            } else if (question.type == QuestionType.SingleChoice) {
                 sendSelections()
                 player.sendMessage(TextUtil.tip("提示: 单选题只能输入一个英文字母，大小写皆可，否则一律判为错误"))
             }
         }
+
         val question = ArrayList<Question>()
 
         val isPassed: Boolean
-        get() {
-            var r = true
-            question.forEach {
-                if (!it.isCorrect){
-                   r = false
-                    player.sendMessage(TextUtil.error("您所答题目")
-                            + "\"${it.content}\""
-                            + TextUtil.error("的答案是错误的")
-                            + TextUtil.tip("正确答案应为:${it.answer}"))
+            get() {
+                var r = true
+                question.forEach {
+                    if (!it.isCorrect) {
+                        r = false
+                        player.sendMessage(
+                            TextUtil.error("您所答题目")
+                                    + "\"${it.content}\""
+                                    + TextUtil.error("的答案是错误的")
+                                    + TextUtil.tip("正确答案应为:${it.answer}")
+                        )
+                    }
                 }
+                if (r) {
+                    player.sendMessage(
+                        TextUtil.getColoredText(
+                            "恭喜，您的回答全部正确，您现在已经成为正式会员了",
+                            TextUtil.TextColor.GOLD,
+                            true,
+                            false
+                        )
+                    )
+                }
+                return r
             }
-            if (r){
-                player.sendMessage(TextUtil.getColoredText("恭喜，您的回答全部正确，您现在已经成为正式会员了", TextUtil.TextColor.GOLD,true,false))
-            }
-            return r
-        }
 
         init {
-            val randoms = MutableList(Game.env.getInt("countOfSurveyQuestion")){ Base.random.nextInt(questionList.size) }
+            val randoms =
+                MutableList(Game.env.getInt("countOfSurveyQuestion")) { Base.random.nextInt(questionList.size) }
             val start = System.currentTimeMillis()
-            for (i in 0 until randoms.size){
+            for (i in 0 until randoms.size) {
                 if (i != 0) {
                     val unless = ArrayList<Int>()
                     for (j in i - 1 downTo 0) {
                         while (randoms[j] == randoms[i] || unless.contains(randoms[i])) {
                             randoms[i] = Base.random.nextInt(questionList.size)
-                            if (System.currentTimeMillis() - start >= 3*1000L){
+                            if (System.currentTimeMillis() - start >= 3 * 1000L) {
                                 throw TimeoutException()
                             }
                         }
@@ -185,10 +211,12 @@ object SurveyManager : Listener {
     }
 
     val questionList = ArrayList<Question>()
-    val inTesting = ArrayList<PlayerAnswerer>()
+    private val testMap = HashMap<Player, PlayerAnswerer>()
     fun init(surveySave: File, plugin: JavaPlugin?) {
-        if (!surveySave.exists())
+        if (!surveySave.exists()) {
+            plugin?.logger?.warning("Survey file @$surveySave doesn't exist.")
             return
+        }
         try {
             val reader = JsonReader(surveySave.reader())
             val parser = JsonParser()
@@ -196,7 +224,10 @@ object SurveyManager : Listener {
             while (reader.hasNext()) {
                 val obj = parser.parse(reader).asJsonObject
 
-                if (!obj.has("Content") || !obj.has("Type") || !obj.has("Answer") || (obj["Type"].asString.contains("Choice") && !obj.has("Selections"))) {
+                if (!obj.has("Content") || !obj.has("Type") || !obj.has("Answer") || (obj["Type"].asString.contains("Choice") && !obj.has(
+                        "Selections"
+                    ))
+                ) {
                     println("[SurveyManager] No enough args for object ${reader.path}")
                     continue
                 }
@@ -206,7 +237,7 @@ object SurveyManager : Listener {
                 val selections = ArrayList<String>()
                 if (type == QuestionType.SingleChoice || type == QuestionType.MultiChoice)
                     obj["Selections"].asJsonArray.forEach { selections.add(it.asString) }
-                questionList.add(Question(content, type, answer,selections))
+                questionList.add(Question(content, type, answer, selections))
             }
             reader.endArray()
             reader.close()
@@ -217,8 +248,8 @@ object SurveyManager : Listener {
             Bukkit.getPluginManager().registerEvents(this, plugin)
     }
 
-    fun startSurvey(player: Player){
-        if (inTesting.any { it.player == player }) {
+    fun startSurvey(player: Player) {
+        if (testMap.containsKey(player)) {
             player.sendMessage(TextUtil.info("您已经开始答题了"))
             return
         }
@@ -235,13 +266,13 @@ object SurveyManager : Listener {
             info.doNotTranslate = true
             try {
                 val answerer = PlayerAnswerer(player)
-                inTesting.add(answerer)
+                testMap[player] = answerer
                 val limit = answerer.question.size * Game.env.getInt("secondsPerQuestion") * 1000L
                 val delay = 10 * 1000L
                 var i = 1
                 val iLimit = limit / delay
                 timer("surveyTimer", initialDelay = delay, period = delay) {
-                    if (!inTesting.any { it.player == player })
+                    if (!testMap.containsKey(player))
                         this.cancel()
                     if (iLimit > i) {
                         player.sendTitle(TextUtil.info("您还剩${(iLimit - i) * 10}秒"), "", 7, 40, 7)
@@ -259,55 +290,51 @@ object SurveyManager : Listener {
                 e.printStackTrace()
                 player.error("获取问卷超时")
             }
-        }else{
+        } else {
             player.sendMessage(TextUtil.error("抱歉，但您参加调查的机会已用尽，您可以尝试请求管理员的帮助"))
         }
     }
 
-    private fun exit(player: Player){
-        inTesting.removeIf { it.player == player }
+    private fun exit(player: Player) {
+        testMap.remove(player)
         player.sendMessage(TextUtil.info("您已退出答题"))
-        val info = PlayerManager.findInfoByPlayer(player)?:return
+        val info = PlayerManager.findInfoByPlayer(player) ?: return
         info.doNotTranslate = true
 
-        info.remainingSurveyChance --
+        info.remainingSurveyChance--
         player.sendMessage("您还剩${info.remainingSurveyChance}次机会")
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    fun onPlayerAsyncChat(event: AsyncPlayerChatEvent){
-        val answerer = inTesting.firstOrNull { it.player == event.player }
+    fun onPlayerAsyncChat(event: AsyncPlayerChatEvent) {
+        val answerer = testMap[event.player]
         if (answerer != null) {
             event.isCancelled = true
-            if (event.message == "period"){
-                if (answerer.index > 0){
+            if (event.message == "period") {
+                if (answerer.index > 0) {
                     answerer.periodQuestion()
-                }
-                else {
+                } else {
                     event.player.sendMessage(TextUtil.error("当前题目是第一题"))
                 }
-            }
-            else if (event.message == "exit"){
+            } else if (event.message == "exit") {
                 exit(event.player)
-            }
-            else {
+            } else {
                 answerer.currentQuestion.playerAnswer = event.message
                 if (answerer.hasNext)
                     answerer.nextQuestion()
-                else{
+                else {
                     val info = PlayerManager.findInfoByPlayer(event.player)
-                    if (info == null){
+                    if (info == null) {
                         event.player.error(Language.getDefault("player.error.unknown"))
-                    }
-                    else{
+                    } else {
                         info.isSurveyPassed = answerer.isPassed
-                                .also {
-                                    if (!it){
-                                        info.remainingSurveyChance --
-                                        event.player.sendMessage("您还剩${info.remainingSurveyChance}次机会")
-                                    }
+                            .also {
+                                if (!it) {
+                                    info.remainingSurveyChance--
+                                    event.player.sendMessage("您还剩${info.remainingSurveyChance}次机会")
                                 }
-                        inTesting.removeIf { it.player == event.player }
+                            }
+                        testMap.remove(event.player)
                     }
                 }
             }
@@ -315,8 +342,8 @@ object SurveyManager : Listener {
     }
 
     @EventHandler
-    fun onPlayerQuit(event: PlayerQuitEvent){
-        if (inTesting.any{ it.player == event.player }){
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        if (testMap.containsKey(event.player)) {
             exit(event.player)
         }
     }

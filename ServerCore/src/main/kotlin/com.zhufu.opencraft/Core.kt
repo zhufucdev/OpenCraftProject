@@ -1,8 +1,6 @@
 package com.zhufu.opencraft
 
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
-import com.gmail.filoghost.holographicdisplays.api.Hologram
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI
 import com.zhufu.opencraft.Base.spawnWorld
 import com.zhufu.opencraft.Base.lobby
 import com.zhufu.opencraft.Base.surviveWorld
@@ -127,13 +125,6 @@ class Core : JavaPlugin(), Listener {
             val info = (it.firstOrNull()
                 ?: throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
             PlayerLobbyManager[info].also { lobby -> if (!lobby.isInitialized) lobby.initialize() }.tpThere(info.player)
-        }
-
-        if (!server.pluginManager.isPluginEnabled("HolographicDisplays")) {
-            logger.warning("HolographicDisplays is not enabled.")
-            logger.warning("Disabling floating text functionality.")
-        } else {
-            spawnHolographicText()
         }
         if (!server.pluginManager.isPluginEnabled("Citizens")) {
             logger.warning("Citizens is not enabled.")
@@ -278,29 +269,6 @@ class Core : JavaPlugin(), Listener {
                 }
             }
         }, 0L, 2 * 20)
-    }
-
-    private var title: Hologram? = null
-    private var content: Hologram? = null
-    private fun spawnHolographicText() {
-        val location = env.getSerializable("notice", Location::class.java, null) ?: return
-        if (title == null)
-            title = HologramsAPI.createHologram(this, location.clone().add(Vector(0, 1, 0)))
-        title!!.clearLines()
-        title!!.appendTextLine(TextUtil.getColoredText("OpenCraft公告栏", TextUtil.TextColor.AQUA, true, false))
-
-        if (content == null)
-            content = HologramsAPI.createHologram(this, location)
-        content!!.clearLines()
-
-        var i = 1
-        val noticeFile = File(dataFolder.also { if (!it.exists()) it.mkdirs() }, "notice.txt")
-        if (!noticeFile.exists()) noticeFile.createNewFile()
-        val reader = noticeFile.bufferedReader()
-        reader.forEachLine {
-            content!!.appendTextLine(TextUtil.getCustomizedText(it))
-            i++
-        }
     }
 
     private fun spawnNPC() {
@@ -452,7 +420,7 @@ class Core : JavaPlugin(), Listener {
                         val path = Paths.get(
                             System.getenv("PATH").split(':').firstOrNull {
                                 Paths.get(it, "screenfetch").toFile().exists()
-                            }?:"null",
+                            } ?: "null",
                             "screenfetch"
                         ).toFile()
                         val screenfetch = if (path.exists()) {
@@ -469,7 +437,7 @@ class Core : JavaPlugin(), Listener {
                                 .replace("[34m", "${ChatColor.COLOR_CHAR}${ChatColor.BLUE.char}")
                                 .replace("[35m", "${ChatColor.COLOR_CHAR}${ChatColor.LIGHT_PURPLE.char}")
                                 .replace("[36m", "${ChatColor.COLOR_CHAR}${ChatColor.DARK_AQUA.char}")
-                                .replace("[37m","${ChatColor.COLOR_CHAR}${ChatColor.WHITE}")
+                                .replace("[37m", "${ChatColor.COLOR_CHAR}${ChatColor.WHITE}")
                                 .plus(ChatColor.RESET.char)
                         } else "ERROR: no shell command screenfetch."
                         sender.sendMessage(
@@ -515,11 +483,6 @@ class Core : JavaPlugin(), Listener {
                     (1 until args.size).forEach {
                         var result = false
                         when (args[it]) {
-                            "notice" -> {
-                                sender.sendMessage(TextUtil.info("正在重载公告栏"))
-                                spawnHolographicText()
-                                result = true
-                            }
                             "game" -> {
                                 sender.sendMessage(TextUtil.info("正在重载游戏"))
                                 result = true
@@ -597,52 +560,40 @@ class Core : JavaPlugin(), Listener {
                         sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
                         return true
                     }
-
-                    if (args.size == 2 && args[1] == "notice") {
-                        if (sender !is Player) {
-                            sender.sendMessage(TextUtil.error("只有玩家才能使用此命令"))
-                            return true
-                        }
-                        env.set("notice", sender.location)
+                    if (args.size < 3) {
+                        sender.sendMessage(TextUtil.error("用法错误"))
+                        return true
+                    }
+                    if (args[1] == "url") {
+                        env.set("url", args[2])
                         env.save(File(dataFolder, "env"))
-                        sender.sendMessage(TextUtil.success("已将公告栏位置设置为当前位置"))
-                        spawnHolographicText()
+                        sender.success("已将服务器网站地址标记为${args[2]}")
+                        urlLooper = 0
+                        looperDirection = true
                     } else {
-                        if (args.size < 3) {
-                            sender.sendMessage(TextUtil.error("用法错误"))
+                        fun checkIntOverZero(): Boolean {
+                            if (!args[2].isDigit()) {
+                                sender.sendMessage(TextUtil.error("此变量只允许数字"))
+                                return false
+                            }
+                            if (args[2].contains('.') || args[2].contains('-')) {
+                                sender.sendMessage(TextUtil.error("此变量只允许正整数"))
+                                return false
+                            }
                             return true
                         }
-                        if (args[1] == "url") {
-                            env.set("url", args[2])
+                        if (!varNames.contains(args[1])) {
+                            sender.sendMessage(TextUtil.error("变量不存在"))
+                            return true
+                        }
+                        if (checkIntOverZero()) {
+                            env.set(args[1], args[2].toIntOrNull())
+                            sender.sendMessage(TextUtil.success("已将服务器环境变量${args[1]}设置为${args[2]}"))
                             env.save(File(dataFolder, "env"))
-                            sender.success("已将服务器网站地址标记为${args[2]}")
-                            urlLooper = 0
-                            looperDirection = true
-                        } else {
-                            fun checkIntOverZero(): Boolean {
-                                if (!args[2].isDigit()) {
-                                    sender.sendMessage(TextUtil.error("此变量只允许数字"))
-                                    return false
-                                }
-                                if (args[2].contains('.') || args[2].contains('-')) {
-                                    sender.sendMessage(TextUtil.error("此变量只允许正整数"))
-                                    return false
-                                }
-                                return true
-                            }
-                            if (!varNames.contains(args[1])) {
-                                sender.sendMessage(TextUtil.error("变量不存在"))
-                                return true
-                            }
-                            if (checkIntOverZero()) {
-                                env.set(args[1], args[2].toIntOrNull())
-                                sender.sendMessage(TextUtil.success("已将服务器环境变量${args[1]}设置为${args[2]}"))
-                                env.save(File(dataFolder, "env"))
 
-                                reloadTask?.cancel()
-                                saveTask?.cancel()
-                                handleTasks()
-                            }
+                            reloadTask?.cancel()
+                            saveTask?.cancel()
+                            handleTasks()
                         }
                     }
                 }
@@ -911,69 +862,73 @@ class Core : JavaPlugin(), Listener {
                 }
             }
         } else if (command.name == "survey") {
-            if (args.size == 1 && sender.isOp) {
-                val commands = mutableListOf("pass", "rollback", "giveChance")
-                return if (args.first().isEmpty()) {
-                    commands
-                } else {
-                    val r = ArrayList<String>()
-                    commands.forEach { if (it.startsWith(args.first())) r.add(it) }
-                    r
-                }
-            } else if (args.size == 2 && sender.isOp) {
-                val p = ArrayList<String?>()
-                OfflineInfo.forEach {
-                    if (args.first() == "pass" && !it.isSurveyPassed)
-                        p.add(Bukkit.getOfflinePlayer(it.uuid!!).name)
-                    else if (args.first() == "rollback" && it.isSurveyPassed)
-                        p.add(Bukkit.getOfflinePlayer(it.uuid!!).name)
-                    else if (args.first() == "giveChance")
-                        p.add(Bukkit.getOfflinePlayer(it.uuid!!).name)
-                }
-                return if (args[1].isEmpty()) {
-                    p.filterNotNull().toMutableList()
-                } else {
-                    val r = ArrayList<String>()
-                    p.forEach { if (it != null && it.startsWith(args[1])) r.add(it) }
-                    r
+            if (sender.isOp) {
+                if (args.size == 1) {
+                    val commands = mutableListOf("pass", "rollback", "giveChance")
+                    return if (args.first().isEmpty()) {
+                        commands
+                    } else {
+                        val r = ArrayList<String>()
+                        commands.forEach { if (it.startsWith(args.first())) r.add(it) }
+                        r
+                    }
+                } else if (args.size == 2) {
+                    val p = ArrayList<String?>()
+                    OfflineInfo.forEach {
+                        if (args.first() == "pass" && !it.isSurveyPassed)
+                            p.add(Bukkit.getOfflinePlayer(it.uuid!!).name)
+                        else if (args.first() == "rollback" && it.isSurveyPassed)
+                            p.add(Bukkit.getOfflinePlayer(it.uuid!!).name)
+                        else if (args.first() == "giveChance")
+                            p.add(Bukkit.getOfflinePlayer(it.uuid!!).name)
+                    }
+                    return if (args[1].isEmpty()) {
+                        p.filterNotNull().toMutableList()
+                    } else {
+                        val r = ArrayList<String>()
+                        p.forEach { if (it != null && it.startsWith(args[1])) r.add(it) }
+                        r
+                    }
                 }
             }
         } else if (command.name == "builder") {
-            if (args.size == 1 && sender.isOp) {
-                val commands = mutableListOf("pass", "rollback", "set")
-                return if (args.first().isEmpty()) {
-                    commands
-                } else {
-                    val r = ArrayList<String>()
-                    commands.forEach {
-                        if (it.startsWith(args.first()))
-                            r.add(it)
+            if (sender.isOp) {
+                if (args.size == 1) {
+                    val commands = mutableListOf("pass", "rollback", "set")
+                    return if (args.first().isEmpty()) {
+                        commands
+                    } else {
+                        val r = ArrayList<String>()
+                        commands.forEach {
+                            if (it.startsWith(args.first()))
+                                r.add(it)
+                        }
+                        r
                     }
-                    r
-                }
-            } else if (args.size == 2 && sender.isOp) {
-                val p = ArrayList<String>()
-                fun addAllOffline() {
-                    OfflineInfo.forEach {
-                        p.add(it.name ?: return@forEach)
+                } else if (args.size == 2) {
+                    val p = ArrayList<String>()
+                    fun addAllOffline() {
+                        OfflineInfo.forEach {
+                            p.add(it.name ?: return@forEach)
+                        }
                     }
-                }
-                when {
-                    args.first() == "pass" -> addAllOffline()
-                    args.first() == "rollback" ->
-                        OfflineInfo.forEach { if (it.isBuilder) p.add(it.name ?: return@forEach) }
-                    args.first() == "set" -> addAllOffline()
-                }
+                    when {
+                        args.first() == "pass" -> addAllOffline()
+                        args.first() == "rollback" ->
+                            OfflineInfo.forEach { if (it.isBuilder) p.add(it.name ?: return@forEach) }
+                        args.first() == "set" -> addAllOffline()
+                    }
 
-                return if (args[1].isEmpty()) {
-                    p
-                } else {
-                    val r = ArrayList<String>()
-                    p.forEach {
-                        if (it.startsWith(args[1]))
-                            r.add(it)
+                    return if (args[1].isEmpty()) {
+                        p
+                    } else {
+                        val r = ArrayList<String>()
+                        p.forEach {
+                            if (it.startsWith(args[1]))
+                                r.add(it)
+                        }
+                        r
                     }
-                    r
                 }
             }
         }

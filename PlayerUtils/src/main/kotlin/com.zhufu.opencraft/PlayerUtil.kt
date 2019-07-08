@@ -27,7 +27,12 @@ class PlayerUtil : JavaPlugin() {
         ServerCaller["SolveLobbyVisitor"] = {
             val info = (it.firstOrNull()
                 ?: throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
-            LobbyVisitor(this,info).show(info.player)
+            Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
+                val ui = LobbyVisitor(this,info)
+                Bukkit.getScheduler().runTask(this) { _ ->
+                    ui.show(info.player)
+                }
+            }
         }
     }
 

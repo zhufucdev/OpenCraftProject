@@ -23,20 +23,33 @@
         </div>
     </li>
     <li><a class="waves-effect" id="nav-message"><i class="mdi mdi-message mdi-24px"></i>消息</a></li>
-    <li><a class="waves-effect" id="nav-server"><i class="mdi mdi-server mdi-24px"></i>服务器</a></li>
+    <li><a class="waves-effect active" id="nav-server"><i class="mdi mdi-server mdi-24px"></i>服务器</a></li>
+    <li><a class="waves-effect" id="nav-dir"><i class="mdi mdi-folder-account mdi-24px"></i>玩家文件夹</a></li>
 </ul>
 
+<div class="tap-target" data-target="sidenav-trigger">
+    <div class="tap-target-content white-text">
+        <h5>还没有到头</h5>
+        <p>
+            您可以点击此处查看更多选项
+        </p>
+    </div>
+</div>
+
+<!-- Chat -->
 <div class="bottom-dialog" id="dialog-message">
     <h4 id="chat-title" class="dialog-title">
         服务器全局聊天
-        <i class="mdi mdi-help-circle tooltipped right" style="font-size: 24px;position: fixed; right: 20px; margin-top: -10px" data-position="bottom" data-tooltip="如果认为聊天无响应，可以尝试刷新页面。"></i>
+        <i class="mdi mdi-help-circle tooltipped right"
+           style="font-size: 24px;position: fixed; right: 20px; margin-top: -10px" data-position="bottom"
+           data-tooltip="如果认为聊天无响应，可以尝试刷新页面。"></i>
     </h4>
     <div id="chat" style="overflow-y: auto;"></div>
     <div class="input-field row dialog-actionbar" id="chat-input-field">
         <input type="text" id="chat-input" class="col s12">
         <label for="chat-input">聊天栏</label>
         <span class="helper-text red-text" id="chat-helper">错误</span>
-        <a class="btn-flat small red-text lighten-1 waves-effect col right center-align tooltipped" id="chat-send"
+        <a class="btn-flat small red-text lighten-1 waves-effect waves-circle col right center-align tooltipped" id="chat-send"
            data-position="left" data-tooltip="发送 (Enter)"></a>
     </div>
 </div>
@@ -48,13 +61,23 @@
 </div>
 
 <script>
-    let navClasses = document.getElementById('navbar').classList;
+    let navClasses = document.getElementById('navbar').classList,
+        tapTarget = M.TapTarget.init(document.getElementsByClassName('tap-target')[0]);
     $(document).on('scroll', function () {
         if (currentPage === 'intro') {
             if (window.pageYOffset > 0) {
                 if (navClasses.contains('z-depth-0')) {
                     navClasses.remove('z-depth-0');
                     navClasses.add('z-depth-2')
+                }
+                if (!isWideScreen()) {
+                    if (document.body.scrollHeight - (window.scrollY + document.documentElement.clientHeight) <= 5) {
+                        let isShown = Cookies.get('isMenuShown');
+                        if (isShown === "false") {
+                            tapTarget.open();
+                            Cookies.set('isMenuShown', true)
+                        }
+                    }
                 }
             } else {
                 if (navClasses.contains('z-depth-2')) {
@@ -122,7 +145,35 @@
     }
 
 
-    $('#face').click(function () {
+    let items = [$('#nav-server'), $('#nav-message'), $('#nav-dir'), $('#face')];
+    function onclick(index){
+        items.forEach((value, i) => {
+            if (index === i){
+                value.parent().get(0).classList.add('active')
+            } else {
+                value.parent().get(0).classList.remove('active')
+            }
+        })
+    }
+    items[0].click(function () {
+        switchPage((callback) => {
+            $('#content').load('ui?request=server', callback);
+        }, 'server');
+        onclick(0);
+    });
+    items[1].click(function () {
+        switchPage((callback) => {
+            $('#content').load('ui?request=message', callback);
+        }, 'message');
+        onclick(1);
+    });
+    items[2].click(function () {
+        switchPage((callback) => {
+            $('#content').load('ui?request=playerDir', callback)
+        }, 'dir');
+        onclick(2);
+    });
+    items[3].click(function () {
         let target;
         let page;
         if (userData.r === 0) {
@@ -134,30 +185,23 @@
         }
         switchPage(function (callback) {
             $('#content').load(target, callback)
-        }, page)
-    });
-
-    $('#nav-server').click(function () {
-        switchPage((callback) => {
-            $('#content').load('ui?request=server', callback);
-        }, 'server')
-    });
-    $('#nav-message').click(function () {
-        switchPage((callback) => {
-            $('#content').load('ui?request=message', callback);
-        }, 'message')
+        }, page);
+        onclick(3)
     });
 
     /** Chat **/
     let chatInput = $('#chat-input'), btnSend = $('#chat-send');
     let messagingDialog = new BottomDialog(document.getElementById('dialog-message'));
-
+    let isSyncStarted = false;
     $('#btn-message').click(() => {
-        updateUserData(()=>{
+        updateUserData(() => {
             if (userData.r !== -1) {
                 messagingDialog.show();
                 resizeChat();
-                callback()
+                if (!isSyncStarted) {
+                    callback();
+                    isSyncStarted = true
+                }
             } else {
                 M.toast({
                     html: '<span>您必须登录才能使用聊天工具</span>',
@@ -243,8 +287,7 @@
 
             helper.style.display = 'none';
             let message = chatInput.val();
-            chatInput.val(undefined);
-            M.updateTextFields();
+            chatInput.val(undefined); // Clear the chat
             $.ajax({
                 url: 'user?request=chat',
                 type: 'POST',
@@ -257,7 +300,8 @@
                     chatError(text)
                 },
                 timeout: 5000
-            })
+            });
+            M.updateTextFields()
         }
     };
     btnSend.click(send);
@@ -281,7 +325,7 @@
         $.ajax({
             url: 'chat',
             success: function (r) {
-                let success = true;
+                let success = true, element = messagingDialog.element, isOnBottom = element.scrollHeight - element.clientHeight - element.scrollTop <= 10;
 
                 if (r.startsWith('$json:')) {
                     let json = JSON.parse(r.substring(6));
@@ -294,16 +338,13 @@
                 } else {
                     chat.append('<p>' + getCustomizedText(r) + '</p>');
                 }
-                let element = messagingDialog.element;
-                if (element.scrollHeight - element.scrollTop > 10) {
+                if (isOnBottom) {
                     startAnimation(
                         (s) => element.scrollTop = s,
                         element.scrollTop,
                         element.scrollHeight,
                         300
                     )
-                } else {
-                    element.scrollTop = element.scrollHeight;
                 }
                 if (success) {
                     callback();
