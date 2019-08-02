@@ -2,6 +2,7 @@
   <dictionary name="zhufu">
     <words>
       <w>bukkit</w>
+      <w>damager</w>
       <w>runnability</w>
       <w>spawnpoint</w>
       <w>teleport</w>

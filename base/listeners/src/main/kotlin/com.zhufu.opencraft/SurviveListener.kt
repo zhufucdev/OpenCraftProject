@@ -61,7 +61,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 inventory.create("survivor").load()
             }
 
-            if (info.tag.getBoolean("isSurvivor", false)) {
+            if (info.isSurvivor) {
                 if (info.status == Surviving) {
                     isInvulnerable = false
                     return
@@ -134,7 +134,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     info.apply {
                         this.inventory.create(RESET).load(false)
                         status = InLobby
-                        tag.set("isSurvivor", false)
+                        isSurvivor = false
                     }
                 }
             } else {
@@ -191,7 +191,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             ) {
                 Bukkit.getLogger().info("Computer booted.")
                 val info = event.player.info()
-                val getter = info.lang()
+                val getter = info.getter()
                 if (info == null) {
                     event.player.error(getter["player.error.unknown"])
                     return
@@ -319,18 +319,20 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
     @EventHandler
     fun onPlayerSleep(event: PlayerBedEnterEvent) {
         val info = event.player.info()
-        val getter = event.player.lang()
+        val getter = event.player.getter()
         if (info == null) {
             event.player.error(getter["player.error.unknown"])
             return
         }
         if (info.status == Surviving) {
-            event.isCancelled = true
             if (info.isSurveyPassed || !info.tag.getBoolean("isOutOfSpawn", false)) {
                 event.player.success(getter["user.spawnpoint.saved"])
                 info.tag.set("surviveSpawn", event.bed.location)
                 event.player.bedSpawnLocation = event.bed.location
-            } else sendPlayerOutOfSpawnMessage(event.player)
+            } else {
+                event.isCancelled = true
+                sendPlayerOutOfSpawnMessage(event.player)
+            }
         } else if (info.status == InLobby && event.player.world == lobby) {
             val own = PlayerLobbyManager[info]
             if (own.contains(event.bed.location)) {
@@ -366,7 +368,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         } else if (info.status == InLobby && event.block.world == lobby) {
             if (!PlayerLobbyManager.isInOwnLobby(info)) {
                 event.isCancelled = true
-                event.player.error(info.lang()["lobby.error.breakNotPermitted"])
+                event.player.error(info.getter()["lobby.error.breakNotPermitted"])
             }
         }
     }
@@ -398,7 +400,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 }
             } else {
                 event.isCancelled = true
-                event.player.error(info.lang()["lobby.error.buildNotPermitted"])
+                event.player.error(info.getter()["lobby.error.buildNotPermitted"])
             }
         }
     }
@@ -423,7 +425,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
 
     @EventHandler
     fun onPlayerTeleported(event: PlayerTeleportedEvent) {
-        when (event.to.world) {
+        when (event.to?.world) {
             lobby -> {
                 if (event.from != null)
                     PlayerManager.findInfoByPlayer(event.player)
@@ -446,7 +448,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 }
             }
             else -> {
-                if (event.to.world!!.name == "world_the_end" || event.to.world!!.name == "world_nether") {
+                if (event.to?.world == endWorld || event.to?.world == surviveWorld) {
                     val info = PlayerManager.findInfoByPlayer(event.player)
                     if (info == null) {
                         event.isCancelled = true

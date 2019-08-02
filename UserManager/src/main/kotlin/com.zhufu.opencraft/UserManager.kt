@@ -1,12 +1,13 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.SurviveListener.Companion.solveSurvivorRequest
-import com.zhufu.opencraft.inventory.PaymentDialog
-import com.zhufu.opencraft.Base.spawnWorld
 import com.zhufu.opencraft.Base.Extend.toPrettyString
+import com.zhufu.opencraft.Base.spawnWorld
 import com.zhufu.opencraft.events.*
+import com.zhufu.opencraft.inventory.PaymentDialog
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -19,6 +20,9 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
+import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.KVisibility
+import kotlin.reflect.full.memberProperties
 
 class UserManager : JavaPlugin(), Listener {
     private lateinit var boardLocation: Location
@@ -117,6 +121,21 @@ class UserManager : JavaPlugin(), Listener {
         }
     }
 
+    @EventHandler
+    fun onOpPrelogin(event: AsyncPlayerPreLoginEvent) {
+        if (Bukkit.getOfflinePlayer(event.uniqueId).isOp && !WebInfo.users.containsKey(event.address)) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                OfflineInfo.findByUUID(event.uniqueId).let {
+                    if (it != null) {
+                        getLang(it, "player.error.opNotLoginOnWeb").toErrorMessage()
+                    } else {
+                        "管理员必须先在网页登录，再在游戏中登录"
+                    }
+                }
+            )
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val info = Info(event.player)
@@ -129,7 +148,8 @@ class UserManager : JavaPlugin(), Listener {
             Language.printLanguages(info.player)
         } else {
             info.logout()
-            Bukkit.getPluginManager().callEvent(PlayerTeleportedEvent(event.player, null, PlayerLobbyManager[info].spawnPoint))
+            Bukkit.getPluginManager()
+                .callEvent(PlayerTeleportedEvent(event.player, null, PlayerLobbyManager[info].spawnPoint))
         }
     }
 
@@ -179,7 +199,13 @@ class UserManager : JavaPlugin(), Listener {
                 Bukkit.getScheduler().runTask(this) { _ ->
                     info.inventory.create(DualInventory.RESET).load()
                     Bukkit.getPluginManager()
-                        .callEvent(PlayerTeleportedEvent(event.player, spawnWorld.spawnLocation, PlayerLobbyManager[info].spawnPoint))
+                        .callEvent(
+                            PlayerTeleportedEvent(
+                                event.player,
+                                spawnWorld.spawnLocation,
+                                PlayerLobbyManager[info].spawnPoint
+                            )
+                        )
                 }
             } else {
                 event.player.error(Language.getDefault("user.error.langNotFound"))
@@ -189,25 +215,27 @@ class UserManager : JavaPlugin(), Listener {
     }
 
     private fun Player.goto(player: Player) {
-        val info = PlayerManager.findInfoByPlayer(player) ?: return
-        val getter = getLangGetter(info)
-        if (info.status == Info.GameStatus.MiniGaming) {
+        val targetInfo = PlayerManager.findInfoByPlayer(player) ?: return
+        val getter = getLangGetter(targetInfo)
+        if (targetInfo.status == Info.GameStatus.MiniGaming) {
             player.error(getter["user.error.invitationInGame"])
             return
         }
-        if (info.status == Info.GameStatus.Observing) {
+        if (targetInfo.status == Info.GameStatus.Observing) {
             player.error(getter["user.error.invitationInObser"])
             return
         }
 
         val thisInfo = PlayerManager.findInfoByPlayer(this) ?: return
-        thisInfo.inventory.create("survivor").set("location", player.location)
-        solveSurvivorRequest(thisInfo)
-        Bukkit.getPluginManager()
-            .callEvent(PlayerTeleportedEvent(this, this.location, player.location))
-        teleport(player)
+        if (thisInfo.status == Info.GameStatus.InLobby) {
+            thisInfo.inventory.create("survivor").set("location", player.location)
+            ServerCaller["SolvePlayerLogin"]!!(listOf(thisInfo))
+        } else {
+            teleport(player)
+        }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onCommand(
         sender: CommandSender,
         command: Command,
@@ -248,7 +276,12 @@ class UserManager : JavaPlugin(), Listener {
             when (args.first()) {
                 "reg" -> {
                     when {
-                        args.size < 3 -> sender.error(getter["command.error.usage"])
+                        args.size < 3 -> {
+                            sender.error(getter["command.error.usage"])
+                            getCommand("user reg")?.usage?.let {
+                                sender.sendMessage(it)
+                            }
+                        }
                         args[1] != args[2] -> sender.error(getter["user.error.pwdDismatch"])
                         else -> {
                             val info = PlayerManager.findInfoByPlayer(sender) ?: return true
@@ -301,6 +334,9 @@ class UserManager : JavaPlugin(), Listener {
                     val info = PlayerManager.findInfoByPlayer(sender)
                     if (info == null) {
                         sender.error("player.error.unknown")
+                        getCommand("user save")?.usage?.let {
+                            sender.sendMessage(it)
+                        }
                         return true
                     }
                     if (args.size == 2 && args[1] == "back") {
@@ -316,26 +352,32 @@ class UserManager : JavaPlugin(), Listener {
                                 3, 1
                             ), TradeManager.getNewID(), this
                         )
-                            .setOnConfirmListener {
-                                val dest = try {
-                                    info.tag.getSerializable("surviveSpawn", Location::class.java)
-                                } catch (e: Exception) {
-                                    sender.sendMessage(
-                                        arrayOf(
-                                            TextUtil.error(getter["user.error.spawnpointNotFound"]),
-                                            getter["gameWarn"]
+                            .setOnPayListener { success ->
+                                if (success) {
+                                    val dest = try {
+                                        info.tag.getSerializable("surviveSpawn", Location::class.java)
+                                    } catch (e: Exception) {
+                                        sender.sendMessage(
+                                            arrayOf(
+                                                TextUtil.error(getter["user.error.spawnpointNotFound"]),
+                                                getter["gameWarn"]
+                                            )
                                         )
-                                    )
-                                    return@setOnConfirmListener
+                                        return@setOnPayListener false
+                                    }
+                                    val event =
+                                        PlayerTeleportedEvent(sender, sender.location, dest)
+                                    server.pluginManager.callEvent(event)
+                                    if (!event.isCancelled) {
+                                        sender.info(getter["user.tpToSpawn"])
+                                        sender.teleport(dest!!)
+                                    } else {
+                                        return@setOnPayListener false
+                                    }
+                                } else {
+                                    sender.error(getter["trade.error.poor"])
                                 }
-                                val event =
-                                    PlayerTeleportedEvent(sender, sender.location, dest)
-                                server.pluginManager.callEvent(event)
-                                if (!event.isCancelled) {
-                                    info.currency -= 3
-                                    sender.info(getter["user.tpToSpawn"])
-                                    sender.teleport(dest!!)
-                                }
+                                true
                             }
                             .setOnCancelListener {
                                 sender.info(getter["user.teleport.cancelled"])
@@ -361,7 +403,7 @@ class UserManager : JavaPlugin(), Listener {
                 }
                 "deobserve" -> {
                     if (PlayerManager.findInfoByPlayer(sender)?.status == Info.GameStatus.Observing)
-                        Bukkit.getPluginManager().callEvent(com.zhufu.opencraft.events.PlayerDeobserveEvent(sender))
+                        Bukkit.getPluginManager().callEvent(PlayerDeobserveEvent(sender))
                     else
                         sender.error(getter["user.error.nonObserving"])
                 }
@@ -369,6 +411,9 @@ class UserManager : JavaPlugin(), Listener {
                 "goto" -> {
                     if (args.size < 2) {
                         sender.error(getter["command.error.usage"])
+                        getCommand("user goto")?.usage?.let {
+                            sender.sendMessage(it)
+                        }
                         return false
                     }
                     val info = PlayerManager.findInfoByPlayer(sender)
@@ -414,18 +459,24 @@ class UserManager : JavaPlugin(), Listener {
                             )
                             , TradeManager.getNewID(), this
                         )
-                            .setOnConfirmListener {
-                                val event = PlayerTeleportedEvent(
-                                    sender,
-                                    sender.location,
-                                    point.location
-                                )
-                                server.pluginManager.callEvent(event)
-                                if (!event.isCancelled) {
-                                    sender.teleport(point.location)
-                                    sender.info(getter["user.checkpoint.tpSucceed"])
-                                    info.currency -= 3
+                            .setOnPayListener { success ->
+                                if (success) {
+                                    val event = PlayerTeleportedEvent(
+                                        sender,
+                                        sender.location,
+                                        point.location
+                                    )
+                                    server.pluginManager.callEvent(event)
+                                    if (!event.isCancelled) {
+                                        sender.teleport(point.location)
+                                        sender.success(getter["user.checkpoint.tpSucceed"])
+                                    } else {
+                                        return@setOnPayListener false
+                                    }
+                                } else {
+                                    sender.error(getter["user.error.noSoManyCoins"])
                                 }
+                                true
                             }
                             .setOnCancelListener {
                                 sender.info(getter["user.teleport.cancelled"])
@@ -460,7 +511,7 @@ class UserManager : JavaPlugin(), Listener {
                     if (args.size == 1) {
                         when {
                             info.gotoRequests.isEmpty() -> {
-                                sender.info(getter["noInvitations"])
+                                sender.info(getter["user.error.noInvitations"])
                             }
                             info.gotoRequests.size > 1 -> {
                                 sender.sendMessage(
@@ -506,6 +557,9 @@ class UserManager : JavaPlugin(), Listener {
                 "death" -> {
                     if (args.size != 2) {
                         sender.error(getter["command.error.usage"])
+                        getCommand("user death")?.usage?.let {
+                            sender.sendMessage(it)
+                        }
                         return false
                     }
                     fun Location.toPrettyString(): String =
@@ -593,6 +647,9 @@ class UserManager : JavaPlugin(), Listener {
                 "saveas" -> {
                     if (args.size < 2) {
                         sender.error(getter["command.error.usage"])
+                        getCommand("user saveas")?.usage?.let {
+                            sender.sendMessage(it)
+                        }
                         return true
                     }
                     val info = PlayerManager.findInfoByPlayer(sender)
@@ -618,6 +675,9 @@ class UserManager : JavaPlugin(), Listener {
                 "delsave" -> {
                     if (args.size < 2) {
                         sender.error(getter["command.error.usage"])
+                        getCommand("user delsave")?.usage?.let {
+                            sender.sendMessage(it)
+                        }
                         return true
                     }
                     val info = PlayerManager.findInfoByPlayer(sender)
@@ -635,6 +695,9 @@ class UserManager : JavaPlugin(), Listener {
                 "lang" -> {
                     if (args.size < 2) {
                         sender.error(getter["command.error.usage"])
+                        getCommand("user lang")?.usage?.let {
+                            sender.sendMessage(it)
+                        }
                         return true
                     }
                     val target = args[1]
@@ -656,6 +719,9 @@ class UserManager : JavaPlugin(), Listener {
                 "transfer" -> {
                     if (args.size < 3) {
                         sender.error(getter["command.error.usage"])
+                        getCommand("user transfer")?.usage?.let {
+                            sender.sendMessage(it)
+                        }
                         return true
                     }
 
@@ -715,6 +781,72 @@ class UserManager : JavaPlugin(), Listener {
                     result!!.delete()
                 }
 
+                "prefer" -> {
+                    if (args.size < 2) {
+                        sender.error(getter["command.error.usage"])
+                        getCommand("user prefer")?.usage?.let {
+                            sender.sendMessage(it)
+                        }
+                    } else {
+                        val info = sender.info()
+                        if (info == null) {
+                            sender.error(getter["player.error.unknown"])
+                        } else {
+                            val parName = args[1]
+                            val member = info.preference::class.memberProperties.firstOrNull {
+                                it.name == parName && it.visibility == KVisibility.PUBLIC
+                            } as KMutableProperty1<PlayerPreference, *>?
+                            when {
+                                member == null -> sender.error(getter["user.error.noSuchPreference", parName])
+                                args.size == 2 -> {
+                                    sender.info(
+                                        "$parName -> ${
+                                        if (member.returnType.classifier == Boolean::class) {
+                                            if (member.get(info.preference) as Boolean) "on" else "off"
+                                        } else {
+                                            member.get(info.preference)
+                                        }
+                                        }"
+                                    )
+                                }
+                                else -> {
+                                    val section = args[2]
+                                    fun <T> castTo() = member as KMutableProperty1<PlayerPreference, T>
+                                    if (member.returnType.classifier == Boolean::class) {
+                                        castTo<Boolean>().set(
+                                            info.preference,
+                                            (when (section) {
+                                                "off" -> false
+                                                "on" -> true
+                                                else -> {
+                                                    sender.error(getter["command.error.typeError", "on | off"])
+                                                    return true
+                                                }
+                                            })
+                                        )
+                                    } else if (member.returnType.classifier == Int::class) {
+                                        val num = section.toIntOrNull()
+                                        if (num == null) {
+                                            sender.error(getter["command.error.typeError", "Integer"])
+                                        } else {
+                                            castTo<Int>().set(
+                                                info.preference,
+                                                num
+                                            )
+                                        }
+                                    } else if (member.returnType.classifier == String::class) {
+                                        castTo<String>().set(
+                                            info.preference,
+                                            section
+                                        )
+                                    } else return false
+                                    sender.success(getter["user.preferred", parName, section])
+                                }
+                            }
+                        }
+                    }
+                }
+
                 else -> {
                     sender.error(getter["command.error.usage"])
                     return false
@@ -751,7 +883,8 @@ class UserManager : JavaPlugin(), Listener {
                     "delsave",
                     "help",
                     "lang",
-                    "transfer"
+                    "transfer",
+                    "prefer"
                 )
 
                 if (args.size == 1) {
@@ -876,6 +1009,32 @@ class UserManager : JavaPlugin(), Listener {
                                 langs
                             } else {
                                 langs.asSequence().filter { it.startsWith(args[1]) }.toMutableList()
+                            }
+                        }
+                    }
+                    "prefer" -> {
+                        val info = sender.info()
+                        if (args.size >= 2 && info != null) {
+                            if (args.size == 2) {
+                                val r = mutableListOf<String>().apply {
+                                    info.preference::class.memberProperties.forEach {
+                                        if (it.visibility == KVisibility.PUBLIC)
+                                            add(it.name)
+                                    }
+                                }
+                                return if (args[1].isEmpty()) r
+                                else r.filter { it.startsWith(args[1]) }.toMutableList()
+                            } else {
+                                val member =
+                                    info.preference::class.memberProperties.firstOrNull {
+                                        it.name == args[1] && it.visibility == KVisibility.PUBLIC
+                                    }
+                                            as KMutableProperty1<PlayerPreference, *>?
+
+                                return if (member != null && member.returnType.classifier == Boolean::class)
+                                    mutableListOf("on", "off")
+                                else
+                                    mutableListOf()
                             }
                         }
                     }

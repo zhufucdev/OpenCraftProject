@@ -9,8 +9,9 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import java.nio.file.Paths
-import java.util.*
+import java.util.UUID
 import kotlin.concurrent.fixedRateTimer
+import kotlin.random.Random
 
 object Base {
     /* Data Save */
@@ -21,23 +22,28 @@ object Base {
     lateinit var lobby: World
     lateinit var tradeWorld: World
     /* Extended Functions */
-    fun getRandomLocation(world: World, bound: Int, x: Int? = null, y: Int? = null, z: Int? = null): Location
-            = Location(world, x?.toDouble() ?: random(bound), y?.toDouble() ?: random(bound), z?.toDouble() ?: random(bound))
-    fun getRandomLocation(location: Location, x: Int? = null, y: Int? = null, z: Int? = null, bound: Int)
-            = location.add(x?.toDouble()?: random(bound), y?.toDouble()?: random(bound), z?.toDouble()?: random(bound))
-    val random = Random()
-    fun random(bound: Int): Double  = (if (trueByPercentages(0.5f))1 else -1) * random.nextDouble() * Random().nextInt(bound + 1)
+    fun getRandomLocation(world: World, bound: Int, x: Int? = null, y: Int? = null, z: Int? = null): Location =
+        Location(world, x?.toDouble() ?: random(bound), y?.toDouble() ?: random(bound), z?.toDouble() ?: random(bound))
 
-    fun trueByPercentages(p: Float): Boolean{
-        if (p < 0) return false
+    fun getRandomLocation(location: Location, x: Int? = null, y: Int? = null, z: Int? = null, bound: Int) =
+        location.add(x?.toDouble() ?: random(bound), y?.toDouble() ?: random(bound), z?.toDouble() ?: random(bound))
+
+    val random = Random.Default
+    fun random(bound: Int): Double =
+        (if (trueByPercentages(0.5f)) 1 else -1) * random.nextDouble() * random.nextInt(bound + 1)
+
+    fun trueByPercentages(p: Float): Boolean {
+        if (p <= 0) return false
+        if (p >= 1) return true
         var n = 1
-        while ((p*10*n).toInt() - p*10*n != 0.toFloat()){
+        while ((p * 10 * n).toInt() - p * 10 * n != 0.toFloat()) {
             n++
         }
-        val r = Random().nextInt(10*n)-1
-        return r in 0 until (p*10*n).toInt()
+        val r = random.nextInt(10 * n) - 1
+        return r in 0 until (p * 10 * n).toInt()
     }
-    fun getUniquePair(order: Int): Pair<Int, Int>{
+
+    fun getUniquePair(order: Int): Pair<Int, Int> {
         var first = true
         var turning = 1
         var x = 0
@@ -72,11 +78,12 @@ object Base {
         }
         return x to z
     }
-    val msgPoolFile get() = Paths.get("plugins","ServerCore","publicMsg.yml").toFile()!!
+
+    val msgPoolFile get() = Paths.get("plugins", "ServerCore", "publicMsg.yml").toFile()!!
     val publicMsgPool = MessagePool.public(msgPoolFile)
 
-    object Extend{
-        fun String.isDigit(): Boolean{
+    object Extend {
+        fun String.isDigit(): Boolean {
             var a = 0
             var b = 0
             this.forEach {
@@ -84,7 +91,7 @@ object Base {
                     a++
                 else if (it == '.')
                     b++
-                else if (!it.isDigit()){
+                else if (!it.isDigit()) {
                     return false
                 }
                 if (a > 1 || b > 1)
@@ -92,19 +99,21 @@ object Base {
             }
             return true
         }
+
         fun Location.toPrettyString(): String = "${world!!.name}($x,$y,$z)"
-        fun Location.appendToJson(writer: JsonWriter){
+        fun Location.appendToJson(writer: JsonWriter) {
             writer
-                    .beginObject()
-                    .name("world").value(world!!.uid.toString())
-                    .name("x").value(x)
-                    .name("y").value(y)
-                    .name("z").value(z)
-                    .name("pitch").value(pitch)
-                    .name("yaw").value(yaw)
-                    .endObject()
+                .beginObject()
+                .name("world").value(world!!.uid.toString())
+                .name("x").value(x)
+                .name("y").value(y)
+                .name("z").value(z)
+                .name("pitch").value(pitch)
+                .name("yaw").value(yaw)
+                .endObject()
         }
-        fun fromJsonToLocation(reader: JsonReader): Location?{
+
+        fun fromJsonToLocation(reader: JsonReader): Location? {
             var world: World? = null
             var x = Double.NaN
             var y = Double.NaN
@@ -113,8 +122,8 @@ object Base {
             var yaw = Float.NaN
 
             reader.beginObject()
-            while (reader.hasNext()){
-                when (reader.nextName()){
+            while (reader.hasNext()) {
+                when (reader.nextName()) {
                     "world" -> world = Bukkit.getWorld(UUID.fromString(reader.nextString()))
                     "x" -> x = reader.nextDouble()
                     "y" -> y = reader.nextDouble()
@@ -125,41 +134,50 @@ object Base {
                 }
             }
             reader.endObject()
-            if (world == null || x == Double.NaN || y == Double.NaN || z == Double.NaN || pitch == Float.NaN || yaw == Float.NaN){
+            if (world == null || x.isNaN() || y.isNaN() || z.isNaN() || pitch.isNaN() || yaw.isNaN()) {
                 return null
             }
-            return Location(world,x, y, z, yaw, pitch)
+            return Location(world, x, y, z, yaw, pitch)
         }
     }
 
     val pluginCore: Plugin = Bukkit.getPluginManager().getPlugin("ServerCore")!!
 
-    object TutorialUtil{
-        fun Entity.tplock(location: Location,time: Long){
+    object TutorialUtil {
+        fun Entity.tplock(location: Location, time: Long) {
             var i = 0L
             val scheduler = Bukkit.getScheduler()
-            fixedRateTimer("lockTask",period = 100L){
+            fixedRateTimer("lockTask", period = 100L) {
                 if (this@tplock.location != location) {
                     scheduler.runTask(pluginCore) { _ ->
                         teleport(location)
                     }
                 }
-                if (i*100L >= time){
+                if (i * 100L >= time) {
                     this.cancel()
                 }
                 i++
             }
         }
-        fun Player.gmd(mode: GameMode){
-            Bukkit.getScheduler().runTask(pluginCore){ _ ->
+
+        fun Player.gmd(mode: GameMode) {
+            Bukkit.getScheduler().runTask(pluginCore) { _ ->
                 gameMode = mode
             }
         }
-        fun Entity.linearTo(location: Location, delay: Long, period: Long = 50, done: (() -> Unit)? = null, ignoreYaw: Boolean = false){
+
+        fun Entity.linearTo(
+            location: Location,
+            delay: Long,
+            period: Long = 50,
+            done: (() -> Unit)? = null,
+            ignoreYaw: Boolean = false
+        ) {
             val old = this.location.clone()
-            val times = delay/period
-            val locationOnce = Vector((location.x-old.x)/times,(location.y-old.y)/times,(location.z-old.z)/times)
-            val pitchOnce = (location.pitch - old.pitch)/times
+            val times = delay / period
+            val locationOnce =
+                Vector((location.x - old.x) / times, (location.y - old.y) / times, (location.z - old.z) / times)
+            val pitchOnce = (location.pitch - old.pitch) / times
             var yawOnce = if (!ignoreYaw) location.yaw - old.yaw else 0f
             if (!ignoreYaw) {
                 if (yawOnce > 180) {
@@ -170,12 +188,12 @@ object Base {
                 yawOnce = yawOnce / times * 2.557.toFloat()
             }
 
-            fun yawAdd(raw: Float,add: Float): Float{
+            fun yawAdd(raw: Float, add: Float): Float {
                 var r = raw
                 r += add
-                if (r >= 180){
+                if (r >= 180) {
                     r = -180 + (r - 180)
-                } else if (r <= -180){
+                } else if (r <= -180) {
                     r += 360
                 }
                 return r
@@ -183,16 +201,16 @@ object Base {
 
             var i = 1L
             val scheduler = Bukkit.getScheduler()
-            fixedRateTimer("linearTask",period = period){
-                scheduler.runTask(pluginCore){ _ ->
+            fixedRateTimer("linearTask", period = period) {
+                scheduler.runTask(pluginCore) { _ ->
                     teleport(this@linearTo.location.clone().add(locationOnce).apply {
                         pitch += pitchOnce
                         if (!ignoreYaw)
-                            yaw = yawAdd(yaw,yawOnce)
+                            yaw = yawAdd(yaw, yawOnce)
                     })
                 }
-                if (i >= times){
-                    scheduler.runTask(pluginCore){ _ ->
+                if (i >= times) {
+                    scheduler.runTask(pluginCore) { _ ->
                         teleport(location)
                         done?.invoke()
                     }

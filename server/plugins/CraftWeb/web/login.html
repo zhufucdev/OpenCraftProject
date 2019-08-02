@@ -37,8 +37,8 @@
 <script id="onload">
     function bringToUser() {
         updateUserData();
-        fadeSwitch(function (callback) {
-            $('#content').load('ui?request=user', callback);
+        fadeSwitch(function () {
+            window.location = '/navigate/user'
         }, document.getElementById('content'), true)
     }
 
@@ -54,12 +54,12 @@
         signUp.hide();
         repeatWarn.hide();
 
-        $('#name-input').keyup(function () {
+        $('#name-input').keyup(function (event) {
             if (event.keyCode === 13) {
                 $('#password').focus()
             }
         });
-        $('#password').keyup(function () {
+        $('#password').keyup(function (event) {
             if (event.keyCode === 13) {
                 if (!isSigningUp)
                     $('#next').click();
@@ -67,12 +67,12 @@
                     $('#pwd-repeat').focus();
             }
         });
-        $('#pwd-repeat').keyup(function () {
+        $('#pwd-repeat').keyup(function (event) {
             if (event.keyCode === 13) {
                 $('#nickname').focus()
             }
         });
-        $('#nickname').keyup(function () {
+        $('#nickname').keyup(function (event) {
             if (event.keyCode === 13) {
                 $('#next').click()
             }
@@ -133,7 +133,7 @@
                     name: name.value,
                     password: pwd.value
                 };
-                url = "user?request=login"
+                url = hostName + "user?request=login"
             } else {
                 if (nickname.value) data = {
                     name: name.value,
@@ -144,14 +144,13 @@
                     name: name.value,
                     password: pwd.value
                 };
-                url = "user?request=sign-up"
+                url = hostName + "user?request=sign-up"
             }
             $.ajax({
                 url: url,
                 data: JSON.stringify(data),
                 type: "POST",
-                success: function (result) {
-                    const r = JSON.parse(result);
+                success: function (r) {
                     const code = r.r;
                     let message;
                     if (!isSigningUp) {
@@ -165,6 +164,8 @@
                         } else if (code === 2) {
                             message = '重复登录';
                             bringToUser()
+                        } else {
+                            message = '错误: ' + code;
                         }
                     } else {
                         if (code === 2) {

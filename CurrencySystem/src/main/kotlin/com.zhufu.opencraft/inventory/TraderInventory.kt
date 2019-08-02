@@ -1,11 +1,10 @@
 package com.zhufu.opencraft.inventory
 
 import com.zhufu.opencraft.*
-import com.zhufu.opencraft.CurrencySystem.Companion.inventoryMap
 import com.zhufu.opencraft.CurrencySystem.Companion.transMap
 import com.zhufu.opencraft.TextUtil
-import com.zhufu.opencraft.special_items.FlyWand
-import com.zhufu.opencraft.special_items.Portal
+import com.zhufu.opencraft.special_item.FlyWand
+import com.zhufu.opencraft.special_item.Portal
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -13,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
 class TraderInventory(val player: Player) {
-    private val getter = player.lang()
+    private val getter = player.getter()
     private val itemFlyWand: ItemStack = FlyWand(getter)
     private val donater: ItemStack = ItemStack(Material.GOLDEN_APPLE).apply {
         itemMeta = itemMeta!!.apply {
@@ -133,32 +132,26 @@ class TraderInventory(val player: Player) {
                     SellingItemInfo(itemFlyWand.clone(), price, 1),
                     TradeManager.getNewID(),
                     CurrencySystem.mInstance
-                ).setOnConfirmListener {
-                    val info = PlayerManager.findInfoByPlayer(player)
-                    if (info == null) {
-                        player.sendMessage(arrayOf(TextUtil.error(Language.getDefault("player.error.unknown"))))
-                        it.cancel()
-                        return@setOnConfirmListener
-                    }
+                ).setOnPayListener { success ->
+                    if (success) {
+                        val info = player.info()!!
 
-                    val survivor = info.inventory.create("survivor")
-                    if (survivor.any { item -> FlyWand.isThis(item) }) {
-                        player.sendMessage(
-                            arrayOf(
-                                TextUtil.error("抱歉，但你不能同时拥有两支权杖"),
-                                TextUtil.tip("为了同时拥有两支权杖，您可以尝试使用箱子等容器，但这并不会带来好的游戏体验")
+                        val survivor = info.inventory.create("survivor")
+                        if (survivor.any { item -> FlyWand.isThis(item) }) {
+                            player.sendMessage(
+                                arrayOf(
+                                    TextUtil.error("抱歉，但你不能同时拥有两支权杖"),
+                                    TextUtil.tip("为了同时拥有两支权杖，您可以尝试使用箱子等容器，但这并不会带来好的游戏体验")
+                                )
                             )
-                        )
-                        return@setOnConfirmListener
-                    }
-                    if (info.currency >= price) {
-                        if (survivor.addItem(itemFlyWand.clone())) {
-                            info.currency -= price
-                        } else {
+                        } else if (!survivor.addItem(itemFlyWand.clone())) {
                             player.error(getter["trade.error.inventoryFull"])
+                            return@setOnPayListener false
                         }
+                        true
                     } else {
                         player.error(getter["trade.error.poor"])
+                        true
                     }
                 }
                     .setOnCancelListener {
@@ -173,23 +166,18 @@ class TraderInventory(val player: Player) {
                     SellingItemInfo(itemPortal, Portal.PRICE.toLong(), 1),
                     TradeManager.getNewID(),
                     CurrencySystem.mInstance
-                ).setOnConfirmListener {
-                    val info = PlayerManager.findInfoByPlayer(player)
-                    if (info == null) {
-                        player.sendMessage(arrayOf(TextUtil.error(Language.getDefault("player.error.unknown"))))
-                        it.cancel()
-                        return@setOnConfirmListener
-                    }
-                    if (info.currency >= Portal.PRICE) {
+                ).setOnPayListener { success ->
+                    val info = player.info()!!
+                    if (success) {
                         val survivor = info.inventory.create("survivor")
-                        if (survivor.addItem(itemPortal.clone())) {
-                            info.currency -= Portal.PRICE
-                        } else {
+                        if (!survivor.addItem(itemPortal.clone())) {
                             player.error(getter["trade.error.inventoryFull"])
+                            return@setOnPayListener false
                         }
                     } else {
                         player.error(getter["trade.error.poor"])
                     }
+                    true
                 }
                     .setOnCancelListener {
                         player.info(getter["trade.cancelled"])

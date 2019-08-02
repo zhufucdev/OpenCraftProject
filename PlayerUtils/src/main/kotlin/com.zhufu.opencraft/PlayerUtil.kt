@@ -1,9 +1,9 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.script.PlayerScript
-import com.zhufu.opencraft.special_items.FlyWand
-import com.zhufu.opencraft.special_items.Portal
-import com.zhufu.opencraft.special_items.SpecialItem
+import com.zhufu.opencraft.special_item.FlyWand
+import com.zhufu.opencraft.special_item.Portal
+import com.zhufu.opencraft.special_item.SpecialItem
 import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
 import org.bukkit.Bukkit
@@ -12,8 +12,6 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.scheduler.BukkitTask
-import org.graalvm.polyglot.Context
 
 class PlayerUtil : JavaPlugin() {
     companion object {
@@ -27,6 +25,7 @@ class PlayerUtil : JavaPlugin() {
         ServerCaller["SolveLobbyVisitor"] = {
             val info = (it.firstOrNull()
                 ?: throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
+            info.player.sendActionText(info.getter()["ui.visitor.booting"].toInfoMessage())
             Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
                 val ui = LobbyVisitor(this,info)
                 Bukkit.getScheduler().runTask(this) { _ ->
@@ -42,7 +41,7 @@ class PlayerUtil : JavaPlugin() {
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        val getter = sender.lang()
+        val getter = sender.getter()
         if (command.name == "lu") {
             if (!sender.isOp) {
                 sender.error(getter["command.error.permission"])

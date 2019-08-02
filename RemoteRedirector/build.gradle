@@ -1,0 +1,19 @@
+group 'com.zhufu.opencraft'
+version '1.0-SNAPSHOT'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.zhufu.opencraft.AppMainKt'
+    }
+}
+
+copyJar {
+    dependsOn build
+    
+}
+
+dependencies {
+    compile project(':webBase')
+    compile 'com.squareup.okhttp3:okhttp:3.11.0'
+    compile 'com.google.code.gson:gson:2.8.0'
+}

@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+import org.jetbrains.annotations.Nullable;
 
 public class PlayerTeleportedEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
@@ -15,6 +16,7 @@ public class PlayerTeleportedEvent extends PlayerEvent implements Cancellable {
         return from;
     }
 
+    @Nullable
     public Location getTo() {
         return to;
     }

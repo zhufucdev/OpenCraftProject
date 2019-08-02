@@ -78,7 +78,7 @@ object TextUtil {
         return result
     }
 
-    fun getCustomizedText(t: String, showTo: ChatInfo? = null): String = getCustomizedText(t, showTo.lang())
+    fun getCustomizedText(t: String, showTo: ChatInfo? = null): String = getCustomizedText(t, showTo.getter())
 
     fun error(t: String): String {
         return getColoredText(t, TextUtil.TextColor.RED, true, underlined = false)
@@ -142,7 +142,6 @@ object TextUtil {
         }
     }
 
-    private fun Char.isEnglishLetter() = this in 'a'..'Z'
     fun formatLore(s: String): List<String> {
         val r = ArrayList<String>()
         if (s.length > 29) {
@@ -173,3 +172,4 @@ fun String.toSuccessMessage() = TextUtil.success(this)
 fun String.toErrorMessage() = TextUtil.error(this)
 fun String.toCustomizedMessage(info: ChatInfo?) = TextUtil.getCustomizedText(this,info)
 fun String.toCustomizedMessage(getter: Language.LangGetter) = TextUtil.getCustomizedText(this,getter)
+fun Char.isEnglishLetter() = this in 'a'..'z' || this in 'A' .. 'Z'

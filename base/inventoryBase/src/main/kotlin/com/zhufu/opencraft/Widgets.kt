@@ -13,7 +13,7 @@ object Widgets {
     val back
         get() = ItemStack(Material.ARROW)
     val rename
-        get() = ItemStack(Material.ACACIA_SIGN)
+        get() = ItemStack(Material.OAK_SIGN)
     val close
         get() = ItemStack(Material.BARRIER)
 }

@@ -1,7 +1,10 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.special_item.Coin
+import com.zhufu.opencraft.special_item.SpecialItem
 import com.zhufu.opencraft.util.ActionBarTextUtil
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.HumanEntity
@@ -9,6 +12,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import java.io.File
+import java.math.BigInteger
+import java.nio.channels.FileChannel
+import java.nio.charset.Charset
+import java.security.DigestInputStream
+import java.security.MessageDigest
+import kotlin.math.absoluteValue
 
 fun getLang(lang: String, value: String, vararg replaceWith: Any?): String = Language.got(lang, value, replaceWith)
 fun getLang(player: ServerPlayer, value: String, vararg replaceWith: Any?): String =
@@ -34,8 +43,8 @@ fun getLangGetter(player: ChatInfo?): Language.LangGetter {
 
 fun HumanEntity.info() = Info.findByPlayer(uniqueId)
 fun OfflinePlayer.offlineInfo() = OfflineInfo.findByUUID(uniqueId)
-fun CommandSender?.lang() = getLangGetter(if (this is HumanEntity) this.info() else null)
-fun ChatInfo?.lang() = getLangGetter(this)
+fun CommandSender?.getter() = getLangGetter(if (this is HumanEntity) this.info() else null)
+fun ChatInfo?.getter() = getLangGetter(this)
 
 fun CommandSender.success(msg: String) {
     this.sendMessage(TextUtil.success(msg))
@@ -61,19 +70,6 @@ fun Player.sendActionText(msg: String) {
     ActionBarTextUtil.sendActionText(this, msg)
 }
 
-fun broadcast(value: String, color: TextUtil.TextColor, vararg replaceWith: String?) {
-    val langMap = HashMap<String, String>()
-    Bukkit.getOnlinePlayers().forEach {
-        val info = it.info() ?: return@forEach
-        if (!info.isLogin) return@forEach
-        val lang = info.userLanguage
-        if (!langMap.containsKey(lang)) {
-            langMap[lang] = TextUtil.getColoredText(Language.got(lang, value, replaceWith), color, false, false)
-        }
-        it.sendMessage(langMap[lang]!!)
-    }
-}
-
 fun runSync(l: () -> Unit) {
     Bukkit.getScheduler().runTask(Base.pluginCore) { _ ->
         l()
@@ -96,3 +92,69 @@ fun File.size(): Long =
     } else {
         inputStream().channel.size()
     }
+
+fun File.MD5(): String {
+    val md = MessageDigest.getInstance("MD5")
+    val input = inputStream()
+    md.update(input.channel.map(FileChannel.MapMode.READ_ONLY, 0, length()))
+    input.close()
+    return BigInteger(1, md.digest()).toString(16)
+}
+
+fun Pair<Location, Location>.center(): Location {
+    val x = (first.x.absoluteValue - second.x.absoluteValue) / 2
+    val y = (first.y.absoluteValue - second.y.absoluteValue) / 2
+    val z = (first.z.absoluteValue - second.z.absoluteValue) / 2
+    return Location(second.world, second.x + x, second.y + y, second.z + z)
+}
+
+fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
+    if (amount < 0) {
+        val sub = -amount
+        var aAmount = 0
+        fun isSimilar(a: ItemStack): Boolean {
+            return a.type == type.type
+                    && if (type is SpecialItem) SpecialItem.getByItem(a, type.getter)?.type == type.type
+            else !SpecialItem.isSpecial(a)
+        }
+        this.inventory.forEach {
+            if (it != null && isSimilar(it))
+                aAmount += it.amount
+        }
+        if (aAmount < sub) {
+            return false
+        }
+        var removed = 0
+        for (i in 0 until this.inventory.size) {
+            val itemStack = this.inventory.getItem(i)
+            if (itemStack != null && isSimilar(itemStack)) {
+                if (itemStack.amount >= sub - removed) {
+                    itemStack.amount -= sub - removed
+                    removed += sub - removed
+                } else {
+                    removed += itemStack.amount
+                    this.inventory.setItem(i, null)
+                }
+                if (removed > sub) {
+                    (removed - sub).also { add ->
+                        this.inventory.addItem(ItemStack(type.type, add))
+                    }
+                    break
+                }
+            }
+        }
+    } else {
+        val notStored = inventory.addItem(
+            type.clone()
+                .also { it.amount = amount }
+        )
+        if (notStored.isNotEmpty()) {
+            notStored.forEach { (_, u) ->
+                world.dropItemNaturally(eyeLocation, u)
+            }
+        }
+    }
+    return true
+}
+
+fun HumanEntity.addCash(amount: Int) = setInventory(Coin(1, getter()), amount)

@@ -48,7 +48,7 @@ class ServerLogger(val player: ServerPlayer, val level: Level) {
             if (createNewFile())
                 writeText(log)
             else if (player is ChatInfo)
-                player.playerOutputStream.send(player.lang()["scripting.error.log"].toErrorMessage())
+                player.playerOutputStream.send(player.getter()["scripting.error.log"].toErrorMessage())
         }
     }
 

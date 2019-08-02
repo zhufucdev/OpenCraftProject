@@ -1,6 +1,5 @@
 package com.zhufu.opencraft
 
-import com.google.common.cache.CacheBuilder
 import com.zhufu.opencraft.player_community.Friend
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
@@ -9,19 +8,15 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.permissions.ServerOperator
 import java.io.File
-import java.io.FileNotFoundException
-import java.io.Reader
 import java.nio.file.Paths
 import java.util.*
+import javax.security.auth.Destroyable
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = null, private val nameToExtend: String? = null) : ServerOperator {
+abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = null, private val nameToExtend: String? = null) : ServerOperator, Destroyable {
     companion object {
-        val memory =
-            CacheBuilder.newBuilder()
-                .maximumSize(Bukkit.getMaxPlayers().toLong())
-                .build<UUID, YamlConfiguration>()!!
+        val memory = HashMap<UUID, YamlConfiguration>()
 
         val size: Int
             get() {
@@ -43,7 +38,15 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
     private var privateTag: YamlConfiguration? = null
     var tag: YamlConfiguration
        get() = if (uuid != null) {
-            memory[uuid!!, { initTag(createNew) }]
+            memory[uuid!!].let {
+                if (it == null){
+                    val t = initTag(createNew)
+                    memory[uuid!!] = t
+                    t
+                } else {
+                    it
+                }
+            }
         } else {
             privateTag.let {
                 if (it == null) {
@@ -147,6 +150,7 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
     var remainingSurveyChance: Int
         get() = tag.getInt("surveyChanceRemaining", 10)
         set(value) = tag.set("surveyChanceRemaining", value)
+    val preference: PlayerPreference = PlayerPreference(this)
 
     var userLanguage: String
         get() = tag.getString("lang", Language.LANG_ZH)!!
@@ -198,6 +202,20 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
 
     override fun setOp(value: Boolean) {
         offlinePlayer.isOp = value
+    }
+
+    open fun delete() {
+        tagFile.delete()
+        inventoriesFile.delete()
+
+    }
+
+    private var isDestroyed = false
+    override fun isDestroyed(): Boolean = isDestroyed
+    override fun destroy() {
+        saveTag()
+        if (uuid != null) memory.remove(uuid!!)
+        isDestroyed = true
     }
 
     override fun hashCode(): Int {

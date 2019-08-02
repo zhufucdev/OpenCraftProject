@@ -13,8 +13,8 @@ import com.zhufu.opencraft.inventory.SetUpValidateInventory
 import com.zhufu.opencraft.inventory.VisitorInventory
 import com.zhufu.opencraft.TradeManager.printTradeError
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
-import com.zhufu.opencraft.special_items.FlyWand
-import com.zhufu.opencraft.special_items.SpecialItem
+import com.zhufu.opencraft.special_item.FlyWand
+import com.zhufu.opencraft.special_item.SpecialItem
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -86,7 +86,7 @@ object EveryThing : Listener {
                         if (it != null)
                             it
                         else {
-                            player.error(player.lang()["player.error.unknown"])
+                            player.error(player.getter()["player.error.unknown"])
                             throw IllegalStateException()
                         }
                     }
@@ -100,7 +100,7 @@ object EveryThing : Listener {
 
     @EventHandler
     fun onPlayerTeleported(event: PlayerTeleportedEvent) {
-        if (event.to.world == tradeWorld) {
+        if (event.to?.world == tradeWorld) {
             val t = getPlayerTerritory(event.player)
             PlayerManager.findInfoByPlayer(event.player)
                 ?.apply {
@@ -186,7 +186,7 @@ object EveryThing : Listener {
                 event.player.sendMessage(TextUtil.error("抱歉，但您不能在此处创建商店"))
                 return
             }
-            if (BuilderListener.isInBuilderMode(event.player)) {
+            if (event.player.info()?.isInBuilderMode == true) {
                 event.player.sendMessage(TextUtil.error("抱歉，但您不能在此时创建商店"))
                 return
             }

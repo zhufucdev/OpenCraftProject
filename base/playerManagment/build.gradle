@@ -3,5 +3,5 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     compile project(':pluginBase')
-    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.0.0-SNAPSHOT'
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.0.1-SNAPSHOT'
 }

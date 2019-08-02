@@ -4,7 +4,7 @@ import com.zhufu.opencraft.Base
 import com.zhufu.opencraft.Info
 import com.zhufu.opencraft.Scripting.loopExecutions
 import com.zhufu.opencraft.exceptions.LoopExecutionOutOfBoundError
-import com.zhufu.opencraft.lang
+import com.zhufu.opencraft.getter
 import org.bukkit.Bukkit
 import java.util.*
 import java.util.function.Function
@@ -26,7 +26,7 @@ object Utils {
         val info = Info.findByPlayer(UUID.fromString(uuid)) ?: throw IllegalStateException()
         if (times > info.maxLoopExecution){
             Bukkit.getLogger().warning("${info.name} was thrown loop execution out of bound error for more than ${info.maxLoopExecution} call.")
-            throw LoopExecutionOutOfBoundError(info.lang()["scripting.error.executionOutOfBound",info.maxLoopExecution])
+            throw LoopExecutionOutOfBoundError(info.getter()["scripting.error.executionOutOfBound",info.maxLoopExecution])
         }
         loopExecutions[uuid1] = times
     }

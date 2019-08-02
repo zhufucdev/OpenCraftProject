@@ -18,8 +18,6 @@
       <module name="OpenCraft.LICENSE.test" target="1.8" />
       <module name="OpenCraft.PlayerManager.main" target="1.8" />
       <module name="OpenCraft.PlayerManager.test" target="1.8" />
-      <module name="OpenCraft.webBase.main" target="1.8" />
-      <module name="OpenCraft.webBase.test" target="1.8" />
       <module name="OpenCraft.WebInterface.main" target="1.8" />
       <module name="OpenCraft.webInterface.main" target="1.8" />
       <module name="OpenCraft.WebInterface.test" target="1.8" />

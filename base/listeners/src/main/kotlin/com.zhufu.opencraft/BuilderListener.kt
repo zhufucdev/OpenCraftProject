@@ -18,11 +18,9 @@ object BuilderListener : Listener {
     private var mPlugin: Plugin? = null
     private val blocks = ArrayList<Location>()
 
-    fun isInBuilderMode(player: HumanEntity) = player.info()?.isBuilder == true && player.gameMode == GameMode.CREATIVE
-
     fun updatePlayerLevel(player: OfflinePlayer, lvl: Int) {
         val online = player.player
-        if (lvl == 0 && online != null && isInBuilderMode(online)) {
+        if (lvl == 0 && online != null && online.info()?.isInBuilderMode == true) {
             switch(online)
         }
         player.offlineInfo()?.builderLevel = lvl
@@ -50,12 +48,12 @@ object BuilderListener : Listener {
             Language.getDefault("player.error.unknown")
             return
         }
-        if (player.gameMode == GameMode.SURVIVAL) {
+        if (info.status == Info.GameStatus.Surviving) {
             info.status = Info.GameStatus.Building
             info.inventory.create("builder").load()
             player.gameMode = GameMode.CREATIVE
             updatePermissions(player, info.builderLevel)
-        } else {
+        } else if (info.status == Info.GameStatus.Building) {
             info.status = Info.GameStatus.Surviving
             info.inventory.create("survivor").load()
             player.gameMode = GameMode.SURVIVAL
@@ -65,7 +63,7 @@ object BuilderListener : Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     fun onPlayerPlaceBlock(event: BlockPlaceEvent) {
-        if (isInBuilderMode(event.player)) {
+        if (event.player.info()?.isInBuilderMode == true) {
             val lvl = event.player.info()?.builderLevel
             if (lvl != null && lvl > 2 && isBlockLimit(event.block.type)) {
                 event.isCancelled = true
@@ -78,7 +76,7 @@ object BuilderListener : Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     fun onPlayerBreakBlock(event: BlockBreakEvent) {
         if (blocks.contains(event.block.location)) {
-            if (isInBuilderMode(event.player)) {
+            if (event.player.info()?.isInBuilderMode == true) {
                 blocks.remove(event.block.location)
             } else if (!event.player.isOp) {
                 event.isCancelled = true
@@ -97,7 +95,7 @@ object BuilderListener : Listener {
 
     @EventHandler
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
-        if (isInBuilderMode(event.player) && event.player.info()?.builderLevel!! > 1) {
+        if (event.player.info()?.isInBuilderMode == true && event.player.info()?.builderLevel!! > 1) {
             event.isCancelled = true
             event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.dropItem"]))
         }
@@ -105,7 +103,7 @@ object BuilderListener : Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     fun onPlayerOpenInventory(event: InventoryOpenEvent) {
-        if (isInBuilderMode(event.player) && event.inventory.type != InventoryType.CREATIVE && event.player.info()?.builderLevel!! > 1) {
+        if (event.player.info()?.isInBuilderMode == true && event.inventory.type != InventoryType.CREATIVE && event.player.info()?.builderLevel!! > 1) {
             event.isCancelled = true
             event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.inventory"]))
         }

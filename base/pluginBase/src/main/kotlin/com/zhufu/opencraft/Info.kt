@@ -2,7 +2,6 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.player_community.PlayerOutputStream
 import com.zhufu.opencraft.util.CommonPlayerOutputStream
-import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -71,6 +70,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
         private set
     var isLogin: Boolean = false
         private set
+    val isInBuilderMode get() = status == GameStatus.Building
 
     var savedAddress: String?
         get() = tag.getString("address")
@@ -151,7 +151,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
 
         ServerCaller["SolvePlayerSurvive"]!!(listOf(player))
 
-        player.info(lang()["user.login.success"])
+        player.info(getter()["user.login.success"])
     }
 
     fun logout(borderLocation: Location) {
@@ -189,8 +189,8 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
     }
 
     override fun destroy() {
-        saveServerID()
-        super.destroy()
+        inventory.present.save()
         infoList.remove(this)
+        super.destroy()
     }
 }

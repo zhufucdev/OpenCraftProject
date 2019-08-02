@@ -132,14 +132,18 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                                     3,
                                     1)
                             , TradeManager.getNewID(), plugin)
-                            .setOnConfirmListener {
-                                val event = PlayerTeleportedEvent(info.player, info.player.location, point.location)
-                                Bukkit.getPluginManager().callEvent(event)
-                                if (!event.isCancelled) {
-                                    info.player.teleport(point.location)
-                                    info.player.info(adapter.getter["user.checkpoint.tpSucceed"])
-                                    info.currency -= 3
+                            .setOnPayListener { success ->
+                                if (success) {
+                                    val event = PlayerTeleportedEvent(info.player, info.player.location, point.location)
+                                    Bukkit.getPluginManager().callEvent(event)
+                                    if (!event.isCancelled) {
+                                        info.player.teleport(point.location)
+                                        info.player.info(adapter.getter["user.checkpoint.tpSucceed"])
+                                    }
+                                } else {
+                                    info.player.error(info.getter()["trade.error.poor"])
                                 }
+                                true
                             }
                             .setOnCancelListener {
                                 info.player.info(adapter.getter["user.teleport.cancelled"])

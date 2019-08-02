@@ -1,6 +1,5 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.DualInventory.Companion.NOTHING
 import com.zhufu.opencraft.DualInventory.Companion.RESET
 import com.zhufu.opencraft.events.PeriodEndEvent
 import com.zhufu.opencraft.events.PlayerJoinGameEvent
@@ -229,18 +228,19 @@ abstract class GameBase : Listener {
         SUCCESSFUL,ALREADY_IN,ROOM_FULL,FAILED,CANCELLED
     }
     fun joinPlayer(player: Player): JoinGameResult {
-        val info = PlayerManager.findInfoByPlayer(player)
+        val info = player.info()
+        val getter = info.getter()
         if (info == null){
-            player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+            player.error(getter["player.error.unknown"])
             return JoinGameResult.FAILED
         }
         if (gaming.contains(player)){
-            player.sendMessage(TextUtil.error(Language[info,"game.error.alreadyIn"]))
+            player.error(getter["game.error.alreadyIn"])
             return JoinGameResult.ALREADY_IN
         }
         else if (isRoomFull){
             info.status = Info.GameStatus.InLobby
-            player.sendMessage(TextUtil.error(Language[info,"game.error.roomFull"]))
+            player.error(getter["game.error.roomFull"])
             return JoinGameResult.ROOM_FULL
         }
         val event = PlayerJoinGameEvent(player, gameID)
@@ -251,7 +251,7 @@ abstract class GameBase : Listener {
         gaming.add(player, team = getSuitablePlayerTeam())
         broadcast("player.joinGame","(${gaming.size}/${getMaxPlayerCount()}) ${player.name}")
         //Load player profile
-        info.inventory.create(NOTHING).load()
+        info.inventory.create(RESET).load(inventoryOnly = true)
         player.gameMode = getDefaultGameMode()
         player.isInvulnerable = false
         player.activePotionEffects.forEach {

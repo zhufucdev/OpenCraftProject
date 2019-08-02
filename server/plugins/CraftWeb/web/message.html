@@ -66,9 +66,8 @@
             let ele = document.getElementById('content');
             fadeOut(ele, 20, () => {
                 $.ajax({
-                    url: 'user?request=change&which=unread&what=p' + one.id,
-                    success: function (r) {
-                        let json = JSON.parse(r);
+                    url: hostName + 'user?request=change&which=unread&what=p' + one.id,
+                    success: function (json) {
                         if (json.r === 0) {
                             M.toast({html: '已撤销标记'});
                             data.messages[index].read = false;
@@ -89,9 +88,8 @@
                 unread(one, index);
             };
             $.ajax({
-                url: 'user?request=change&which=read&what=p' + one.id,
-                success: function (r) {
-                    let json = JSON.parse(r);
+                url: hostName + 'user?request=change&which=read&what=p' + one.id,
+                success: function (json) {
                     if (json.r === 0) {
                         let t = M.toast({html: '<span>已将目标标记为已读</span><a class="btn-flat toast-action" id="undo">撤销</a>'});
                         data.messages[index].read = true;
@@ -164,29 +162,30 @@
         $('#contents').show();
     }
 
-    if (userData.r === 0) {
-        hideError();
-        $('#prgs').show();
-        $.ajax({
-            url: 'user?request=check&check=message',
-            success: function (r) {
-                $('#prgs').hide();
-                let json = JSON.parse(r);
-                if (json.r === 0 && json.messages) {
-                    init(json);
-                } else {
-                    errorMessage('无法获取消息');
+    updateUserData(function (userData) {
+        if (userData.r === 0) {
+            hideError();
+            $('#prgs').show();
+            $.ajax({
+                url: hostName + 'user?request=check&check=message',
+                success: function (json) {
+                    $('#prgs').hide();
+                    if (json.r === 0 && json.messages) {
+                        init(json);
+                    } else {
+                        errorMessage('无法获取消息');
+                    }
                 }
+            });
+        } else {
+            errorMessage('您必须登录才能接收消息');
+            document.querySelector('html').style.height = '100%';
+            document.querySelector('body').style.height = '100%';
+            document.querySelector('.container').style.textAlign = 'center';
+            onDisable = () => {
+                document.querySelector('html').style.height = null;
+                document.querySelector('body').style.height = null
             }
-        });
-    } else {
-        errorMessage('您必须登录才能接收消息');
-        document.querySelector('html').style.height = '100%';
-        document.querySelector('body').style.height = '100%';
-        document.querySelector('.container').style.textAlign = 'center';
-        onDisable = () => {
-            document.querySelector('html').style.height = null;
-            document.querySelector('body').style.height = null
         }
-    }
+    });
 </script>

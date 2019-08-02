@@ -84,7 +84,7 @@ abstract class NPCItemInventory(
     @EventHandler
     fun onNPCClick(event: NPCRightClickEvent) {
         if (event.npc == clickableNPC) {
-            if (BuilderListener.isInBuilderMode(event.clicker)) {
+            if (event.clicker.info()?.isInBuilderMode == true) {
                 event.clicker.sendMessage(TextUtil.error("抱歉，但您不能在此时购买或更改物品"))
                 return
             }

@@ -3,8 +3,7 @@ package com.zhufu.opencraft
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
-import HttpsServer
-import SimpleExecutor
+import com.sun.net.httpserver.HttpHandler
 import org.bukkit.configuration.ConfigurationSection
 import java.io.File
 import java.util.logging.Logger
@@ -12,18 +11,27 @@ import java.util.logging.Logger
 class CraftWeb : JavaPlugin() {
     private val instance = HttpsServer()
     private val http = HttpServer()
+    private lateinit var handler: HttpHandler
 
     companion object {
         const val unknown = "unknown"
         lateinit var logger: Logger
+        lateinit var plugin: JavaPlugin
     }
 
     override fun onEnable() {
         Companion.logger = logger
+        plugin = this
         config.apply {
             if (!isSet("root")) {
-                val default = File(dataFolder, "web").also { if (!it.exists()) it.mkdirs() }
+                val default = File(dataFolder, "web")
+                if (!default.exists()) default.mkdirs()
                 set("root", default.path)
+            }
+            if (!isSet("wikiRoot")){
+                val default = File(dataFolder, "wiki")
+                if (!default.exists()) default.mkdirs()
+                set("wikiRoot", default.path)
             }
             if (!isSet("keyPath"))
                 set("keyPath", File(dataFolder, "key.jks").path)
@@ -41,6 +49,8 @@ class CraftWeb : JavaPlugin() {
                 set("chatPackLossThreshold", 10)
             if (!isSet("playerDirMaxSize"))
                 set("playerDirMaxSize", 50 * 1024 * 1024)
+            if (!isSet("remotePort"))
+                set("remotePort", 2003)
             saveConfig()
         }
         ServerCaller.set<ConfigurationSection>("GetWebConfig") {
@@ -62,16 +72,19 @@ class CraftWeb : JavaPlugin() {
     }
 
     override fun onDisable() {
-        instance.stop(0)
-        http.stop(0)
+        if (instance.isInitialized)
+            instance.stop(0)
+        if (http.isInitialized)
+            http.stop(0)
     }
 
     private fun init() {
+        handler = MajorHandler(File(config.getString("root")!!), File(config.getString("wikiRoot")!!), config)
         instance.init(
             key = File(config.getString("keyPath")!!),
             password = config.getString("key")!!,
             port = config.getInt("httpsPort"),
-            handler = MajaroHandler(File(config.getString("root")!!), config),
+            handler = handler,
             executor = SimpleExecutor()
         )
     }
@@ -79,13 +92,14 @@ class CraftWeb : JavaPlugin() {
     private fun initHttp() {
         http.init(
             port = config.getInt("httpPort"),
-            handler = HttpsDirector(config.getString("hostName")!!)
+            handler = handler,
+            executor = SimpleExecutor()
         )
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (command.name == "web") {
-            val getter = sender.lang()
+            val getter = sender.getter()
             if (!sender.isOp) {
                 sender.error(getter["command.error.permission"])
             }

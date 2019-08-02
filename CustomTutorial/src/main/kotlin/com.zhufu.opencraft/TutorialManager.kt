@@ -160,8 +160,9 @@ object TutorialManager {
         fun play(to: Entity, includeInventory: Boolean = false): TutorialPlayer? {
             if (!played.contains(to.name)) {
                 played.add(to.name)
-                TutorialManager.saveToFile(this)
+                saveToFile(this)
             }
+            var lastStatus: Info.GameStatus? = null
             val info =
                 if (to is HumanEntity) {
                     if (includeInventory) {
@@ -171,6 +172,7 @@ object TutorialManager {
                             to.error(getter["player.error.unknown"])
                             return null
                         }
+                        lastStatus = info.status
                         info.status = Info.GameStatus.InTutorial
                         info
                     } else {
@@ -193,8 +195,7 @@ object TutorialManager {
                 Bukkit.getScheduler().runTask(TutorialManager.mPlugin!!) { t ->
                     info?.inventory?.last
                         ?.also {
-                            info.status =
-                                if (it.name == "survivor") Info.GameStatus.Surviving else Info.GameStatus.InLobby
+                            info.status = lastStatus!!
                         }
                         ?.load()
                 }

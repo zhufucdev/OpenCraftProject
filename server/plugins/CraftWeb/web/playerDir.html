@@ -22,7 +22,7 @@
                 <div id="toolbar-dir" class="card-toolbar"></div>
             </div>
             <!-- File List -->
-            <div class="collection" style="border: transparent;"></div>
+            <div class="collection" id="file-collection" style="border: transparent;"></div>
             <!-- Editor -->
             <div id="editor" style="overflow: auto" class="center"></div>
         </div>
@@ -75,8 +75,10 @@
 
 <script id="onload">
     function init() {
+        showTopProgress();
+
         let dirError = $('#dir-error'), pathString, paths, currentFile, isSelecting,
-            dirWindow = $('#dir-window'), edit = $('#editor'), collection = $('.collection'),
+            dirWindow = $('#dir-window'), edit = $('#editor'), collection = $('#file-collection'),
             editorToolbar = new Toolbar($('#toolbar-editor').get(0), [
                 // Initialized icons for toolbar of editor.
                 {
@@ -128,17 +130,16 @@
                                 showRenameDialog('', (name) => {
                                     let fullPath = pathString + '/' + name, toReturn = undefined;
                                     $.ajax({
-                                        url: 'user?request=dir&operation=check&path=' + fullPath,
+                                        url: hostName + 'user?request=dir&operation=check&path=' + fullPath,
                                         async: false,
-                                        success: function (r) {
-                                            let json = JSON.parse(r);
+                                        success: function (json) {
                                             if (json.r === 1) {
                                                 $.ajax({
-                                                    url: 'user?request=dir&operation=write&path=' + fullPath,
+                                                    url: hostName + 'user?request=dir&operation=write&path=' + fullPath,
                                                     type: 'POST',
                                                     data: '',
-                                                    success: function (r) {
-                                                        let json = JSON.parse(r), html;
+                                                    success: function (json) {
+                                                        let html;
                                                         if (json.r === 0) {
                                                             html = '创建了' + name;
                                                             refresh()
@@ -167,15 +168,14 @@
                                 showRenameDialog('', (name) => {
                                     let fullPath = pathString + '/' + name, toReturn = undefined;
                                     $.ajax({
-                                        url: 'user?request=dir&operation=check&path=' + fullPath,
+                                        url: hostName + 'user?request=dir&operation=check&path=' + fullPath,
                                         async: false,
-                                        success: function (r) {
-                                            let json = JSON.parse(r);
+                                        success: function (json) {
                                             if (json.r === 1) {
                                                 $.ajax({
-                                                    url: 'user?request=dir&operation=mkdir&path=' + fullPath,
-                                                    success: function (r) {
-                                                        let json = JSON.parse(r), html;
+                                                    url: hostName + 'user?request=dir&operation=mkdir&path=' + fullPath,
+                                                    success: function (json) {
+                                                        let html;
                                                         switch (json.r) {
                                                             case 0:
                                                                 html = '创建了' + name;
@@ -348,15 +348,15 @@
             showUploadingDialog = initUploadingDialog();
 
         function refresh(showCheckboxes, showAnimation) {
+            showTopProgress();
             edit.hide();
             editorToolbar.hide();
             dirToolbar.show();
             currentFile = undefined;
             isSelecting = showCheckboxes === true;
             $.ajax({
-                url: 'user?request=dir&path=' + pathString,
-                success: function (r) {
-                    let json = JSON.parse(r);
+                url: hostName + 'user?request=dir&path=' + pathString,
+                success: function (json) {
                     if (typeof json.r === 'object') {
                         dirError.hide();
 
@@ -369,7 +369,8 @@
                         });
 
                         function showError(e) {
-                            collection.append('<h5 class="center-align">' + e + '</h5>')
+                            collection.append('<h5 class="center-align">' + e + '</h5>');
+                            hideTopProgress()
                         }
 
                         if (typeof json.r !== 'number') {
@@ -437,6 +438,7 @@
                             showError('文件夹不存在')
                         }
                         dirWindow.show();
+                        hideTopProgress()
                     }
                 }
             });
@@ -571,6 +573,14 @@
                         options = {
                             mode: 'javascript'
                         }
+                    } else if (extension === 'md') {
+                        options = {
+                            mode: 'markdown'
+                        }
+                    } else if (extension === 'html') {
+                        options = {
+                            mode: 'htmlmixed'
+                        }
                     } else if (extension === 'text' || extension === 'txt') {
                         options = {
                             mode: 'plaintext'
@@ -607,7 +617,7 @@
             }
 
             $.ajax({
-                url: 'user?request=dir&path=' + path + '&operation=read',
+                url: hostName + 'user?request=dir&path=' + path + '&operation=read',
                 xhr: function () {
                     let xhr = new XMLHttpRequest();
                     xhr.responseType = 'blob';
@@ -626,11 +636,10 @@
                     save.click(function () {
                         if (save.isActive()) {
                             $.ajax({
-                                url: 'user?request=dir&operation=write&path=' + path,
+                                url: hostName + 'user?request=dir&operation=write&path=' + path,
                                 type: 'POST',
                                 data: editor.getValue(),
-                                success: function (r) {
-                                    let json = JSON.parse(r);
+                                success: function (json) {
                                     if (json.r !== 0) {
                                         M.toast({
                                             html: '<span>服务器未能写入文件, 错误代码: ' + json.r + '</span>',
@@ -673,6 +682,7 @@
 
         function showError(message) {
             dirWindow.hide();
+            hideTopProgress();
 
             $('#dir-not-login').show();
             let msg = $('#error-message');
@@ -683,11 +693,10 @@
 
         function deleteFile(paths, back, onSuccess) {
             $.ajax({
-                url: 'user?request=dir&operation=del',
+                url: hostName + 'user?request=dir&operation=del',
                 type: 'POST',
                 data: JSON.stringify(paths),
-                success: function (r) {
-                    let json = JSON.parse(r);
+                success: function (json) {
                     let html;
                     if (json.r === 0) {
                         html = '从服务器删除了该文件';
@@ -713,9 +722,8 @@
 
         function renameFile(path, name) {
             $.ajax({
-                url: 'user?request=dir&operation=rename&name=' + name + '&path=' + path,
-                success: function (r) {
-                    let json = JSON.parse(r);
+                url: hostName + 'user?request=dir&operation=rename&name=' + name + '&path=' + path,
+                success: function (json) {
                     let html;
                     if (json.r === 0) {
                         html = '成功将' + getFileName(path) + '重命名为' + getFileName(name)
@@ -752,9 +760,8 @@
                         function test(i) {
                             targetName = !isNaN(i) ? rename(i) : file.name;
                             $.ajax({
-                                url: 'user?request=dir&operation=check&path=' + pathString + '/' + targetName,
-                                success: function (r) {
-                                    let json = JSON.parse(r);
+                                url: hostName + 'user?request=dir&operation=check&path=' + pathString + '/' + targetName,
+                                success: function (json) {
                                     if (typeof json.r !== 'number') {
                                         test(isNaN(i) ? 1 : i + 1);
                                     } else {
@@ -764,19 +771,18 @@
                                         }
                                         // do upload
                                         $.ajax({
-                                            url: 'user?request=dir&operation=write&path=' + pathString + '/' + targetName,
+                                            url: hostName + 'user?request=dir&operation=write&path=' + pathString + '/' + targetName,
                                             type: 'POST',
                                             processData: false,
                                             contentType: false,
                                             data: file,
-                                            success: function (r) {
+                                            success: function (json) {
                                                 completions++;
                                                 if (completions >= files.length) {
                                                     controller.close();
                                                     refresh()
                                                 } else update();
 
-                                                let json = JSON.parse(r);
                                                 if (json.r !== 0) {
                                                     let html;
                                                     if (json.r === 2) {

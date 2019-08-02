@@ -13,17 +13,26 @@ ext {
 }
 
 allprojects {
+    group 'com.zhufu.opencraft'
+    version '1.0-SNAPSHOT'
+    
     apply plugin: 'java'
     apply plugin: 'kotlin'
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-        compileOnly "com.destroystokyo.paper:paper-api:1.14.2-R0.1-SNAPSHOT"
+        compile "com.destroystokyo.paper:paper-api:1.14.4-R0.1-SNAPSHOT"
         compile "org.jetbrains.kotlin:kotlin-reflect:1.3.40"
         compileOnly fileTree(dir: 'lib', includes: ['*.jar'])
         testCompile group: 'junit', name: 'junit', version: '4.12'
     }
 
     sourceCompatibility = 1.8
+    compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
 
     repositories {
         mavenCentral()
@@ -34,8 +43,7 @@ allprojects {
         maven { url 'https://repo.codemc.org/repository/maven-public/' }
         maven { url 'http://maven.enginehub.org/repo/' }
     }
-
-    version '1.0-SNAPSHOT'
+    
     if (project.name.charAt(0).isUpperCase() && project != rootProject) {
         beforeEvaluate {
             copyJar.shouldRunAfter(build)
@@ -62,14 +70,4 @@ allprojects {
             compile project(':pluginBase')
         }
     }
-}
-
-group 'com.zhufu.opencraft'
-version '1.0-SNAPSHOT'
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
 }

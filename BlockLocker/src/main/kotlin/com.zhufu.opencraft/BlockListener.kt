@@ -55,8 +55,12 @@ object BlockListener : Listener {
         val player = event.player
         val info = BlockLockManager[block.location.toBlockLocation()] ?: return
         if (!info.canAccess(player)) {
-            event.player.error(getLang(event.player, "block.error.inaccessible"))
+            player.error(getLang(player, "block.error.inaccessible"))
             event.isCancelled = true
+        } else if (info.ownedBy(player)) {
+            BlockLockManager.remove(info)
+            val getter = player.getter()
+            player.info(getter["block.delete", info.name, getter["block.block"]])
         }
     }
 
@@ -100,7 +104,7 @@ object BlockListener : Listener {
         } ?: return
         creationMap.remove(player)
         if (isCancel)
-            player.info(player.lang()["block.cancel"])
+            player.info(player.getter()["block.cancel"])
     }
 
     @EventHandler

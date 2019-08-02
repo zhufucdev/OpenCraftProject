@@ -1,9 +1,10 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.Info.Companion.infoList
+import com.zhufu.opencraft.Info.Companion.plugin
 import com.zhufu.opencraft.OfflineInfo.Companion.offlineList
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
-import com.zhufu.opencraft.special_items.SpecialItem
+import com.zhufu.opencraft.special_item.SpecialItem
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -27,9 +28,9 @@ object PlayerManager : Listener {
         if (!chatters.contains(chatInfo))
             chatters.add(chatInfo)
     }
+
     fun remove(chatInfo: ChatInfo) = chatters.remove(chatInfo)
-    fun findChatter(name: String)
-            = chatters.firstOrNull { it.id == name } ?: infoList.firstOrNull { it.name == name }
+    fun findChatter(name: String) = chatters.firstOrNull { it.id == name } ?: infoList.firstOrNull { it.name == name }
     fun removeFirstChatter(l: (ChatInfo) -> Boolean): Boolean {
         val index = chatters.indexOfFirst(l)
         if (index == -1)
@@ -41,31 +42,33 @@ object PlayerManager : Listener {
     fun findInfoByPlayer(player: Player) = Info.findByPlayer(player)
     fun findInfoByPlayer(uuid: UUID) = Info.findByPlayer(uuid)
     fun findOfflinePlayer(uuid: UUID): OfflineInfo? = infoList.firstOrNull { it.uuid == uuid }
-            ?: offlineList.firstOrNull { it.uuid == uuid }
-            ?: try {
-                OfflineInfo(uuid).also { offlineList.add(it) }
-            } catch (e: Exception) {
-                null
-            }
+        ?: offlineList.firstOrNull { it.uuid == uuid }
+        ?: try {
+            OfflineInfo(uuid).also { offlineList.add(it) }
+        } catch (e: Exception) {
+            null
+        }
+
     fun createOfflinePlayer(uuid: UUID) = findOfflinePlayer(uuid)
-            ?: OfflineInfo(uuid, true).also { offlineList.add(it) }
+        ?: OfflineInfo(uuid, true).also { offlineList.add(it) }
 
     fun forEachPlayer(l: (Info) -> Unit) = infoList.forEach(l)
     fun forEachChatter(l: (ChatInfo) -> Unit) {
         infoList.forEach(l)
         chatters.forEach(l)
     }
+
     fun forEachOffline(l: (OfflineInfo) -> Unit) = offlineList.forEach(l)
 
     fun addOffline(info: OfflineInfo) = offlineList.add(info)
     fun add(info: Info) = infoList.add(info)
     fun remove(p: Player) = forEachPlayer {
-        if (it.uuid == p.uniqueId){
+        if (it.uuid == p.uniqueId) {
             it.destroy()
         }
     }
 
-    fun onPlayerOutOfDemo(info: Info){
+    fun onPlayerOutOfDemo(info: Info) {
         val event = PlayerTeleportedEvent(info.player, info.player.location, Base.lobby.spawnLocation)
         Bukkit.getPluginManager().callEvent(event)
         if (!event.isCancelled) {
@@ -74,23 +77,43 @@ object PlayerManager : Listener {
         }
         showPlayerOutOfDemoTitle(info.player)
     }
-    fun showPlayerOutOfDemoTitle(player: Player){
-        val getter = player.lang()
-        player.sendTitle(TextUtil.info(getter["survey.title"]), TextUtil.tip(getter["survey.toBeMember"]),7,80,7)
+
+    fun showPlayerOutOfDemoTitle(player: Player) {
+        val getter = player.getter()
+        player.sendTitle(TextUtil.info(getter["survey.title"]), TextUtil.tip(getter["survey.toBeMember"]), 7, 80, 7)
     }
+
     val Inventory.containsSpecialItem: Boolean
         get() = this.any { if (it != null) SpecialItem.isSpecial(it) else false }
     val Inventory.specialItems: List<SpecialItem>
         get() {
             val r = ArrayList<SpecialItem>()
-            for (i in 0 until this.size){
-                val it = this.getItem(i)?:continue
-                val getter = viewers.firstOrNull()?.lang()?:return emptyList()
-                SpecialItem.getByItem(it,getter)?.apply {
+            for (i in 0 until this.size) {
+                val it = this.getItem(i) ?: continue
+                val getter = viewers.firstOrNull()?.getter() ?: return emptyList()
+                SpecialItem.getByItem(it, getter)?.apply {
                     inventoryPosition = i
                     r.add(this)
                 }
             }
             return r
         }
+}
+
+fun broadcast(value: String, color: TextUtil.TextColor, vararg replaceWith: String?) {
+    val langMap = HashMap<String, String>()
+    PlayerManager.forEachChatter {
+        if (it is Info && !it.isLogin) return@forEachChatter
+        val lang = it.targetLang
+        if (!langMap.containsKey(lang)) {
+            langMap[lang] = TextUtil.getColoredText(
+                Language.got(lang, value, replaceWith), color,
+                bold = false,
+                underlined = false
+            )
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
+            it.playerOutputStream.send(langMap[lang]!!)
+        }
+    }
 }

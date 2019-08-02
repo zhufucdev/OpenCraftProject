@@ -5,7 +5,7 @@ import com.google.gson.JsonObject
 import com.zhufu.opencraft.ChatInfo
 import com.zhufu.opencraft.Language
 import com.zhufu.opencraft.WebInfo
-import com.zhufu.opencraft.lang
+import com.zhufu.opencraft.getter
 import com.zhufu.opencraft.player_community.PlayerOutputStream
 import java.io.File
 
@@ -28,18 +28,22 @@ class WebOutputStream(private val parent: WebInfo): PlayerOutputStream() {
         val json = JsonObject()
         json.apply {
             addProperty("r",0)
-            addProperty("sender",sender.id)
+            addProperty("sender",sender.displayName)
             addProperty("raw",regularText)
             addProperty("translation",translatedText)
         }
         send("\$json:$json")
     }
 
-    override fun sendRaw(json: JsonElement) {
-        send(parent.lang()["translator.withJson",json.toString()])
+    override fun sendChat(sender: ChatInfo, text: String) {
+        send("${sender.displayName}: $text")
     }
 
-    override val lang: Language.LangGetter = parent.lang()
+    override fun sendRaw(json: JsonElement) {
+        send(parent.getter()["translator.withJson",json.toString()])
+    }
+
+    override val lang: Language.LangGetter = parent.getter()
     override val name: String
         get() = "${parent.name ?: "unknown"} Web"
 }

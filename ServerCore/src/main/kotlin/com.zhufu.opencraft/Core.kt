@@ -17,7 +17,6 @@ import com.zhufu.opencraft.listener.*
 import com.zhufu.opencraft.survey.SurveyManager
 import com.zhufu.opencraft.events.PlayerInventorySaveEvent
 import com.zhufu.opencraft.events.PlayerJoinGameEvent
-import com.zhufu.opencraft.events.PlayerRegisterEvent
 import com.zhufu.opencraft.headers.ServerHeaders
 import com.zhufu.opencraft.headers.server_wrap.SimpleServerListPingEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
@@ -25,7 +24,7 @@ import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
 import com.zhufu.opencraft.script.AbstractScript
 import com.zhufu.opencraft.script.ServerScript
-import com.zhufu.opencraft.special_items.FlyWand
+import com.zhufu.opencraft.special_item.FlyWand
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.SpawnReason
 import net.citizensnpcs.api.npc.NPC
@@ -38,7 +37,6 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
@@ -63,7 +61,7 @@ class Core : JavaPlugin(), Listener {
     private var saveTask: BukkitTask? = null
     private lateinit var scoreBoardTask: BukkitTask
     override fun onEnable() {
-        //World initiations
+        //World initializations
         spawnWorld = server.createWorld(
             WorldCreator.name("world_spawn")
                 .type(WorldType.CUSTOMIZED)
@@ -102,7 +100,6 @@ class Core : JavaPlugin(), Listener {
             GameManager.init(this)
             PlayerManager.init(this)
             TradeManager.init(this)
-            BuilderListener.init(this)
             PlayerObserverListener.init(this)
             AbstractScript.threadPool = Executors.newCachedThreadPool()
             PlayerLobbyManager.init()
@@ -131,6 +128,7 @@ class Core : JavaPlugin(), Listener {
             logger.warning("Disabling NPC functionality.")
         } else {
             Bukkit.getScheduler().runTaskLater(this, { _ ->
+                BuilderListener.init(this)
                 spawnNPC()
             }, 40)
         }
@@ -213,7 +211,7 @@ class Core : JavaPlugin(), Listener {
                         ServerStatics.onlineTime += 2 * 1000L
                     }
 
-                    if (BuilderListener.isInBuilderMode(info.player)) {
+                    if (info.isInBuilderMode) {
                         obj.getScore(
                             TextUtil.getColoredText(
                                 getter["server.statics.builderLevel", info.builderLevel],
@@ -634,7 +632,7 @@ class Core : JavaPlugin(), Listener {
                     }
                 }
                 args.first() == "script" -> {
-                    val getter = sender.lang()
+                    val getter = sender.getter()
                     if (!sender.isOp) {
                         sender.error(getter["command.error.permission"])
                         return true
@@ -933,11 +931,6 @@ class Core : JavaPlugin(), Listener {
             }
         }
         return mutableListOf()
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    fun onPlayerRegister(event: PlayerRegisterEvent) {
-        event.info.isSurveyPassed = false
     }
 
     @EventHandler

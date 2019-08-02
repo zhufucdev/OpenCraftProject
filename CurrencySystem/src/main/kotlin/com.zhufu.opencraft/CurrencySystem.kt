@@ -6,6 +6,7 @@ import com.zhufu.opencraft.Base.TutorialUtil.gmd
 import com.zhufu.opencraft.Base.TutorialUtil.tplock
 import com.zhufu.opencraft.Base.TutorialUtil.linearTo
 import com.zhufu.opencraft.Base.tradeWorld
+import com.zhufu.opencraft.Base.Extend.toPrettyString
 import com.zhufu.opencraft.inventory.TraderInventory
 import com.zhufu.opencraft.Base.Extend.isDigit
 import com.zhufu.opencraft.Game.env
@@ -37,8 +38,8 @@ class CurrencySystem : JavaPlugin() {
     companion object {
         var npc: NPC? = null
         val transMap = HashMap<Material, Long>()
-        val inventoryMap = ArrayList<TraderInventory>()
-        val territoryMap = ArrayList<TradeTerritoryInfo>()
+        val inventoryMap = arrayListOf<TraderInventory>()
+        val territoryMap = arrayListOf<TradeTerritoryInfo>()
         val tradeRoot = Paths.get("plugins", "trade").toFile()
         val donation: File
             get() = File(tradeRoot, "donation.png")
@@ -201,10 +202,18 @@ class CurrencySystem : JavaPlugin() {
                 return true
             }
 
-            val getter = getLangGetter(if (sender is Player) PlayerManager.findInfoByPlayer(sender.uniqueId) else null)
+            val getter = sender.getter()
+            fun checkLogin(player: Player): Boolean {
+                if (player.info()?.isLogin == false) {
+                    player.error(getter["user.error.notLoginYet"])
+                    return false
+                }
+                return true
+            }
             when (args.first()) {
                 "back" -> {
                     val player = sender as Player
+                    if (!checkLogin(player)) return true
                     val t = territoryMap.firstOrNull { it.player == player.uniqueId }
                     if (t == null) {
                         sender.sendMessage(TextUtil.error(getter["trade.error.chunkNotFound"]))
@@ -219,6 +228,7 @@ class CurrencySystem : JavaPlugin() {
                 }
                 "center" -> {
                     val player = sender as Player
+                    if (!checkLogin(player)) return true
                     val event = PlayerTeleportedEvent(player, sender.location, tradeWorld.spawnLocation)
                     server.pluginManager.callEvent(event)
                     if (!event.isCancelled)
@@ -239,28 +249,25 @@ class CurrencySystem : JavaPlugin() {
                     val player = Bukkit.getPlayer(args[1])
                     if (player == null) {
                         sender.error(getter["command.error.playerNotFound"])
-                        return true
-                    }
-                    val info = PlayerManager.findInfoByPlayer(player)
-                    if (info == null) {
-                        sender.error(getter["command.error.playerNotFound"])
-                        return true
-                    }
-                    if (!args[2].isDigit()) {
-                        sender.error(getter["command.error.argNonDigit"])
-                        return true
-                    }
-                    info.currency += args[2].toInt()
 
-                    sender.info(getter["trade.giveCurrency.objective", player.name, args[2]])
-                    player.info(getLang(info, "trade.giveCurrency.subjective", args[2], info.currency))
+                    } else {
+                        val info = PlayerManager.findInfoByPlayer(player)
+                        if (info == null) {
+                            sender.error(getter["command.error.playerNotFound"])
+                        } else if (!args[2].isDigit()) {
+                            sender.error(getter["command.error.argNonDigit"])
+                        } else {
+                            info.currency += args[2].toInt()
+
+                            sender.info(getter["trade.giveCurrency.objective", player.name, args[2]])
+                            player.info(getLang(info, "trade.giveCurrency.subjective", args[2], info.currency))
+                        }
+                    }
                 }
                 "set" -> {
                     if (!sender.isOp) {
                         sender.error(getter["command.error.permission"])
-                        return true
-                    }
-                    if (args.size < 3) {
+                    } else if (args.size < 3) {
                         sender.error(getter["command.error.usage"])
                         return true
                     }
@@ -312,6 +319,67 @@ class CurrencySystem : JavaPlugin() {
                 }
                 else -> sender.error(getter["command.error.usage"])
             }
+        } else if (command.name == "bank") {
+            val getter = sender.getter()
+            if (args.isEmpty()) {
+                sender.info(getter["bank.found.1"])
+                if (!BankManager.isEmpty()) {
+                    BankManager.forEach {
+                        sender.sendMessage("${it.first} @ ${it.second.toPrettyString()}")
+                    }
+                    if (sender is Player) {
+                        val nearest = BankManager.bankNearest(sender.location)
+                        if (nearest != null) sender.info(getter["bank.found.2", nearest.toPrettyString()])
+                        else sender.error(getter["bank.found.none"])
+                    } else {
+                        sender.error(getter["command.error.playerOnly"])
+                    }
+                } else {
+                    sender.error(getter["bank.found.none"])
+                }
+            } else if (sender is Player) {
+                if (sender.isOp) {
+                    when (args.first()) {
+                        "add" -> {
+                            if (args.size < 2) {
+                                BankManager.createBanker(sender.location)
+                                sender.success(getter["bank.createdBanker"])
+                            } else {
+                                val name = args[1]
+                                if (!name.contains(':')) {
+                                    val l = sender.location.toBlockLocation()
+                                    BankManager.createBank(l, name)
+                                    sender.success(getter["bank.created", name, l.toPrettyString()])
+                                } else {
+                                    sender.error(getter["bank.error.illegalName", name])
+                                }
+                            }
+                        }
+                        "remove" -> {
+                            if (args.size < 2){
+                                val success = BankManager.removeBanker(near = sender.location)
+                                if (success) {
+                                    sender.success(getter["bank.removedBanker"])
+                                } else {
+                                    sender.error(getter["bank.error.noBankersNearby"])
+                                }
+                            } else {
+                                val success = BankManager.removeBank(args[1])
+                                if (success) {
+                                    sender.success(getter["bank.removed", args[1]])
+                                } else {
+                                    sender.error(getter["bank.found.none"])
+                                }
+                            }
+                        }
+
+                    }
+                } else {
+                    sender.error(getter["command.error.permission"])
+                }
+            } else {
+                sender.error(getter["command.error.playerOnly"])
+            }
         }
         return true
     }
@@ -343,6 +411,15 @@ class CurrencySystem : JavaPlugin() {
                 }
                 return r.toMutableList()
             }
+        } else if (command.name == "bank") {
+            if (sender.isOp) {
+                val commands = mutableListOf("add", "remove")
+                if (args.isEmpty()){
+                    return commands
+                } else if (args.size == 1) {
+                    return commands.filter { it.startsWith(args.first()) }.toMutableList()
+                }
+            }
         }
         return mutableListOf()
     }
@@ -358,21 +435,23 @@ class CurrencySystem : JavaPlugin() {
         val toX: Int
         val toZ: Int
 
-        val center: Location get(){
-            val dest = Location(tradeWorld,fromX + 16.0,TradeWorldGenerator.base.toDouble(),fromZ + 16.0)
-            while (dest.blockY < tradeWorld.maxHeight && (dest.block.type != Material.AIR || dest.clone().add(
-                    Vector(
-                        0,
-                        1,
-                        0
-                    )
-                ).block.type != Material.AIR)
-            ) {
-                dest.add(Vector(0, 1, 0))
+        val center: Location
+            get() {
+                val dest = Location(tradeWorld, fromX + 16.0, TradeWorldGenerator.base.toDouble(), fromZ + 16.0)
+                while (dest.blockY < tradeWorld.maxHeight && (dest.block.type != Material.AIR || dest.clone().add(
+                        Vector(
+                            0,
+                            1,
+                            0
+                        )
+                    ).block.type != Material.AIR)
+                ) {
+                    dest.add(Vector(0, 1, 0))
+                }
+                return dest
             }
-            return dest
-        }
-        fun contains(location: Location) = location.blockX in fromX .. toX && location.blockZ in fromZ .. toZ
+
+        fun contains(location: Location) = location.blockX in fromX..toX && location.blockZ in fromZ..toZ
 
         init {
             with(Base.getUniquePair(id)) {
@@ -424,6 +503,7 @@ class CurrencySystem : JavaPlugin() {
         tradeWorld.peace()
 
         QRUtil.init(this)
+        BankManager.init(this)
         password = config.getString("serverPwd", "")!!
 
         if (!donation.exists()) {
@@ -439,7 +519,7 @@ class CurrencySystem : JavaPlugin() {
                 entity.inventory.setItemInMainHand(ItemStack(Material.EMERALD))
                 OfflineInfo.forEach {
                     try {
-                        it.territoryID.let { id -> territoryMap.add(TradeTerritoryInfo(it.uuid!!,id)) }
+                        it.territoryID.let { id -> territoryMap.add(TradeTerritoryInfo(it.uuid!!, id)) }
                     } catch (e: Exception) {
                         logger.warning("Error while loading territory for ${it.name}")
                         e.printStackTrace()
@@ -456,13 +536,14 @@ class CurrencySystem : JavaPlugin() {
         }, 40)
     }
 
-    override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator? {
+    override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator {
         return TradeWorldGenerator()
     }
 
     override fun onDisable() {
         npc?.destroy()
         TradeManager.saveToFile(File(tradeRoot, "tradeInfos.json"))
+        BankManager.onClose()
         tradeWorld.entities.forEach {
             if (it is Item)
                 it.remove()

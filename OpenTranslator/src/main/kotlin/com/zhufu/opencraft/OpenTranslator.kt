@@ -46,7 +46,8 @@ class OpenTranslator : JavaPlugin(), Listener {
                     try {
                         Translate.translate(msg, target = target)
                     } catch (e: Exception) {
-                        e.printStackTrace();"(CouldNotTranslate)$msg"
+                        e.printStackTrace()
+                        "(CouldNotTranslate)$msg"
                     }
                 else TextUtil.getCustomizedText(msg)
             translations[target] = translation
@@ -54,13 +55,17 @@ class OpenTranslator : JavaPlugin(), Listener {
         }
 
         PlayerManager.forEachChatter {
-            val translation =
-                if (translations.containsKey(it.targetLang)) translations[it.targetLang]!!
-                else addTranslation(it.targetLang)
-            try {
-                it.playerOutputStream.sendChat(info, msg, translation, emptyList())
-            } catch (ignore: Exception){
+            if (it is ServerPlayer && !it.preference.showTranslations) {
+                it.playerOutputStream.sendChat(info, msg)
+            } else {
+                val translation =
+                    if (translations.containsKey(it.targetLang)) translations[it.targetLang]!!
+                    else addTranslation(it.targetLang)
+                try {
+                    it.playerOutputStream.sendChat(info, msg, translation, emptyList())
+                } catch (ignore: Exception) {
 
+                }
             }
         }
         Bukkit.getConsoleSender().sendMessage("<${info.displayName}(已翻译)> $msg")

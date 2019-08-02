@@ -1,12 +1,12 @@
-function startAnimation(handler,from,to,duration,period,onDone) {
-    if (period === undefined) 
+function startAnimation(handler, from, to, duration, period, onDone) {
+    if (period === undefined)
         period = 10;
-    else if (typeof period === 'function'){
+    else if (typeof period === 'function') {
         onDone = period;
         period = 10;
     }
     if (duration === undefined) throw 'Duration must be defined.';
-    let x = -Math.PI/2, calc;
+    let x = -Math.PI / 2, calc;
     let times = duration / period;
     let once = Math.PI / times;
     let subtract = Math.abs(from - to);
@@ -27,7 +27,7 @@ function startAnimation(handler,from,to,duration,period,onDone) {
         if (s >= times) {
             handler(to);
             clearInterval(interval);
-            if (typeof onDone === 'function') 
+            if (typeof onDone === 'function')
                 onDone()
         } else handler(calc());
     }, period)

@@ -97,7 +97,6 @@ class PlayerLobby(val owner: OfflineInfo) {
 
             barriers.min()?.let { lowY = it + 1 }
             barriers.max()?.let { highY = it - 1 }
-            Bukkit.getLogger().info("lowY = $lowY, highY = $highY")
 
             Bukkit.getScheduler().runTask(Base.pluginCore) { _ ->
                 val from = CuboidRegion(
@@ -133,11 +132,11 @@ class PlayerLobby(val owner: OfflineInfo) {
                 if (spawnPoint != null) {
                     player.teleport(spawnPoint!!)
                 } else {
-                    player.warn(player.lang()["lobby.warn.noSpawnpoint", owner.name])
+                    player.warn(player.getter()["lobby.warn.noSpawnpoint", owner.name])
                     player.teleport(Location(Base.lobby, fromX.toDouble() + 16, 128.0, fromZ.toDouble() + 16))
                 }
                 PlayerLobbyManager.targetMap[player] = this
-                val getter = player.lang()
+                val getter = player.getter()
                 player.info()?.apply {
                     if (!isSurvivor && (player.info()?.territoryID ?: -1) == this@PlayerLobby.id) {
                         // To make speeches

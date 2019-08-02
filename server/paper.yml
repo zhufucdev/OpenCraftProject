@@ -11,7 +11,7 @@
 # Docs: https://paper.readthedocs.org/ 
 
 verbose: false
-config-version: 18
+config-version: 19
 settings:
   load-permissions-yml-before-plugins: true
   bungee-online-mode: true
@@ -56,6 +56,7 @@ timings:
   server-name: Unknown Server
 world-settings:
   default:
+    count-all-mobs-for-spawning: false
     auto-save-interval: -1
     max-auto-save-chunks-per-tick: 24
     parrots-are-unaffected-by-player-movement: false
@@ -101,6 +102,7 @@ world-settings:
     remove-corrupt-tile-entities: false
     fixed-chunk-inhabited-time: -1
     game-mechanics:
+      disable-relative-projectile-velocity: false
       disable-player-crits: false
       disable-sprint-interruption-on-attack: false
       disable-end-credits: false
@@ -138,3 +140,25 @@ world-settings:
     hopper:
       cooldown-when-full: true
       disable-move-event: false
+    anti-xray:
+      enabled: false
+      engine-mode: 1
+      chunk-edge-mode: 2
+      max-chunk-section-index: 3
+      update-radius: 2
+      hidden-blocks:
+      - gold_ore
+      - iron_ore
+      - coal_ore
+      - lapis_ore
+      - mossy_cobblestone
+      - obsidian
+      - chest
+      - diamond_ore
+      - redstone_ore
+      - clay
+      - emerald_ore
+      - ender_chest
+      replacement-blocks:
+      - stone
+      - oak_planks

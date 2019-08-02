@@ -4,7 +4,7 @@ import com.google.gson.JsonElement
 import com.zhufu.opencraft.ChatInfo
 import com.zhufu.opencraft.Language
 import com.zhufu.opencraft.player_community.PlayerOutputStream
-import com.zhufu.opencraft.lang
+import com.zhufu.opencraft.getter
 import net.minecraft.server.v1_14_R1.IChatBaseComponent
 import net.minecraft.server.v1_14_R1.PacketPlayOutChat
 import org.bukkit.ChatColor
@@ -28,8 +28,12 @@ class CommonPlayerOutputStream(val player: Player) : PlayerOutputStream() {
     override fun sendChat(sender: ChatInfo, regularText: String, translatedText: String, images: List<File>) =
         send("*<${sender.displayName}> $translatedText ${ChatColor.GOLD}<->${ChatColor.RESET} $regularText")
 
+    override fun sendChat(sender: ChatInfo, text: String) {
+        send("<${sender.displayName}> $text")
+    }
+
     override val lang: Language.LangGetter
-        get() = player.lang()
+        get() = player.getter()
     override val name: String
         get() = player.name
 }

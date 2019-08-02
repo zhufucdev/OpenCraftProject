@@ -12,7 +12,10 @@
 # Bug tracker: https://www.spigotmc.org/go/bugs
 
 
+chunk-gc:
+  period-in-ticks: 600
 settings:
+  minimum-api: none
   allow-end: true
   warn-on-overload: true
   permissions-file: permissions.yml

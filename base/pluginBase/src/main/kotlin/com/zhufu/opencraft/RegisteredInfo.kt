@@ -23,7 +23,9 @@ class RegisteredInfo(uuid: UUID) : WebInfo(false, uuid) {
     override val tagFile: File
         get() = Paths.get("plugins", "tag", "$uuid.yml").toFile()
     override val playerDir: File
-        get() = Paths.get("plugins", "playerDir", uuid.toString()).toFile()
+        get() = Paths.get("plugins", "playerDir", uuid.toString()).toFile().also {
+            if (!it.exists()) it.mkdirs()
+        }
 
     override val id: String
         get() = name ?: "unknown"

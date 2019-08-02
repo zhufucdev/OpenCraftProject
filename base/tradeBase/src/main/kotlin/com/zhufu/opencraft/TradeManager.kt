@@ -21,7 +21,8 @@ object TradeManager {
         val long = itemInfo.unitPrise * itemInfo.amount.toLong()
         return long > Int.MAX_VALUE
     }
-    fun checkLimit(unitPrise: Long,amount: Int): Boolean {
+
+    fun checkLimit(unitPrise: Long, amount: Int): Boolean {
         val long = unitPrise * amount
         return long > Int.MAX_VALUE
     }
@@ -32,14 +33,23 @@ object TradeManager {
         if (isSerous) sendMessage(TextUtil.tip("我们对此表示抱歉，如果影响您的游戏进展，请联系服务器管理员"))
     }
 
-    fun loadTradeCompass(player: Info){
+    fun loadTradeCompass(player: Info) {
         if (player.player.world == Base.tradeWorld) {
             player.inventory.create(DualInventory.RESET).load(inventoryOnly = true)
             player.player.inventory.addItem(
-                    ItemStack(Material.COMPASS)
-                            .also {
-                                it.itemMeta = it.itemMeta!!.apply { setDisplayName(TextUtil.getColoredText(Language[player, "trade.explorer"], TextUtil.TextColor.RED, false, underlined = false)) }
-                            }
+                ItemStack(Material.COMPASS)
+                    .also {
+                        it.itemMeta = it.itemMeta!!.apply {
+                            setDisplayName(
+                                TextUtil.getColoredText(
+                                    Language[player, "trade.explorer"],
+                                    TextUtil.TextColor.RED,
+                                    false,
+                                    underlined = false
+                                )
+                            )
+                        }
+                    }
             )
         }
     }
@@ -56,11 +66,21 @@ object TradeManager {
 
     val size: Int
         get() = mList.size
+
     fun forEach(l: (TradeInfo) -> Unit) = mList.forEach(l)
     fun firstOrNull(l: (TradeInfo) -> Boolean) = mList.firstOrNull(l)
-    operator fun get(player: HumanEntity): List<TradeInfo> = mList.filter { it.getSeller() == player.uniqueId.toString() }
+    operator fun get(player: HumanEntity): List<TradeInfo> =
+        mList.filter { it.getSeller() == player.uniqueId.toString() }
 
-    fun sell(seller: String, what: ItemStack, amount: Int, unitPrise: Long, buyer: Player? = null, location: Location? = null, ignoreInventoryItem: Boolean = false) {
+    fun sell(
+        seller: String,
+        what: ItemStack,
+        amount: Int,
+        unitPrise: Long,
+        buyer: Player? = null,
+        location: Location? = null,
+        ignoreInventoryItem: Boolean = false
+    ) {
         val id = getNewID()
         if (seller != "server") {
             val sellerPlayer = Bukkit.getPlayer(UUID.fromString(seller))
@@ -70,28 +90,29 @@ object TradeManager {
             }
         }
         add(
-                TradeInfo(id)
-                        .apply {
-                            this.location = location
-                            items = SellingItemInfo(item = what, unitPrise = unitPrise, amount = amount)
-                            setSeller(seller, ignoreInventoryItem)
-                            setBuyer(buyer?.uniqueId?.toString(), items!!.amount)
-                        }
+            TradeInfo(id)
+                .apply {
+                    this.location = location
+                    items = SellingItemInfo(item = what, unitPrise = unitPrise, amount = amount)
+                    setSeller(seller, ignoreInventoryItem)
+                    setBuyer(buyer?.uniqueId?.toString(), items!!.amount)
+                }
         )
     }
 
-    private fun add(tradeInfo: TradeInfo){
+    private fun add(tradeInfo: TradeInfo) {
         mList.add(tradeInfo)
     }
 
     enum class TradeResult {
-        SUCCESSFUL,FAILED,UPDATE
+        SUCCESSFUL, FAILED, UPDATE
     }
-    fun buy(who: HumanEntity, id: Int,howMany: Int): TradeResult {
-        val t = mList.firstOrNull { it.id == id }?:return TradeResult.FAILED
+
+    fun buy(who: HumanEntity, id: Int, howMany: Int): TradeResult {
+        val t = mList.firstOrNull { it.id == id } ?: return TradeResult.FAILED
         val amount = t.items!!.amount
 
-        val r = t.setBuyer(who.uniqueId.toString(),howMany = howMany)
+        val r = t.setBuyer(who.uniqueId.toString(), howMany = howMany)
         return if (!r)
             TradeResult.FAILED
         else {
@@ -102,12 +123,12 @@ object TradeManager {
         }
     }
 
-    fun cancel(info: TradeInfo){
+    fun cancel(info: TradeInfo) {
         info.cancel()
         mList.remove(info)
     }
 
-    fun destroy(info: TradeInfo){
+    fun destroy(info: TradeInfo) {
         info.destroy()
         mList.remove(info)
     }
@@ -118,7 +139,7 @@ object TradeManager {
         if (!file.exists())
             file.createNewFile()
         val gson = GsonBuilder().setPrettyPrinting()
-                .create()
+            .create()
         val writer = gson.newJsonWriter(file.writer())
         writer.beginArray()
         mList.forEach {
@@ -138,7 +159,7 @@ object TradeManager {
         while (reader.hasNext()) {
             try {
                 mList.add(TradeInfo.fromJson(reader))
-            }catch (e: IllegalArgumentException){
+            } catch (e: IllegalArgumentException) {
                 Bukkit.getLogger().warning("Could not load ${reader.path}.")
                 e.printStackTrace()
             }
@@ -146,7 +167,7 @@ object TradeManager {
         reader.endArray()
         reader.close()
 
-        presentID = (mList.maxBy { it.id }?.id?:-1)+1
+        presentID = (mList.maxBy { it.id }?.id ?: -1) + 1
     }
 
     var presentID = 0

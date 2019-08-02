@@ -23,3 +23,14 @@ commands:
   trade donation:
     usage: /trade donation
     description: 服务器捐赠通道，用于向玩家展示带有捐赠二维码的地图
+  bank:
+    usage: /bank
+    description: 查询银行位置
+  bank add:
+    usage: /bank add [名称]
+    description: 在此处放置银行服务员或指定名称的银行
+    permission: op
+  bank remove:
+    usage: /bank remove [银行名称]
+    description: 移除最近的银行服务员或指定的银行
+    permission: op

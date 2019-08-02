@@ -231,7 +231,7 @@
             document.getElementById('time').innerHTML = '您已经在服务器游玩了 ' + userData.time + ' 毫秒，合' + gameTime(userData.time);
             document.getElementById('money').innerHTML = '您在服务器拥有' + userData.coin + '个货币';
             $.ajax({
-                url: 'env?get=diamondExchange',
+                url: hostName + 'env?get=diamondExchange',
                 success: function (r) {
                     let exchange = parseInt(r);
                     document.getElementById('money').innerHTML += '，相当于' + (parseInt(userData.coin) / exchange).toFixed(3) + '颗钻石'
@@ -276,18 +276,15 @@
     refresh();
 
     function logout() {
-        fadeSwitch(function (callback) {
-            navUpdate.call();
-            $('#content').load('ui?request=main', callback);
-            currentPage = 'intro'
+        fadeSwitch(function () {
+            window.location = '/'
         }, document.getElementById('content'), true)
     }
 
     $('#logout').click(function () {
         $.ajax({
-            url: 'user?request=logout',
-            success: function (r) {
-                let result = JSON.parse(r);
+            url: hostName + 'user?request=logout',
+            success: function (result) {
                 if (result.r === 0) {
                     logout()
                 } else {
@@ -317,11 +314,10 @@
 
                 let doFileUpload = file !== undefined;
                 $.ajax({
-                    url: 'user?request=change&which=nickname',
+                    url: hostName + 'user?request=change&which=nickname',
                     type: 'POST',
                     data: newName,
-                    success: function (r) {
-                        let json = JSON.parse(r);
+                    success: function (json) {
                         let error = "";
                         if (json.r === 0) {
                             if (!doFileUpload) refresh()
@@ -345,9 +341,8 @@
                     resetFace();
                     if (file === 'RESET') {
                         $.ajax({
-                            url: 'user?request=change&which=empty&what=face',
-                            success: function (r) {
-                                let json = JSON.parse(r);
+                            url: hostName + 'user?request=change&which=empty&what=face',
+                            success: function (json) {
                                 if (json.r === 1) {
                                     M.toast({html: '<span>错误: 远程服务器未删除头像</span>'})
                                 }
@@ -360,16 +355,15 @@
                         loading.open();
                         $.ajax({
                             type: 'POST',
-                            url: 'user?request=change&which=face',
+                            url: hostName + 'user?request=change&which=face',
                             processData: false,
                             contentType: false,
                             data: file,
                             complete: function () {
                                 $.ajax({
                                     type: 'GET',
-                                    url: 'user?request=check&check=uploadDone',
-                                    success: function (r) {
-                                        let json = JSON.parse(r);
+                                    url: hostName + 'user?request=check&check=uploadDone',
+                                    success: function (json) {
                                         if (json.r === -1) {
                                             M.toast({html: '<span>错误: 服务器未删除旧文件</span>'})
                                         } else {
@@ -418,10 +412,9 @@
             dialog.open();
             $('#confirm-destroy').click(function () {
                 $.ajax({
-                    url: 'user?request=destroy',
+                    url: hostName + 'user?request=destroy',
                     type: 'POST',
-                    success: function (r) {
-                        let json = JSON.parse(r);
+                    success: function (json) {
                         if (json.r === 0) {
                             logout()
                         } else {
@@ -442,9 +435,8 @@
             if (!showStatics) {
                 sP.show();
                 $.ajax({
-                    url: 'user?request=check&check=statics',
-                    success: function (r) {
-                        let json = JSON.parse(r);
+                    url: hostName + 'user?request=check&check=statics',
+                    success: function (json) {
                         if (json.r !== -1) {
                             document.getElementById('statics-card-content').style.overflowX = 'auto';
                             if (isWiderScreen) {

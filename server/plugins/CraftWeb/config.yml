@@ -1,6 +1,6 @@
 root: plugins/CraftWeb/web
 keyPath: plugins/CraftWeb/key.jks
-httpPort: 2019
+httpPort: 2333
 httpsPort: 2018
 key: zhufu13246512
 uiWhiteList:
@@ -10,6 +10,9 @@ uiWhiteList:
 - server
 - message
 - playerDir
-hostName: localhost:2020
+- wikiEditor
+hostName: open-craft.cn:443
 chatPackLossThreshold: 10
 playerDirMaxSize: 52428800
+wikiRoot: plugins/CraftWeb/wiki
+remotePort: 2003

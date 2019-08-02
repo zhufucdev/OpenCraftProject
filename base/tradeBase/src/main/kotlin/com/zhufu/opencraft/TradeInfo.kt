@@ -117,46 +117,6 @@ class TradeInfo : Cloneable, Destroyable {
 
     var location: Location? = null
 
-    private fun Player.setInventory(type: ItemStack, amount: Int): Boolean {
-        if (amount < 0) {
-            val sub = -amount
-            var aAmount = 0
-            this.inventory.forEach {
-                if (it != null && it.type == type.type)
-                    aAmount += it.amount
-            }
-            if (aAmount < sub) {
-                return false
-            }
-            var removed = 0
-            for (i in 0 until this.inventory.size) {
-                val itemStack = this.inventory.getItem(i)
-                if (itemStack != null && itemStack.type == type.type) {
-                    if (itemStack.amount >= sub - removed) {
-                        itemStack.amount -= sub - removed
-                        removed += sub - removed
-                    } else {
-                        removed += itemStack.amount
-                        this.inventory.setItem(i, null)
-                    }
-                    if (removed >= sub) {
-                        (removed - sub).also { add ->
-                            if (add > 0)
-                                this.inventory.addItem(ItemStack(type.type, add))
-                        }
-                        break
-                    }
-                }
-            }
-        } else {
-            this.inventory.addItem(
-                type.clone()
-                    .also { it.amount = amount }
-            )
-        }
-        return true
-    }
-
     override fun equals(other: Any?): Boolean {
         return other is TradeInfo
                 && other.items == this.items

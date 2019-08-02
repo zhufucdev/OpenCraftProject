@@ -57,6 +57,8 @@ user:
       3: "You've received following invitations:"
     noSuchInvitation: "Invitation doesn't exist."
     noSoManyCoins: "You do not have enough coins!"
+    noSuchPreference: "No such preference: %s"
+  preferred: "Successfully updated preference %s to %s."
   checkpoint:
     saved: "Saved %s as checkpoint IDed %s"
     failed: "Sorry, but you cannot set up checkpoints here."
@@ -100,7 +102,7 @@ server:
     flyRemaining: "FlyingTimeLeft: %s s"
 
 builder.error:
-  block: "You can't place things here."
+  placeBlock: "You can't place things here."
   breakBlock: "Don't destroy the architect's building!"
   dropItem: "You can't throw anything here."
   inventory: "You can't see your inventory here."
@@ -125,6 +127,7 @@ player:
   left: "%s left the game."
   error:
     unknown: "抱歉，但我们无法确定你是谁。您的游戏出现问题，请联系服务器管理员。Sorry, but we can't make sure that who you are. Your game seemed to go wrong, please contact the server operator."
+    opNotLoginOnWeb: 'Operators must first log in on the web, then in game.'
 
 command:
   error:
@@ -137,6 +140,7 @@ command:
     failed: "failed"
     tooFewArgs: "Too few arguments(%s needed)."
     noSucnItem: 'No such item: %s.'
+    typeError: 'Type error, expecting %s.'
   done: "Done."
   unnamed: "Unnamed"
   
@@ -264,6 +268,7 @@ ui:
     title: 'Lobby Visitor'
     located: 'lobby in order of %s'
     back: 'Go back to own lobby.'
+    booting: 'Booting Lobby Visitor'
 
 trade:
   tutorial:
@@ -291,11 +296,18 @@ trade:
     pwdUnset: "There's no password on this server"
     inventoryFull: "Trade Failed: Your inventory is full."
     error: "Trade Failed: You don't have enough coins."
+    lackOfItem: "Trade Failed: You don't have enough items."
   giveCurrency.objective: "Given %s coin(s) to %s !"
   giveCurrency.subjective: "A player gave you %s coin(s)，You've got %s coin(s) now!"
   pwd.setTo: "The password of this server has set to %s"
   explorer: "Trade Explorer"
   cancelled: "Trade cancelled."
+  pay:
+    title: 'Payment Review'
+    amout: 'Amount is %s.'
+    currencyConsume: 'This will consume %s from you.'
+    saving: 'Use Savings'
+    cash: 'Use Cashes'
 
 translator:
   usingLang: "%s is your language."
@@ -352,7 +364,7 @@ block:
     playerNotFound: "Player not found: %s"
     name: "Block named %s already exists."
     inaccessible: "You don't have the permissions to access."
-    selectNothing: "You have selected nothing. Right click a container block to select."
+    selectedNothing: "You have selected nothing. Right click a container block to select."
   tip:
     new: "Right click on a container block to select or unselect. Left click to give up the trade. Type /bl in chat to pay for what you've selected."
     accessible: "accessible"
@@ -425,6 +437,11 @@ portal:
   dropSecondary: "Sorry, but you can't drop a secondary-portal item."
   spawned: 'Portal created.'
   loadChunk: 'Loading your destination chunk...'
+  mustPlaceFirst: 'You must create the portal first, or cancel by left-clicking the one place.'
+coin:
+  name: 'Coin'
+  title: 'OpenCraft Physical Currency'
+
 msg:
   read: 'Read'
   clickToRead: 'Click to mark it as read.'
@@ -470,3 +487,45 @@ lobby:
     1: "You have woken up."
     2: "<%s> Oh, my lovely home!"
     3: "Tip: Go downstairs to look for a computer. Then click on the button nearby to play multiplayer mode."
+wiki:
+  thanks: 'Thanks to %s for updating the article %s of Wiki!'
+
+boss:
+  spawned:
+    1: 'Server Boss has spawned!'
+    2: 'Go ahead to location near (%s, %s, %s)，or teleport using /boss.'
+  difficulty: 'Current difficulty is %s.'
+  difChanged: 'Set difficulty to %s.'
+  award: "The Server Boss is killed. You've done %s points of damage to it which takes up %s of all. The summary of currency is %s, so you should get %s coins."
+  next: "Next boss will spawn at %s."
+  teleport: "Teleport you to the server boss."
+  error:
+    notSpawned: "Server Boss hasn't spawned."
+    building: "Sorry, but you are not supposed to do this in builder mode."
+
+bank:
+  title: 'OpenCraft Bank'
+  tip: 'Put your coins here, or take these away.'
+  bankerName: 'Clerk'
+  created: 'Bank %s was created at %s.'
+  createdBanker: 'A clerk was add here.'
+  removed: 'Bank called %s was remove.'
+  removedBanker: 'A clerk nearby was removed.'
+  mode:
+    deposit:
+      title: 'Deposit Mode'
+      subtitle: 'Deposit coins into the bank.'
+      done: 'Deposited %s into the bank.'
+    withdraw:
+      title: 'Withdraw Mode'
+      subtitle: 'Put coins into the bank.'
+      done: 'Put %s into the bank.'
+    tip: 'Click to switch.'
+  error:
+    illegalName: "Illegal name: %s with keyword ':'."
+    noBankersNearby: 'There are no clerks near you.'
+    outOfBound: "You can't exchange more then %s coins."
+  found:
+    1: '---Here are all banks---'
+    2: 'The nearest one is at %s.'
+    none: 'No bank was found.'

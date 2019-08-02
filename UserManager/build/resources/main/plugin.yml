@@ -6,7 +6,7 @@ softdepend: [ServerCore,CurrencySystem]
 api-version: '1.14'
 commands:
   user:
-    usage: /user <log|reg|pwd|save|observe|deobserve|goto|accept|death|help|lang|transfer> ...
+    usage: /user <log|reg|pwd|save|observe|deobserve|goto|accept|death|help|lang|transfer|prefer> ...
     description: 用户管理器，使您能在服务器登陆、注册等
   user log:
     usage: /user log(亦缩写作'l') <密码>
@@ -49,3 +49,7 @@ commands:
     description: 设置用户自定义语言
   user transfer:
     usage: /user transfer <旧密码> <当前密码>
+    description: 转移玩家数据
+  user prefer:
+    usage: /user prefer <选项> [off|on|其他数据值]
+    description: 更新玩家首选项

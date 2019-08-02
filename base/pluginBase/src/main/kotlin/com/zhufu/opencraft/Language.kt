@@ -9,18 +9,20 @@ object Language {
     val languages = ArrayList<YamlConfiguration>()
     fun printLanguages(player: HumanEntity) {
         player.sendMessage(
-                buildString {
-                    languages.forEachIndexed { index, yamlConfiguration ->
-                        append("${index + 1}.")
-                        append(yamlConfiguration.getString("info.name"))
-                        append(',')
-                    }
-                    deleteCharAt(lastIndex)
+            buildString {
+                languages.forEachIndexed { index, yamlConfiguration ->
+                    append("${index + 1}.")
+                    append(yamlConfiguration.getString("info.name"))
+                    append(',')
                 }
+                deleteCharAt(lastIndex)
+            }
         )
     }
 
-    fun getCodeByName(name: String) = languages.firstOrNull { it.getString("info.name") == name }?.getString("info.code")
+    fun getCodeByName(name: String) =
+        languages.firstOrNull { it.getString("info.name") == name }?.getString("info.code")
+
     fun getCodeByOrder(i: Int) = (if (languages.size < i) null else languages[i - 1])?.getString("info.code")
 
     val default: YamlConfiguration
@@ -34,12 +36,17 @@ object Language {
 
     fun init() {
         languages.clear()
-        File("plugins/lang").also { if (!it.exists()) it.mkdirs() }.listFiles().forEach {
+        File("plugins/lang").also { if (!it.exists()) it.mkdirs() }.listFiles()?.forEach {
             println("[DualLang] Loading language file for ${it.name}")
             try {
                 if (it.isHidden)
                     throw Exception()
-                languages.add(YamlConfiguration.loadConfiguration(it).also { conf -> if (!conf.contains("info.code")) conf.set("info.code", it.nameWithoutExtension) })
+                languages.add(YamlConfiguration.loadConfiguration(it).also { conf ->
+                    if (!conf.contains("info.code")) conf.set(
+                        "info.code",
+                        it.nameWithoutExtension
+                    )
+                })
             } catch (e: Exception) {
                 println("[DualLang] Failed to load ${it.name}")
             }
@@ -66,24 +73,32 @@ object Language {
                 }
             }
         } else {
-            raw = "ERROR: ${get(lang, "user.error.translationNotFound")}"
+            raw = "ERROR: ${get(lang, "user.error.translationNotFound", value)}"
             PaperPluginLogger.getGlobal().warning("Translation not found: $value in language $lang")
         }
         return raw
     }
 
     operator fun get(lang: String, value: String, vararg replaceWith: Any?): String = got(lang, value, replaceWith)
-    fun byChat(player: ChatInfo, value: String, vararg replaceWith: Any?) = got(lang = player.targetLang,value = value,replaceWith = replaceWith)
-    operator fun get(player: OfflineInfo, value: String, vararg replaceWith: Any?): String = got(lang = player.userLanguage, value = value, replaceWith = replaceWith)
+    fun byChat(player: ChatInfo, value: String, vararg replaceWith: Any?) =
+        got(lang = player.targetLang, value = value, replaceWith = replaceWith)
+
+    operator fun get(player: OfflineInfo, value: String, vararg replaceWith: Any?): String =
+        got(lang = player.userLanguage, value = value, replaceWith = replaceWith)
+
     operator fun get(player: HumanEntity, value: String, vararg replaceWith: Any?): String {
         val info = OfflineInfo.findByUUID(player.uniqueId)
-                ?: return got(LANG_ZH, "player.error.unknown", null)
+            ?: return got(LANG_ZH, "player.error.unknown", null)
         return got(info.userLanguage, value, replaceWith)
     }
 
-    fun getDefault(value: String, vararg replaceWith: Any?): String = got(default.getString("info.code")!!, value, replaceWith)
+    fun getDefault(value: String, vararg replaceWith: Any?): String =
+        got(default.getString("info.code")!!, value, replaceWith)
+
     fun getConf(lang: String) = languages.firstOrNull { it.getString("info.code") == lang }
-    operator fun get(player: OfflineInfo) = if (player.isUserLanguageSelected) LangGetter(player) else LangGetter(default.getString("info.code")!!)
+    operator fun get(player: OfflineInfo) =
+        if (player.isUserLanguageSelected) LangGetter(player) else LangGetter(default.getString("info.code")!!)
+
     operator fun get(lang: String) = LangGetter(lang)
 
     class LangGetter {
@@ -93,7 +108,7 @@ object Language {
         constructor(lang: String) {
             this.lang = lang
             conf = getConf(lang)
-                    ?: throw LanguageNotFoundException("Language called $lang not found!")
+                ?: throw LanguageNotFoundException("Language called $lang not found!")
         }
 
         constructor(lang: YamlConfiguration) {

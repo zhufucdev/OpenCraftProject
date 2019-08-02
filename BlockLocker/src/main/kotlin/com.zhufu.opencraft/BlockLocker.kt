@@ -48,7 +48,7 @@ class BlockLocker : JavaPlugin(), Listener {
     }
 
     private fun newBlockFor(sender: Player) {
-        val getter = sender.lang()
+        val getter = sender.getter()
 
         if (!BlockListener.creationMap.containsKey(sender)) {
             if (sender.location.world == Base.tradeWorld) {
@@ -73,60 +73,55 @@ class BlockLocker : JavaPlugin(), Listener {
                 TradeManager.getNewID(),
                 this
             )
-                .setOnConfirmListener {
-                    val info = sender.info()
-                    if (info == null) {
-                        sender.error(getter["player.error.unknown"])
-                        return@setOnConfirmListener
-                    }
-
-                    val prise = unitPrise * results.size
-                    if (info.currency < prise) {
-                        sender.error(getter["block.size", results.size, prise, info.currency])
-                        return@setOnConfirmListener
-                    }
-                    val newName: String
-                    run {
-                        var max = 0
-                        val prefix = getter["command.unnamed"]
-                        BlockLockManager.forEach {
-                            if (it.name.startsWith(prefix)) {
-                                val order = it.name.substring(prefix.length).toIntOrNull() ?: return@forEach
-                                if (order > max) max = order
-                            }
-                        }
-                        newName = "$prefix${max + 1}"
-                    }
-
-                    val uuid = sender.uniqueId.toString()
-                    BlockLockManager.add(
-                        if (results.size == 1) {
-                            BlockLockManager.BlockInfo(results.keys.first(), newName)
-                        } else {
-                            BlockLockManager.GroupBlockInfo(newName).apply {
-                                owner = uuid
-                                results.keys.forEachIndexed { index, location ->
-                                    add(
-                                        BlockLockManager.BlockInfo(location, "$newName-$index").apply { owner = uuid }
-                                    )
+                .setOnPayListener { success ->
+                    if (success) {
+                        val newName: String
+                        run {
+                            var max = 0
+                            val prefix = getter["command.unnamed"]
+                            BlockLockManager.forEach {
+                                if (it.name.startsWith(prefix)) {
+                                    val order = it.name.substring(prefix.length).toIntOrNull() ?: return@forEach
+                                    if (order > max) max = order
                                 }
                             }
-                        }.apply {
-                            owner = uuid
-                            BlockLockManager.selected[sender] = this
-                            sender.success(
-                                getter[
-                                        "block.success",
-                                        getter["block.${if (this is BlockLockManager.BlockInfo) "block" else "group"}"],
-                                        newName,
-                                        sender.name
-                                ]
-                            )
+                            newName = "$prefix${max + 1}"
                         }
-                    )
-                    info.currency -= prise
-                    sender.tip(getter["ui.block.selecting.tip.2"])
-                    BlockListener.cleanFor(sender)
+
+                        val uuid = sender.uniqueId.toString()
+                        BlockLockManager.add(
+                            if (results.size == 1) {
+                                BlockLockManager.BlockInfo(results.keys.first(), newName)
+                            } else {
+                                BlockLockManager.GroupBlockInfo(newName).apply {
+                                    owner = uuid
+                                    results.keys.forEachIndexed { index, location ->
+                                        add(
+                                            BlockLockManager.BlockInfo(location, "$newName-$index").apply {
+                                                owner = uuid
+                                            }
+                                        )
+                                    }
+                                }
+                            }.apply {
+                                owner = uuid
+                                BlockLockManager.selected[sender] = this
+                                sender.success(
+                                    getter[
+                                            "block.success",
+                                            getter["block.${if (this is BlockLockManager.BlockInfo) "block" else "group"}"],
+                                            newName,
+                                            sender.name
+                                    ]
+                                )
+                            }
+                        )
+                        sender.tip(getter["ui.block.selecting.tip.2"])
+                        BlockListener.cleanFor(sender)
+                    } else {
+                        sender.error(getter["trade.error.poor"])
+                    }
+                    true
                 }
                 .setOnCancelListener {
                     sender.info(getter["block.cancel"])
@@ -138,7 +133,7 @@ class BlockLocker : JavaPlugin(), Listener {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (command.name == "bl") {
-            val getter = sender.lang()
+            val getter = sender.getter()
             fun groupOrBlock(info: BlockLockManager.BaseInfo, get: Language.LangGetter? = null): String {
                 return if (info is BlockLockManager.GroupBlockInfo) {
                     get?.get("block.group")

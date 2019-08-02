@@ -26,6 +26,7 @@ abstract class PlayerOutputStream : OutputStream() {
 
     abstract fun send(text: String)
     abstract fun sendChat(sender: ChatInfo, regularText: String, translatedText: String, images: List<File>)
+    abstract fun sendChat(sender: ChatInfo, text: String)
     abstract fun sendRaw(json: JsonElement)
 
     abstract val lang: Language.LangGetter

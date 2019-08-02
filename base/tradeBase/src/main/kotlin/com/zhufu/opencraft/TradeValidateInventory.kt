@@ -149,6 +149,7 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
             inventory = Bukkit.createInventory(null, InventoryType.CHEST, inventoryName)
             inventory.addItem(tradeInfo.items!!.item.clone().also { it.amount = tradeInfo.items!!.amount })
         } else {
+            inventoryName = "确认购买$id"
             init()
         }
     }
@@ -213,25 +214,26 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
             tradeInfo.id,
             TradeManager.plugin!!
         )
-            .setOnConfirmListener {
-                val info = PlayerManager.findInfoByPlayer(player.uniqueId)
-                if (info == null) {
-                    player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
-                    return@setOnConfirmListener
+            .setOnPayListener { success ->
+                if (success) {
+                    val info = player.info()!!
+                    when (TradeManager.buy(player, tradeInfo.id, amount)) {
+                        TradeManager.TradeResult.FAILED -> {
+                            return@setOnPayListener false
+                        }
+                        TradeManager.TradeResult.SUCCESSFUL -> {
+                            TradeManager.destroy(tradeInfo)
+                        }
+                        TradeManager.TradeResult.UPDATE -> {
+                            init()
+                        }
+                    }
+                    TradeManager.loadTradeCompass(info)
+                } else {
+                    player.error(player.getter()["trade.error.poor"])
                 }
-                when (TradeManager.buy(player, tradeInfo.id, amount)) {
-                    TradeManager.TradeResult.FAILED -> {
-                        return@setOnConfirmListener
-                    }
-                    TradeManager.TradeResult.SUCCESSFUL -> {
-                        TradeManager.destroy(tradeInfo)
-                    }
-                    TradeManager.TradeResult.UPDATE -> {
-                        init()
-                    }
-                }
-                TradeManager.loadTradeCompass(info)
                 isPaying = false
+                true
             }
             .setOnCancelListener {
                 player.sendMessage(TextUtil.info("交易已取消"))

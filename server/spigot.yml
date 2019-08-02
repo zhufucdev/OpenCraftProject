@@ -87,6 +87,9 @@ world-settings:
       exp: 3.0
       item: 2.5
     growth:
+      bamboo-modifier: 100
+      sweetberry-modifier: 100
+      kelp-modifier: 100
       cactus-modifier: 100
       cane-modifier: 100
       melon-modifier: 100

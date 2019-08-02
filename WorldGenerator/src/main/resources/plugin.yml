@@ -1,4 +1,5 @@
 name: 'WorldGenerator'
 version: '1.0'
 main: 'com.zhufu.opencraft.GeneratorPlugin'
+api-version: '1.14'
 load: STARTUP

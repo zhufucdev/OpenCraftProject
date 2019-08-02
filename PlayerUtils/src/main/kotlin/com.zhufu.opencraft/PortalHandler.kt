@@ -3,7 +3,7 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.Base.TutorialUtil.linearTo
 import com.zhufu.opencraft.Everything.mPlugin
 import com.zhufu.opencraft.Everything.near
-import com.zhufu.opencraft.special_items.Portal
+import com.zhufu.opencraft.special_item.Portal
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -11,6 +11,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
@@ -53,6 +54,9 @@ object PortalHandler : Listener {
 
     fun onServerClose() {
         timer.cancel()
+        portalMap.values.forEach {
+            it.location.block.type = Material.AIR
+        }
     }
 
     private fun Player.owns(sth: Everything.Cube?) =
@@ -77,20 +81,28 @@ object PortalHandler : Listener {
                     }
                     val dest = destation.clone().add(Vector(0.5, 1.0, 0.5))
                     cube.data.set("isCoolDown", true)
-                    Bukkit.getScheduler().runTask(Everything.mPlugin!!) { _ ->
+                    Bukkit.getScheduler().runTask(mPlugin!!) { _ ->
                         if (blockDistance(dest, event.player.location) <= 22500) {
-                            val oldMode = event.player.gameMode
-                            event.player.gameMode = GameMode.SPECTATOR
-                            event.player.linearTo(
-                                location = dest,
-                                delay = 3600,
-                                done = {
-                                    event.player.apply {
-                                        gameMode = oldMode
-                                        playSound(location, Sound.BLOCK_PORTAL_TRAVEL, 0.4f, 1f)
+                            val info = event.player.info()
+                            if (info == null) {
+                                event.player.error(Language.getDefault("player.error.unknown"))
+                            } else {
+                                info.inventory.create(DualInventory.NOTHING).load(inventoryOnly = true)
+                                event.player.gameMode = GameMode.SPECTATOR
+                                event.player.linearTo(
+                                    location = dest,
+                                    delay = 3600,
+                                    done = {
+                                        event.player.apply {
+                                            info.inventory.last.apply {
+                                                set("location", dest)
+                                                load()
+                                            }
+                                            playSound(location, Sound.BLOCK_PORTAL_TRAVEL, 0.4f, 1f)
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         } else {
                             event.player.apply {
                                 dest.chunk.load(true)
@@ -118,7 +130,7 @@ object PortalHandler : Listener {
 
     private fun blockBreak(location: Location, player: Player): Boolean {
         val game = Everything.index(location)
-        val owner = player.owns(game)
+        val owner = player.owns(game) || player.isOp
         if (game?.type == "TP" && (game.from.near(location) || game.to.near(location))) {
             if (owner) {
                 game.apply {
@@ -160,7 +172,7 @@ object PortalHandler : Listener {
             obs.block.type = Material.AIR
             player.inventory.setItem(
                 portalMap[player]!!.held,
-                Portal(player.lang()).apply { amount = portalMap[player]!!.amount })
+                Portal(player.getter()).apply { amount = portalMap[player]!!.amount })
             portalMap.remove(player)
         }
         return true
@@ -195,7 +207,7 @@ object PortalHandler : Listener {
         if (!event.canBuild())
             return
         if (Portal.isThis(event.itemInHand)) {
-            val getter = event.player.lang()
+            val getter = event.player.getter()
             if (!portalMap.containsKey(event.player)) {
                 portalMap[event.player] =
                     FallbackInfo(
@@ -214,13 +226,21 @@ object PortalHandler : Listener {
                     success(getter["portal.spawned"])
                     val amount =
                         portalMap[event.player]!!.amount - if (event.player.gameMode == GameMode.CREATIVE) 0 else 1
-                    inventory.setItemInMainHand(if (amount <= 0) ItemStack(Material.AIR) else Portal(lang()).apply {
+                    inventory.setItemInMainHand(if (amount <= 0) ItemStack(Material.AIR) else Portal(getter()).apply {
                         this.amount = amount
                     })
                 }
 
                 portalMap.remove(event.player)
             }
+        }
+    }
+
+    @EventHandler
+    fun onSecondaryPortalClick(event: InventoryClickEvent) {
+        if (Portal.isThis(event.currentItem) && portalMap.containsKey(Bukkit.getPlayer(event.whoClicked.uniqueId))) {
+            event.whoClicked.error(getLang(event.whoClicked, "portal.mustPlaceFirst"))
+            event.isCancelled = true
         }
     }
 }

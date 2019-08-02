@@ -40,7 +40,7 @@ class BookNoticer : JavaPlugin(), Listener {
             }
         Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
             event.player.info()?.apply {
-                messagePool.sendUnreadTo(this)
+                if (preference.sendMessagesOnLogin) messagePool.sendUnreadTo(this)
                 Base.publicMsgPool.sendUnreadTo(this)
             }
         }
@@ -48,7 +48,7 @@ class BookNoticer : JavaPlugin(), Listener {
 
     @EventHandler
     fun onPlayerLobby(event: PlayerTeleportedEvent) {
-        if (event.to.world != lobby)
+        if (event.to?.world != lobby)
             return
         Bukkit.getScheduler().runTaskAsynchronously(this, Runnable {
             getBook(event.player).show(event.player,true)

@@ -51,7 +51,7 @@
 
 <script id="onload">
     function refresh() {
-        $('#address').empty().append('地址: ' + window.location.hostname);
+        $('#address').empty().append('地址: ' + hostName);
 
         let pinged = false;
         let dpsed = false;
@@ -72,7 +72,7 @@
             }
         }
         $.ajax({
-            url: 'ping',
+            url: hostName + 'ping',
             success: function () {
                 pinged = true;
                 testToHide();
@@ -80,9 +80,8 @@
             }
         });
         $.ajax({
-            url: 'ping?which=dps',
-            success: function (r) {
-                let json = JSON.parse(r);
+            url: hostName + 'ping?which=dps',
+            success: function (json) {
                 let result;
                 dpsed = true;
                 testToHide();
@@ -111,10 +110,9 @@
         $('#prgs-player').show();
         fadeIn(prgsPlayer,20);
         $.ajax({
-            url: 'ping?which=player',
-            success: function (r) {
+            url: hostName + 'ping?which=player',
+            success: function (json) {
                 done = true;
-                let json = JSON.parse(r);
                 setTimeout(() => fadeOut(prgsPlayer,20,()=>$('#prgs-player').hide()),250);
                 online.empty().append('在线情况: '+json.online + '<span class="grey-text">|</span>'+json.maxOnline);
                 total.empty().append('注册玩家数: '+json.totalPlayers)

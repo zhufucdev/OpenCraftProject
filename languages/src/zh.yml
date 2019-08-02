@@ -60,7 +60,7 @@ user:
     pwdDismatch: '两次输入的密码不相符'
     langSelected: '您的语言已被设置为%s'
     invitationUnacceptable: '您不能在此时接受请求'
-    onInvitations: '您没有收到传送请求'
+    noInvitations: '您没有收到传送请求'
     moreThanOneInvitations:
       1: '您收到不止一封请求'
       2: '使用此命令时，可使用TAB键补全请求'
@@ -68,6 +68,8 @@ user:
     noSuchInvitation: '请求不存在'
     noSoManyCoins: '您的货币数量不足'
     langNotFound: "语言不存在。No such language."
+    noSuchPreference: '没有这样的首选项: %s'
+  preferred: '已将首选项 %s 更新为 %s'
   checkpoint:
     saved: '已将%s保存为ID为%s的记录点'
     failed: '抱歉，但您不能在此处设置传送点'
@@ -110,6 +112,7 @@ player:
   error:
     unknown: "抱歉，但我们无法确定你是谁。您的游戏出现问题，请联系服务器管理员。Sorry, but we can't make sure that who you are. Your game seemed to go wrong, please contact the server operator."
     unknownBy: "您的服务器信息未找到，但%s1需要该信息。很抱歉对您的游戏造成不便，请联系服务器管理员。Your info in server was not found, but was needed by %s1. Sorry for troubling your game. Please contact the server operator,"
+    opNotLoginOnWeb: '管理员必须先在网页登录，再在游戏中登录'
 
 command:
   error:
@@ -123,6 +126,7 @@ command:
     failed: '失败'
     tooFewArgs: '缺少参数(需要%s个)'
     noSuchItem: '没有这样的物品: %s'
+    typeError: '类型错误, 期望得到%s'
   done: '完成'
   unnamed: '未命名'
 
@@ -156,12 +160,19 @@ trade:
     chunkNotFound: '抱歉，但我们无法找到您的领地'
     inventoryFull: '交易失败: 您的物品栏没有足够的剩余空间'
     poor: '交易失败: 您没有足够的货币'
+    lackOfItem: '交易失败: 您没有足够的物品'
   pwd.setTo: '已将服务器密码设置为%s'
   explorer: '交易浏览器'
   cancelled: '交易已取消'
+  pay:
+    title: '确认支付'
+    amount: '数量为%s'
+    currencyConsume: '这将消耗您%s个货币'
+    saving: '使用存款'
+    cash: '使用现款'
 
 builder.error:
-  block: '抱歉，但您没有权限放置此方块'
+  placeBlock: '抱歉，但您没有权限放置此方块'
   breakBlock: '抱歉，但您不能破坏建筑师放置的方块'
   dropItem: '抱歉，但您没有权限丢弃物品'
   inventory: '抱歉，但您没有权限打开物品栏'
@@ -298,6 +309,7 @@ ui:
     title: '主城访问器'
     located: '主城编号 %s'
     back: '返回自己的主城'
+    booting: '正在启动主城访问器'
 
 welcome:
   1:
@@ -377,7 +389,7 @@ block:
     playerNotFound: '玩家不存在: %s'
     name: '名为%s的方块已存在'
     inaccessible: '您没有权限访问此方块'
-    selectNothing: '您尚未选中任何方块。右键一个容器方块来选中'
+    selectedNothing: '您尚未选中任何方块。右键一个容器方块来选中'
   tip:
     new: '右键容器方块来选中或取消选中。左键以放弃交易。在聊天栏输入/bl 来确认购买您所选的方块。'
     accessible: '可访问'
@@ -448,6 +460,10 @@ portal:
   spawned: '传送门已创建'
   notOwn: '您不是传送门所有者'
   loadChunk: '正在加载目标区块'
+  mustPlaceFirst: '您必须先创建传送门，或左键已经放置的方块以取消。'
+coin:
+  name: '硬币'
+  title: 'OpenCraft实体货币'
 
 msg:
   read: '已读'
@@ -489,8 +505,51 @@ lobby:
   error:
     buildNotPermitted: '您没有权限在此放置方块'
     breakNotPermitted: '您没有权限破坏此方块'
-  spawnpointSet: '已将该位置设置为出色点。拜访者将从此进入。'
+  spawnpointSet: '已将该位置设置为出生点。拜访者将从此进入。'
   speeches:
     1: '您醒来了'
     2: "<%s> 哦，我可爱的家！"
     3: "提示: 下楼寻找一台电脑，点击其附近的按钮以开始多人游戏。"
+
+wiki:
+  thanks: '感谢 %s 更新Wiki的 %s 文章!'
+
+boss:
+  spawned:
+    1: '服务器boss已生成！'
+    2: '前往坐标为(%s, %s, %s)的位置附近，或使用/boss 进行传送'
+  difficulty: '当前难度为 %s'
+  difChanged: '将难度设置为 %s'
+  award: '服务器Boss被消灭。您对其造成了 %s 点伤害，占总数的 %s，而货币总数为 %s，所以您被分配到 %s 个货币。'
+  next: '下一次刷新在 %s'
+  teleport: '将您传送至服务器Boss所在'
+  error:
+    notSpawned: '服务器boss未生成'
+    building: '抱歉，但您不能在建筑者模式中攻击Boss。'
+
+bank:
+  title: 'OpenCraft银行'
+  tip: '将货币存放于此，或从中取出货币'
+  bankerName: '店员'
+  created: '银行 %s 已创建'
+  createdBanker: '店员就地添加'
+  removed: '名为%s的银行已被移除'
+  removedBanker: '附近的一位店员已被移除'
+  mode:
+    deposit:
+      title: '存款模式'
+      subtitle: '将货币存入银行'
+      done: '将%s存入银行'
+    withdraw:
+      title: '取款模式'
+      subtitle: '从账户中取出存款'
+      done: '从存款中取出%s'
+    tip: '点击以切换'
+  error:
+    illegalName: '非法名称: %s，包含关键字":"。'
+    noBankersNearby: '附近未找到店员'
+    outOfBound: '您最多能交换%s个货币'
+  found:
+    1: '---以下是所有银行---'
+    2: '最近的一个位于 %s'
+    none: '未找到银行'

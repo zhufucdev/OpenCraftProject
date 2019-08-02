@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <option name="delegatedBuild" value="false" />
+        <option name="testRunner" value="PLATFORM" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
@@ -18,6 +21,8 @@
             <option value="$PROJECT_DIR$/OperationFinder" />
             <option value="$PROJECT_DIR$/PlayerUtils" />
             <option value="$PROJECT_DIR$/PrevHacking" />
+            <option value="$PROJECT_DIR$/RemoteRedirector" />
+            <option value="$PROJECT_DIR$/ServerBoss" />
             <option value="$PROJECT_DIR$/ServerCore" />
             <option value="$PROJECT_DIR$/SkinnyRemix" />
             <option value="$PROJECT_DIR$/TenMinSur" />
@@ -34,6 +39,7 @@
             <option value="$PROJECT_DIR$/base/scripting" />
             <option value="$PROJECT_DIR$/base/tradeBase" />
             <option value="$PROJECT_DIR$/base/utils" />
+            <option value="$PROJECT_DIR$/base/webBase" />
             <option value="$PROJECT_DIR$/languages" />
           </set>
         </option>

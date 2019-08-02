@@ -6,7 +6,6 @@ import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.Base.Extend.appendToJson
-import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.ui.MenuInterface
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -14,7 +13,6 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
-import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -295,7 +293,10 @@ object Everything : Listener {
     fun onPlayerClick(event: PlayerInteractEvent) {
         fun plus() {
             val player = event.player
-            if (player.info()?.status != Info.GameStatus.Surviving)
+            val info = player.info()
+            if (info?.status != Info.GameStatus.Surviving)
+                return
+            if (!info.preference.playerUtilitiesGesture)
                 return
             fun reset() {
                 clickMap[player] = 1 to System.currentTimeMillis()
@@ -384,7 +385,7 @@ object Everything : Listener {
 
     @EventHandler
     fun onDropItem(event: PlayerDropItemEvent){
-        if (event.itemDrop.itemStack.itemMeta!!.displayName == event.player.info().lang()["scripting.ui.new"].toInfoMessage()
+        if (event.itemDrop.itemStack.itemMeta!!.displayName == event.player.info().getter()["scripting.ui.new"].toInfoMessage()
             && originItemMap.containsKey(event.player.uniqueId)){
             event.isCancelled = true
 
@@ -402,7 +403,7 @@ object Everything : Listener {
         player.inventory.setItemInMainHand(
             ItemStack(Material.WRITABLE_BOOK).updateItemMeta<BookMeta> {
                 addPage(origin)
-                setDisplayName(player.info().lang()["scripting.ui.new"].toInfoMessage())
+                setDisplayName(player.info().getter()["scripting.ui.new"].toInfoMessage())
             }
         )
     }

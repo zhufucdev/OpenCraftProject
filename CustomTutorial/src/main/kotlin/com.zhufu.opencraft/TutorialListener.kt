@@ -2,6 +2,7 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.TutorialManager.Tutorial
 import com.zhufu.opencraft.TutorialManager.Tutorial.TutorialStep
+import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.ui.EditorUI
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -38,8 +39,7 @@ class TutorialListener: Listener {
         originProjectData[player] = project.clone()
         inCreation[player] = project
         player.gameMode = GameMode.SPECTATOR
-        if (player.openInventory != null)
-            player.closeInventory()
+        player.closeInventory()
         player.sendTitle(TextUtil.info("您已进入编辑模式"), TextUtil.tip("输入/ct 或使用鼠标点击以调出编辑模式菜单"),7,80,7)
     }
     fun recorder(player: Player,step: TutorialStep){
@@ -80,7 +80,7 @@ class TutorialListener: Listener {
 
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent){
-        if (event.to!!.block.type != Material.AIR && event.to!!.block.type.isSolid
+        if (event.to.block.type != Material.AIR && event.to.block.type.isSolid
                 && event.player.gameMode == GameMode.SPECTATOR
                 && inCreation.containsKey(event.player)){
             event.isCancelled = true
@@ -116,7 +116,7 @@ class TutorialListener: Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    fun onPlayerTeleported(event: com.zhufu.opencraft.events.PlayerTeleportedEvent){
+    fun onPlayerTeleported(event: PlayerTeleportedEvent){
         if (inCreation.containsKey(event.player)){
             inCreation[event.player]!!
                     .also {

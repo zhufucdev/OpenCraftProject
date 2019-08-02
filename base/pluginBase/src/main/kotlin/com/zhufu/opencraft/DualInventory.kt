@@ -1,7 +1,7 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.Info.Companion.plugin
-import com.zhufu.opencraft.special_items.SpecialItem
+import com.zhufu.opencraft.special_item.SpecialItem
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -150,17 +150,14 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
                 if (itemStack == null)
                     return@forEachIndexed
 
-                if (SpecialItem.isSpecial(itemStack)) {
-                    config.set(
-                        path,
-                        SpecialItem.getSerialize(itemStack, player.lang())
-                    )
-                } else {
-                    itemStack.enchantments.filter { it.value > it.key.maxLevel }.forEach { t, _ ->
-                        itemStack.removeEnchantment(t)
+                config.set(
+                    path,
+                    if (SpecialItem.isSpecial(itemStack)) {
+                        SpecialItem.getSerialize(itemStack, player.getter())
+                    } else {
+                        itemStack
                     }
-                    config.set(path, itemStack)
-                }
+                )
             }
 
             if (!inventoryOnly) {
@@ -227,7 +224,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             if (config.isSet("inventory")) {
                 for (i in 0 until player.inventory.size) {
                     val path = "inventory.$i"
-                    val getter = player.lang()
+                    val getter = player.getter()
                     val item =
                         if (config.isConfigurationSection(path)) {
                             if (config.isSet("item")) config.getItemStack("item")
@@ -277,7 +274,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
                         } catch (e: Exception) {
                             failureList.add("player/potion/$it: ${e::class.simpleName}: ${e.message}")
                             e.printStackTrace()
-                        } as Unit
+                        }
                     }
                 }
             }

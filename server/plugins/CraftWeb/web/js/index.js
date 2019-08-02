@@ -1,4 +1,5 @@
-let currentPage = 'intro';
+let currentPage = 'intro', lastPage;
+const hostName = 'https://localhost:2018/';
 
 function openGithub() {
     window.open("https://github.com/zhufucdev/OpenCraftProject")
@@ -26,7 +27,7 @@ function fadeOut(ele, speed, done) {
     }, speed)
 }
 
-function fadeIn(ele, speed) {
+function fadeIn(ele, speed, onDone) {
     ele.style.opacity = 0;
     let s = 0;
     let timer = setInterval(function () {
@@ -35,7 +36,8 @@ function fadeIn(ele, speed) {
             ele.style.opacity = s;
         } else {
             ele.style.opacity = 1;
-            clearInterval(timer)
+            clearInterval(timer);
+            if (typeof onDone === 'function') onDone()
         }
     }, speed)
 }
@@ -63,22 +65,21 @@ function col(ele, from, to, done) {
     }, from, to, 300, done);
 }
 
-let userData;
+let userData = {r: -1};
 
 function updateUserData(success, error) {
     $.ajax({
-        url: 'user?request=check',
+        url: hostName + 'user?request=check',
         success: function (r) {
             console.info(r);
-            userData = JSON.parse(r);
-            if (success) success.call()
+            userData = r;
+            if (typeof success === 'function') success(r)
         },
         error: error
     });
 }
 
-let navUpdate;
-let onDisable;
+let navUpdate, onDisable, navToolbar;
 
 function isWideScreen() {
     return window.innerWidth >= 992;
@@ -243,7 +244,7 @@ function getCustomizedText(text) {
         let lang = text.substring(index + 2, b);
         let result = '[unknown]';
         $.ajax({
-            url: 'lang?get=' + lang,
+            url: hostName + 'lang?get=' + lang,
             async: false,
             success: function (r) {
                 result = r;
@@ -262,36 +263,37 @@ function hideTopProgress() {
     fadeOut(document.getElementById('prgs'), 20)
 }
 
+let bottomDialogID = 0;
+
 function BottomDialog(ele, options) {
     this.element = ele;
+    this.id = bottomDialogID++;
     ele.style.display = 'none';
 
-    let overlay = $('<div class="modal-overlay"></div>');
+    $(document.body).append('<div class="modal-overlay" id="modal-overlay-' + this.id + '"></div>');
+    let overlay = $('#modal-overlay-' + this.id);
     this.isShown = false;
 
-    overlay.appendTo('body');
     overlay.click(() => {
         if (this.isShown)
             this.dismiss()
     });
 
-    $.style(document.getElementsByClassName('modal-overlay')[0], 'opacity', 0);
+    overlay.css('opacity', 0);
     if (options) {
-        if (options.onShow) this._onShow = options.onShow;
+        if (typeof options.onShow === 'function') this._onShow = options.onShow;
+        if (typeof options.onDismiss === 'function') this._onDismiss = options.onDismiss;
     }
 
     this.show = () => {
-        let overlay = document.getElementsByClassName('modal-overlay')[0];
-        $.extend(overlay.style, {
-            zIndex: 1000,
-            display: 'block'
-        });
+        overlay.css('zIndex', 1000)
+            .css('display', 'block');
         $.extend(this.element.style, {
             display: 'block',
             opacity: 0
         });
         startAnimation((s) => {
-            overlay.style.opacity = s;
+            overlay.css('opacity', s);
         }, 0, 0.5, 200, 20, () => {
             this.isShown = true
         });
@@ -303,27 +305,29 @@ function BottomDialog(ele, options) {
             startAnimation((s) => {
                 this.element.style.marginBottom = s + 'px';
             }, -targetHeight, 0, 220);
-            let actionBar = document.getElementsByClassName('dialog-actionbar')[0];
-            startAnimation(
-                (s) => {
-                    actionBar.style.bottom = s + 'px'
-                },
-                -actionBar.clientHeight,
-                0,
-                300 * actionBar.clientHeight / this.element.clientHeight
-            );
+            let actionBar = $(this.element).children('.dialog-actionbar');
+            if (actionBar.length > 0) {
+                let actionBarHeight = actionBar.get(0).clientHeight;
+                startAnimation(
+                    (s) => {
+                        actionBar.css('bottom', s + 'px')
+                    },
+                    -actionBarHeight,
+                    0,
+                    300 * actionBarHeight / this.element.clientHeight
+                );
+            }
 
             if (this._onShow)
-                this._onShow();
+                this._onShow()
         }, 10)
     };
 
     this.dismiss = () => {
-        let overlay = document.getElementsByClassName('modal-overlay')[0];
         this.isShown = false;
         startAnimation((s) => {
-            overlay.style.opacity = s;
-        }, 0.5, 0, 300, 20, () => overlay.style.display = 'none');
+            overlay.css('opacity', s);
+        }, 0.5, 0, 300, 20, () => overlay.css('display', 'none'));
         startAnimation((s) => {
             this.element.style.marginBottom = s + 'px';
         }, 0, -this.element.clientHeight, 300, () => this.element.style.display = 'none');
@@ -336,7 +340,9 @@ function BottomDialog(ele, options) {
             0,
             -actionBar.clientHeight,
             300 * actionBar.clientHeight / this.element.clientHeight
-        )
+        );
+        if (this._onDismiss)
+            this._onDismiss()
     }
 }
 
@@ -356,109 +362,148 @@ function renderSize(value) {
     return size + unitArr[index];
 }
 
-function Toolbar(ele, items) {
+function showFab(ele, callback) {
+    if (ele.style.transform !== 'scale(1)')
+        startAnimation((s) => ele.style.transform = 'scale(' + s.toFixed(3) + ')', 0, 1, 200, callback)
+    else if (typeof callback === 'function')
+        callback()
+}
+
+function hideFab(ele, callback) {
+    if (ele.style.transform !== 'scale(0)')
+        startAnimation((s) => ele.style.transform = 'scale(' + s.toFixed(3) + ')', 1, 0, 200, callback)
+    else if (typeof callback === 'function')
+        callback()
+}
+
+let toolbarID = 0;
+
+function Toolbar(ele, items, darkMode) {
     this.items = {};
-    this.id = (new Date()).getTime();
+    if (typeof items === 'boolean') {
+        darkMode = items;
+        items = undefined
+    }
+    this.id = toolbarID++;
 
     this.element = ele;
-
     $(ele).append('<div id="bar-' + this.id + '" style="display: inline"></div>');
 
-    this.push = (icon, name, priority, isActive, onClick) => {
+    this.push = (icon, name, priority, isActive, onClick, tooltipPosition) => {
         if (this.items.hasOwnProperty(name)) return;
-        let bar = $('#bar-' + this.id);
 
-        let appendToBar = () => {
-            let jquery = $('<i class="mdi ' + icon + ' mdi-24px" style="display: inline; margin-right: 5px; margin-left: 5px" data-tooltip="' + name + '" data-position="top"></i>');
-            jquery.tooltip();
-            bar.append(jquery);
-            this.items[name] = {
-                name: name,
-                priority: priority,
-                jquery: jquery
-            }
-        };
-
-        let appendToMenu = () => {
-            // Check if menu exists
-            let bar = $(ele);
-            if (bar.children('.dropdown-trigger').length < 1) {
-                bar.append('<a class="dropdown-trigger mdi mdi-dots-vertical waves-effect black-text" style="margin-top: -7px" data-target="dropdown-' + this.id + '"></a>');
-                bar.append('<ul class="dropdown-content" id="dropdown-' + this.id + '"></ul>');
-                $('.dropdown-trigger').dropdown();
-            }
-            let jquery = $('<li><a href="#" class="black-text">' + name + '</a></li>');
-            $('#dropdown-' + this.id).append(jquery);
-            this.items[name] = {
-                name: name,
-                priority: priority,
-                jquery: jquery
-            }
-        };
-        switch (priority) {
-            case Toolbar.DisplayPriority.showAlways:
-                appendToBar();
-                break;
-            case Toolbar.DisplayPriority.hideAlways:
-                appendToMenu();
-                break;
-            case Toolbar.DisplayPriority.smart:
-                if (items.length > 4) {
-                    appendToMenu()
-                } else {
-                    appendToBar()
-                }
-                break;
-            default:
-                appendToBar()
-        }
-
-        let result = this.items[name];
-        result.setActive = (active, force) => {
-            if (force || isActive !== active) {
-                function animate(from, to) {
-                    let element = result.jquery.get(0);
-                    startAnimation(s => element.style.color = 'rgba(0, 0, 0, ' + s + ')', from, to, 200)
-                }
-
-                if (!active) {
-                    animate(1, 0.26);
-                } else {
-                    animate(0.26, 1)
-                }
-                isActive = active;
-            }
-        };
-        result.isActive = () => {
-            return isActive;
-        };
-        if (isActive === false) {
-            result.setActive(false, true)
+        if (typeof icon !== 'string') {
+            pushFrom(icon);
+            return this.items[icon.name]
         } else {
-            result.setActive(true, true)
+            if (typeof onClick === 'string') {
+                tooltipPosition = onClick;
+                onClick = undefined
+            }
+
+            let bar = $('#bar-' + this.id);
+
+            let appendToBar = () => {
+                let jquery = $('<i class="mdi ' + icon + ' mdi-24px' + (darkMode ? ' black-text' : '') + '" style="display: inline; margin-right: 5px; margin-left: 5px" data-tooltip="' + name + '" data-position="' + (tooltipPosition || 'top') + '"></i>');
+                jquery.tooltip();
+                bar.append(jquery);
+                this.items[name] = {
+                    name: name,
+                    priority: priority,
+                    jquery: jquery,
+                    isInMenu: false
+                }
+            };
+
+            let appendToMenu = () => {
+                // Check if menu exists
+                let bar = $(ele);
+                if (bar.children('.dropdown-content').length < 1) {
+                    bar.append('<ul class="dropdown-content" id="dropdown-' + this.id + '"></ul>');
+                }
+                if (bar.children('.dropdown-trigger').length < 1) {
+                    bar.append('<i class="dropdown-trigger mdi mdi-dots-vertical mdi-24px ' + (darkMode ? ' black-text' : '') + ' waves-effect black-text" style="margin-top: -7px; display: inline" data-target="dropdown-' + this.id + '" id="trigger-' + this.id + '"></i>');
+                    $('.dropdown-trigger').dropdown();
+                }
+                let jquery = $('<li><a href="#" class="black-text">' + name + '</a></li>');
+                $('#dropdown-' + this.id).append(jquery);
+                this.items[name] = {
+                    name: name,
+                    priority: priority,
+                    jquery: jquery,
+                    isInMenu: true
+                }
+            };
+            switch (priority) {
+                case Toolbar.DisplayPriority.showAlways:
+                    appendToBar();
+                    break;
+                case Toolbar.DisplayPriority.hideAlways:
+                    appendToMenu();
+                    break;
+                case Toolbar.DisplayPriority.smart:
+                    if (this.items.length > 4) {
+                        appendToMenu()
+                    } else {
+                        appendToBar()
+                    }
+                    break;
+                default:
+                    appendToBar()
+            }
+
+            let result = this.items[name];
+            result.setActive = (active, force) => {
+                if (force || isActive !== active) {
+                    function animate(from, to) {
+                        let element = result.jquery.get(0);
+                        startAnimation(s => element.style.color = 'rgba(0, 0, 0, ' + s + ')', from, to, 200)
+                    }
+
+                    if (!active) {
+                        animate(1, 0.26);
+                    } else {
+                        animate(0.26, 1)
+                    }
+                    isActive = active;
+                }
+            };
+            result.isActive = () => {
+                return isActive;
+            };
+            if (isActive === false) {
+                result.setActive(false, true)
+            } else {
+                result.setActive(true, true)
+            }
+
+            result.click = l => {
+                result.jquery.off('click')
+                    .on('click', () => {
+                        if (l) l(result)
+                    })
+            };
+            result.click(onClick);
+
+            return result;
         }
-
-        result.click = l => {
-            result.jquery.off('click');
-            result.jquery.click(() => {
-                if (l) l(result)
-            })
-        };
-        result.click(onClick);
-
-        return result;
     };
     this.remove = (names) => {
         if (typeof names === 'string') {
             if (this.items.hasOwnProperty(names)) {
-                this.items[names].jquery.remove();
-                this.items[names] = undefined;
+                let r = this.items[names];
+                r.jquery.remove();
+                delete this.items[names];
+                if (r.isInMenu) {
+                    for (let value in this.items) {
+                        if (value.isInMenu) return
+                    }
+                    $('#trigger-' + this.id).remove()
+                }
             }
         } else if (typeof names === 'object') {
-            for (let name in names) {
-                if (names.hasOwnProperty(name)) {
-                    this.remove(name)
-                }
+            for (let i in names) {
+                this.remove(names[i])
             }
         }
     };
@@ -470,39 +515,50 @@ function Toolbar(ele, items) {
     this.show = () => $(ele).show();
     this.hide = () => $(ele).hide();
 
-    for (let i in items) {
-        if (items.hasOwnProperty(i)) {
-            let it = items[i], hasChildren = it.hasOwnProperty('children');
-            let result = this.push(it.icon, it.name, it.priority, it.active, it.onclick);;
-            if (hasChildren) {
-                let id = new Date().getTime();
-                let root = $(ele);
+    let pushFrom = (it) => {
+        let hasChildren = it.hasOwnProperty('children');
+        let result = this.push(it.icon, it.name, it.priority, it.active, it.onclick, it.tooltipPosition);
 
-                function addChildren(parent, children) {
-                    parent.classList.add('dropdown-trigger');
-                    parent.dataset.target = 'dropdown-'+ id;
-                    let content = $('<ul class="dropdown-content" id="dropdown-' + id + '"></ul>');
-                    root.append(content);
-                    M.Dropdown.init(parent);
-                    for (let index in children) {
-                        if (children.hasOwnProperty(index)) {
-                            let childConfig = children[index], hasChildren = childConfig.hasOwnProperty('children');
-                            if (hasChildren) id = new Date().getTime();
-                            let child = $('<li><a class="black-text center" style="padding: 10px; font-size: 16px" ' + (hasChildren ? 'data-target="dropdown-' + id + '"' : '') + '>' +
-                                '<i class="mdi ' + childConfig.icon + ' mdi-18px" style="margin-right: auto; transform: translateY(-5px)"></i>' +
-                                childConfig.name +
-                                '</a></li>');
-                            content.append(child);
-                            child.click(childConfig.onclick);
-                            if (hasChildren) {
-                                addChildren(child.get(0).firstChild, childConfig.children)
-                            }
+        if (hasChildren) {
+            let id = new Date().getTime();
+            let root = $(ele);
+
+            function addChildren(parent, children) {
+                if (darkMode !== undefined) {
+                    if (darkMode) parent.classList.add('black-text');
+                    else parent.classList.add('mdi-light');
+                }
+                parent.classList.add('dropdown-trigger');
+                parent.dataset.target = 'dropdown-' + id;
+                let content = $('<ul class="dropdown-content" id="dropdown-' + id + '"></ul>');
+                root.append(content);
+                let parentJquery = $(parent);
+                parentJquery.dropdown({
+                    constrainWidth: false
+                });
+                for (let index in children) {
+                    if (children.hasOwnProperty(index)) {
+                        let childConfig = children[index], hasChildren = childConfig.hasOwnProperty('children');
+                        if (hasChildren) id = new Date().getTime();
+                        let child = $('<li><a class="black-text center" style="padding: 10px; font-size: 16px" ' + (hasChildren ? 'data-target="dropdown-' + id + '"' : '') + '>' +
+                            '<i class="mdi ' + childConfig.icon + ' mdi-18px" style="margin-right: auto;"></i>' +
+                            childConfig.name +
+                            '</a></li>');
+                        content.append(child);
+                        child.click(childConfig.onclick);
+                        if (hasChildren) {
+                            addChildren(child.get(0).firstChild, childConfig.children)
                         }
                     }
                 }
-
-                addChildren(result.jquery.get(0), it.children)
             }
+
+            addChildren(result.jquery.get(0), it.children)
+        }
+    };
+    for (let i in items) {
+        if (items.hasOwnProperty(i)) {
+            pushFrom(items[i])
         }
     }
 }
@@ -512,3 +568,57 @@ Toolbar.DisplayPriority = {
     hideAlways: Symbol('hideAlways'),
     smart: Symbol('smart')
 };
+
+function isUnderSameDomain(a, b) {
+    if (typeof a !== 'string' || typeof b !== 'string') return false;
+
+    function getDomain(str) {
+        if (str.startsWith('http://')) {
+            let index = str.indexOf('/', 8);
+            return str.substring(7, index === -1 ? null : index)
+        } else if (str.startsWith('https://')) {
+            let index = str.indexOf('/', 9);
+            return str.substring(8, index === -1 ? null : index)
+        } else {
+            let index = str.indexOf('/');
+            return str.substring(0, index === -1 ? null : index)
+        }
+    }
+
+    return getDomain(a) === getDomain(b)
+}
+
+function renderMarkdown(parent, hrefClickHandler) {
+    if (typeof parent === 'function') {
+        hrefClickHandler = parent;
+        parent = undefined
+    }
+    parent = parent || $('main');
+
+    parent.find('markdown').each((index, ele) => {
+        let original = ele.innerHTML, markdown = "";
+        let start;
+        original.split('\n').forEach(line => {
+            if (start === undefined) {
+                start = 0;
+                for (; start < line.length; start++) {
+                    let char = line.charAt(start);
+                    if (char !== ' ' && char !== '\t')
+                        break
+                }
+            }
+            markdown += line.substr(start) + '\n'
+        });
+        ele.innerHTML = markdownit({
+            highlight: function (str, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return hljs.highlight(lang, str).value;
+                    } catch (__) {
+                    }
+                }
+            }
+        }).render(markdown)
+    });
+    parent.find('a').on('click', hrefClickHandler)
+}

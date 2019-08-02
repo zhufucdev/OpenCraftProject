@@ -8,6 +8,8 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryDragEvent
+import org.bukkit.event.inventory.InventoryMoveItemEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
@@ -35,6 +37,7 @@ abstract class ClickableInventory(val plugin: Plugin) : Listener {
 
     fun close(){
         showingTo?.closeInventory()
+        HandlerList.unregisterAll(this)
     }
     @EventHandler
     fun onInventoryClose(event: InventoryCloseEvent){
@@ -45,4 +48,5 @@ abstract class ClickableInventory(val plugin: Plugin) : Listener {
         }
     }
     open fun onClose(player: HumanEntity){}
+    open fun onMoveItem(event: InventoryDragEvent){}
 }
