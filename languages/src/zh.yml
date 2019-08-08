@@ -20,7 +20,7 @@ user:
   toSelectLang: '请选择您的语言(在聊天栏输入以选择)。Please choose the language you use through the chat:'
   loginWithIP: '使用上一次的IP地址自动登录'
   login1: '您还没有在服务器登录'
-  login2: '使用%s 来登陆'
+  login2: '使用%s 来登录'
   login.timeout: '验证超时'
   login.success: '您已成功登录'
   pwd.changed: '密码修改成功'
@@ -41,6 +41,45 @@ user:
     online: '该玩家在线，您无法找回他的数据'
     success: '成功加载了原有数据'
     failure: '无法加载%s的数据，请联系服务器管理员'
+  friend:
+    list: '-----您的好友列表-----'
+    empty: '您还没有好友'
+    sharingInventory: '共享物品栏'
+    sharingCheckpoints: '共享%s个记录点'
+    inventory:
+      created: '已创建共享物品栏'
+      cancelled: '物品栏交易已取消'
+    sent: '请求已发送'
+    added: '您已与%s成为好友'
+    removed: '已移除好友%s'
+    wasRemoved: '您的好友 %s 将您从好友列表移除'
+    messaged: '已向 %s 发送该消息'
+    transfer:
+      out: '您向好友 %s2 转账了%s1元'
+      in: '您的好友 %s 向您转账了%s元'
+      cancel: '转账已取消'
+    point:
+      start: '开始与 %s2 分享记录点%s1'
+      stop: '停止与 %s2 分享记录点%s1'
+    location:
+      start: '开始与 %s 分享位置，传送将无需同意'
+      stop: '停止与 %s 分享位置'
+    request:
+      title: '%s 想要与您成为好友'
+      tip: '使用/friend %s add 来通过请求，或者/friend %s del 来拒绝'
+    error:
+      noSuchFriend: '没有这样的好友: %s'
+      notRemoved: '无法移除好友%s'
+      notAccepted: '%s 还没有接受您的好友请求'
+      blankMessage: '消息不能为空'
+      object: '未知对象: %s'
+    info:
+      title: '-----%s的好友信息-----'
+      time: '你们在 %s 成为了好友'
+      transfer: '你们有%s的转账数目'
+      noInventory: '你们之间还没用共享物品栏'
+      inventory: '在你们的共享物品栏中有%s个物品'
+      checkpoints: '你们之间有%s共享记录点'
   error:
     translationNotFound: '没有这样的翻译: %s，请联系服务器管理员。'
     invitationTimeout: '您的请求已过期'
@@ -48,7 +87,7 @@ user:
     invitationInGame: '您无法在游戏中接受请求'
     invitationInObser: '您无法在观战中接受请求'
     alreadyLogin: '您已经登录'
-    notLoginYet: '您还尚未登陆'
+    notLoginYet: '您还尚未登录'
     toRegister: '您可以尝试重新注册，但这可能会丢失您的一部分数据。请谨慎使用%s'
     wrongOldPwd: '旧密码验证失败'
     pointedBedNotFound: '未发现指针指向床方块'
@@ -101,18 +140,20 @@ survey:
   title: '您的服务器试玩已用尽'
   outOfSpawn: '您已退出出生范围，您将失去方块破坏、放置和交互的权限'
   intoSpawn: '您已进入出生范围'
-  outOfSpawn2: '您以退出出生范围'
+  outOfSpawn2: '您已退出出生范围'
   toPlaceBlock: '要放置方块，请使用/survey 参加服务器调查以成为正式会员'
 
 player:
   join: '%s加入了游戏'
+  joinGame: '%s加入了%s'
   left: '%s离开了游戏'
   warn:
-    badNet: '%s正在登陆，然而由于网络问题，这可能需要几秒钟'
+    badNet: '%s正在登录，然而由于网络问题，这可能需要几秒钟'
   error:
     unknown: "抱歉，但我们无法确定你是谁。您的游戏出现问题，请联系服务器管理员。Sorry, but we can't make sure that who you are. Your game seemed to go wrong, please contact the server operator."
     unknownBy: "您的服务器信息未找到，但%s1需要该信息。很抱歉对您的游戏造成不便，请联系服务器管理员。Your info in server was not found, but was needed by %s1. Sorry for troubling your game. Please contact the server operator,"
     opNotLoginOnWeb: '管理员必须先在网页登录，再在游戏中登录'
+    notFound: '没有这样的玩家: %s'
 
 command:
   error:
@@ -170,9 +211,13 @@ trade:
     currencyConsume: '这将消耗您%s个货币'
     saving: '使用存款'
     cash: '使用现款'
+  input:
+    title: '选择支付'
+    error:
+      outOfBound: '您一次至多能支付%s元'
 
 builder.error:
-  placeBlock: '抱歉，但您没有权限放置此方块'
+  block: '抱歉，但您没有权限放置此方块'
   breakBlock: '抱歉，但您不能破坏建筑师放置的方块'
   dropItem: '抱歉，但您没有权限丢弃物品'
   inventory: '抱歉，但您没有权限打开物品栏'
@@ -310,7 +355,38 @@ ui:
     located: '主城编号 %s'
     back: '返回自己的主城'
     booting: '正在启动主城访问器'
-
+  world:
+    title: '世界传送器'
+    tip: '点击以传送'
+    click: '点击以查看'
+  friend:
+    title: '好友列表'
+    check: '点击以查看'
+    click: '点击以交互'
+    add: '添加好友'
+    del: '删除好友'
+    send: '发送好友请求'
+    count: '他（她）有%s好友'
+    transfer:
+      title: '转账'
+      click: '点击以转账'
+    msg:
+      title: '发消息'
+      tip: '使用/friend %s msg <内容> 来留言'
+    inventory:
+      title: '共享物品栏'
+      buy: '点击以购买'
+      check: '点击以查看'
+    share:
+      title: '共享内容'
+      click: '点击以管理'
+      start: '点击以开始共享'
+      stop: '点击以停止共享'
+    point:
+      title: '记录点'
+      sharer: '分享者: %s'
+    location:
+      title: '玩家位置'
 welcome:
   1:
     title: '欢迎来到OpenCraft!'
@@ -464,12 +540,22 @@ portal:
 coin:
   name: '硬币'
   title: 'OpenCraft实体货币'
+insurance:
+  name: '保险'
+  applied: '保险已生效'
+  tip: '去交易世界购买保险可以减少您的损失。'
+  content:
+    1: '承保人: %s'
+    2: '保证人: OpenCraft 团队'
+    3: '此保险担保，在您死亡后，将有80%的物品被保留。'
 
 msg:
   read: '已读'
   clickToRead: '点击标记为已读'
   markAsRead: '已标记为已读'
   alreadyRead: '目标以被标记为已读'
+  list: '-----您的消息-----'
+  empty: '您还没有收到消息'
 
 scripting:
   toRun:
@@ -549,6 +635,7 @@ bank:
     illegalName: '非法名称: %s，包含关键字":"。'
     noBankersNearby: '附近未找到店员'
     outOfBound: '您最多能交换%s个货币'
+    coinCraft: '抱歉，但您不能用货币进行合成'
   found:
     1: '---以下是所有银行---'
     2: '最近的一个位于 %s'

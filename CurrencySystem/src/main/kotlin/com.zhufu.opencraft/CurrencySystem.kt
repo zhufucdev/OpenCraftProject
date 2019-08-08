@@ -13,6 +13,7 @@ import com.zhufu.opencraft.Game.env
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.api.trait.trait.Equipment
 import org.bukkit.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -37,6 +38,7 @@ import kotlin.collections.HashMap
 class CurrencySystem : JavaPlugin() {
     companion object {
         var npc: NPC? = null
+        var npcBack: NPC? = null
         val transMap = HashMap<Material, Long>()
         val inventoryMap = arrayListOf<TraderInventory>()
         val territoryMap = arrayListOf<TradeTerritoryInfo>()
@@ -356,7 +358,7 @@ class CurrencySystem : JavaPlugin() {
                             }
                         }
                         "remove" -> {
-                            if (args.size < 2){
+                            if (args.size < 2) {
                                 val success = BankManager.removeBanker(near = sender.location)
                                 if (success) {
                                     sender.success(getter["bank.removedBanker"])
@@ -414,7 +416,7 @@ class CurrencySystem : JavaPlugin() {
         } else if (command.name == "bank") {
             if (sender.isOp) {
                 val commands = mutableListOf("add", "remove")
-                if (args.isEmpty()){
+                if (args.isEmpty()) {
                     return commands
                 } else if (args.size == 1) {
                     return commands.filter { it.startsWith(args.first()) }.toMutableList()
@@ -510,30 +512,39 @@ class CurrencySystem : JavaPlugin() {
             logger.warning("Donation map doesn't exists! Put it at ${donation.absolutePath}")
         }
 
-        Bukkit.getScheduler().runTaskLater(this, { _ ->
-            if (server.pluginManager.isPluginEnabled("Citizens")) {
-                npc = CitizensAPI.getNPCRegistry()
-                    .createNPC(EntityType.PLAYER, EveryThing.traderInventoryName)
-                npc!!.spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
-                val entity = npc!!.entity as Player
-                entity.inventory.setItemInMainHand(ItemStack(Material.EMERALD))
-                OfflineInfo.forEach {
-                    try {
-                        it.territoryID.let { id -> territoryMap.add(TradeTerritoryInfo(it.uuid!!, id)) }
-                    } catch (e: Exception) {
-                        logger.warning("Error while loading territory for ${it.name}")
-                        e.printStackTrace()
-                    }
-                }
+        if (server.pluginManager.isPluginEnabled("Citizens")) {
+            CitizensAPI.getNPCRegistry().forEach {
+                if (it.name == EveryThing.traderInventoryName || it.name == EveryThing.backNPCName)
+                    it.destroy()
+            }
 
+            npc = CitizensAPI.getNPCRegistry()
+                .createNPC(EntityType.PLAYER, EveryThing.traderInventoryName).apply {
+                    spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
+                    addTrait(Equipment().apply {
+                        equipment[0] = ItemStack(Material.EMERALD)
+                    })
+                }
+            npcBack = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, EveryThing.backNPCName).apply {
+                spawn(Location(tradeWorld, 8.5, TradeWorldGenerator.base + 2.0, 4.0))
+            }
+
+            OfflineInfo.forEach {
                 try {
-                    TradeManager.loadFromFile(File(tradeRoot, "tradeInfos.json"))
+                    it.territoryID.let { id -> territoryMap.add(TradeTerritoryInfo(it.uuid!!, id)) }
                 } catch (e: Exception) {
+                    logger.warning("Error while loading territory for ${it.name}")
                     e.printStackTrace()
                 }
             }
-            server.pluginManager.registerEvents(EveryThing, this)
-        }, 40)
+
+            try {
+                TradeManager.loadFromFile(File(tradeRoot, "tradeInfos.json"))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        server.pluginManager.registerEvents(EveryThing, this)
     }
 
     override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator {
@@ -542,6 +553,7 @@ class CurrencySystem : JavaPlugin() {
 
     override fun onDisable() {
         npc?.destroy()
+        npcBack?.destroy()
         TradeManager.saveToFile(File(tradeRoot, "tradeInfos.json"))
         BankManager.onClose()
         tradeWorld.entities.forEach {

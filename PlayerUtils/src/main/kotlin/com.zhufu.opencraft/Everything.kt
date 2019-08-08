@@ -28,6 +28,7 @@ import java.io.File
 import java.io.StringReader
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToLong
 
@@ -200,10 +201,10 @@ object Everything : Listener {
         val max: Int
         if (game.to.blockX == game.from.blockX) {
             add = Vector(0, 0, 1)
-            max = Math.abs(game.from.blockZ - game.to.blockZ)
+            max = abs(game.from.blockZ - game.to.blockZ)
         } else {
             add = Vector(1, 0, 0)
-            max = Math.abs(game.from.blockX - game.to.blockX)
+            max = abs(game.from.blockX - game.to.blockX)
         }
 
         val base =

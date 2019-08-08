@@ -19,34 +19,37 @@ abstract class ClickableInventory(val plugin: Plugin) : Listener {
     protected var isShowing = false
     protected var showingTo: HumanEntity? = null
 
-    fun show(player: HumanEntity){
-        Bukkit.getPluginManager().registerEvents(this,plugin)
+    fun show(player: HumanEntity) {
+        Bukkit.getPluginManager().registerEvents(this, plugin)
         player.openInventory(inventory)
         this.showingTo = player
         isShowing = true
     }
 
     @EventHandler
-    fun onInventoryClick(event: InventoryClickEvent){
-        if (event.inventory == this.inventory){
+    fun onInventoryClick(event: InventoryClickEvent) {
+        if (event.inventory == this.inventory) {
             event.isCancelled = true
             onClick(event)
         }
     }
+
     abstract fun onClick(event: InventoryClickEvent)
 
-    fun close(){
+    fun close() {
         showingTo?.closeInventory()
         HandlerList.unregisterAll(this)
     }
+
     @EventHandler
-    fun onInventoryClose(event: InventoryCloseEvent){
-        if (event.inventory == this.inventory){
+    fun onInventoryClose(event: InventoryCloseEvent) {
+        if (event.inventory == this.inventory) {
             onClose(event.player)
             isShowing = false
             HandlerList.unregisterAll(this)
         }
     }
-    open fun onClose(player: HumanEntity){}
-    open fun onMoveItem(event: InventoryDragEvent){}
+
+    open fun onClose(player: HumanEntity) {}
+    open fun onMoveItem(event: InventoryDragEvent) {}
 }

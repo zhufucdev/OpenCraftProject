@@ -1,4 +1,6 @@
 buildersBlock: []
 limitsOfBlock:
-  tnt: true
-  redstone: true
+- tnt
+- redstone
+- '[ |a-z|A-Z|_]*shulker_box'
+- ender_chest

@@ -52,7 +52,7 @@ class TradeInfo : Cloneable, Destroyable {
 
     private var buyer: String? = null
     fun getBuyer() = buyer
-    fun setBuyer(buyer: String?, howMany: Int = items!!.amount): Boolean {
+    fun setBuyer(buyer: String?, howMany: Int = items!!.amount, cost: Boolean = false): Boolean {
         this.buyer = buyer
         if (buyer == null)
             return false
@@ -81,8 +81,8 @@ class TradeInfo : Cloneable, Destroyable {
         if (howMany != this.items!!.amount) {
             this.items!!.amount -= howMany
         }
-
-        info.currency -= prise
+        if (!cost)
+            info.currency -= prise
         if (seller != "server") {
             val seller = PlayerManager.findOfflinePlayer(UUID.fromString(seller!!)) ?: return false
             seller.currency += prise

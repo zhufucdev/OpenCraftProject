@@ -50,7 +50,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 3,
                 ItemStack(Material.CLOCK).apply {
                     itemMeta = itemMeta!!.apply {
-                        val rename = TextUtil.formatLore(TextUtil.format(info?.gameTime ?: -1, getter))
+                        val rename = TextUtil.formatLore(TextUtil.format(info?.gameTime ?: 0, getter))
                         setDisplayName(TextUtil.info(rename.first()))
                         val newLore = ArrayList<String>()
                         for (i in 1 until rename.size) {
@@ -147,7 +147,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
             )
             setItem(
                 19,
-                ItemStack(Material.GRASS_BLOCK).apply {
+                ItemStack(Material.CHEST).apply {
                     itemMeta = itemMeta!!.apply {
                         setDisplayName(TextUtil.getColoredText(getter["ui.survival.grass.title"], GREEN))
                         var count = 0
@@ -173,6 +173,20 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                             TextUtil.tip(getter["ui.survival.pearl.click"])
                         )
                     }
+                }
+            )
+            setItem(
+                21,
+                ItemStack(Material.GRASS_BLOCK).updateItemMeta<ItemMeta> {
+                    setDisplayName(getter["ui.world.title"].toSuccessMessage())
+                    lore = listOf(getter["ui.world.click"].toTipMessage())
+                }
+            )
+            setItem(
+                22,
+                ItemStack(Material.PLAYER_HEAD).updateItemMeta<ItemMeta> {
+                    setDisplayName(TextUtil.getColoredText(getter["ui.friend.title"], AQUA, bold = true))
+                    lore = listOf(getter["ui.friend.check"].toTipMessage())
                 }
             )
             setItem(
@@ -237,6 +251,22 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                     CheckpointUI(info, plugin, this).show(player)
                 }
             }
+            21 -> {
+                val info = player.info()
+                if (info == null) {
+                    close()
+                } else {
+                    WorldUI(plugin, info, this).show(player)
+                }
+            }
+            22 -> {
+                val info = player.info()
+                if (info == null) {
+                    close()
+                } else {
+                    FriendListUI(info, plugin, this).show(player)
+                }
+            }
             28 -> {
                 ServerCaller["showTutorialUI"]?.invoke(listOf(player))
             }
@@ -246,10 +276,10 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
             }
             30 -> {
                 val info = player.info()
-                if (info == null){
+                if (info == null) {
                     close()
                 } else {
-                    ServerScriptUI(info,plugin,this).show(player)
+                    ServerScriptUI(info, plugin, this).show(player)
                 }
             }
         }

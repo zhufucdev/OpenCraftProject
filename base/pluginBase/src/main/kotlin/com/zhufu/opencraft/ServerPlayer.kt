@@ -1,20 +1,27 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.player_community.Friend
+import com.zhufu.opencraft.player_community.Friendship
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
 import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.permissions.ServerOperator
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
 import javax.security.auth.Destroyable
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = null, private val nameToExtend: String? = null) : ServerOperator, Destroyable {
+abstract class ServerPlayer(
+    private val createNew: Boolean,
+    val uuid: UUID? = null,
+    private val nameToExtend: String? = null
+) : ServerOperator, Destroyable {
     companion object {
         val memory = HashMap<UUID, YamlConfiguration>()
 
@@ -29,6 +36,33 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
                 r += Paths.get("plugins", "tag", "preregister").toFile().listFiles()?.size ?: 0
                 return r
             }
+
+        fun forEach(l: (ServerPlayer) -> Unit) {
+            Paths.get("plugins", "tag").toFile().listFiles()?.forEach {
+                if (!it.isHidden && !it.isDirectory)
+                    l(OfflineInfo(UUID.fromString(it.nameWithoutExtension)))
+            }
+            Paths.get("plugins", "tag", "preregister").toFile().listFiles()?.forEach {
+                if (!it.isHidden)
+                    l(PreregisteredInfo(it.nameWithoutExtension))
+            }
+        }
+
+        fun of(name: String? = null, uuid: UUID? = null) = when {
+            uuid != null -> OfflineInfo(uuid, false)
+            name != null -> {
+                if (PreregisteredInfo.exists(name)) {
+                    PreregisteredInfo(name)
+                } else {
+                    val offlineInfo = (OfflineInfo.findByName(name) ?: throw IllegalStateException())
+                    if (offlineInfo.isOnline)
+                        offlineInfo.onlinePlayerInfo!!
+                    else
+                        offlineInfo
+                }
+            }
+            else -> throw IllegalStateException()
+        }
     }
 
     override fun equals(other: Any?): Boolean = other is ServerPlayer && other.tagFile == this.tagFile
@@ -37,11 +71,11 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
     abstract val playerDir: File
     private var privateTag: YamlConfiguration? = null
     var tag: YamlConfiguration
-       get() = if (uuid != null) {
-            memory[uuid!!].let {
-                if (it == null){
+        get() = if (uuid != null) {
+            memory[uuid].let {
+                if (it == null) {
                     val t = initTag(createNew)
-                    memory[uuid!!] = t
+                    memory[uuid] = t
                     t
                 } else {
                     it
@@ -59,18 +93,10 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
             }
         }
         set(value) {
-            if (uuid != null) memory.put(uuid!!, value)
+            if (uuid != null) memory[uuid] = value
             else privateTag = value
         }
-    val friendship = ArrayList<Friend>().apply {
-        val section = tag.getConfigurationSection("friendship")
-        section?.getKeys(false)?.forEach {
-            if (section.isSet("$it.uuid"))
-                add(Friend(uuid = UUID.fromString(section.getString("$it.uuid")), itsFriend = this@ServerPlayer))
-            else if (section.isSet("$it.name"))
-                add(Friend(name = section.getString("$it.name"), itsFriend = this@ServerPlayer))
-        }
-    }
+    val friendship get() = Friendship.from(this)
 
     private fun initTag(createNew: Boolean) = try {
         if (tagFile.exists())
@@ -89,35 +115,65 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
 
     open fun saveTag() {
         if (friendship.isNotEmpty())
-            friendship.forEachIndexed { index, friend ->
-                val key: String
-                val value: String
-                when {
-                    friend.uuid != null -> {
-                        key = "uuid"
-                        value = friend.uuid.toString()
-                    }
-                    friend.name != null -> {
-                        key = "name"
-                        value = friend.name.toString()
-                    }
-                    else -> return@forEachIndexed
-                }
-                tag.set("friendship.$index.$key", value)
-            }
+            friendship.save()
         if (!messagePool.isEmpty) {
             tag.set("messages", messagePool.serialize())
+        }
+        tag.set("checkpoints", null)
+        checkpoints.forEach {
+            tag.set("checkpoints.${it.name}", it.location)
         }
         tag.save(tagFile)
         if (PlayerStatics.contains(this))
             statics!!.save()
     }
 
+    var checkpoints = arrayListOf<CheckpointInfo>().apply {
+        val checkpoints = tag.getConfigurationSection("checkpoints")
+        checkpoints?.getKeys(false)?.forEach {
+            try {
+                add(
+                    CheckpointInfo(
+                        location = checkpoints.getSerializable(it, Location::class.java)!!,
+                        name = it
+                    )
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+        private set
+    val sharedCheckpoints: List<Pair<ServerPlayer, CheckpointInfo>>
+        get() {
+            val r = arrayListOf<Pair<ServerPlayer, CheckpointInfo>>()
+            friendship.forEach { friend ->
+                if (friend.isFriend) friend.sharedCheckpoints.forEach { point ->
+                    if (!checkpoints.contains(point))
+                        r.add(friend.friend to point)
+                }
+            }
+            return r
+        }
+
+    fun removeCheckpoint(name: String): Boolean {
+        val index = checkpoints.firstOrNull { it.name == name }
+        return if (index != null) {
+            checkpoints.remove(index)
+            friendship.forEach {
+                it.sharedCheckpoints.remove(index)
+            }
+            true
+        } else {
+            false
+        }
+    }
+
     var password: String?
         get() = tag.getString("password", null)
         set(value) = tag.set("password", value)
-    val inventoriesFile
-        get() = Paths.get("plugins", "inventories", uuid.toString()).toFile()!!
+    val inventoriesFile: File
+        get() = Paths.get("plugins", "inventories", uuid.toString()).toFile()
 
     var currency: Long
         get() = tag.getLong("currency", 0)
@@ -150,7 +206,7 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
     var remainingSurveyChance: Int
         get() = tag.getInt("surveyChanceRemaining", 10)
         set(value) = tag.set("surveyChanceRemaining", value)
-    val preference: PlayerPreference = PlayerPreference(this)
+    val preference: PlayerPreference = PlayerPreference(tag)
 
     var userLanguage: String
         get() = tag.getString("lang", Language.LANG_ZH)!!
@@ -163,10 +219,10 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
 
     val offlinePlayer: OfflinePlayer
         get() =
-            if (uuid != null) Bukkit.getOfflinePlayer(uuid!!)
+            if (uuid != null) Bukkit.getOfflinePlayer(uuid)
             else throw IllegalStateException("Cannot read offline player for an info with uuid null.")
 
-    var name: String?
+    open var name: String?
         get() = nameToExtend
             ?: tag.getString("name")
             ?: try {
@@ -193,6 +249,11 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
         set(value) {
             tag.set("isSurvivor", value)
         }
+    val skullItem get() = ItemStack(Material.PLAYER_HEAD).updateItemMeta<SkullMeta> {
+        Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore) { _ ->
+            owningPlayer = offlinePlayer
+        }
+    }
 
     override fun isOp(): Boolean = try {
         offlinePlayer.isOp
@@ -214,23 +275,21 @@ abstract class ServerPlayer(private val createNew: Boolean, var uuid: UUID? = nu
     override fun isDestroyed(): Boolean = isDestroyed
     override fun destroy() {
         saveTag()
-        if (uuid != null) memory.remove(uuid!!)
+        friendship.destroy()
+        MessagePool.remove(this)
+        if (uuid != null) memory.remove(uuid)
         isDestroyed = true
     }
 
     override fun hashCode(): Int {
-        var result = createNew.hashCode()
-        result = 31 * result + (uuid?.hashCode() ?: 0)
+        var result = uuid?.hashCode() ?: 0
         result = 31 * result + tagFile.hashCode()
         result = 31 * result + playerDir.hashCode()
-        result = 31 * result + (privateTag?.hashCode() ?: 0)
-        result = 31 * result + friendship.hashCode()
-        result = 31 * result + messagePool.hashCode()
         return result
     }
 
     val statics get() = PlayerStatics.from(this)
-    val messagePool = MessagePool.from(tag)
+    val messagePool get() = MessagePool.of(this)
 
     var maxLoopExecution
         get() = tag.getLong("maxLoopExecution", 1000)

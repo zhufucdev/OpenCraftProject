@@ -6,46 +6,21 @@ object TextUtil {
     const val KEY = '§'
     const val END = "§r"
 
-    enum class TextColor {
-        BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GREY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE,
-        BOLD, UNDERLINED, END, RANDOM, DEL, ITALIC;
+    enum class TextColor(val code: String) {
+        BLACK("${KEY}0"), DARK_BLUE("${KEY}1"), DARK_GREEN("${KEY}2"), DARK_AQUA("${KEY}3"),
+        DARK_RED("${KEY}4"), DARK_PURPLE("${KEY}5"), GOLD("${KEY}6"), GREY("${KEY}7"),
+        DARK_GRAY("${KEY}8"), BLUE("${KEY}9"), GREEN("${KEY}a"), AQUA("${KEY}b"), RED("${KEY}c"),
+        LIGHT_PURPLE("${KEY}d"), YELLOW("${KEY}e"), WHITE("${KEY}f"),
+        BOLD("${KEY}l"), UNDERLINED("${KEY}n"), END("${KEY}r"), RANDOM("${KEY}k"), DEL("${KEY}m"),
+        ITALIC("${KEY}o"),
+        INFO("$YELLOW"), ERROR("$BOLD$RED"), SUCCESS("$GREEN"), WARN("$UNDERLINED$RED"),
+        TIP("$UNDERLINED$GOLD");
 
-        fun getCode(): String = getCode(this)
-
-        companion object {
-            fun getCode(color: TextColor): String {
-                val sb = StringBuilder(KEY.toString())
-                when (color) {
-                    BLACK -> sb.append('0')
-                    DARK_BLUE -> sb.append('1')
-                    DARK_GREEN -> sb.append('2')
-                    DARK_AQUA -> sb.append('3')
-                    DARK_RED -> sb.append('4')
-                    DARK_PURPLE -> sb.append('5')
-                    GOLD -> sb.append('6')
-                    GREY -> sb.append('7')
-                    DARK_GRAY -> sb.append('8')
-                    BLUE -> sb.append('9')
-                    GREEN -> sb.append('a')
-                    AQUA -> sb.append('b')
-                    RED -> sb.append('c')
-                    LIGHT_PURPLE -> sb.append('d')
-                    YELLOW -> sb.append('e')
-                    WHITE -> sb.append('f')
-                    BOLD -> sb.append('l')
-                    UNDERLINED -> sb.append('n')
-                    END -> sb.append('r')
-                    RANDOM -> sb.append('k')
-                    DEL -> sb.append('m')
-                    ITALIC -> sb.append('o')
-                }
-                return sb.toString()
-            }
-        }
+        override fun toString(): String = code
     }
 
     fun getColoredText(t: String, color: TextColor, bold: Boolean = false, underlined: Boolean = false): String {
-        val sb = StringBuilder(TextUtil.TextColor.getCode(color))
+        val sb = StringBuilder(color.code)
         if (bold) {
             sb.append("§l")
         }
@@ -59,7 +34,7 @@ object TextUtil {
     fun getCustomizedText(t: String, getter: Language.LangGetter): String {
         var result = t
         TextUtil.TextColor.values().forEach {
-            result = result.replace("\$${it.name}", it.getCode(), true)
+            result = result.replace("\$${it.name}", it.code, true)
         }
         var index = result.indexOf("\${")
         while (index != -1) {
@@ -67,11 +42,20 @@ object TextUtil {
             if (end == -1) {
                 continue
             }
-            val value = result.substring(index + 2, end)
+            var value = result.substring(index + 2, end)
+
+            val args = arrayListOf<String>()
+            if (value.contains(',')) {
+                val parts = value.split(',')
+                value = parts.first()
+                for (i in 1 until parts.size) {
+                    args.add(parts[i])
+                }
+            }
             result = result.replaceRange(
                 index,
                 end + 1,
-                getter[value]
+                Language.got(getter.lang, value, args.toTypedArray())
             )
             index = result.indexOf("\${")
         }
@@ -81,23 +65,23 @@ object TextUtil {
     fun getCustomizedText(t: String, showTo: ChatInfo? = null): String = getCustomizedText(t, showTo.getter())
 
     fun error(t: String): String {
-        return getColoredText(t, TextUtil.TextColor.RED, true, underlined = false)
+        return getColoredText(t, TextUtil.TextColor.ERROR)
     }
 
     fun info(t: String): String {
-        return getColoredText(t, TextUtil.TextColor.YELLOW, true, underlined = false)
+        return getColoredText(t, TextUtil.TextColor.INFO)
     }
 
     fun tip(t: String): String {
-        return getColoredText(t, TextUtil.TextColor.GOLD, false, underlined = true)
+        return getColoredText(t, TextUtil.TextColor.TIP)
     }
 
     fun success(t: String): String {
-        return getColoredText(t, TextUtil.TextColor.GREEN, false, underlined = false)
+        return getColoredText(t, TextUtil.TextColor.SUCCESS)
     }
 
     fun warn(t: String): String {
-        return getColoredText(t, TextUtil.TextColor.RED, false, underlined = true)
+        return getColoredText(t, TextUtil.TextColor.WARN)
     }
 
     fun printException(e: Exception): Array<String> {
@@ -108,7 +92,7 @@ object TextUtil {
 
         list.add(tip("请将以下信息反映给服务器管理员:"))
         list.add(e.localizedMessage)
-        list.add(e.stackTrace.joinToString { "at ${it.className}.${it.methodName}(${TextUtil.TextColor.BLUE.getCode()}${it.fileName}: ${TextUtil.TextColor.UNDERLINED.getCode()}${it.lineNumber})$END" })
+        list.add(e.stackTrace.joinToString { "at ${it.className}.${it.methodName}(${TextUtil.TextColor.BLUE.code}${it.fileName}: ${TextUtil.TextColor.UNDERLINED}${it.lineNumber})$END" })
 
         return list.toTypedArray()
     }
@@ -154,6 +138,7 @@ object TextUtil {
     enum class StringDetectResult {
         String, Int, Long, Double
     }
+
     fun detectString(string: String): StringDetectResult {
         return if (string.isDigit()) {
             when {
@@ -170,6 +155,6 @@ fun String.toTipMessage() = TextUtil.tip(this)
 fun String.toWarnMessage() = TextUtil.warn(this)
 fun String.toSuccessMessage() = TextUtil.success(this)
 fun String.toErrorMessage() = TextUtil.error(this)
-fun String.toCustomizedMessage(info: ChatInfo?) = TextUtil.getCustomizedText(this,info)
-fun String.toCustomizedMessage(getter: Language.LangGetter) = TextUtil.getCustomizedText(this,getter)
-fun Char.isEnglishLetter() = this in 'a'..'z' || this in 'A' .. 'Z'
+fun String.toCustomizedMessage(info: ChatInfo?) = TextUtil.getCustomizedText(this, info)
+fun String.toCustomizedMessage(getter: Language.LangGetter) = TextUtil.getCustomizedText(this, getter)
+fun Char.isEnglishLetter() = this in 'a'..'z' || this in 'A'..'Z'

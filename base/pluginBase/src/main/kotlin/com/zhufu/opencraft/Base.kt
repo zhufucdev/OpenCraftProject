@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
+import java.io.File
 import java.nio.file.Paths
 import java.util.UUID
 import kotlin.concurrent.fixedRateTimer
@@ -79,7 +80,7 @@ object Base {
         return x to z
     }
 
-    val msgPoolFile get() = Paths.get("plugins", "ServerCore", "publicMsg.yml").toFile()!!
+    val msgPoolFile: File get() = Paths.get("plugins", "ServerCore", "publicMsg.yml").toFile()
     val publicMsgPool = MessagePool.public(msgPoolFile)
 
     object Extend {

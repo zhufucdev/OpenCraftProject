@@ -82,34 +82,11 @@ object PortalHandler : Listener {
                     val dest = destation.clone().add(Vector(0.5, 1.0, 0.5))
                     cube.data.set("isCoolDown", true)
                     Bukkit.getScheduler().runTask(mPlugin!!) { _ ->
-                        if (blockDistance(dest, event.player.location) <= 22500) {
-                            val info = event.player.info()
-                            if (info == null) {
-                                event.player.error(Language.getDefault("player.error.unknown"))
-                            } else {
-                                info.inventory.create(DualInventory.NOTHING).load(inventoryOnly = true)
-                                event.player.gameMode = GameMode.SPECTATOR
-                                event.player.linearTo(
-                                    location = dest,
-                                    delay = 3600,
-                                    done = {
-                                        event.player.apply {
-                                            info.inventory.last.apply {
-                                                set("location", dest)
-                                                load()
-                                            }
-                                            playSound(location, Sound.BLOCK_PORTAL_TRAVEL, 0.4f, 1f)
-                                        }
-                                    }
-                                )
-                            }
-                        } else {
-                            event.player.apply {
-                                dest.chunk.load(true)
-                                info(getLang(this, "portal.loadChunk"))
-                                teleport(dest)
-                                playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f)
-                            }
+                        event.player.apply {
+                            dest.chunk.load(true)
+                            info(getLang(this, "portal.loadChunk"))
+                            teleport(dest)
+                            playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f)
                         }
                         Bukkit.getScheduler().runTaskLater(mPlugin!!, { _ ->
                             cube.data.set("isCoolDown", false)
@@ -130,8 +107,8 @@ object PortalHandler : Listener {
 
     private fun blockBreak(location: Location, player: Player): Boolean {
         val game = Everything.index(location)
-        val owner = player.owns(game) || player.isOp
         if (game?.type == "TP" && (game.from.near(location) || game.to.near(location))) {
+            val owner = player.owns(game) || player.isOp
             if (owner) {
                 game.apply {
                     from.block.type = Material.AIR
@@ -226,9 +203,11 @@ object PortalHandler : Listener {
                     success(getter["portal.spawned"])
                     val amount =
                         portalMap[event.player]!!.amount - if (event.player.gameMode == GameMode.CREATIVE) 0 else 1
-                    inventory.setItemInMainHand(if (amount <= 0) ItemStack(Material.AIR) else Portal(getter()).apply {
-                        this.amount = amount
-                    })
+                    inventory.setItemInMainHand(
+                        if (amount <= 0) ItemStack(Material.AIR)
+                        else Portal(getter()).apply {
+                            this.amount = amount
+                        })
                 }
 
                 portalMap.remove(event.player)

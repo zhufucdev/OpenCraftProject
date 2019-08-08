@@ -17,12 +17,53 @@ user:
   reg2: "Register using %s"
   error.alreadyReg: "You've already registered."
   toRegister: "Hey are you new here? "
-  invitation.receive: "%s wants to go to your position."
-  invitation.toAccept: "Accept using /user accept%s"
+  invitation:
+    receive: "%s wants to go to your position."
+    toAccept: "Accept using /user accept%s"
   tpToSpawn: "Teleport you back to the spawn point!"
   teleport.cancelled: "Teleport cancelled."
   login.failed: "The password you've typed doesn't match your ID."
   coinRemaining: "You have %s left."
+  friend:
+    list: '----List of Friends of Yours----'
+    empty: "You haven't made any friends yet."
+    sharingInventory: 'sharing inventory'
+    sharingCheckpoints: 'sharing %s checkpoints'
+    inventory:
+      created: 'Shared Inventory created.'
+      cancelled: 'Inventory payment cancelled.'
+    sent: 'Request is sent.'
+    added: 'You have made friend with %s.'
+    removed: 'Removed friend %s.'
+    wasRemoved: 'Your friend %s removed you from the list.'
+    mesaged: 'Messaged %s.'
+    transfer:
+      out: 'You transferred %s to your friend %s.'
+      in: 'Your friend %s transferred %s to you.'
+      cancelled: 'Transfer is cancelled.'
+    request:
+      title: '%s wants to make friend with you.'
+      tip: 'Accept using /friend %s add, or deny using /friend %s del.'
+    point:
+      start: 'Start sharing checkpoint %s with %s.'
+      stop: 'Stop sharing checkpoint %s with %s.'
+    location:
+      start: 'Start sharing location with %s. Teleport will not require agreements.'
+      stop: 'Stop sharing location with %s.'
+    error:
+      noSuchFriend: 'No such friend: %s.'
+      notRemoved: 'Could not remove friend %s.'
+      notAccepted: "%s haven't accepted your friend request."
+      blankMessage: 'Message must not be blank.'
+      object: 'Unknown object: %s.'
+    info:
+      title: '-----Info of friend %s-----'
+      time: 'You made friends at %s.'
+      transfer: "You've transferred %s up to now."
+      noInventory: 'No shared inventory.'
+      inventory: 'There are %s items in your shared inventory.'
+      checkpoints: 'There are %s checkpoints shared.'
+
   transfer:
     tip: 'If you have played in server but had a data lost, use /user transfer <old password> <new password> to save your data back.'
     overOne: 'There are more than one person who have such password, so we cannot make sure your ID. Please contact the server operator.'
@@ -52,9 +93,9 @@ user:
     invitationUnacceptable: "You cannot accept requests this time."
     onInvitations: "You've not received any invitations yet."
     moreThanOneInvitations:
-      1: "There are more than one invitations you've received."
+      1: "There are more than one requests you've received."
       2: "You can press TAB key to auto-fill this command."
-      3: "You've received following invitations:"
+      3: "You've received following requests:"
     noSuchInvitation: "Invitation doesn't exist."
     noSoManyCoins: "You do not have enough coins!"
     noSuchPreference: "No such preference: %s"
@@ -102,7 +143,7 @@ server:
     flyRemaining: "FlyingTimeLeft: %s s"
 
 builder.error:
-  placeBlock: "You can't place things here."
+  block: "You can't place things here."
   breakBlock: "Don't destroy the architect's building!"
   dropItem: "You can't throw anything here."
   inventory: "You can't see your inventory here."
@@ -124,10 +165,14 @@ tutorial.begin: "So, let’s play in OpenCraft the Server!"
 
 player:
   join: "%s joined the game."
+  joinGame: "%s joined %s."
   left: "%s left the game."
+  warn:
+    badNet: '%s is now logging in. However, with his network not good, this may take a few seconds.'
   error:
     unknown: "抱歉，但我们无法确定你是谁。您的游戏出现问题，请联系服务器管理员。Sorry, but we can't make sure that who you are. Your game seemed to go wrong, please contact the server operator."
     opNotLoginOnWeb: 'Operators must first log in on the web, then in game.'
+    notFound: 'No such player: %s'
 
 command:
   error:
@@ -269,7 +314,38 @@ ui:
     located: 'lobby in order of %s'
     back: 'Go back to own lobby.'
     booting: 'Booting Lobby Visitor'
-
+  world:
+    title: 'World Teleporter'
+    tip: 'Click to teleport.'
+    click: 'Click to check.'
+  friend:
+    title: 'Friend List'
+    check: 'Click to check.'
+    click: 'Click to interact.'
+    add: 'Add as friend'
+    del: 'Delete from friends'
+    send: 'Send friend request'
+    count: 'He or she has %s friends.'
+    transfer:
+      title: 'Transfer'
+      click: 'Click to transfer.'
+    msg:
+      title: 'Send message'
+      tip: 'Use /friend %s msg <Content> to leave a message.'
+    inventory:
+      title: 'Shared Inventory'
+      buy: 'Click to buy.'
+      check: 'Click to check.'
+    share:
+      title: 'Sharing Content'
+      click: 'Click to manage.'
+      start: 'Click to start sharing.'
+      stop: 'Click to stop sharing.'
+    point:
+      title: 'Checkpoints'
+      sharer: 'Sharer: %s'
+    location:
+      title: 'Player Location'
 trade:
   tutorial:
     1:
@@ -308,6 +384,10 @@ trade:
     currencyConsume: 'This will consume %s from you.'
     saving: 'Use Savings'
     cash: 'Use Cashes'
+  input:
+    title: 'Selectable Pay'
+    error:
+      outOfBound: 'You can once pay at most %s.'
 
 translator:
   usingLang: "%s is your language."
@@ -441,12 +521,22 @@ portal:
 coin:
   name: 'Coin'
   title: 'OpenCraft Physical Currency'
+insurance:
+  name: 'Insurance'
+  applied: 'The insurance has applied.'
+  tip: 'Go to trade world and buy an insurance, then your loss will be reduced.'
+  content:
+    1: 'Insurer: %s'
+    2: 'Guarantor: OpenCraft Team'
+    3: 'This insurance guarantees that 80% of your inventory will be kept after yur death.'
 
 msg:
   read: 'Read'
   clickToRead: 'Click to mark it as read.'
   markAsRead: 'Marked as read.'
   alreadyRead: 'Target is already marked as read.'
+  list: '-----Your messages-----'
+  empty: "You haven't received any message yet."
 
 scripting:
   toRun:
@@ -525,6 +615,7 @@ bank:
     illegalName: "Illegal name: %s with keyword ':'."
     noBankersNearby: 'There are no clerks near you.'
     outOfBound: "You can't exchange more then %s coins."
+    coinCraft: "Sorry, but you cannot craft with coins."
   found:
     1: '---Here are all banks---'
     2: 'The nearest one is at %s.'

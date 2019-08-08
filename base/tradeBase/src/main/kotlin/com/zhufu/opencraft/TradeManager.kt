@@ -84,7 +84,7 @@ object TradeManager {
         val id = getNewID()
         if (seller != "server") {
             val sellerPlayer = Bukkit.getPlayer(UUID.fromString(seller))
-            sellerPlayer!!.sendMessage(TextUtil.info("您正在以${unitPrise}出售${if (what.itemMeta?.hasLocalizedName() == true) what.itemMeta!!.localizedName else what.type.name}×$amount"))
+            sellerPlayer!!.sendMessage(TextUtil.info("您正在以${unitPrise}出售${if (what.itemMeta?.hasLocalizedName() == true) what.itemMeta!!.localizedName else what.i18NDisplayName}×$amount"))
             Bukkit.getOnlinePlayers().filter { it.uniqueId.toString() != seller }.forEach {
                 it.sendMessage(TextUtil.info("${sellerPlayer.name}正在以${unitPrise}出售${what.type.name}×$amount"))
             }
@@ -112,7 +112,7 @@ object TradeManager {
         val t = mList.firstOrNull { it.id == id } ?: return TradeResult.FAILED
         val amount = t.items!!.amount
 
-        val r = t.setBuyer(who.uniqueId.toString(), howMany = howMany)
+        val r = t.setBuyer(who.uniqueId.toString(), howMany = howMany, cost = true)
         return if (!r)
             TradeResult.FAILED
         else {

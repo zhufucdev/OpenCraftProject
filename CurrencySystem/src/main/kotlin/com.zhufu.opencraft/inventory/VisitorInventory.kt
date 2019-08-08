@@ -38,7 +38,7 @@ class VisitorInventory(plugin: Plugin, val player: Player) : PageInventory<Visit
         }
 
         override val size: Int
-            get() = 100//tradeMap.size
+            get() = tradeMap.size
 
         override fun getItem(index: Int, currentPage: Int): ItemStack {
 

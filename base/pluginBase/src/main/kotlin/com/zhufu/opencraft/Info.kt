@@ -13,15 +13,16 @@ import java.util.*
 import kotlin.concurrent.timer
 import kotlin.math.pow
 
-class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
+class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
     companion object {
-        val infoList = ArrayList<Info>()
+        val cache = ArrayList<Info>()
         lateinit var plugin: Plugin
 
-        fun findByName(name: String) = infoList.firstOrNull { it.name == name }
-        fun findByPlayer(player: Player) = infoList.firstOrNull { it.player == player }
-        fun findByPlayer(uuid: UUID) = infoList.firstOrNull { it.player.uniqueId == uuid }
+        fun findByName(name: String) = cache.firstOrNull { it.name == name }
+        fun findByPlayer(player: Player) = cache.firstOrNull { it.player == player }
+        fun findByPlayer(uuid: UUID) = cache.firstOrNull { it.player.uniqueId == uuid }
     }
+
     class GotoRequest(val requester: Player, val timeLimit: Long) {
         init {
             timer("timeoutSender", initialDelay = timeLimit, period = 1) {
@@ -55,12 +56,12 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
     var status: GameStatus = GameStatus.InLobby
     override var doNotTranslate = false
     override val displayName: String
-            get() = player.name + if (nickname != null) ", $nickname" else ""
+        get() = player.name + if (nickname != null) ", $nickname" else ""
     override val targetLang: String
         get() = userLanguage
     override val playerOutputStream: PlayerOutputStream = CommonPlayerOutputStream(player)
     override val id: String
-        get() = name?:"unknown"
+        get() = name ?: "unknown"
 
     val gotoRequests = ArrayList<GotoRequest>()
 
@@ -71,6 +72,11 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
     var isLogin: Boolean = false
         private set
     val isInBuilderMode get() = status == GameStatus.Building
+    override var name: String?
+        get() = tag.getString("name", player.name)
+        set(value) {
+            tag.set("name", value)
+        }
 
     var savedAddress: String?
         get() = tag.getString("address")
@@ -95,10 +101,11 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
             }
             val method = ServerCaller["ChangeChunkOwner"]
             if (method != null)
-                method.invoke(listOf(target.uuid,this.uuid))
+                method.invoke(listOf(target.uuid, this.uuid))
             else
                 failureList.add("chunk/server caller found nothing.")
 
+            statics!!.copyFrom(target.statics!!)
         }
 
         try {
@@ -155,7 +162,15 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
     }
 
     fun logout(borderLocation: Location) {
-        player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 10.toDouble().pow(10.toDouble()).toInt(), 128, false, false))
+        player.addPotionEffect(
+            PotionEffect(
+                PotionEffectType.BLINDNESS,
+                10.toDouble().pow(10.toDouble()).toInt(),
+                128,
+                false,
+                false
+            )
+        )
         player.inventory.clear()
         player.walkSpeed = 0f
         player.exp = 0f
@@ -169,7 +184,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
         isLogin = false
     }
 
-    fun logout(){
+    fun logout() {
         inventory.create(DualInventory.RESET).load()
         status = GameStatus.InLobby
         isLogin = false
@@ -190,7 +205,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId,true), ChatInfo {
 
     override fun destroy() {
         inventory.present.save()
-        infoList.remove(this)
+        cache.remove(this)
         super.destroy()
     }
 }

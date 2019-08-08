@@ -1,9 +1,7 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.script.PlayerScript
-import com.zhufu.opencraft.special_item.FlyWand
-import com.zhufu.opencraft.special_item.Portal
-import com.zhufu.opencraft.special_item.SpecialItem
+import com.zhufu.opencraft.special_item.*
 import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
 import org.bukkit.Bukkit
@@ -92,7 +90,12 @@ class PlayerUtil : JavaPlugin() {
                 return true
             }
             when (args.first()) {
-                "menu" -> MenuInterface(this, sender).show(sender)
+                "menu" -> {
+                    if (sender.info()?.isLogin == true)
+                        MenuInterface(this, sender).show(sender)
+                    else
+                        sender.error(getter["user.error.notLoginYet"])
+                }
                 "rename" -> {
                     if (!selected.containsKey(sender)) {
                         sender.error(getter["pu.error.unselected"])
@@ -130,6 +133,18 @@ class PlayerUtil : JavaPlugin() {
                             sender.warn(getter["msg.alreadyRead"])
                     }
                 }
+                "messages" -> {
+                    val info = sender.info()
+                    if (info == null) {
+                        sender.error(getter["player.error.unknown"])
+                    } else {
+                        sender.info(getter["msg.list"])
+                        if (!info.messagePool.isEmpty)
+                            info.messagePool.sendAllTo(info)
+                        else
+                            sender.error(getter["msg.empty"])
+                    }
+                }
                 "si" -> {
                     if (args.size < 4) {
                         sender.error(getter["command.error.toFewArgs", 3])
@@ -160,6 +175,14 @@ class PlayerUtil : JavaPlugin() {
                         args[3].equals(SpecialItem.Type.Portal.name, true) -> {
                             player.inventory.addItem(Portal(getter).apply { this.amount = amount })
                             getter["portal.name"]
+                        }
+                        args[3].equals(SpecialItem.Type.Coin.name, true) -> {
+                            player.inventory.addItem(Coin(amount, getter))
+                            getter["coin.name"]
+                        }
+                        args[3].equals(SpecialItem.Type.Insurance.name, true) -> {
+                            player.inventory.addItem(Insurance(getter, player.name).apply { this.amount = amount })
+                            getter["coin.name"]
                         }
                         else -> {
                             sender.error(getter["command.error.noSuchItem", args[3]])
@@ -250,7 +273,7 @@ class PlayerUtil : JavaPlugin() {
             }
         } else {
             if (args.size == 1) {
-                val all = mutableListOf("rename", "menu", "script").apply { if (sender.isOp) add("si") }
+                val all = mutableListOf("rename", "menu", "script", "message").apply { if (sender.isOp) add("si") }
                 return if (args.first().isEmpty())
                     all
                 else {

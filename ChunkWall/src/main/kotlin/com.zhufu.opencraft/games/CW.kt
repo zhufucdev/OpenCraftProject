@@ -50,18 +50,18 @@ class CW : GameBase() {
         }
 
         lateinit var originWorld: World
-        private fun createNewGameWorld(id: Int,plugin: JavaPlugin): World {
+        private fun createNewGameWorld(id: Int, plugin: JavaPlugin): World {
             val w = Bukkit.createWorld(
-                    WorldCreator("game_cw_$id")
-                            .type(WorldType.CUSTOMIZED)
-                            .generator(VoidGenerator(128))
+                WorldCreator("game_cw_$id")
+                    .type(WorldType.CUSTOMIZED)
+                    .generator(VoidGenerator(128))
             )
             val wb = w!!.worldBorder
             wb.setCenter(0.toDouble(), 0.toDouble())
             wb.size = 16 * 2.toDouble()
             wb.warningDistance = 1
 
-            val chunks = listOf<Chunk>(w.getChunkAt(0, 0), w.getChunkAt(-1, -1), w.getChunkAt(0, -1), w.getChunkAt(-1, 0))
+            val chunks = listOf(w.getChunkAt(0, 0), w.getChunkAt(-1, -1), w.getChunkAt(0, -1), w.getChunkAt(-1, 0))
             val biomeAlreadyUsed = ArrayList<Biome>()
             chunks.forEach { cnk ->
                 println("Spawning blocks for chunk ${cnk.x} ${cnk.z}")
@@ -85,11 +85,23 @@ class CW : GameBase() {
                     times++
                 }
                 val chunk = r.chunk
-                chunk.load()
+                chunk.load(true)
 
                 cnk.load()
                 cnk.entities.forEach { it.remove() }
 
+                for (x in 0 until 16)
+                    for (z in 0 until 16) {
+                        for (y in 0 until 255)
+                            cnk.getBlock(x, y, z).apply {
+                                val copyFrom = chunk.getBlock(x, y, z)
+                                type = copyFrom.type
+                                biome = copyFrom.biome
+                                blockData = copyFrom.blockData
+                            }
+                        cnk.getBlock(x, 255, z).type = Material.BARRIER
+                        cnk.getBlock(x, 129, z).type = Material.BARRIER
+                    }
             }
             println("Using Biome $biomeAlreadyUsed")
             spawnBedrock(w)
@@ -99,9 +111,9 @@ class CW : GameBase() {
              */
             w.time = 2000
             w.difficulty = Difficulty.PEACEFUL
-            Bukkit.getScheduler().runTaskLater(plugin,{ _ ->
+            Bukkit.getScheduler().runTaskLater(plugin, { _ ->
                 w.difficulty = Difficulty.NORMAL
-            },50)
+            }, 50)
             return w
         }
 
@@ -149,14 +161,15 @@ class CW : GameBase() {
         }
 
         val ranges = ArrayList<String>()
-        val map = YamlConfiguration.loadConfiguration(File("plugins/ChunkWall/config.yml")).getMapList(getCodeByOre(ore))
+        val map =
+            YamlConfiguration.loadConfiguration(File("plugins/ChunkWall/config.yml")).getMapList(getCodeByOre(ore))
         map.first().keys.forEach {
             ranges.add(it as String)
         }
         var calc = ""
         for (it in ranges) {
             val separator = it.indexOf('-')
-                    .also { if (it == -1) throw OperationNotSupportedException("Unable to find '-' mark in a ore-percentage line for $code at \"$it\"") }
+                .also { if (it == -1) throw OperationNotSupportedException("Unable to find '-' mark in a ore-percentage line for $code at \"$it\"") }
             val a = it.substring(0, separator).toInt()
             val b = it.substring(separator + 1).toInt()
 
@@ -212,7 +225,7 @@ class CW : GameBase() {
 
         override fun onTimeChanged(i: Long, limit: Long) {
             players!!.forEach {
-                val scoreboard = getScoreboard(it.player,"区块战墙", teamScores!!, i, limit, "生存")
+                val scoreboard = getScoreboard(it.player, "区块战墙", teamScores!!, i, limit, "生存")
                 it.player.scoreboard = scoreboard
             }
         }
@@ -230,7 +243,7 @@ class CW : GameBase() {
         fun onPlayerMove(event: PlayerMoveEvent) {
             if (!validatePlayer(event.player))
                 return
-            val to = event.to!!.clone().add(Vector(0,-1,0))
+            val to = event.to!!.clone().add(Vector(0, -1, 0))
             val info = players!!.findInfoByPlayer(event.player) ?: return
             if (to.world!!.getBlockAt(to).type != Material.AIR && !info.tag.getBoolean("unprotected", false)) {
                 info.tag.set("unprotected", true)
@@ -282,23 +295,24 @@ class CW : GameBase() {
                     if (spawn != Material.STONE) {
                         event.isDropItems = false
                         world.dropItem(
-                                location,
-                                when (spawn) {
-                                    Material.COAL_ORE -> ItemStack(Material.COAL)
-                                    Material.IRON_ORE -> ItemStack(Material.IRON_INGOT)
-                                    Material.GOLD_ORE -> ItemStack(Material.GOLD_INGOT)
-                                    Material.DIAMOND_ORE -> ItemStack(Material.DIAMOND)
-                                    else -> return
-                                }
+                            location,
+                            when (spawn) {
+                                Material.COAL_ORE -> ItemStack(Material.COAL)
+                                Material.IRON_ORE -> ItemStack(Material.IRON_INGOT)
+                                Material.GOLD_ORE -> ItemStack(Material.GOLD_INGOT)
+                                Material.DIAMOND_ORE -> ItemStack(Material.DIAMOND)
+                                else -> return
+                            }
                         )
 
                         val x = location.blockX
                         val y = location.blockY
                         val z = location.blockZ
                         val updateBlocks = arrayOf<Block>(
-                                world.getBlockAt(x, y + 1, z), world.getBlockAt(x, y - 1, z),
-                                world.getBlockAt(x + 1, y, z), world.getBlockAt(x - 1, y, z),
-                                world.getBlockAt(x, y, z - 1), world.getBlockAt(x, y, z + 1))
+                            world.getBlockAt(x, y + 1, z), world.getBlockAt(x, y - 1, z),
+                            world.getBlockAt(x + 1, y, z), world.getBlockAt(x - 1, y, z),
+                            world.getBlockAt(x, y, z - 1), world.getBlockAt(x, y, z + 1)
+                        )
                         updateBlocks.forEach {
                             if (it.type == Material.STONE) {
                                 val spawn2 = spawnOreAt(it.location.blockY)
@@ -310,15 +324,17 @@ class CW : GameBase() {
                     }
                 }
             } else {
-                event.block.world.dropItemNaturally(event.block.location, ItemStack(
-                        when (event.block.type){
+                event.block.world.dropItemNaturally(
+                    event.block.location, ItemStack(
+                        when (event.block.type) {
                             Material.IRON_ORE -> Material.IRON_INGOT
                             Material.COAL_ORE -> Material.COAL
                             Material.GOLD_ORE -> Material.GOLD_INGOT
                             Material.DIAMOND_ORE -> Material.DIAMOND
                             else -> return
                         }
-                ))
+                    )
+                )
             }
         }
     }
@@ -358,7 +374,7 @@ class CW : GameBase() {
 
         override fun onTimeChanged(i: Long, limit: Long) {
             players!!.forEach {
-                val scoreboard = getScoreboard(it.player,"区块战墙", teamScores!!, i, limit, "PVP")
+                val scoreboard = getScoreboard(it.player, "区块战墙", teamScores!!, i, limit, "PVP")
                 it.player.scoreboard = scoreboard
             }
         }
@@ -430,7 +446,8 @@ class CW : GameBase() {
         }
 
         override fun getWorld(): World = world
-        override fun getPlayerLocation(info: Gaming.PlayerGamingInfo): Location = Location(world, 0.toDouble(), 129.toDouble(), 0.toDouble())
+        override fun getPlayerLocation(info: Gaming.PlayerGamingInfo): Location =
+            Location(world, 0.toDouble(), 129.toDouble(), 0.toDouble())
     }
 
     override fun getUnitWinningPrise(): Int = 100

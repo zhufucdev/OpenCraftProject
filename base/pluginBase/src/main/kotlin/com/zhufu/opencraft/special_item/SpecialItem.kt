@@ -1,43 +1,58 @@
 package com.zhufu.opencraft.special_item
 
+import com.zhufu.opencraft.Info
 import com.zhufu.opencraft.Language
+import com.zhufu.opencraft.PlayerModifier
 import com.zhufu.opencraft.getter
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scoreboard.Objective
+import org.reflections.Reflections
+import kotlin.jvm.internal.Reflection
+import kotlin.reflect.full.companionObjectInstance
 
 abstract class SpecialItem(m: Material, val getter: Language.LangGetter) : ItemStack(m) {
     enum class Type {
-        FlyingWand, Portal, Coin
+        FlyingWand, Portal, Coin, Insurance
     }
 
     companion object {
+        private val reflection by lazy { Reflections("com.zhufu.opencraft.special_item") }
+
         fun isSpecial(config: ConfigurationSection?): Boolean {
             return config?.getBoolean("isSpecialItem", false) ?: false
         }
 
-        fun isSpecial(item: ItemStack) = Portal.isThis(item) || FlyWand.isThis(item) || Coin.isThis(item)
-
-        fun getByConfig(config: ConfigurationSection, getter: Language.LangGetter) = if (isSpecial(config)) {
-            when {
-                FlyWand.isThis(config) -> FlyWand.deserialize(config, getter)
-                Coin.isThis(config) -> Coin.deserialize(config, getter)
-                else -> Portal.deserialize(config, getter)
+        fun isSpecial(item: ItemStack): Boolean {
+            reflection.getSubTypesOf(SpecialItem::class.java).forEach {
+                if ((Reflection.createKotlinClass(it).companionObjectInstance as SISerializable).isThis(item)) return true
             }
-        } else null
+            return false
+        }
 
-        fun getByItem(item: ItemStack, getter: Language.LangGetter) = if (isSpecial(item)) {
-            when {
-                FlyWand.isThis(item) -> FlyWand(item, getter)
-                Coin.isThis(item) -> Coin(item.amount, getter)
-                else -> Portal(getter, item)
+        fun getByConfig(config: ConfigurationSection, getter: Language.LangGetter): SpecialItem? {
+            reflection.getSubTypesOf(SpecialItem::class.java).forEach {
+                val instance = Reflection.createKotlinClass(it).companionObjectInstance as SISerializable
+                if (instance.isThis(config))
+                    return instance.deserialize(config, getter)
             }
-        } else null
+            return null
+        }
+
+        fun getByItem(item: ItemStack, getter: Language.LangGetter): SpecialItem? {
+            reflection.getSubTypesOf(SpecialItem::class.java).forEach {
+                val instance = Reflection.createKotlinClass(it).companionObjectInstance as SISerializable
+                if (instance.isThis(item))
+                    return instance.deserialize(item, getter)
+            }
+            return null
+        }
 
         fun getSerialize(item: ItemStack, getter: Language.LangGetter) =
-            getByItem(item, getter)?.getSerialize()?:YamlConfiguration().apply { set("item", item) }
+            getByItem(item, getter)?.getSerialize() ?: YamlConfiguration().apply { set("item", item) }
 
         fun getAll(player: Player): List<SpecialItem> {
             val r = ArrayList<SpecialItem>()
@@ -59,4 +74,6 @@ abstract class SpecialItem(m: Material, val getter: Language.LangGetter) : ItemS
             set("type", type.name)
         }
     }
+
+    open fun doPerTwoSeconds(mod: PlayerModifier, data: YamlConfiguration, score: Objective, scoreboardSorter: Int) {}
 }

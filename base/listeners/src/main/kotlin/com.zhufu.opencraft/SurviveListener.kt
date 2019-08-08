@@ -9,6 +9,7 @@ import com.zhufu.opencraft.Info.GameStatus.*
 import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
+import com.zhufu.opencraft.special_item.Insurance
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -29,6 +30,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.Vector
 import java.io.File
+import kotlin.math.roundToInt
 
 @Suppress("unused")
 class SurviveListener(private val plugin: JavaPlugin) : Listener {
@@ -231,6 +233,9 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             InTutorial -> {
                 info.inventory.create(RESET).load()
             }
+            Building -> {
+                event.respawnLocation = surviveWorld.spawnLocation
+            }
             else -> {
                 event.respawnLocation = lobby.spawnLocation
             }
@@ -240,15 +245,64 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val info = PlayerManager.findInfoByPlayer(event.entity)
-        if (validateInfo(info))
-            info!!.tag
-                .apply {
-                    if (info.status != Surviving)
-                        return
-                    set("lastDeath.location", event.entity.location)
-                    set("lastDeath.reason", event.deathMessage)
-                    set("lastDeath.time", System.currentTimeMillis())
+        if (validateInfo(info)) {
+            if (info!!.status == Surviving) {
+                info.tag
+                    .apply {
+                        set("lastDeath.location", event.entity.location)
+                        set("lastDeath.reason", event.deathMessage)
+                        set("lastDeath.time", System.currentTimeMillis())
+                    }
+
+                var dropInPercentage = 1.0
+                event.entity.inventory.specialItems.forEach { item ->
+                    if (item is Insurance && item.player == event.entity.name) {
+                        dropInPercentage *= 0.2
+                        event.entity.inventory.clear(item.inventoryPosition)
+                    }
                 }
+                if (dropInPercentage != 1.0) {
+                    val indexDropItem = arrayListOf<Int>()
+                    val inventory = event.entity.inventory
+                    val amountDropItem = (inventory.count { it != null } * dropInPercentage).roundToInt()
+                    event.drops.clear()
+                    for (i in 0 until amountDropItem) {
+                        fun newRandom() = Base.random.nextInt(inventory.size)
+                        var index = newRandom()
+                        while (indexDropItem.contains(index) || inventory.getItem(index) == null)
+                            index = newRandom()
+                        indexDropItem.add(index)
+
+                        val item = inventory.getItem(index)!!
+                        val location = event.entity.eyeLocation
+                        Bukkit.getScheduler().callSyncMethod(plugin) {
+                            location.chunk.apply {
+                                isForceLoaded = true
+                                load()
+                                Bukkit.getScheduler().runTaskLater(plugin, { _ ->
+                                    isForceLoaded = false
+                                }, 5 * 20 * 60)
+                            }
+                        }
+                        event.entity.world.dropItemNaturally(event.entity.eyeLocation, item)
+                        inventory.clear(index)
+                    }
+
+                    event.entity.info(getLang(event.entity, "insurance.applied"))
+                    event.newTotalExp = (event.entity.totalExperience * dropInPercentage).roundToInt()
+                    event.keepInventory = true
+                } else {
+                    if (!info.tag.getBoolean("isInsuranceTipShown", false)) {
+                        event.entity.tip(getLang(event.entity, "insurance.tip"))
+                        info.tag.set("isInsuranceTipShown", true)
+                    }
+
+                    event.keepInventory = false
+                    event.newTotalExp = 0
+                }
+                event.keepLevel = false
+            }
+        }
     }
 
     @EventHandler
@@ -469,6 +523,12 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 }
             }
         }
+        if (!event.isCancelled) {
+            event.player.isInvulnerable = true
+            Bukkit.getScheduler().runTaskLater(plugin, { _ ->
+                event.player.isInvulnerable = false
+            }, 20)
+        }
     }
 
     @EventHandler
@@ -516,6 +576,6 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
 
         //if (isNetherPortal)
         //    location = event.portalTravelAgent.findOrCreate(location)
-        event.setTo(location)
+        event.to = location
     }
 }

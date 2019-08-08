@@ -9,8 +9,10 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.util.Vector
 import java.io.File
 import java.math.BigInteger
 import java.nio.channels.FileChannel
@@ -18,6 +20,8 @@ import java.nio.charset.Charset
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import kotlin.math.absoluteValue
+import kotlin.math.cos
+import kotlin.math.sin
 
 fun getLang(lang: String, value: String, vararg replaceWith: Any?): String = Language.got(lang, value, replaceWith)
 fun getLang(player: ServerPlayer, value: String, vararg replaceWith: Any?): String =
@@ -158,3 +162,23 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
 }
 
 fun HumanEntity.addCash(amount: Int) = setInventory(Coin(1, getter()), amount)
+
+val Inventory.containsSpecialItem: Boolean
+    get() = this.any { if (it != null) SpecialItem.isSpecial(it) else false }
+val Inventory.specialItems: List<SpecialItem>
+    get() {
+        val r = ArrayList<SpecialItem>()
+        for (i in 0 until this.size) {
+            val it = this.getItem(i) ?: continue
+            val getter = viewers.firstOrNull()?.getter() ?: return emptyList()
+            SpecialItem.getByItem(it, getter)?.apply {
+                inventoryPosition = i
+                r.add(this)
+            }
+        }
+        return r
+    }
+
+fun vector(yaw: Double, pitch: Double) = Vector(sin(pitch) * cos(yaw), sin(pitch) * sin(yaw), cos(pitch))
+
+fun Inventory.contentSize() = count { it != null }

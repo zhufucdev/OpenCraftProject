@@ -59,15 +59,4 @@ object Listener: Listener {
                 println("[PrevHacking] ${event.player.name} pointed to an ore!")
         }
     }
-
-    @EventHandler
-    fun onInventoryOpen(event: InventoryOpenEvent){
-        if (event.inventory.holder != null){
-            event.inventory.onEach {
-                it?.enchantments?.filter { enchat -> enchat.value > enchat.key.maxLevel }?.forEach { t, _ ->
-                    it.removeEnchantment(t)
-                }
-            }
-        }
-    }
 }

@@ -8,6 +8,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
@@ -54,9 +55,11 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             player.totalExperience = 0
             player.walkSpeed = 0.2f
             player.flySpeed = 0.1f
+            player.totalExperience = 0
             player.activePotionEffects.forEach {
                 player.removePotionEffect(it.type)
             }
+            player.allowFlight = player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR
         }
     }
 

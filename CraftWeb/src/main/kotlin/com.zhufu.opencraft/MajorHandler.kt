@@ -12,6 +12,7 @@ import okhttp3.HttpUrl
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.FileConfiguration
 import java.io.File
+import java.io.InputStream
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.URI
@@ -56,7 +57,8 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                     else
                         noSuchContentFile
                 }
-                file.readBytes() to file.mimeType
+                response(file.inputStream(), file.size(), exchange, file.mimeType.toString())
+                return
             }
             require == "ui" && url.queryParameter("request") != null -> {
                 val request = url.queryParameter("request")
@@ -1088,9 +1090,21 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                 add("Access-Control-Allow-Origin", "*")
                 set("Content-Type", type)
             }
-            e.sendResponseHeaders(200, content.size.toLong())
+            e.sendResponseHeaders(206, content.size.toLong())
             e.responseBody.apply {
                 write(content)
+                close()
+            }
+        }
+
+        fun response(content: InputStream, size: Long, e: HttpExchange, type: String = "text/plain") {
+            e.responseHeaders.apply {
+                add("Access-Control-Allow-Origin", "*")
+                set("Content-Type", type)
+            }
+            e.sendResponseHeaders(200, size)
+            e.responseBody.apply {
+                content.copyTo(this)
                 close()
             }
         }

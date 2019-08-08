@@ -122,7 +122,7 @@ open class PageInventory<T : PageInventory.Adapter> : ClickableInventory {
             }
             else -> {
                 val index = event.rawSlot + currentPage * (itemsOnePage - 9)
-                if (index < adapter.size)
+                if (event.rawSlot < itemsOnePage - 9)
                     l1?.invoke(index, event.currentItem!!)
                 else if (event.rawSlot in itemsOnePage - 8..itemsOnePage - 2) {
                     l2?.invoke(event.rawSlot - itemsOnePage + 8, event.currentItem!!)

@@ -20,6 +20,7 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
@@ -64,7 +65,7 @@ object NPCController : Listener {
         }
         this.difficulty = difficulty
         damageMap.clear()
-        totalDamage = 0.0
+        totalDamage = 0F
 
         var isSpecial = false
         currentType = when (random.nextInt(7)) {
@@ -125,7 +126,6 @@ object NPCController : Listener {
                 )
             }
             defaultGoalController.apply {
-
                 addBehavior(
                     TargetAI(currentNPC, radiusForCurrent(), difficulty, mPlugin),
                     1
@@ -255,7 +255,8 @@ object NPCController : Listener {
     fun spinnerSpeedForCurrent() = 1025 / (difficulty + 40F)
     fun percentageToDropWeapon() = -100F / (difficulty + 249) + 0.8F
     fun radiusForCurrent() = sin(difficulty / 3.0) * 40 + 70
-    fun arrowDamageForCurrent() = -500.0 / (difficulty + 49) + 12.5
+    fun arrowDamageForCurrent() = -1200.0 / (difficulty + 299) + 6
+    fun littleBossMaxSpawnCount() = -1008.0 / (difficulty + 111) + 10
 
     val spawnListeners = HashMap<NPC, () -> Unit>()
     @EventHandler
@@ -264,19 +265,28 @@ object NPCController : Listener {
     }
 
     private val damageMap = HashMap<Player, Double>()
-    var totalDamage = 0.0
+    var totalDamage = 0F
     @EventHandler
     fun onBossDamaged(event: NPCDamageByEntityEvent) {
-        if (::currentNPC.isInitialized && event.npc == currentNPC && event.damager is Player) {
-            val player = event.damager as Player
+        if (::currentNPC.isInitialized && event.npc == currentNPC) {
+            fun handle(player: Player) {
+                if (player.info()?.isInBuilderMode == true) {
+                    event.isCancelled = true
+                    player.error(getLang(player, "boss.error.building"))
+                } else {
+                    val damage = damageMap.getOrDefault(player, 0.0) + event.damage
+                    damageMap[player] = damage
+                    totalDamage += event.damage.toFloat()
+                }
+            }
 
-            if (player.info()?.isInBuilderMode == true) {
-                event.isCancelled = true
-                player.error(getLang(player, "boss.error.building"))
-            } else {
-                val damage = damageMap.getOrDefault(player, 0.0) + event.damage
-                damageMap[player] = damage
-                totalDamage += event.damage
+            if (event.damager is Player) {
+                handle(event.damager as Player)
+            } else if (event.damager is Projectile) {
+                val projectile = event.damager as Projectile
+                if (projectile.shooter is Player) {
+                    handle(projectile.shooter as Player)
+                }
             }
         }
     }
@@ -309,7 +319,7 @@ object NPCController : Listener {
                     p.info(getter["boss.next", nextDate])
                 }
                 damageMap.clear()
-                totalDamage = 0.0
+                totalDamage = 0F
                 Bukkit.getScheduler().callSyncMethod(mPlugin) {
                     currentNPC.destroy()
                 }

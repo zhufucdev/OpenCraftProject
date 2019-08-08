@@ -36,6 +36,7 @@ import java.util.*
 @Suppress("unused")
 object EveryThing : Listener {
     val traderInventoryName = TextUtil.getColoredText("服务器商人", TextUtil.TextColor.AQUA, true, false)
+    val backNPCName = "生存模式".toInfoMessage()
 
     /**
      * Reload Event
@@ -246,6 +247,14 @@ object EveryThing : Listener {
                 return
             }
             inventoryMap.add(TraderInventory(event.clicker).apply { show() })
+        } else if (event.npc == CurrencySystem.npcBack) {
+            val info = event.clicker.info()
+            if (info == null) {
+                event.clicker.error(Language.getDefault("player.error.unknown"))
+            } else {
+                info.status = Info.GameStatus.Surviving
+                info.inventory.create("survivor").load()
+            }
         }
     }
 

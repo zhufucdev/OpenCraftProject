@@ -12,12 +12,19 @@ import org.bukkit.inventory.ItemStack
 class Portal : SpecialItem {
     override val type: Type
         get() = Type.Portal
-    fun setCount(amount: Int){
+
+    fun setCount(amount: Int) {
         this.amount = amount
     }
-    constructor(getter: Language.LangGetter,secondary: Boolean = false): super(Material.OBSIDIAN, getter) {
+
+    constructor(getter: Language.LangGetter, secondary: Boolean = false) : super(Material.OBSIDIAN, getter) {
         itemMeta = itemMeta!!.apply {
-            setDisplayName(TextUtil.getColoredText(getter["portal.name"] + if (secondary) " 2" else "", TextColor.LIGHT_PURPLE))
+            setDisplayName(
+                TextUtil.getColoredText(
+                    getter["portal.name"] + if (secondary) " 2" else "",
+                    TextColor.LIGHT_PURPLE
+                )
+            )
 
             val newLore = ArrayList<String>()
             TextUtil.formatLore(getter["portal.title"]).forEach {
@@ -33,15 +40,19 @@ class Portal : SpecialItem {
             addEnchant(Enchantment.DURABILITY, 1, true)
         }
     }
-    constructor(getter: Language.LangGetter,itemStack: ItemStack): this(getter){
+
+    constructor(getter: Language.LangGetter, itemStack: ItemStack) : this(getter) {
         amount = itemStack.amount
     }
 
     override fun getSerialize(): ConfigurationSection {
-        return super.getSerialize().apply { if (amount > 1) set("amount",amount) }
+        return super.getSerialize().apply { if (amount > 1) set("amount", amount) }
     }
 
     companion object : SISerializable {
+        override fun deserialize(itemStack: ItemStack, getter: Language.LangGetter): SpecialItem =
+            Portal(getter, itemStack)
+
         const val PRICE = 100
         var displayNames: List<String> private set
 
@@ -58,7 +69,7 @@ class Portal : SpecialItem {
         override fun deserialize(config: ConfigurationSection, getter: Language.LangGetter): SpecialItem {
             if (isThis(config)) {
                 return Portal(getter).apply {
-                    if (config.isSet("amount")){
+                    if (config.isSet("amount")) {
                         amount = config.getInt("amount")
                     }
                 }
@@ -67,9 +78,9 @@ class Portal : SpecialItem {
         }
 
         override fun isThis(itemStack: ItemStack?) =
-            itemStack != null && itemStack.hasItemMeta() && displayNames.any { itemStack.itemMeta!!.displayName.contains(it) } && itemStack.itemMeta!!.hasItemFlag(
-                ItemFlag.HIDE_ENCHANTS
-            )
+            itemStack != null && itemStack.hasItemMeta()
+                    && displayNames.any { itemStack.itemMeta!!.displayName.contains(it) }
+                    && itemStack.itemMeta!!.hasItemFlag(ItemFlag.HIDE_ENCHANTS)
 
         override fun isThis(config: ConfigurationSection): Boolean =
             config.isSet("type") && config.getString("type") == "Portal"

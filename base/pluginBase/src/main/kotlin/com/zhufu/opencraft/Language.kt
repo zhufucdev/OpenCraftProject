@@ -125,7 +125,7 @@ object Language {
                 raw = conf.getString(value)!!
                 replaceWith.forEachIndexed { i, any ->
                     if (any != null) {
-                        val index = "%${i + 1}"
+                        val index = "%s${i + 1}"
                         raw =
                             if (raw.contains(index)) {
                                 raw.replace(index, any.toString())

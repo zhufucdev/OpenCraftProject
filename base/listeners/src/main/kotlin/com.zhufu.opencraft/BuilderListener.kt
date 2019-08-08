@@ -1,7 +1,6 @@
 package com.zhufu.opencraft
 
 import org.bukkit.*
-import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -30,7 +29,7 @@ object BuilderListener : Listener {
     private fun updatePermissions(player: Player, lvl: Int) {
         val we = Bukkit.getPluginManager().getPlugin("WorldEdit")
         if (we != null) {
-            val per = player.addAttachment(we) ?: return
+            val per = player.addAttachment(we)
             when (lvl) {
                 1 -> {
                     per.setPermission("worldedit.*", true)
@@ -50,8 +49,10 @@ object BuilderListener : Listener {
         }
         if (info.status == Info.GameStatus.Surviving) {
             info.status = Info.GameStatus.Building
-            info.inventory.create("builder").load()
-            player.gameMode = GameMode.CREATIVE
+            info.inventory.create("builder").apply {
+                set("gameMode", GameMode.CREATIVE.name)
+                load()
+            }
             updatePermissions(player, info.builderLevel)
         } else if (info.status == Info.GameStatus.Building) {
             info.status = Info.GameStatus.Surviving
@@ -68,8 +69,10 @@ object BuilderListener : Listener {
             if (lvl != null && lvl > 2 && isBlockLimit(event.block.type)) {
                 event.isCancelled = true
                 event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.block"]))
-            } else if (!blocks.contains(event.block.location))
+            } else if (!blocks.contains(event.block.location)) {
                 blocks.add(event.block.location)
+                saveConfig()
+            }
         }
     }
 
@@ -78,6 +81,7 @@ object BuilderListener : Listener {
         if (blocks.contains(event.block.location)) {
             if (event.player.info()?.isInBuilderMode == true) {
                 blocks.remove(event.block.location)
+                saveConfig()
             } else if (!event.player.isOp) {
                 event.isCancelled = true
                 event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.placeBlock"]))
@@ -109,7 +113,10 @@ object BuilderListener : Listener {
         }
     }
 
-    fun isBlockLimit(type: Material) = mPlugin!!.config.getBoolean("limitsOfBlock.${type.name.toLowerCase()}", false)
+    fun isBlockLimit(type: Material) =
+        mPlugin!!.config.getStringList("limitsOfBlock").any {
+            Regex(it).matches(type.name.toLowerCase())
+        }
     fun init(plugin: Plugin) {
         mPlugin = plugin
 
@@ -119,16 +126,13 @@ object BuilderListener : Listener {
         }
 
         if (!plugin.config.isSet("limitsOfBlock")) {
-            val conf = plugin.config.createSection("limitsOfBlock")
-            conf.set("tnt", true)
-            conf.set("redstone", true)
-            plugin.config.set("limitsOfBlock", conf)
+            plugin.config.set("limitsOfBlock", listOf("tnt", "redstone", "ender_chest"))
         }
 
         Bukkit.getPluginManager().registerEvents(this, plugin)
     }
 
-    fun onServerClose() {
+    fun saveConfig() {
         mPlugin!!.config.set("buildersBlock", blocks.toList())
         mPlugin!!.saveConfig()
     }

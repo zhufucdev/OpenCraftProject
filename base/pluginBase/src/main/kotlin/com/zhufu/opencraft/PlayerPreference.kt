@@ -1,7 +1,8 @@
 package com.zhufu.opencraft
 
-class PlayerPreference(private val parent: ServerPlayer) {
-    private val tag by lazy { parent.tag }
+import org.bukkit.configuration.ConfigurationSection
+
+class PlayerPreference(private val tag: ConfigurationSection) {
     var playerUtilitiesGesture: Boolean
         get() = tag.getBoolean("prefer.gesture", true)
         set(value) = tag.set("prefer.gesture", value)

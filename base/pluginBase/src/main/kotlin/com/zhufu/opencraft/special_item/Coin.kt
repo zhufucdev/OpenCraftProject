@@ -31,6 +31,8 @@ class Coin(amount: Int, getter: Language.LangGetter) : SpecialItem(Material.GOLD
     }
 
     companion object : SISerializable {
+        override fun deserialize(itemStack: ItemStack, getter: Language.LangGetter) = Coin(itemStack.amount, getter)
+
         override fun deserialize(config: ConfigurationSection, getter: Language.LangGetter): SpecialItem =
             Coin(config.getInt("amount", 1), getter)
 

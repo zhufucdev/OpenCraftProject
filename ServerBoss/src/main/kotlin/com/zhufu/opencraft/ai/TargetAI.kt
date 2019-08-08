@@ -8,6 +8,7 @@ import net.citizensnpcs.api.event.NPCDamageByEntityEvent
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.trait.trait.Equipment
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.*
@@ -25,14 +26,21 @@ class TargetAI(val npc: NPC, private val radius: Double, private val difficulty:
         Bukkit.getPluginManager().registerEvents(this, plugin)
     }
 
+    private var littleSpawnedCount = 0
     private var isLittleSpawned = false
     var healthGiver: NPC? = null
     private var isSpinner = false
     private var isSkeleton = false
-    private val speed = NPCController.spinnerSpeedForCurrent()
+    private var isArrowSetShoot = false
+    private val shotSpeed = NPCController.spinnerSpeedForCurrent()
+    private val maxLittleSpawn = NPCController.littleBossMaxSpawnCount()
     private var tick = 0
     override fun run(): BehaviorStatus {
         val navigator = npc.navigator
+        val chunk = npc.entity.location.chunk
+        if (!chunk.isLoaded) {
+            chunk.load(true)
+        }
         return when {
             target != null -> {
                 if (target!!.world != npc.storedLocation.world) {
@@ -40,7 +48,7 @@ class TargetAI(val npc: NPC, private val radius: Double, private val difficulty:
                     return BehaviorStatus.FAILURE
                 }
                 if (isSpinner && target!!.location.distance(npc.entity.location) <= 6) {
-                    if (tick >= speed) {
+                    if (tick >= shotSpeed) {
                         npc.entity.world.apply {
                             fun direct() = target!!.location.toVector().subtract(npc.entity.location.toVector())
                             val location = (npc.entity as LivingEntity).eyeLocation
@@ -69,15 +77,49 @@ class TargetAI(val npc: NPC, private val radius: Double, private val difficulty:
                         if (navigator.isNavigating) navigator.cancelNavigation()
 
                         navigator.setTarget(target!!, true)
-                        npc.entity.velocity =
-                            target!!.location.toVector().subtract(npc.entity.location.toVector()).multiply(0.3)
+                        dashTo(target!!.location, 0.3)
                     }
-                    if (difficulty >= 50
-                        && !isLittleSpawned
-                        && (npc.entity as LivingEntity).healthRate() <= 0.2
-                    ) {
-                        spawnLittle()
-                        isLittleSpawned = true
+                    if (difficulty >= 50) {
+                        if ((npc.entity as LivingEntity).healthRate() <= 0.2) {
+                            if (!isLittleSpawned
+                                && littleSpawnedCount < maxLittleSpawn
+                            ) {
+                                spawnLittle()
+                                isLittleSpawned = true
+                                littleSpawnedCount++
+                            }
+                        } else {
+                            isLittleSpawned = false
+                        }
+                    }
+                    if (difficulty >= 90) {
+                        val entity = npc.entity as LivingEntity
+                        if (entity.healthRate() <= 0.5 && !isArrowSetShoot) {
+                            isArrowSetShoot = true
+                            npc.entity.world.apply {
+                                val location = entity.eyeLocation
+                                fun makeStandard(arrow: Arrow) {
+                                    arrow.shooter = entity
+                                    arrow.damage = NPCController.arrowDamageForCurrent() * 0.7
+                                }
+                                for (i in 0..10) {
+                                    for (k in 0..5) {
+                                        makeStandard(spawnArrow(
+                                            location,
+                                            vector(i * 18.0, k * -18.0),
+                                            NPCController.arrowSpeedForCurrent(),
+                                            0F
+                                        ))
+                                        makeStandard(spawnArrow(
+                                            location,
+                                            vector(i * -18.0, k * -18.0),
+                                            NPCController.arrowSpeedForCurrent(),
+                                            0F
+                                        ))
+                                    }
+                                }
+                            }
+                        }
                     }
                     BehaviorStatus.RUNNING
                 }
@@ -85,6 +127,11 @@ class TargetAI(val npc: NPC, private val radius: Double, private val difficulty:
             target == null -> BehaviorStatus.SUCCESS
             else -> BehaviorStatus.RUNNING
         }
+    }
+
+    private fun dashTo(to: Location, rate: Double) {
+        npc.entity.velocity =
+            to.toVector().subtract(npc.entity.location.toVector()).multiply(rate)
     }
 
     override fun reset() {
@@ -164,6 +211,7 @@ class TargetAI(val npc: NPC, private val radius: Double, private val difficulty:
 
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
-        updateTarget()
+        if (event.entity == target)
+            updateTarget()
     }
 }

@@ -8,6 +8,7 @@ dependencies {
     compile project(':tradeBase')
     compile project(':miniGameBase')
     compile project(':scripting')
+    compile project(':worldBase')
     compile group: 'io.netty', name: 'netty-all', version: '4.1.33.Final'
     compileOnly fileTree(rootDir.path + '/libs/server_api.jar')
 }

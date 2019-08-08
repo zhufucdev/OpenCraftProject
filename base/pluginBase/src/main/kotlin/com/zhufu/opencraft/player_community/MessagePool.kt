@@ -6,9 +6,12 @@ import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.*
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.io.StringWriter
+import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 open class MessagePool private constructor() {
     enum class Type {
@@ -17,7 +20,7 @@ open class MessagePool private constructor() {
 
     class PublicMessagePool : MessagePool() {
         override fun markAsRead(i: Int) =
-            throw UnsupportedOperationException("Call #markAsRead(Int,ServerPlayer) instead.")
+            throw UnsupportedOperationException("Call [markAsRead(Int,ServerPlayer)] instead.")
 
         override fun sendAllTo(player: ChatInfo) {
             messages.forEach {
@@ -57,7 +60,8 @@ open class MessagePool private constructor() {
             }
             return r
         }
-        fun isRead(id: Int,player: ServerPlayer) = get(id)?.extra?.contains(player.name!!)
+
+        fun isRead(id: Int, player: ServerPlayer) = get(id)?.extra?.contains(player.name!!)
     }
 
     class Message(
@@ -66,12 +70,48 @@ open class MessagePool private constructor() {
         val id: Int,
         val type: Type,
         var extra: ConfigurationSection? = null
-    )
+    ) {
+        fun sendTo(receiver: ChatInfo) = receiver.playerOutputStream.sendRaw(getJson(this, receiver))
 
-    internal val messages = ArrayList<Message>()
-    fun add(text: String, type: Type, extra: ConfigurationSection? = null) {
+        private fun createExtra() {
+            if (extra == null)
+                extra = YamlConfiguration()
+        }
+
+        fun recordTime() {
+            createExtra()
+            extra!!.set("time", System.currentTimeMillis())
+        }
+
+        val time get() = extra?.getLong("time", -1) ?: -1L
+        var sender: String?
+            get() = extra?.getString("sender")
+            set(value) {
+                createExtra()
+                extra!!.set("sender", value)
+            }
+
+        override fun equals(other: Any?): Boolean =
+            other is Message
+                    && other.text == text
+                    && other.id == id
+
+        override fun hashCode(): Int {
+            var result = text.hashCode()
+            result = 31 * result + read.hashCode()
+            result = 31 * result + id
+            result = 31 * result + type.hashCode()
+            result = 31 * result + (extra?.hashCode() ?: 0)
+            return result
+        }
+    }
+
+    val messages = ArrayList<Message>()
+    fun add(text: String, type: Type, extra: ConfigurationSection? = null): Message {
         val max = messages.maxBy { it.id }?.id ?: -1
-        messages.add(Message(text, false, max + 1, type, extra))
+        val msg = Message(text, false, max + 1, type, extra)
+        messages.add(msg)
+        return msg
     }
 
     fun remove(id: Int) = messages.removeAll { it.id == id }
@@ -79,33 +119,10 @@ open class MessagePool private constructor() {
         messages.sortBy { it.id }
         messages.forEach(l)
     }
+
     operator fun get(id: Int) = messages.firstOrNull { it.id == id }
 
-    private fun getJson(msg: Message, player: ChatInfo): JsonElement {
-        val sr = StringWriter()
-        JsonWriter(sr)
-            .beginArray()
-            .value(TextUtil.getCustomizedText(msg.text, player) + ' ')
-            .beginObject()//Click to read and hover for help.
-            .name("text")
-            .value(TextUtil.getColoredText("[${Language.byChat(player, "msg.read")}]", TextUtil.TextColor.GREEN, true))
-            .name("clickEvent")
-            .beginObject()
-            .name("action").value("run_command")
-            .name("value")
-            .value("/pu server:markMessageRead ${msg.id}${if (msg.type == Type.Public) " public" else ""}")
-            .endObject()
-            .name("hoverEvent")
-            .beginObject()
-            .name("action").value("show_text")
-            .name("value").value(TextUtil.tip(Language[player.targetLang, "msg.clickToRead"]))
-            .endObject()
-            .endObject()
-            .endArray()
-        return JsonParser().parse(sr.toString())
-    }
-
-    internal fun sendTo(player: ChatInfo, msg: Message) = player.playerOutputStream.sendRaw(getJson(msg, player))
+    fun sendTo(player: ChatInfo, msg: Message) = player.playerOutputStream.sendRaw(getJson(msg, player))
 
     open fun sendAllTo(player: ChatInfo) {
         Base.publicMsgPool.sendAllTo(player)
@@ -159,6 +176,52 @@ open class MessagePool private constructor() {
     val isEmpty get() = messages.isEmpty()
 
     companion object {
+        fun getJson(msg: Message, player: ChatInfo): JsonElement {
+            val sr = StringWriter()
+            val writer = JsonWriter(sr)
+                .beginArray()
+            if (msg.time != -1L)
+                writer
+                    .beginObject()
+                    .name("text").value("(${SimpleDateFormat("MM/dd HH:mm").format(Date(msg.time))}) ")
+                    .name("hoverEvent").beginObject()
+                    .name("action").value("show_text")
+                    .name("value").value(SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Date(msg.time)))
+                    .endObject()
+                    .endObject()
+            if (msg.sender != null)
+                writer
+                    .beginObject()
+                    .name("text").value("${msg.sender}: ")
+                    .endObject()
+            writer.value(TextUtil.getCustomizedText(msg.text, player) + ' ')
+                .beginObject()//Click to read and hover for help.
+                .name("text")
+                .value(
+                    TextUtil.getColoredText(
+                        "[${Language.byChat(player, "msg.read")}]",
+                        TextUtil.TextColor.GREEN,
+                        true
+                    )
+                )
+                .name("clickEvent")
+                .beginObject()
+                .name("action").value("run_command")
+                .name("value")
+                .value("/pu server:markMessageRead ${msg.id}${if (msg.type == Type.Public) " public" else ""}")
+                .endObject()
+                .name("hoverEvent")
+                .beginObject()
+                .name("action").value("show_text")
+                .name("value").value(TextUtil.tip(Language[player.targetLang, "msg.clickToRead"]))
+                .endObject()
+                .endObject()
+                .endArray()
+            return JsonParser().parse(sr.toString())
+        }
+
+        private val cache = HashMap<ServerPlayer, MessagePool>()
+
         private fun addAllTo(r: MessagePool, section: ConfigurationSection) {
             var max = 0
             section.getKeys(false).sorted().forEach {
@@ -174,13 +237,17 @@ open class MessagePool private constructor() {
             }
         }
 
-        fun from(tag: YamlConfiguration): MessagePool {
+        fun of(who: ServerPlayer): MessagePool {
+            if (cache.containsKey(who))
+                return cache[who]!!
             val r = MessagePool()
-            val section = tag.getConfigurationSection("messages")
+            val section = who.tag.getConfigurationSection("messages")
             if (section != null) addAllTo(r, section)
-
+            cache[who] = r
             return r
         }
+
+        fun remove(who: ServerPlayer) = cache.remove(who)
 
         fun public(file: File): PublicMessagePool {
             val r = PublicMessagePool()

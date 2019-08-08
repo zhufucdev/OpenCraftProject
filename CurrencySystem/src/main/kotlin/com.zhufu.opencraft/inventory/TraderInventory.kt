@@ -4,28 +4,27 @@ import com.zhufu.opencraft.*
 import com.zhufu.opencraft.CurrencySystem.Companion.transMap
 import com.zhufu.opencraft.TextUtil
 import com.zhufu.opencraft.special_item.FlyWand
+import com.zhufu.opencraft.special_item.Insurance
 import com.zhufu.opencraft.special_item.Portal
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import kotlin.math.roundToInt
 
 class TraderInventory(val player: Player) {
     private val getter = player.getter()
-    private val itemFlyWand: ItemStack = FlyWand(getter)
-    private val donater: ItemStack = ItemStack(Material.GOLDEN_APPLE).apply {
-        itemMeta = itemMeta!!.apply {
-            setDisplayName(TextUtil.success("捐赠"))
-            lore = listOf("为了表示感谢，我们会给予您一定数量的货币", TextUtil.info("货币数量=在线时长(分钟)*捐赠金额*3"))
-        }
+    private val donater: ItemStack = ItemStack(Material.GOLDEN_APPLE).updateItemMeta<ItemMeta> {
+        setDisplayName(TextUtil.success("捐赠"))
+        lore = listOf("为了表示感谢，我们会给予您一定数量的货币", TextUtil.info("货币数量=在线时长(分钟)*捐赠金额*3"))
     }
-    private val itemPortal = Portal(getter)
     val inventory = Bukkit.createInventory(null, 36, EveryThing.traderInventoryName)
         .apply {
-            setItem(size - 9, itemFlyWand)
-            setItem(size - 8, itemPortal)
-            setItem(size - 7, donater)
+            setItem(size - 9, FlyWand(getter))
+            setItem(size - 8, Portal(getter))
+            setItem(size - 7, Insurance(getter, player.name))
+            setItem(size - 6, donater)
         }
     lateinit var modeSwitcher: ItemStack
     var mode: Short = 0
@@ -125,11 +124,11 @@ class TraderInventory(val player: Player) {
 
     fun selectSpecialItem(current: ItemStack) {
         when {
-            current.itemMeta == itemFlyWand.itemMeta -> {
+            FlyWand.isThis(current) -> {
                 val price = FlyWand.MAX_TIME_REMAINING * FlyWand.PRICE_PER_MIN / 60
                 PaymentDialog(
                     player,
-                    SellingItemInfo(itemFlyWand.clone(), price, 1),
+                    SellingItemInfo(FlyWand(getter), price, 1),
                     TradeManager.getNewID(),
                     CurrencySystem.mInstance
                 ).setOnPayListener { success ->
@@ -144,7 +143,7 @@ class TraderInventory(val player: Player) {
                                     TextUtil.tip("为了同时拥有两支权杖，您可以尝试使用箱子等容器，但这并不会带来好的游戏体验")
                                 )
                             )
-                        } else if (!survivor.addItem(itemFlyWand.clone())) {
+                        } else if (!survivor.addItem(FlyWand(getter))) {
                             player.error(getter["trade.error.inventoryFull"])
                             return@setOnPayListener false
                         }
@@ -160,17 +159,17 @@ class TraderInventory(val player: Player) {
                     .show()
             }
 
-            current.itemMeta == itemPortal.itemMeta -> {
+            Portal.isThis(current) -> {
                 PaymentDialog(
                     player,
-                    SellingItemInfo(itemPortal, Portal.PRICE.toLong(), 1),
+                    SellingItemInfo(Portal(getter), Portal.PRICE.toLong(), 1),
                     TradeManager.getNewID(),
                     CurrencySystem.mInstance
                 ).setOnPayListener { success ->
                     val info = player.info()!!
                     if (success) {
                         val survivor = info.inventory.create("survivor")
-                        if (!survivor.addItem(itemPortal.clone())) {
+                        if (!survivor.addItem(Portal(getter))) {
                             player.error(getter["trade.error.inventoryFull"])
                             return@setOnPayListener false
                         }
@@ -184,6 +183,33 @@ class TraderInventory(val player: Player) {
                     }
                     .show()
             }
+
+            Insurance.isThis(current) -> {
+                val insurance = Insurance(getter, player.name)
+                PaymentDialog(
+                    player,
+                    SellingItemInfo(insurance, Insurance.PRICE.toLong(), 1),
+                    TradeManager.getNewID(),
+                    CurrencySystem.mInstance
+                )
+                    .setOnPayListener { success ->
+                        if (success) {
+                            val inventory = player.info()!!.inventory.create("survivor")
+                            if (!inventory.addItem(insurance)) {
+                                player.error(getter["trade.error.inventoryFull"])
+                                return@setOnPayListener false
+                            }
+                        } else {
+                            player.error(getter["trade.error.poor"])
+                        }
+                        true
+                    }
+                    .setOnCancelListener {
+                        player.info(getter["trade.cancelled"])
+                    }
+                    .show()
+            }
+
             current == modeSwitcher -> {
                 mode = if (mode == 0.toShort()) 1.toShort() else 0.toShort()
                 setMode()

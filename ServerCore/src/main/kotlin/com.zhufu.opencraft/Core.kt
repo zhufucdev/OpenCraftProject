@@ -1,30 +1,28 @@
 package com.zhufu.opencraft
 
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
-import com.zhufu.opencraft.Base.spawnWorld
-import com.zhufu.opencraft.Base.lobby
-import com.zhufu.opencraft.Base.surviveWorld
 import com.zhufu.opencraft.Base.Extend.isDigit
-import com.zhufu.opencraft.Game.env
-import com.zhufu.opencraft.PlayerManager.showPlayerOutOfDemoTitle
-import com.zhufu.opencraft.Game.varNames
-import com.zhufu.opencraft.PlayerManager.containsSpecialItem
-import com.zhufu.opencraft.PlayerManager.specialItems
 import com.zhufu.opencraft.Base.endWorld
+import com.zhufu.opencraft.Base.lobby
 import com.zhufu.opencraft.Base.netherWorld
+import com.zhufu.opencraft.Base.spawnWorld
+import com.zhufu.opencraft.Base.surviveWorld
+import com.zhufu.opencraft.Game.env
+import com.zhufu.opencraft.Game.varNames
+import com.zhufu.opencraft.PlayerManager.showPlayerOutOfDemoTitle
 import com.zhufu.opencraft.chunkgenerator.VoidGenerator
-import com.zhufu.opencraft.listener.*
-import com.zhufu.opencraft.survey.SurveyManager
 import com.zhufu.opencraft.events.PlayerInventorySaveEvent
 import com.zhufu.opencraft.events.PlayerJoinGameEvent
 import com.zhufu.opencraft.headers.ServerHeaders
 import com.zhufu.opencraft.headers.server_wrap.SimpleServerListPingEvent
+import com.zhufu.opencraft.listener.NPCListener
+import com.zhufu.opencraft.listener.NPCSelectListener
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
 import com.zhufu.opencraft.script.AbstractScript
 import com.zhufu.opencraft.script.ServerScript
-import com.zhufu.opencraft.special_item.FlyWand
+import com.zhufu.opencraft.survey.SurveyManager
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.SpawnReason
 import net.citizensnpcs.api.npc.NPC
@@ -73,6 +71,8 @@ class Core : JavaPlugin(), Listener {
         endWorld = server.getWorld("world_the_end")!!
         lobby = server.getWorld("world")!!
         lobby.peace()
+
+        surviveWorld.setGameRule(GameRule.KEEP_INVENTORY, false)
 
         env =
             try {
@@ -139,9 +139,10 @@ class Core : JavaPlugin(), Listener {
             it.despawn()
             it.destroy()
         }
+        env.save(File(dataFolder, "env"))
         PlayerObserverListener.onServerStop()
         PlayerManager.forEachPlayer { it.saveServerID() }
-        BuilderListener.onServerClose()
+        BuilderListener.saveConfig()
         PlayerStatics.cleanUp()
         Base.publicMsgPool.serialize().save(Base.msgPoolFile)
         PlayerLobbyManager.onServerClose()
@@ -166,6 +167,8 @@ class Core : JavaPlugin(), Listener {
             env.set("secondsPerQuestion", 30)
         if (!env.isSet("url"))
             env.set("url", "https://www.open-craft.cn")
+        if (!env.isSet("debug"))
+            env.set("debug", false)
         env.save(File(dataFolder, "env"))
         saveTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, Runnable {
             Bukkit.getPluginManager().callEvent(PlayerInventorySaveEvent())
@@ -184,7 +187,11 @@ class Core : JavaPlugin(), Listener {
                         it.player.info(Language[it, "server.saveInventory"])
                 }
             }
-        }, 0, env.getInt("inventorySaveDelay").toLong())
+        }, 0, env.getLong("inventorySaveDelay"))
+
+        reloadTask = Bukkit.getScheduler().runTaskTimer(this, Runnable {
+            Bukkit.getPluginManager().callEvent(ServerReloadEvent())
+        }, 0, env.getLong("reloadDelay"))
 
         scoreBoardTask = Bukkit.getScheduler().runTaskTimer(this, Runnable {
             PlayerManager.forEachPlayer { info ->
@@ -221,38 +228,27 @@ class Core : JavaPlugin(), Listener {
                             )
                         ).score = --sub
                     }
+                    /*
+                    if (info.status == Info.GameStatus.Surviving && !info.isOp && info.player.gameMode != GameMode.SURVIVAL) {
+                        info.player.gameMode = GameMode.SURVIVAL
+                    }
+                     */
 
-                    var allowFlight =
-                        info.player.gameMode == GameMode.CREATIVE || info.player.gameMode == GameMode.SPECTATOR
+
+                    val modifier = PlayerModifier(info)
                     if (info.player.inventory.containsSpecialItem) {
+                        val data = YamlConfiguration()
                         info.player.inventory.specialItems.forEach { item ->
-                            if (item is FlyWand) {
-                                if (!allowFlight) {
-                                    if (info.player.isFlying) {
-                                        item.updateTime(item.timeRemaining - 2)
-                                        if (item.inventoryPosition != -1)
-                                            info.player.inventory.setItem(item.inventoryPosition, item)
-                                    }
-                                    if (!item.isUpToTime) {
-                                        allowFlight = true
-                                    }
-                                    obj.getScore(
-                                        TextUtil.getColoredText(
-                                            getter["server.statics.flyRemaining", item.timeRemaining],
-                                            TextUtil.TextColor.RED
-                                        )
-                                    ).score = --sub
-                                }
-                            }
+                            item.doPerTwoSeconds(modifier, data, obj, sub--)
                         }
                     }
-                    info.player.allowFlight = allowFlight
+                    modifier.apply()
 
                     val url = env.getString("url")
                     obj.getScore(
                         buildString {
-                            val all = TextUtil.TextColor.AQUA.getCode()
-                            val special = TextUtil.TextColor.WHITE.getCode()
+                            val all = TextUtil.TextColor.AQUA.code
+                            val special = TextUtil.TextColor.WHITE.code
                             append(url)
                             insert(urlLooper, special)
                             insert(urlLooper + 3, all)
@@ -534,6 +530,17 @@ class Core : JavaPlugin(), Listener {
                                     false
                                 }
                             }
+                            "builder" -> {
+                                sender.info("正在重载建筑者配置")
+                                result = try {
+                                    reloadConfig()
+                                    true
+                                } catch (e: Exception) {
+                                    sender.error("${e.javaClass.simpleName}: ${e.message}")
+                                    e.printStackTrace()
+                                    false
+                                }
+                            }
                             else -> {
                                 sender.sendMessage(TextUtil.error("无效模块: ${args[1]}"))
                             }
@@ -568,6 +575,14 @@ class Core : JavaPlugin(), Listener {
                         sender.success("已将服务器网站地址标记为${args[2]}")
                         urlLooper = 0
                         looperDirection = true
+                    } else if (args[1] == "debug") {
+                        if (args[2] == "true") {
+                            env.set("debug", true)
+                            sender.success("已启动调试模式")
+                        } else {
+                            env.set("debug", false)
+                            sender.success("已关闭调试模式")
+                        }
                     } else {
                         fun checkIntOverZero(): Boolean {
                             if (!args[2].isDigit()) {
@@ -825,7 +840,7 @@ class Core : JavaPlugin(), Listener {
                         if (!sender.isOp) {
                             return mutableListOf()
                         }
-                        val models = listOf("game", "notice", "npc", "survey")
+                        val models = listOf("game", "notice", "npc", "survey", "lang", "ss", "builder")
                         if (args.size == 1)
                             return models.toMutableList()
                         else if (args.size >= 2) {
@@ -838,12 +853,18 @@ class Core : JavaPlugin(), Listener {
                         if (!sender.isOp) {
                             return mutableListOf()
                         }
-                        if (args.size == 1)
-                            return varNames.toMutableList()
-                        else if (args.size == 2) {
-                            val result = ArrayList<String>()
-                            varNames.forEach { if (it.startsWith(args[1])) result.add(it) }
-                            return result.toMutableList()
+
+                        when(args.size) {
+                            1 -> return varNames.toMutableList()
+                            2 -> {
+                                val result = ArrayList<String>()
+                                varNames.forEach { if (it.startsWith(args[1])) result.add(it) }
+                                return result.toMutableList()
+                            }
+                            3 -> {
+                                if (args.last() == "debug")
+                                    return mutableListOf("true", "false")
+                            }
                         }
                     }
                     "notice" -> {
@@ -958,6 +979,7 @@ class Core : JavaPlugin(), Listener {
     }
 
     @EventHandler
+    @Synchronized
     fun onServerListPing(event: PaperServerListPingEvent) {
         ServerHeaders.serverSelf.onServerPing.forEach {
             it.apply(arrayOf(SimpleServerListPingEvent(event)))

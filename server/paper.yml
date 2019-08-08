@@ -162,3 +162,7 @@ world-settings:
       replacement-blocks:
       - stone
       - oak_planks
+    alt-item-despawn-rate:
+      enabled: false
+      items:
+        COBBLESTONE: 300

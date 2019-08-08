@@ -18,8 +18,8 @@ commands:
     usage: /user pwd <旧密码> <新密码> <重复 新密码>
     description: 修改用户在服务器密码
   user save:
-    usage: /user save [back]
-    description: 保存用户在生存世界的重生点，需要鼠标指针指向一张床，加上"back"来回到保存的重生点
+    usage: /user save back
+    description: 回到保存的重生点
   user saveas:
     usage: /user saveas <ID>
     description: 保存为用户记录点，并给予其唯一ID
@@ -52,4 +52,7 @@ commands:
     description: 转移玩家数据
   user prefer:
     usage: /user prefer <选项> [off|on|其他数据值]
-    description: 更新玩家首选项
+    description: 查看或更新玩家首选项
+  friend:
+    usage: /friend <好友ID> [add|del|transfer|msg|inventory|share]
+    description: 查看好友信息，添加、删除好友，或者与指定好友交互

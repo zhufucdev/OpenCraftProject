@@ -50,10 +50,7 @@ class ChunkWall : JavaPlugin() {
 
         if (!GameManager.isInit)
             GameManager.init(this)
-        CW.originWorld = server.createWorld(
-                WorldCreator("game_cw_origin")
-                        .type(WorldType.LARGE_BIOMES)
-        )!!
+        CW.originWorld = WorldCreator("game_cw_origin").createWorld()!!
 
         GameManager.addNew("CW")
     }

@@ -1,6 +1,7 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.inventory.BankInventory
+import com.zhufu.opencraft.special_item.Coin
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.citizensnpcs.api.event.NPCSpawnEvent
@@ -12,6 +13,9 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.inventory.CraftItemEvent
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.CraftingInventory
 import org.bukkit.plugin.Plugin
 import java.io.File
 import java.util.*
@@ -123,6 +127,15 @@ object BankManager : Listener {
             } else {
                 BankInventory(mPlugin, info).show()
             }
+        }
+    }
+
+    @EventHandler
+    fun onCoinCraft(event: CraftItemEvent) {
+        val inventory = event.inventory
+        if (inventory.matrix.any { Coin.isThis(it) }) {
+            inventory.result = null
+            event.whoClicked.error(getLang(event.whoClicked, "bank.error.coinCraft"))
         }
     }
 }

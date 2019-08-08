@@ -1,7 +1,6 @@
 package com.zhufu.opencraft.ui
 
 import com.zhufu.opencraft.*
-import com.zhufu.opencraft.OfflineInfo.CheckpointInfo
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.inventory.PaymentDialog
 import com.zhufu.opencraft.Base.Extend.toPrettyString
@@ -218,7 +217,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
 
                         tasks.forEach { t, u ->
                             if (u == 'D'){
-                                info.checkpoints.remove(t)
+                                info.removeCheckpoint(t.name)
                             }
                         }
                         adapter.reset()

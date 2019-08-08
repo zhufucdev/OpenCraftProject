@@ -1,7 +1,7 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.WorldTeleporter.mWorld.WorldPermissions.*
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
+import com.zhufu.opencraft.WorldManager.WorldPermissions
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.WorldCreator
@@ -34,50 +34,12 @@ class WorldTeleporter : JavaPlugin() {
             }
             saveConfig()
         }, 5 * 20)
+
+        WorldManager.init(config)
     }
 
     override fun onDisable() {
         saveConfig()
-        logger.info("Saving Customized Worlds...")
-        customizedWorlds.forEach {
-            logger.info("Saving for $it")
-            server.getWorld(it)!!.save()
-        }
-    }
-
-    class mWorld(val world: World, val per: WorldPermissions, val description: String = "") {
-        enum class WorldPermissions {
-            PUBLIC, PRIVATE, PROTECTED;
-
-            fun canUse(sender: CommandSender) = (this == PUBLIC)
-                    || (this == PRIVATE && (sender !is Player || sender.isOp))
-
-            fun canSee(sender: CommandSender) = (this == PUBLIC)
-                    || ((this == PRIVATE || this == PROTECTED) && (sender !is Player || sender.isOp))
-
-            companion object {
-                fun valueOf(value: String?, def: WorldPermissions): WorldPermissions = when {
-                    value.isNullOrEmpty() -> def
-                    value == "private" -> PRIVATE
-                    value == "protected" -> PROTECTED
-                    value == "public" -> PUBLIC
-                    else -> def
-                }
-            }
-        }
-    }
-
-    private fun getAvailableWorlds(): List<mWorld> {
-        val r = ArrayList<mWorld>()
-        Bukkit.getWorlds().forEach {
-            if (it.name.startsWith("game_")){
-                return@forEach
-            }
-            val per = config.getString("${it.name}.permission")
-            val des = config.getString("${it.uid}.description")
-            r.add(mWorld(it, mWorld.WorldPermissions.valueOf(per, PUBLIC), des ?: ""))
-        }
-        return r.toList()
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -87,20 +49,34 @@ class WorldTeleporter : JavaPlugin() {
                 sender.sendMessage(TextUtil.error("用法错误"))
                 return false
             } else if (args[0] == "list") {
-                val p = sender
                 val sb = ArrayList<String>()
                 sb.add(TextUtil.info("-----以下是所有可能的世界-----") + "\n")
-                getAvailableWorlds().forEach {
+                WorldManager.getAvailableWorlds().forEach {
                     if (it.per.canSee(sender))
                         sb.add(
-                                when (it.per) {
-                                    PUBLIC -> TextUtil.getColoredText(">${it.world.name}", TextUtil.TextColor.BLUE, false, false)
-                                    PRIVATE -> TextUtil.getColoredText("*${it.world.name}", TextUtil.TextColor.WHITE, true, false)
-                                    PROTECTED -> TextUtil.getColoredText("!${it.world.name}", TextUtil.TextColor.GREY, true, false)
-                                }
+                            when (it.per) {
+                                WorldPermissions.PUBLIC -> TextUtil.getColoredText(
+                                    ">${it.world.name}",
+                                    TextUtil.TextColor.BLUE,
+                                    false,
+                                    false
+                                )
+                                WorldPermissions.PRIVATE -> TextUtil.getColoredText(
+                                    "*${it.world.name}",
+                                    TextUtil.TextColor.WHITE,
+                                    true,
+                                    false
+                                )
+                                WorldPermissions.PROTECTED -> TextUtil.getColoredText(
+                                    "!${it.world.name}",
+                                    TextUtil.TextColor.GREY,
+                                    true,
+                                    false
+                                )
+                            }
                         )
                 }
-                p.sendMessage(sb.toTypedArray())
+                sender.sendMessage(sb.toTypedArray())
             } else if (args[0] == "des" || args[0] == "set") {
                 if (sender is Player && !(sender.isOp)) {
                     sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
@@ -142,7 +118,8 @@ class WorldTeleporter : JavaPlugin() {
                     sender.error(getter["command.error.usage"])
                     return true
                 }
-                val type = if (WorldType.values().any { it.name == args[1].toUpperCase() }) WorldType.valueOf(args[1].toUpperCase()) else null
+                val type =
+                    if (WorldType.values().any { it.name == args[1].toUpperCase() }) WorldType.valueOf(args[1].toUpperCase()) else null
                 val name = args[2]
                 if (type == null) {
                     sender.error("Not such type ${args[1]}")
@@ -175,20 +152,19 @@ class WorldTeleporter : JavaPlugin() {
                     sender.sendMessage("此命令只能被玩家所运行")
                     return true
                 }
-                val p = sender
                 val world: World? = Bukkit.getWorld(args[0])
                 if (world != null) {
                     val per = config.getString("${world.name}.permission")
-                    if (mWorld.WorldPermissions.valueOf(per, def = PUBLIC).canUse(sender)) {
-                        val event = PlayerTeleportedEvent(p, p.location, world.spawnLocation)
+                    if (WorldPermissions.valueOf(per, def = WorldPermissions.PUBLIC).canUse(sender)) {
+                        val event = PlayerTeleportedEvent(sender, sender.location, world.spawnLocation)
                         Bukkit.getPluginManager().callEvent(event)
                         Bukkit.getScheduler().runTaskLater(this, { _ ->
                             if (!event.isCancelled)
-                                p.teleport(world.spawnLocation)
+                                sender.teleport(world.spawnLocation)
                         }, 20)
                     } else {
-                        p.error("您没有访问此世界的权限")
-                        p.tip("使用/wt list 查看可能的世界")
+                        sender.error("您没有访问此世界的权限")
+                        sender.tip("使用/wt list 查看可能的世界")
                     }
                 } else {
                     sender.sendMessage(TextUtil.error("世界不存在"))
@@ -198,7 +174,12 @@ class WorldTeleporter : JavaPlugin() {
         return true
     }
 
-    override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): MutableList<String> {
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array<out String>
+    ): MutableList<String> {
         fun hasPermission(sender: CommandSender) = sender is ConsoleCommandSender || (sender is Player && sender.isOp)
         fun showPermissions(present: String): MutableList<String> {
             val permissions = listOf("private", "public", "protected")
@@ -221,25 +202,31 @@ class WorldTeleporter : JavaPlugin() {
                             sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
                             return mutableListOf()
                         }
-                        if (args.size == 1) {
-                            return worlds
-                        } else if (args.size == 2) {
-                            val results = ArrayList<String>()
-                            var isCompleted = false
-                            worlds.forEach {
-                                if (it == args[1]) {
-                                    isCompleted = true
-                                    return@forEach
+                        when {
+                            args.size == 1 -> return worlds
+                            args.size == 2 -> {
+                                val results = ArrayList<String>()
+                                var isCompleted = false
+                                worlds.forEach {
+                                    if (it == args[1]) {
+                                        isCompleted = true
+                                        return@forEach
+                                    }
+                                    if (it.startsWith(args[1])) {
+                                        results.add(it)
+                                    }
                                 }
-                                if (it.startsWith(args[1])) {
-                                    results.add(it)
-                                }
+                                return if (!isCompleted) results.toMutableList()
+                                else showPermissions("")
                             }
-                            if (!isCompleted) return results.toMutableList()
-                            else return showPermissions("")
-                        } else if (args.size == 3) {
-                            return showPermissions(args[2])
-                        } else sender.sendMessage(arrayOf(TextUtil.error("用法错误"), server.getPluginCommand("wt set")!!.usage))
+                            args.size == 3 -> return showPermissions(args[2])
+                            else -> sender.sendMessage(
+                                arrayOf(
+                                    TextUtil.error("用法错误"),
+                                    server.getPluginCommand("wt set")!!.usage
+                                )
+                            )
+                        }
                     }
                     "des" -> {
                         if (!hasPermission(sender)) {
@@ -261,10 +248,10 @@ class WorldTeleporter : JavaPlugin() {
                             WorldType.values().forEach {
                                 types.add(it.name)
                             }
-                            if (args[1].isEmpty()) {
-                                return types
+                            return if (args[1].isEmpty()) {
+                                types
                             } else {
-                                return types.asSequence().filter { it.startsWith(args[1]) }.toMutableList()
+                                types.asSequence().filter { it.startsWith(args[1]) }.toMutableList()
                             }
                         }
                     }
@@ -273,10 +260,10 @@ class WorldTeleporter : JavaPlugin() {
                             return mutableListOf()
                         }
                         if (args.size == 2) {
-                            if (args[1].isEmpty()) {
-                                return worlds
+                            return if (args[1].isEmpty()) {
+                                worlds
                             } else {
-                                return worlds.asSequence().filter { it.startsWith(args[1]) }.toMutableList()
+                                worlds.asSequence().filter { it.startsWith(args[1]) }.toMutableList()
                             }
                         }
                     }
@@ -290,7 +277,7 @@ class WorldTeleporter : JavaPlugin() {
                             t.add("new")
                             t.add("unload")
                         }
-                        getAvailableWorlds().forEach {
+                        WorldManager.getAvailableWorlds().forEach {
                             if (it.per.canUse(sender))
                                 t.add(it.world.name)
                         }

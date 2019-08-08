@@ -74,7 +74,7 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
     }
 
     private fun init() {
-        inventory.addItem(tradeInfo.items!!.item.clone().also { it.amount = tradeInfo.items!!.amount })
+        inventory.addItem(tradeInfo.items!!.item.clone().apply { amount = tradeInfo.items!!.amount })
 
         setShowingItem()
         inventory.setItem(9 * 1 + 3,
@@ -140,9 +140,11 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
     override fun onInventoryOpen(player: HumanEntity) {
         val info = PlayerManager.findInfoByPlayer(player.uniqueId)
         if (info == null) {
-            player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+            player.error(Language.getDefault("player.error.unknown"))
             return
         }
+
+        info.inventory.create("survivor").load(inventoryOnly = true)
 
         if (player.uniqueId.toString() == tradeInfo.getSeller() ?: return) {
             inventoryName = "修改$id"
@@ -194,6 +196,8 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
         } else if (!isPaying) {
             TradeManager.loadTradeCompass(info)
         }
+        if (info.tag.getBoolean("isTerritoryInMessageShown", false))
+            info.inventory.create(DualInventory.RESET).load(inventoryOnly = true)
     }
 
     private fun plusOne() {

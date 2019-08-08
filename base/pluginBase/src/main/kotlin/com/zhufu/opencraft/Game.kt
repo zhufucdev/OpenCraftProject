@@ -14,6 +14,7 @@ object Game {
         "secondsPerQuestion",
         "notice",
         "url",
-        "diamondExchange"
+        "diamondExchange",
+        "debug"
     )
 }

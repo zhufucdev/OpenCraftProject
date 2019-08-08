@@ -1,12 +1,16 @@
 package com.zhufu.opencraft.special_item
 
 import com.zhufu.opencraft.Language
+import com.zhufu.opencraft.PlayerModifier
 import com.zhufu.opencraft.TextUtil
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scoreboard.Objective
 
 class FlyWand : SpecialItem {
     constructor(getter: Language.LangGetter, initializeTime: Boolean = true) : super(Material.STICK, getter) {
@@ -36,6 +40,31 @@ class FlyWand : SpecialItem {
         updateTime(timeRemaining)
     }
 
+    override fun doPerTwoSeconds(mod: PlayerModifier, data: YamlConfiguration, score: Objective, scoreboardSorter: Int) {
+        if (!data.isSet("hasFlyWand")) {
+            var allowFlight =
+                mod.player.gameMode == GameMode.CREATIVE || mod.player.gameMode == GameMode.SPECTATOR
+            data.set("hasFlyWand", true)
+            if (!allowFlight) {
+                if (mod.player.isFlying) {
+                    updateTime(timeRemaining - 2)
+                    if (inventoryPosition != -1)
+                        mod.player.inventory.setItem(inventoryPosition, this)
+                }
+                if (!isUpToTime) {
+                    allowFlight = true
+                }
+                score.getScore(
+                    TextUtil.getColoredText(
+                        getter["server.statics.flyRemaining", timeRemaining],
+                        TextUtil.TextColor.RED
+                    )
+                ).score = scoreboardSorter
+                mod.isFlyable = allowFlight
+            }
+        }
+    }
+
     companion object : SISerializable {
         const val MAX_TIME_REMAINING = 30 * 60L
         const val PRICE_PER_MIN = 100
@@ -50,6 +79,9 @@ class FlyWand : SpecialItem {
             }
             displayNames = r
         }
+
+        override fun deserialize(itemStack: ItemStack, getter: Language.LangGetter): SpecialItem =
+            FlyWand(itemStack, getter)
 
         override fun deserialize(config: ConfigurationSection, getter: Language.LangGetter): FlyWand {
             if (config.isSet("timeRemaining")) {

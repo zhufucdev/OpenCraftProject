@@ -9,7 +9,7 @@ import java.nio.file.Paths
 import java.util.*
 import kotlin.collections.HashMap
 
-class PlayerStatics private constructor(val parent: ServerPlayer, private val data: JsonObject) {
+class PlayerStatics private constructor(val parent: ServerPlayer, private var data: JsonObject) {
     private fun getToday() = Calendar.getInstance().apply {
         time = Date()
         set(Calendar.SECOND, 0)
@@ -39,17 +39,19 @@ class PlayerStatics private constructor(val parent: ServerPlayer, private val da
             tT = value
         }
 
-    operator fun get(time: Long) = data[time.toString()]?.asLong?:0L
+    operator fun get(time: Long) = data[time.toString()]?.asLong ?: 0L
     operator fun set(time: Long, value: Long) = data.addProperty(time.toString(), value)
 
     fun getData() = data
 
+    val file by lazy { Paths.get(
+        "plugins",
+        "statics",
+        parent.uuid!!.toString() + ".json"
+    ).toFile() }
+
     fun save() {
-        Paths.get(
-            "plugins",
-            "statics",
-            parent.uuid!!.toString() + ".json"
-        ).toFile().apply {
+        file.apply {
             if (!exists()) {
                 if (!parentFile.exists())
                     parentFile.mkdirs()
@@ -65,6 +67,15 @@ class PlayerStatics private constructor(val parent: ServerPlayer, private val da
                 close()
             }
         }
+    }
+
+    fun copyFrom(other: PlayerStatics) {
+        data = other.data
+        save()
+    }
+
+    fun delete() {
+        file.delete()
     }
 
     companion object {
