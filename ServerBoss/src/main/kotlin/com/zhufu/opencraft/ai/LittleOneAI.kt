@@ -15,6 +15,8 @@ import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
+import org.bukkit.util.Vector
+import kotlin.math.abs
 
 class LittleOneAI(private val parent: TargetAI, private val npc: NPC, plugin: Plugin) : BehaviorGoalAdapter(),
     Listener {
@@ -69,7 +71,16 @@ class LittleOneAI(private val parent: TargetAI, private val npc: NPC, plugin: Pl
             BehaviorStatus.RUNNING
         } else {
             when (target) {
-                npc.navigator.entityTarget?.target -> BehaviorStatus.RUNNING
+                npc.navigator.entityTarget?.target -> {
+                    npc.entity.apply {
+                        if (target!!.isFlying) {
+                            NavigateUtility.targetFlyable(this, target!!)
+                        } else {
+                            setGravity(true)
+                        }
+                    }
+                    BehaviorStatus.RUNNING
+                }
                 null -> BehaviorStatus.SUCCESS
                 else -> {
                     val navigator = npc.navigator

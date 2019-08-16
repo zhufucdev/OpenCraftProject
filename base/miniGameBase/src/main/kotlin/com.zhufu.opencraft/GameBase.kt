@@ -167,26 +167,24 @@ abstract class GameBase : Listener {
 
     private fun onWinnerResultShow() {
         val winners = getWinners()
-        val prise = ((gaming.size - winners.size) * getUnitWinningPrise() / winners.size.toDouble()).roundToInt()
-        winners.forEach {
-            val info = PlayerManager.findInfoByPlayer(it)
-            if (info == null) {
-                it.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
-            } else {
-                it.sendMessage(TextUtil.success(Language[info, "game.win"]))
-                it.sendMessage(TextUtil.info(Language[info, "game.win.result", winners.size, gaming.size - winners.size, getUnitWinningPrise(), prise]))
+        if (winners.isNotEmpty()) {
+            val prise = ((gaming.size - winners.size) * getUnitWinningPrise() / winners.size.toDouble()).roundToInt()
+            winners.forEach {
+                val info = PlayerManager.findInfoByPlayer(it)
+                if (info == null) {
+                    it.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+                } else {
+                    it.sendMessage(TextUtil.success(Language[info, "game.win"]))
+                    it.sendMessage(TextUtil.info(Language[info, "game.win.result", winners.size, gaming.size - winners.size, getUnitWinningPrise(), prise]))
 
-                info.currency += prise
+                    info.currency += prise
+                }
             }
         }
     }
 
     fun initGameEnder() {
-        try {
-            onWinnerResultShow()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        onWinnerResultShow()
 
         isGameStarted = false
         plugin.logger.info("Ending game IDed $gameID")

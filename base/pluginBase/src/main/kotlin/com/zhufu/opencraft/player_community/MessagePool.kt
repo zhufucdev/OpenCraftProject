@@ -6,7 +6,6 @@ import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.*
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.io.StringWriter
 import java.text.SimpleDateFormat
@@ -15,7 +14,7 @@ import kotlin.collections.HashMap
 
 open class MessagePool private constructor() {
     enum class Type {
-        Friend, System, Public
+        Friend, System, Public, OneTime
     }
 
     class PublicMessagePool : MessagePool() {
@@ -36,12 +35,24 @@ open class MessagePool private constructor() {
             }
         }
 
+        override fun sendTo(player: ChatInfo, msg: Message) {
+            player.playerOutputStream.sendRaw(getJson(msg, player))
+            if (msg.type == Type.OneTime) {
+                msg.apply {
+                    if (extra == null) extra = YamlConfiguration()
+                    if (!extra!!.contains(player.id)) {
+                        extra!!.set(player.id, true)
+                    }
+                }
+            }
+        }
+
         fun markAsRead(id: Int, player: ServerPlayer): Boolean {
             var r = false
             get(id)?.apply {
                 if (extra == null) extra = YamlConfiguration()
                 if (!extra!!.contains(player.name!!)) {
-                    extra!!.set(player.name!!, "R")
+                    extra!!.set(player.name!!, true)
                     r = true
                 }
             }
@@ -69,9 +80,10 @@ open class MessagePool private constructor() {
         var read: Boolean,
         val id: Int,
         val type: Type,
-        var extra: ConfigurationSection? = null
+        var extra: ConfigurationSection? = null,
+        private val parent: MessagePool
     ) {
-        fun sendTo(receiver: ChatInfo) = receiver.playerOutputStream.sendRaw(getJson(this, receiver))
+        fun sendTo(receiver: ChatInfo) = parent.sendTo(receiver, this)
 
         private fun createExtra() {
             if (extra == null)
@@ -109,7 +121,7 @@ open class MessagePool private constructor() {
     val messages = ArrayList<Message>()
     fun add(text: String, type: Type, extra: ConfigurationSection? = null): Message {
         val max = messages.maxBy { it.id }?.id ?: -1
-        val msg = Message(text, false, max + 1, type, extra)
+        val msg = Message(text, false, max + 1, type, extra, this)
         messages.add(msg)
         return msg
     }
@@ -122,7 +134,12 @@ open class MessagePool private constructor() {
 
     operator fun get(id: Int) = messages.firstOrNull { it.id == id }
 
-    fun sendTo(player: ChatInfo, msg: Message) = player.playerOutputStream.sendRaw(getJson(msg, player))
+    open fun sendTo(player: ChatInfo, msg: Message) {
+        player.playerOutputStream.sendRaw(getJson(msg, player))
+        if (msg.type == Type.OneTime) {
+            messages.remove(msg)
+        }
+    }
 
     open fun sendAllTo(player: ChatInfo) {
         Base.publicMsgPool.sendAllTo(player)
@@ -231,7 +248,8 @@ open class MessagePool private constructor() {
                         read = section.getBoolean("$it.read", false),
                         id = it.toIntOrNull().let { id -> id?.also { if (max < id) max = id } ?: max++ },
                         type = Type.valueOf(section.getString("$it.type", "System")!!),
-                        extra = section.getConfigurationSection("$it.extra")
+                        extra = section.getConfigurationSection("$it.extra"),
+                        parent = r
                     )
                 )
             }

@@ -62,7 +62,7 @@ object BuilderListener : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler
     fun onPlayerPlaceBlock(event: BlockPlaceEvent) {
         if (event.player.info()?.isInBuilderMode == true) {
             val lvl = event.player.info()?.builderLevel
@@ -71,20 +71,18 @@ object BuilderListener : Listener {
                 event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.block"]))
             } else if (!blocks.contains(event.block.location)) {
                 blocks.add(event.block.location)
-                saveConfig()
             }
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler
     fun onPlayerBreakBlock(event: BlockBreakEvent) {
         if (blocks.contains(event.block.location)) {
             if (event.player.info()?.isInBuilderMode == true) {
                 blocks.remove(event.block.location)
-                saveConfig()
             } else if (!event.player.isOp) {
                 event.isCancelled = true
-                event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.placeBlock"]))
+                event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.breakBlock"]))
             }
         }
     }

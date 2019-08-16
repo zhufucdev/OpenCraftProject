@@ -89,8 +89,10 @@ class Skinny : JavaPlugin(), Listener {
                         sender.success(getter["skinny.success", target])
                         sender.tip(getter["skinny.tip"])
 
-                        info.skin = if (target != sender.name) target else null
-                        skin.isCustomize = true
+                        info.skin = if (target != sender.name) {
+                            skin.isCustomize = true
+                            target
+                        } else null
                         cache[sender.name] = skin
                     }
                 } catch (e: Exception) {

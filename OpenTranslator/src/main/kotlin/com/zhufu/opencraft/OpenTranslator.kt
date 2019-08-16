@@ -23,10 +23,10 @@ class OpenTranslator : JavaPlugin(), Listener {
 
         val getter = getLangGetter(info)
 
-        val lang = Translate.detectLanguage(msg)
+        val detectLang = Translate.detectLanguage(msg)
         val detections = Translate.toTranslateOrNot(msg)
         val sb = StringBuilder()
-        sb.append(getter["translator.usingLang", lang])
+        sb.append(getter["translator.usingLang", detectLang])
         detections.forEach {
             when (it) {
                 Expression -> sb.append(getter["translator.containsExpr"])
@@ -42,7 +42,7 @@ class OpenTranslator : JavaPlugin(), Listener {
         val translations = HashMap<String, String>()
         fun addTranslation(target: String): String {
             val translation =
-                if (target != lang || detections.isNotEmpty())
+                if (target != detectLang || detections.isNotEmpty())
                     try {
                         Translate.translate(msg, target = target)
                     } catch (e: Exception) {
@@ -56,15 +56,22 @@ class OpenTranslator : JavaPlugin(), Listener {
 
         PlayerManager.forEachChatter {
             if (it is ServerPlayer && !it.preference.showTranslations) {
-                it.playerOutputStream.sendChat(info, msg)
+                Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
+                    it.playerOutputStream.sendChat(info, msg)
+                }
             } else {
                 val translation =
                     if (translations.containsKey(it.targetLang)) translations[it.targetLang]!!
                     else addTranslation(it.targetLang)
-                try {
-                    it.playerOutputStream.sendChat(info, msg, translation, emptyList())
-                } catch (ignore: Exception) {
+                Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
+                    try {
+                        if (it.targetLang == detectLang && detections.isEmpty())
+                            it.playerOutputStream.sendChat(info, msg)
+                        else
+                            it.playerOutputStream.sendChat(info, msg, translation, emptyList())
+                    } catch (ignore: Exception) {
 
+                    }
                 }
             }
         }

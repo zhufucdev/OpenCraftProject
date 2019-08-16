@@ -19,6 +19,7 @@ import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.security.DigestInputStream
 import java.security.MessageDigest
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
@@ -106,9 +107,9 @@ fun File.MD5(): String {
 }
 
 fun Pair<Location, Location>.center(): Location {
-    val x = (first.x.absoluteValue - second.x.absoluteValue) / 2
-    val y = (first.y.absoluteValue - second.y.absoluteValue) / 2
-    val z = (first.z.absoluteValue - second.z.absoluteValue) / 2
+    val x = (first.x - second.x) / 2
+    val y = (first.y - second.y) / 2
+    val z = (first.z - second.z) / 2
     return Location(second.world, second.x + x, second.y + y, second.z + z)
 }
 
@@ -182,3 +183,12 @@ val Inventory.specialItems: List<SpecialItem>
 fun vector(yaw: Double, pitch: Double) = Vector(sin(pitch) * cos(yaw), sin(pitch) * sin(yaw), cos(pitch))
 
 fun Inventory.contentSize() = count { it != null }
+
+val Location.blockLocation: Location
+    get() = clone().apply {
+        x = blockX.toDouble()
+        y = blockY.toDouble()
+        z = blockZ.toDouble()
+    }
+val Location.center: Location
+    get() = clone().add(Vector(0.5, 0.0, 0.5))

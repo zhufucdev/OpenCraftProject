@@ -169,15 +169,15 @@ object CommandExecutor : AbstractCommandExecutor {
                 }
             }
             "done" -> {
-                TutorialListener.mInstance.removeRecorder(player)
+                TutorialListener.instance.removeRecorder(player)
                 player.sendMessage(TextUtil.success("已保存"))
                 return {}
             }
             "exit" -> {
-                TutorialListener.mInstance.removeRecorder(player)
+                TutorialListener.instance.removeRecorder(player)
                 return {
                     if (it.project.name != "NULL"){
-                        it.project[it.project.indexOf(it)] = TutorialListener.mInstance.originData[player]!!
+                        it.project[it.project.indexOf(it)] = TutorialListener.instance.originData[player]!!
                     }
                     else{
                         it.project.removeStep(it.project.indexOf(it))
@@ -186,7 +186,7 @@ object CommandExecutor : AbstractCommandExecutor {
                 }
             }
             "del" -> {
-                TutorialListener.mInstance.removeRecorder(player)
+                TutorialListener.instance.removeRecorder(player)
                 return {
                     it.project.removeStep(it.project.indexOf(it))
                     player.sendMessage(TextUtil.info("已删除该步骤"))

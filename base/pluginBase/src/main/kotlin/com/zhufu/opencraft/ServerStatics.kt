@@ -6,21 +6,22 @@ import com.google.gson.JsonParser
 import java.nio.file.Paths
 
 object ServerStatics {
-    private val save get() = Paths.get("plugins","statics","server.json").toFile()
+    private val save get() = Paths.get("plugins", "statics", "server.json").toFile()
     private lateinit var data: JsonObject
     var playerNumber: Int
-        get() = data["players"]?.asInt?:0
+        get() = data["players"]?.asInt ?: 0
         set(value) {
-            data.addProperty("players",value)
+            data.addProperty("players", value)
         }
     var onlineTime: Long
-        get() = data["online"]?.asLong?:0
+        get() = data["online"]?.asLong ?: 0
         set(value) {
-            data.addProperty("online",value)
+            data.addProperty("online", value)
         }
-    fun init(){
-        data = if (!save.exists()){
-            if (!save.parentFile.exists()){
+
+    fun init() {
+        data = if (!save.exists()) {
+            if (!save.parentFile.exists()) {
                 save.parentFile.mkdirs()
             }
             save.createNewFile()
@@ -29,12 +30,12 @@ object ServerStatics {
             JsonParser().parse(save.reader()).asJsonObject
     }
 
-    fun save(){
+    fun save() {
         val writer = save.writer()
         GsonBuilder()
             .setPrettyPrinting()
             .create()
-            .toJson(data,writer)
+            .toJson(data, writer)
         writer.apply {
             flush()
             close()

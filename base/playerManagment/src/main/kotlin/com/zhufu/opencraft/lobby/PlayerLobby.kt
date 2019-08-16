@@ -51,6 +51,42 @@ class PlayerLobby(val owner: OfflineInfo) {
             tag.set("spawnpoint", value)
         }
 
+    fun likeBy(who: ServerPlayer): Boolean {
+        if (reviewedBy(who) == null) {
+            tag.set("review.${who.name}", true)
+            return true
+        }
+        return false
+    }
+
+    fun dislikeBy(who: ServerPlayer): Boolean {
+        if (reviewedBy(who) == null) {
+            tag.set("review.${who.name}", false)
+            return true
+        }
+        return false
+    }
+
+    fun cancelReviewFor(who: ServerPlayer) = tag.set("review.${who.name}", null)
+    /**
+     * @return true when getting a like, false when getting a dislike, or null when getting nothing
+     */
+    fun reviewedBy(who: ServerPlayer) =
+        if (tag.isSet("review.${who.name}")) tag.getBoolean("review.${who.name}") else null
+    val likesInAll: Int
+        get() {
+            val review = tag.getConfigurationSection("review") ?: return 0
+            var r = 0
+            review.getKeys(false).forEach {
+                if (review.getBoolean(it)) {
+                    r++
+                } else {
+                    r--
+                }
+            }
+            return r
+        }
+
     fun contains(location: Location) = location.blockX in fromX..toX && location.blockZ in fromZ..toZ
 
     private var isInitializing = false
@@ -100,10 +136,10 @@ class PlayerLobby(val owner: OfflineInfo) {
 
             Bukkit.getScheduler().runTask(Base.pluginCore) { _ ->
                 val from = CuboidRegion(
-                        BukkitWorld(Base.spawnWorld),
-                        BlockVector3.at(0, lowY, 0),
-                        BlockVector3.at(32, highY, 32)
-                    )
+                    BukkitWorld(Base.spawnWorld),
+                    BlockVector3.at(0, lowY, 0),
+                    BlockVector3.at(32, highY, 32)
+                )
                 val to = CuboidRegion(
                     BukkitWorld(Base.lobby),
                     BlockVector3.at(this.fromX, lowY, this.fromZ),

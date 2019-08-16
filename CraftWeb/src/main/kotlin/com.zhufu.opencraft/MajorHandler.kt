@@ -265,8 +265,13 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                         val statics = find.statics?.getData()
                                         if (statics == null)
                                             addProperty("r", -1)
-                                        else
-                                            add("statics", statics)
+                                        else {
+                                            val value = JsonObject()
+                                            statics.entrySet().forEach { (time, v) ->
+                                                value.addProperty(time, if (v.isJsonObject) v.asJsonObject["time"].asLong else v.asLong)
+                                            }
+                                            add("statics", value)
+                                        }
                                     }
                                     if (check.contains("message")) {
                                         val messages = JsonArray()

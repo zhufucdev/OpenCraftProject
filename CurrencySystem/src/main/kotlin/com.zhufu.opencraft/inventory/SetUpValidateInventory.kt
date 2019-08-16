@@ -11,10 +11,9 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.material.MaterialData
 
 class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, private val player: Player) :
-    NPCItemInventory(baseLocation, null, itemSell, CurrencySystem.mInstance) {
+    NPCItemInventory(baseLocation, null, itemSell, CurrencySystem.instance) {
     companion object {
         val inventories = ArrayList<SetUpValidateInventory>()
     }

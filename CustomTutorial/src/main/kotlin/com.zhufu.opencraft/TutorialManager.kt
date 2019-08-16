@@ -23,8 +23,14 @@ import kotlin.collections.ArrayList
 
 object TutorialManager {
     private val mList = ArrayList<Tutorial>()
-    fun add(tutorial: Tutorial) = mList.add(tutorial.also { it.id = getNewID() })
-    fun addAsDraft(tutorial: Tutorial) = mList.add(tutorial.also { it.id = getNewID() })
+    fun add(tutorial: Tutorial) {
+        mList.add(tutorial.also { it.id = getNewID() })
+        saveToFile(tutorial)
+    }
+    fun addAsDraft(tutorial: Tutorial) {
+        mList.add(tutorial.also { it.id = getNewID() })
+        saveToFile(tutorial)
+    }
     fun del(id: Int) = mList.removeIf {
         deleteFile(it)
         it.id == id
@@ -68,7 +74,7 @@ object TutorialManager {
     fun deleteFile(element: Tutorial) = CustomTutorial.getFile(getName(element)).delete()
 
     fun loadFromFile() {
-        CustomTutorial.saveDir.listFiles().forEach { file ->
+        CustomTutorial.saveDir.listFiles()?.forEach { file ->
             if (file.isHidden)
                 return@forEach
             try {

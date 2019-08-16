@@ -147,6 +147,7 @@ player:
   join: '%s加入了游戏'
   joinGame: '%s加入了%s'
   left: '%s离开了游戏'
+  unknownName: '未知名称'
   warn:
     badNet: '%s正在登录，然而由于网络问题，这可能需要几秒钟'
   error:
@@ -308,7 +309,11 @@ ui:
     sec: '秒'
   statics:
     title: '服务器统计'
-    face: '欢迎, %s'
+    face:
+      title: '欢迎, %s'
+      tip: '点击查看排行'
+      chart: '您处于每日排行榜第%s位'
+      noChart: '您不参与排行'
     clock: '您已经在服务器玩了%s'
     gold: '您拥有%s货币, 相当于%s颗钻石'
   miniGame:
@@ -360,6 +365,7 @@ ui:
     tip: '点击以传送'
     click: '点击以查看'
   friend:
+    booting: '正在启动好友列表'
     title: '好友列表'
     check: '点击以查看'
     click: '点击以交互'
@@ -387,6 +393,14 @@ ui:
       sharer: '分享者: %s'
     location:
       title: '玩家位置'
+  chart:
+    title: '玩家排行'
+    click: '点击以查看'
+    booting: '正在启动玩家排行'
+    pos: '第%s名'
+    self: '您的位置'
+    daily: '每日排行榜'
+    all: '总排行'
 welcome:
   1:
     title: '欢迎来到OpenCraft!'
@@ -586,6 +600,13 @@ npc:
     parConflit: '参数冲突: %s'
     returnWrongType: '%s的返回值类型错误'
 lobby:
+  like: '喜欢这个主城'
+  dislike: '不喜欢这个主城'
+  cancel: '点击以取消'
+  yours: '您的主城'
+  get:
+    like: '%s名玩家喜欢这个主城'
+    dislike: '%s名玩家不喜欢这个主城'
   warn:
     noSpawnpoint: '%s的主城没有设置出生点，传送到默认位置'
   error:
@@ -640,3 +661,7 @@ bank:
     1: '---以下是所有银行---'
     2: '最近的一个位于 %s'
     none: '未找到银行'
+
+chart:
+  award: '恭喜！您在昨天的每日排行中名列前茅，服务器奖励您%s货币'
+  showOff: '恭喜 %s 在%s的每日排行中获得第%s名！'

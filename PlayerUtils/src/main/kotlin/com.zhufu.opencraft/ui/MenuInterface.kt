@@ -42,7 +42,15 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 ItemStack(Material.PLAYER_HEAD).apply {
                     itemMeta = (itemMeta as SkullMeta).apply {
                         owningPlayer = Bukkit.getOfflinePlayer(player.uniqueId)
-                        setDisplayName(TextUtil.getColoredText(getter["ui.statics.face", player.name], GREEN))
+                        setDisplayName(TextUtil.getColoredText(getter["ui.statics.face.title", player.name], GREEN))
+                        val chart = info?.let { Game.dailyChart.indexOf(it) } ?: -1
+                        lore = listOf(
+                            getter["ui.statics.face.tip"].toTipMessage(),
+                            (if (chart != -1)
+                                getter["ui.statics.face.chart", chart + 1]
+                            else
+                                getter["ui.statics.face.noChart"]).toInfoMessage()
+                        )
                     }
                 }
             )
@@ -239,6 +247,19 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
 
     override fun onClick(event: InventoryClickEvent) {
         when (event.rawSlot) {
+            1 -> {
+                Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
+                    val info = player.info()
+                    if (info != null) {
+                        player.sendActionText(getter["ui.chart.booting"].toInfoMessage())
+                        val ui = ChartUI(plugin, info, this)
+                        Bukkit.getScheduler().callSyncMethod(plugin) {
+                            ui.show(info.player)
+                        }
+                    }
+                }
+                close()
+            }
             8 -> close()
             10 -> GameManager.joinPlayerCorrectly(player, "CW")
             11 -> GameManager.joinPlayerCorrectly(player, "TMS")
@@ -264,7 +285,14 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 if (info == null) {
                     close()
                 } else {
-                    FriendListUI(info, plugin, this).show(player)
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
+                        val ui = FriendListUI(info, plugin, this)
+                        player.sendActionText(getter["ui.friend.booting"].toInfoMessage())
+                        Bukkit.getScheduler().callSyncMethod(plugin) {
+                            ui.show(player)
+                        }
+                    }
+                    close()
                 }
             }
             28 -> {

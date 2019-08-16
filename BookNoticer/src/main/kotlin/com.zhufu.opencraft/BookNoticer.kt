@@ -50,9 +50,9 @@ class BookNoticer : JavaPlugin(), Listener {
     fun onPlayerLobby(event: PlayerTeleportedEvent) {
         if (event.to?.world != lobby)
             return
-        Bukkit.getScheduler().runTaskAsynchronously(this, Runnable {
+        Bukkit.getScheduler().runTaskLater(this, Runnable {
             getBook(event.player).show(event.player,true)
-        })
+        }, 5)
     }
 
     override fun onCommand(

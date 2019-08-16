@@ -38,8 +38,8 @@ class CustomTutorial : JavaPlugin() {
     }
 
     private fun showUI(player: Player) {
-        val pC = TutorialListener.mInstance.inCreation[player]
-        val pR = TutorialListener.mInstance.inRecording[player]
+        val pC = TutorialListener.instance.inCreation[player]
+        val pR = TutorialListener.instance.inRecording[player]
         if (pC != null && pR == null) {
             EditorUI(pC).show(player)
         } else if (pC == null && pR == null) {
@@ -72,8 +72,8 @@ class CustomTutorial : JavaPlugin() {
             if (args.isEmpty()) {
                 showUI(sender)
             } else {
-                val pC = TutorialListener.mInstance.inCreation[sender]
-                val pR = TutorialListener.mInstance.inRecording[sender]
+                val pC = TutorialListener.instance.inCreation[sender]
+                val pR = TutorialListener.instance.inRecording[sender]
                 when (args.first()) {
                     "reload" -> {
                         if (!sender.isOp) {
@@ -122,7 +122,7 @@ class CustomTutorial : JavaPlugin() {
                             sender.sendMessage(TextUtil.error("失败"))
                             return true
                         }
-                        TutorialListener.mInstance.removeCreator(sender)
+                        TutorialListener.instance.removeCreator(sender)
                         sender.sendMessage(TextUtil.success("完成"))
                     }
                     "saveas" -> {
@@ -146,9 +146,9 @@ class CustomTutorial : JavaPlugin() {
                         pC.isDraft = false
                         pC.name = args[1]
                         pC.id = TutorialManager.getNewID()
-                        TutorialManager.add(TutorialListener.mInstance.originProjectData[sender]!!)
+                        TutorialManager.add(TutorialListener.instance.originProjectData[sender]!!)
 
-                        TutorialListener.mInstance.removeCreator(sender)
+                        TutorialListener.instance.removeCreator(sender)
                         sender.sendMessage(TextUtil.success("已将教程另存为${args[1]}"))
                     }
                     "exit" -> {
@@ -166,13 +166,13 @@ class CustomTutorial : JavaPlugin() {
                             return true
                         }
                         if (!pC.isDraft) {
-                            TutorialManager[pC.id] = TutorialListener.mInstance.originProjectData[sender]!!
+                            TutorialManager[pC.id] = TutorialListener.instance.originProjectData[sender]!!
                                 .also { it.isDraft = false }
                             sender.sendMessage(TextUtil.info("不保存并退出"))
                         } else {
                             sender.sendMessage(TextUtil.info("教程已保存为草稿"))
                         }
-                        TutorialListener.mInstance.removeCreator(sender)
+                        TutorialListener.instance.removeCreator(sender)
                     }
 
                     "trigger" -> {
@@ -287,10 +287,10 @@ class CustomTutorial : JavaPlugin() {
             if (sender !is Player)
                 return mutableListOf()
 
-            TutorialListener.mInstance.inCreation[sender] ?: return mutableListOf()
+            TutorialListener.instance.inCreation[sender] ?: return mutableListOf()
 
             if (args.size == 1) {
-                val commands = mutableListOf("save", "saveas", "exit", "trigger","reload")
+                val commands = mutableListOf("save", "saveas", "exit", "trigger", "reload")
                 return if (args.first().isEmpty()) {
                     commands
                 } else {

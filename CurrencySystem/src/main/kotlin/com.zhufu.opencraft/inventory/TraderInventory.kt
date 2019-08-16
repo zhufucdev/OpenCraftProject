@@ -130,7 +130,7 @@ class TraderInventory(val player: Player) {
                     player,
                     SellingItemInfo(FlyWand(getter), price, 1),
                     TradeManager.getNewID(),
-                    CurrencySystem.mInstance
+                    CurrencySystem.instance
                 ).setOnPayListener { success ->
                     if (success) {
                         val info = player.info()!!
@@ -164,7 +164,7 @@ class TraderInventory(val player: Player) {
                     player,
                     SellingItemInfo(Portal(getter), Portal.PRICE.toLong(), 1),
                     TradeManager.getNewID(),
-                    CurrencySystem.mInstance
+                    CurrencySystem.instance
                 ).setOnPayListener { success ->
                     val info = player.info()!!
                     if (success) {
@@ -190,7 +190,7 @@ class TraderInventory(val player: Player) {
                     player,
                     SellingItemInfo(insurance, Insurance.PRICE.toLong(), 1),
                     TradeManager.getNewID(),
-                    CurrencySystem.mInstance
+                    CurrencySystem.instance
                 )
                     .setOnPayListener { success ->
                         if (success) {
@@ -216,7 +216,7 @@ class TraderInventory(val player: Player) {
             }
             current == donater -> {
                 player.closeInventory()
-                Bukkit.getScheduler().runTaskLater(CurrencySystem.mInstance, { _ ->
+                Bukkit.getScheduler().runTaskLater(CurrencySystem.instance, { _ ->
                     QRUtil.sendToPlayer(CurrencySystem.donation, player)
                 }, 20)
             }

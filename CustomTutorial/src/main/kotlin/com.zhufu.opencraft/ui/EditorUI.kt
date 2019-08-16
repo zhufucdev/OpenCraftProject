@@ -4,7 +4,6 @@ import com.zhufu.opencraft.*
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import org.bukkit.material.MaterialData
 import java.util.*
 
 class EditorUI(val project: TutorialManager.Tutorial)
@@ -77,13 +76,13 @@ class EditorUI(val project: TutorialManager.Tutorial)
     init {
         setOnItemClickListener { index, item ->
             close()
-            TutorialListener.mInstance.recorder(Bukkit.getPlayer(UUID.fromString(project.creator))!!,project[index])
+            TutorialListener.instance.recorder(Bukkit.getPlayer(UUID.fromString(project.creator))!!,project[index])
         }
         setOnToolbarItemClickListener { index, item ->
             when (index){
                 0 -> {
                     close()
-                    TutorialListener.mInstance.recorder(Bukkit.getPlayer(UUID.fromString(project.creator))!!,project.addNewStep())
+                    TutorialListener.instance.recorder(Bukkit.getPlayer(UUID.fromString(project.creator))!!,project.addNewStep())
                 }
                 1 -> {
                     close()
@@ -95,7 +94,7 @@ class EditorUI(val project: TutorialManager.Tutorial)
                 }
                 6 -> {
                     close()
-                    TutorialListener.mInstance.removeCreator(Bukkit.getPlayer(showingTo!!.uniqueId)!!)
+                    TutorialListener.instance.removeCreator(Bukkit.getPlayer(showingTo!!.uniqueId)!!)
                     TutorialManager.del(project.id)
                     showingTo!!.sendMessage(TextUtil.info("已删除该教程"))
                 }

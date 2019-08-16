@@ -2,6 +2,7 @@ package com.zhufu.opencraft.ui
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.player_community.MessagePool
+import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
@@ -85,7 +86,14 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
                     FriendInteractUI(plugin, friend, info, this).show()
                 } else {
                     adapter.addMode = true
-                    refresh()
+                    close()
+                    info.player.sendActionText(adapter.getter["ui.friend.booting"].toInfoMessage())
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
+                        Bukkit.getScheduler().callSyncMethod(plugin) {
+                            show(info.player)
+                        }
+                        refresh()
+                    }
                 }
             } else {
                 val player = adapter.strangers[index]

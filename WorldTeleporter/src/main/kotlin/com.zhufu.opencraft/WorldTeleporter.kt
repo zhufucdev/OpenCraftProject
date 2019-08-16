@@ -18,22 +18,20 @@ class WorldTeleporter : JavaPlugin() {
     private val customizedWorlds = ArrayList<String>()
 
     override fun onEnable() {
-        Bukkit.getScheduler().runTaskLater(this, { _ ->
-            config.getKeys(false).forEach {
-                val world = Bukkit.getWorld(it)
-                if (world == null) {
-                    if (!File(it).exists()) {
-                        logger.warning("World named $it doesn't exists. Excepting.")
-                        config.set(it, null)
-                    } else {
-                        logger.info("World named $it isn't loaded, but exists on file. Loading...")
-                        Bukkit.createWorld(WorldCreator.name(it))
-                        customizedWorlds.add(it)
-                    }
+        config.getKeys(false).forEach {
+            val world = Bukkit.getWorld(it)
+            if (world == null) {
+                if (!File(it).exists()) {
+                    logger.warning("World named $it doesn't exists. Excepting.")
+                    config.set(it, null)
+                } else {
+                    logger.info("World named $it isn't loaded, but exists on file. Loading...")
+                    Bukkit.createWorld(WorldCreator.name(it))
+                    customizedWorlds.add(it)
                 }
             }
-            saveConfig()
-        }, 5 * 20)
+        }
+        saveConfig()
 
         WorldManager.init(config)
     }

@@ -139,7 +139,8 @@ class UserManager : JavaPlugin(), Listener {
     fun onOpPrelogin(event: AsyncPlayerPreLoginEvent) {
         if (!Game.env.getBoolean("debug")
             && Bukkit.getOfflinePlayer(event.uniqueId).isOp
-            && !WebInfo.users.containsKey(event.address)) {
+            && !WebInfo.users.containsKey(event.address)
+        ) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                 OfflineInfo.findByUUID(event.uniqueId).let {
                     if (it != null) {
@@ -166,6 +167,9 @@ class UserManager : JavaPlugin(), Listener {
             info.logout()
             Bukkit.getPluginManager()
                 .callEvent(PlayerTeleportedEvent(event.player, null, PlayerLobbyManager[info].spawnPoint))
+            Bukkit.getScheduler().runTaskLater(this, { _ ->
+                Bukkit.getPluginManager().callEvent(PlayerLogoutEvent(info, false))
+            }, 5)
         }
     }
 

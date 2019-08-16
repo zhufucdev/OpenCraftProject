@@ -24,6 +24,8 @@ import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import kotlin.math.roundToInt
@@ -38,6 +40,8 @@ object NPCController : Listener {
     lateinit var currentBossBar: BossBar
     var difficulty: Long = 0
     var isCurrentBossAlive: Boolean = false
+        private set
+    var withOutEqu = false
         private set
     lateinit var mPlugin: Plugin
 
@@ -67,18 +71,17 @@ object NPCController : Listener {
         damageMap.clear()
         totalDamage = 0F
 
-        var isSpecial = false
         currentType = when (random.nextInt(7)) {
             0 -> EntityType.ZOMBIE
             1 -> EntityType.SKELETON
             2 -> EntityType.PIG_ZOMBIE
             3 -> {
-                isSpecial = true
+                withOutEqu = true
                 EntityType.SPIDER
             }
             4 -> EntityType.DROWNED
             5 -> {
-                isSpecial = true
+                withOutEqu = true
                 EntityType.BLAZE
             }
             else -> EntityType.WITHER_SKELETON
@@ -104,11 +107,11 @@ object NPCController : Listener {
         }
 
         currentNPC.apply {
-            if (!isSpecial) {
+            if (!withOutEqu) {
                 addTrait(equipmentForCurrent())
             }
             onSpawn {
-                if (isSpecial) {
+                if (withOutEqu) {
                     (entity as LivingEntity).apply {
                         val maxHealth = healthForSpecial()
                         getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue = maxHealth
@@ -151,13 +154,15 @@ object NPCController : Listener {
                 }
             }
             if (currentNPC.entity?.isDead == false) {
-                currentBossBar.progress = (currentNPC.entity as LivingEntity).healthRate()
+                currentBossBar.apply {
+                    progress = (currentNPC.entity as LivingEntity).healthRate()
+                }
             } else {
                 Bukkit.removeBossBar(BOSS_BAR_NAMESPACE)
                 task.cancel()
                 currentBossBar.removeAll()
             }
-        }, 0, 1)
+        }, 0, 5)
     }
 
     private fun equipmentForCurrent(): Equipment {
@@ -254,9 +259,13 @@ object NPCController : Listener {
     fun arrowSpreadForCurrent() = 1002 / (difficulty + 166F) + 6
     fun spinnerSpeedForCurrent() = 1025 / (difficulty + 40F)
     fun percentageToDropWeapon() = -100F / (difficulty + 249) + 0.8F
-    fun radiusForCurrent() = sin(difficulty / 3.0) * 40 + 70
+    fun percentageToDropEqui() = -100F / (difficulty + 999) + 0.2F
+    fun radiusForCurrent() = sin(difficulty / 3.0) + 16
     fun arrowDamageForCurrent() = -1200.0 / (difficulty + 299) + 6
     fun littleBossMaxSpawnCount() = -1008.0 / (difficulty + 111) + 10
+    fun expForCurrent() = -10000.0 / (difficulty - 9.0 / 59) + 12000
+    fun fireSpawnRateForCurrent() = -56F / (difficulty + 79) + 0.8F
+    fun strengthForCurrent() = (1000.0 / (difficulty + 199) + 6).roundToInt()
 
     val spawnListeners = HashMap<NPC, () -> Unit>()
     @EventHandler
@@ -298,6 +307,26 @@ object NPCController : Listener {
         } else if (::currentNPC.isInitialized && event.npc == currentNPC) {
             if (Base.trueByPercentages(percentageToDropWeapon()))
                 event.drops.add(getWeaponForCurrent(0.5))
+            if (!withOutEqu)
+                Equipments.values().forEach { equipment ->
+                    if (Base.trueByPercentages(percentageToDropEqui()))
+                        event.drops.add(
+                            event.npc.getTrait(Equipment::class.java)[equipment.index].also {
+                                (it.itemMeta as Damageable).damage =
+                                    (Material.DIAMOND_CHESTPLATE.maxDurability * random.nextDouble(
+                                        0.1,
+                                        1.0
+                                    )).roundToInt()
+                                it.updateItemMeta<ItemMeta> {
+                                    val targetEnch = Enchantment.PROTECTION_ENVIRONMENTAL
+                                    val oldLvl = getEnchantLevel(targetEnch)
+                                    removeEnchant(targetEnch)
+                                    addEnchant(targetEnch, (oldLvl * 0.05).roundToInt(), true)
+                                }
+                            }
+                        )
+                }
+            event.droppedExp = expForCurrent().roundToInt()
             currentNPC.storedLocation.chunk.isForceLoaded = false
             isCurrentBossAlive = false
 

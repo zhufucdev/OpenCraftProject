@@ -14,13 +14,13 @@ import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.trait.trait.Equipment
+import net.citizensnpcs.api.util.MemoryDataKey
 import org.bukkit.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.inventory.ItemStack
@@ -86,7 +86,7 @@ class CurrencySystem : JavaPlugin() {
             }
         var password = ""
 
-        lateinit var mInstance: CurrencySystem
+        lateinit var instance: CurrencySystem
 
         fun showTutorial(player: Player) {
             Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore, Runnable {
@@ -149,7 +149,7 @@ class CurrencySystem : JavaPlugin() {
                     .setDirection(Vector(0, -90, 0))
                 val l3Bottom = l3Top.clone().add(Vector(0.0, -15.0, 0.0))
                 val scheduler = Bukkit.getScheduler()
-                scheduler.runTask(mInstance) { _ ->
+                scheduler.runTask(instance) { _ ->
                     player.teleport(l3Top)
                 }
                 player.sendTitle(
@@ -489,7 +489,7 @@ class CurrencySystem : JavaPlugin() {
     }
 
     override fun onEnable() {
-        mInstance = this
+        instance = this
 
         val serverTradeConfig = readServerTradeConfig()
         transMap[Material.COAL] = serverTradeConfig.getLong("coal", -1)
@@ -513,21 +513,38 @@ class CurrencySystem : JavaPlugin() {
         }
 
         if (server.pluginManager.isPluginEnabled("Citizens")) {
-            CitizensAPI.getNPCRegistry().forEach {
-                if (it.name == EveryThing.traderInventoryName || it.name == EveryThing.backNPCName)
+            CitizensAPI.getNPCRegistry().toList().forEach {
+                if (it.data().get<Boolean?>("trade") == true)
                     it.destroy()
             }
 
+            fun uuidFor(npc: String) = config.getString(npc, null).let {
+                if (it != null) UUID.fromString(it)!!
+                else {
+                    val r = UUID.randomUUID()
+                    config.set(npc, r.toString())
+                    r!!
+                }
+            }
+
+            val traderUUID = uuidFor("trader")
+            val backUUID = uuidFor("back")
+
             npc = CitizensAPI.getNPCRegistry()
-                .createNPC(EntityType.PLAYER, EveryThing.traderInventoryName).apply {
+                .createNPC(EntityType.PLAYER, traderUUID, 0, EveryThing.traderInventoryName).apply {
                     spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
                     addTrait(Equipment().apply {
                         equipment[0] = ItemStack(Material.EMERALD)
                     })
+                    data()["trade"] = true
+                    data().saveTo(MemoryDataKey())
                 }
-            npcBack = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, EveryThing.backNPCName).apply {
-                spawn(Location(tradeWorld, 8.5, TradeWorldGenerator.base + 2.0, 4.0))
-            }
+            npcBack =
+                CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, backUUID, 1, EveryThing.backNPCName).apply {
+                    spawn(Location(tradeWorld, 8.5, TradeWorldGenerator.base + 2.0, 4.0))
+                    data()["trade"] = true
+                    data().saveTo(MemoryDataKey())
+                }
 
             OfflineInfo.forEach {
                 try {
@@ -552,14 +569,13 @@ class CurrencySystem : JavaPlugin() {
     }
 
     override fun onDisable() {
-        npc?.destroy()
-        npcBack?.destroy()
         TradeManager.saveToFile(File(tradeRoot, "tradeInfos.json"))
         BankManager.onClose()
-        tradeWorld.entities.forEach {
-            if (it is Item)
-                it.remove()
-        }
         NPCItemInventory.npcList.forEach { it.destroy() }
+        CitizensAPI.getNPCRegistry().toList().forEach {
+            if (it.data().get<Boolean?>("trade") == true)
+                it.destroy()
+            it.data()
+        }
     }
 }

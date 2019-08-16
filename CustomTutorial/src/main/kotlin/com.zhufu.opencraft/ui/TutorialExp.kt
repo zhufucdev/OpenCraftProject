@@ -5,7 +5,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.material.MaterialData
 import java.util.*
 
 class TutorialExp(val player: Player)
@@ -56,12 +55,12 @@ class TutorialExp(val player: Player)
             if (index == e.size){
                 val r = TutorialManager.Tutorial(player.uniqueId.toString(),"未命名")
                 TutorialManager.addAsDraft(r)
-                TutorialListener.mInstance.creator(player,r)
+                TutorialListener.instance.creator(player,r)
             }
             else{
                 val t = e[index]
                 if (t.creator == player.uniqueId.toString()){
-                    TutorialListener.mInstance.creator(player,t)
+                    TutorialListener.instance.creator(player,t)
                 }else{
                     close()
                     t.play(player,true)

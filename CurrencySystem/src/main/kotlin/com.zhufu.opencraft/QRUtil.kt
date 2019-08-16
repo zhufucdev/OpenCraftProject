@@ -77,7 +77,7 @@ object QRUtil : Listener {
     }
 
     fun sendToPlayer(image: File,player: Player){
-        Bukkit.getScheduler().runTaskAsynchronously(CurrencySystem.mInstance, Runnable{
+        Bukkit.getScheduler().runTaskAsynchronously(CurrencySystem.instance, Runnable{
             if (!CurrencySystem.isServerReady){
                 player.sendMessage(TextUtil.error("抱歉，但您不能在此时进行捐赠，因为主机与服务器还没有建立连接"))
                 player.sendMessage(TextUtil.tip("如有需要，请联系服务器管理员"))

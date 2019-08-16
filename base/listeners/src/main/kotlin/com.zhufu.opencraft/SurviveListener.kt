@@ -17,12 +17,14 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
+import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.*
@@ -36,16 +38,16 @@ import kotlin.math.roundToInt
 class SurviveListener(private val plugin: JavaPlugin) : Listener {
     companion object {
         lateinit var INSTANCE: SurviveListener
-        fun Player.solveSurvivorRequest(info: Info) {
+        fun Player.solveSurvivorRequest(info: Info): Boolean {
             isInvulnerable = true
             if (!info.isSurveyPassed && info.remainingDemoTime <= 0) {
                 PlayerManager.onPlayerOutOfDemo(info)
-                return
+                return false
             }
             val getter = getLangGetter(player?.info())
             if (!info.isLogin) {
                 info.player.info(getter["user.login1"])
-                return
+                return false
             }
 
             fun randomSpawn(inventory: DualInventory) {
@@ -66,7 +68,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             if (info.isSurvivor) {
                 if (info.status == Surviving) {
                     isInvulnerable = false
-                    return
+                    return false
                 }
                 val inventory = info.inventory.create("survivor")
 
@@ -116,7 +118,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     info.tag.set("surviveSpawn", l)
                 } else if (!isLocationCorrect && !isSpawnCorrect) {
                     reset()
-                    return
+                    return true
                 }
 
                 try {
@@ -142,6 +144,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             } else {
                 randomSpawn(info.inventory)
             }
+            return true
         }
     }
 
@@ -420,9 +423,10 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             event.isCancelled = true
             sendPlayerOutOfSpawnMessage(event.player)
         } else if (info.status == InLobby && event.block.world == lobby) {
-            if (!PlayerLobbyManager.isInOwnLobby(info)) {
+            if (!PlayerLobbyManager.isInOwnLobby(info) && !event.player.isOp) {
                 event.isCancelled = true
-                event.player.error(info.getter()["lobby.error.breakNotPermitted"])
+                event.player.sendActionText(info.getter()["lobby.error.breakNotPermitted"].toErrorMessage())
+                ServerCaller["SolveLobbyVisitor"]!!(listOf(info))
             }
         }
     }
@@ -452,9 +456,10 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 ) {
                     event.isCancelled = true
                 }
-            } else {
+            } else if (!event.player.isOp) {
                 event.isCancelled = true
-                event.player.error(info.getter()["lobby.error.buildNotPermitted"])
+                event.player.sendActionText(info.getter()["lobby.error.buildNotPermitted"].toErrorMessage())
+                ServerCaller["SolveLobbyVisitor"]!!(listOf(info))
             }
         }
     }
@@ -518,7 +523,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                             )
                         )
                     } else {
-                        event.player.solveSurvivorRequest(info)
+                        event.isCancelled = !event.player.solveSurvivorRequest(info)
                     }
                 }
             }
@@ -577,5 +582,31 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         //if (isNetherPortal)
         //    location = event.portalTravelAgent.findOrCreate(location)
         event.to = location
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onPlayerDamage(event: EntityDamageByEntityEvent) {
+        if (!event.isCancelled) {
+            val damager = event.damager
+            fun handlePlayer(damager: Player) {
+                damager.info()?.apply {
+                    if (status == Surviving || status == MiniGaming) {
+                        statics?.let {
+                            it.damageToday += event.finalDamage
+                        }
+                        damageDone += event.finalDamage
+                    }
+                }
+            }
+
+            if (damager is Player) {
+                handlePlayer(damager)
+            } else if (damager is Projectile) {
+                val shooter = damager.shooter
+                if (shooter is Player) {
+                    handlePlayer(shooter)
+                }
+            }
+        }
     }
 }

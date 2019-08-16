@@ -33,7 +33,7 @@ class AsyncPlayerPreLoginListener(private val mPlugin: Skinny) : Listener {
             }
         }
 
-        //Added by zhufucomcom for server use.
+        //Added by zhufucdev for server use.
         val info = PlayerManager.findOfflinePlayer(preLoginEvent.uniqueId)
         if (skin != null) {
             if (skin.isCustomize && info != null)

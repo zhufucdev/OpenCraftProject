@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
 import java.util.ArrayList
 
-abstract class ResultRuler() : GameRuler() {
+abstract class ResultRuler : GameRuler() {
     abstract val winner: GameBase.Team
 
     override fun getAllowPVP(): Boolean = false

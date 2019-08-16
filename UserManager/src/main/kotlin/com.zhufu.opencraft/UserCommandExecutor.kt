@@ -3,6 +3,7 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.Base.Extend.toPrettyString
 import com.zhufu.opencraft.events.*
 import com.zhufu.opencraft.inventory.PaymentDialog
+import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -234,6 +235,11 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
             thisInfo.inventory.create("survivor").set("location", player.location)
             ServerCaller["SolvePlayerLogin"]!!(listOf(thisInfo))
         } else {
+            if (targetInfo.status == Info.GameStatus.InLobby) {
+                thisInfo.inventory.create(DualInventory.RESET).load()
+                PlayerLobbyManager.targetMap[this] = PlayerLobbyManager[targetInfo]
+            }
+
             player.isInvulnerable = true
             teleport(player)
 

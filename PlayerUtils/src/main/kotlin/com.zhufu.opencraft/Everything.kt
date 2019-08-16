@@ -30,6 +30,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 object Everything : Listener {
@@ -67,11 +68,9 @@ object Everything : Listener {
             fun validate(a: Int, b: Int, x: Int) =
                 if (a < b) x in a..b else x in b..a
 
-            return validate(from.blockX, to.blockX, location.blockX) && validate(
-                from.blockY,
-                to.blockY,
-                location.blockY
-            ) && validate(from.blockZ, to.blockZ, location.blockZ)
+            return validate(from.blockX, to.blockX, location.blockX)
+                    && validate(from.blockY, to.blockY, location.blockY)
+                    && validate(from.blockZ, to.blockZ, location.blockZ)
         }
 
         fun fill(world: World, material: Material) {
@@ -249,15 +248,15 @@ object Everything : Listener {
             player.sendMessage(TextUtil.error("游戏结束: 操作已超时"))
         } else {
             val maxXZ: Int
-            val maxY = Math.abs(game.from.blockY - game.to.blockY)
+            val maxY = abs(game.from.blockY - game.to.blockY)
 
             val add: Vector
             if (game.from.blockX == game.to.blockX) {
                 add = Vector(0, 0, 1)
-                maxXZ = Math.abs(game.from.blockZ - game.to.blockZ)
+                maxXZ = abs(game.from.blockZ - game.to.blockZ)
             } else {
                 add = Vector(1, 0, 0)
-                maxXZ = Math.abs(game.from.blockX - game.to.blockX)
+                maxXZ = abs(game.from.blockX - game.to.blockX)
             }
             val a = base.clone()
             for (y in 1..maxY) {
@@ -286,6 +285,36 @@ object Everything : Listener {
         cube.type = "TP"
         cube.savedData.addProperty("owner", owner)
         cubes.add(cube)
+    }
+
+    fun createCRT(location: Location) {
+        val base = location.blockLocation.add(Vector(0, -1, 0))
+        val yaw = abs(location.yaw.roundToInt() % 360)
+        val cube: Cube
+        mPlugin!!.logger.info("Yaw is $yaw")
+        when (yaw) {
+            in 315..360, in 0 until 45 -> {
+                cube = Cube(base.clone().add(Vector(1, 0, 0)), base.clone().add(Vector(-1, 0, 0)))
+                cube.savedData.addProperty("yaw", 0)
+            }
+            in 45 until 135 -> {
+                cube = Cube(base.clone().add(Vector(0, 0, 1)), base.clone().add(Vector(0, 0, -1)))
+                cube.savedData.addProperty("yaw", 270)
+            }
+            in 135 until 225 -> {
+                cube = Cube(base.clone().add(Vector(1, 0, 0)), base.clone().add(Vector(-1, 0, 0)))
+                cube.savedData.addProperty("yaw", 180)
+            }
+            else -> {
+                cube = Cube(base.clone().add(Vector(0, 0, 1)), base.clone().add(Vector(0, 0, -1)))
+                cube.savedData.addProperty("yaw", 90)
+            }
+        }
+        cube.type = "CRT"
+        cube.fill(location.world!!, Material.BLUE_CONCRETE)
+        cubes.add(cube)
+
+        ChartHandler.spawnNPC(cube, Game.dailyChart)
     }
 
     private val clickMap = HashMap<Player, Pair<Int, Long>>()
@@ -350,10 +379,18 @@ object Everything : Listener {
 
     @EventHandler
     fun onBlockBreak(event: BlockBreakEvent) {
-        cubes.removeAll {
-            if (it.type != "TP")
-                it.contains(event.block.location)
-            else false
+        cubes.removeIf {
+            if (it.type != "TP") {
+                if (it.type == "CRT" && it.contains(event.block.location)) {
+                    if (event.player.isOp) {
+                        ChartHandler.remove(it)
+                        true
+                    } else {
+                        event.isCancelled = true
+                        false
+                    }
+                } else it.contains(event.block.location)
+            } else false
         }
     }
 
@@ -366,9 +403,9 @@ object Everything : Listener {
                     for (i in 0 until event.newBookMeta.pageCount) {
                         val text = event.newBookMeta.pages[i]
                         var index = 0
-                        while (index < text.length){
+                        while (index < text.length) {
                             val c = text[index]
-                            if (c != TextUtil.KEY || (index < text.length && !text[index + 1].isDigit())){
+                            if (c != TextUtil.KEY || (index < text.length && !text[index + 1].isDigit())) {
                                 append(c)
                             } else {
                                 index++
@@ -385,9 +422,10 @@ object Everything : Listener {
     }
 
     @EventHandler
-    fun onDropItem(event: PlayerDropItemEvent){
+    fun onDropItem(event: PlayerDropItemEvent) {
         if (event.itemDrop.itemStack.itemMeta!!.displayName == event.player.info().getter()["scripting.ui.new"].toInfoMessage()
-            && originItemMap.containsKey(event.player.uniqueId)){
+            && originItemMap.containsKey(event.player.uniqueId)
+        ) {
             event.isCancelled = true
 
             val pair = originItemMap[event.player.uniqueId]!!

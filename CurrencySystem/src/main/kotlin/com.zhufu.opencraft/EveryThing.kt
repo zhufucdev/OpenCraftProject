@@ -164,10 +164,10 @@ object EveryThing : Listener {
         if (event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK) {
             val itemInHand = event.player.inventory.itemInMainHand
             if (event.player.world == tradeWorld && itemInHand.type == Material.COMPASS)
-                VisitorInventory(CurrencySystem.mInstance, event.player)
+                VisitorInventory(CurrencySystem.instance, event.player)
             else if (SpecialItem.isSpecial(itemInHand)) {
                 if (FlyWand.isThis(itemInHand)) {
-                    FlyWandInventory(event.player, CurrencySystem.mInstance)
+                    FlyWandInventory(event.player, CurrencySystem.instance)
                 }
             }
         }

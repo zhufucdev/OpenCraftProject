@@ -5,6 +5,7 @@ import com.zhufu.opencraft.Base.Extend.isDigit
 import com.zhufu.opencraft.Base.endWorld
 import com.zhufu.opencraft.Base.lobby
 import com.zhufu.opencraft.Base.netherWorld
+import com.zhufu.opencraft.Base.publicMsgPool
 import com.zhufu.opencraft.Base.spawnWorld
 import com.zhufu.opencraft.Base.surviveWorld
 import com.zhufu.opencraft.Game.env
@@ -48,6 +49,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
+import kotlin.concurrent.fixedRateTimer
 import kotlin.math.roundToLong
 
 class Core : JavaPlugin(), Listener {
@@ -57,6 +59,7 @@ class Core : JavaPlugin(), Listener {
 
     private var reloadTask: BukkitTask? = null
     private var saveTask: BukkitTask? = null
+    private var awardTask: Timer? = null
     private lateinit var scoreBoardTask: BukkitTask
     override fun onEnable() {
         //World initializations
@@ -132,6 +135,48 @@ class Core : JavaPlugin(), Listener {
                 spawnNPC()
             }, 40)
         }
+
+        fun startAward() {
+            fun Pair<Int, Int>.smaller() = if (first < second) first else second
+            val yesterday = SimpleDateFormat("MM/dd").format(Date())
+
+            awardTask = fixedRateTimer(
+                name = "awardTask",
+                startAt = Date(Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.DAY_OF_YEAR, get(Calendar.DAY_OF_YEAR) + 1)
+                }.timeInMillis),
+                period = 10
+            ) {
+                val chart = Game.dailyChart
+                for (i in 0 .. (2 to chart.lastIndex).smaller()) {
+                    val award = -300 * i + 1000
+                    chart[i].apply {
+                        messagePool.add(
+                            text = "\${chart.award,$award}",
+                            type = MessagePool.Type.System
+                        ).apply {
+                            recordTime()
+                            if (isOnline)
+                                sendTo(onlinePlayerInfo!!)
+                        }
+                        publicMsgPool.add(
+                            text = "\$success\${chart.showOff,$name,$yesterday,${i + 1}}",
+                            type = MessagePool.Type.OneTime,
+                            extra = YamlConfiguration().apply {
+                                set(name, true)
+                            }
+                        )
+                        currency += award
+                    }
+                }
+                startAward()
+                this.cancel()
+            }
+        }
+        startAward()
     }
 
     override fun onDisable() {
@@ -215,7 +260,7 @@ class Core : JavaPlugin(), Listener {
                     }
                     if (info.status != Info.GameStatus.InLobby && info.status != Info.GameStatus.InTutorial) {
                         info.gameTime += 2 * 1000L
-                        ServerStatics.onlineTime += 2 * 1000L
+                        ServerStatics.onlineTime += 2
                     }
 
                     if (info.isInBuilderMode) {
@@ -451,10 +496,14 @@ class Core : JavaPlugin(), Listener {
                         sender.sendMessage(TextUtil.error("请给出原因"))
                         return false
                     }
+                    val message = TextUtil.info(args[1])
                     server.onlinePlayers.forEach {
-                        it.sendTitle(TextUtil.error("服务器即将关闭"), TextUtil.info(args[1]), 7, 1000, 7)
+                        it.sendTitle(TextUtil.error("服务器即将关闭"), message, 7, 1000, 7)
                     }
                     Bukkit.getScheduler().runTaskLater(this, Runnable {
+                        Bukkit.getOnlinePlayers().forEach {
+                            it.kickPlayer(message)
+                        }
                         server.shutdown()
                     }, (args[1].length * 0.2 * 20).roundToLong())
                 }

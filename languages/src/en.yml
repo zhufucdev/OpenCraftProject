@@ -167,6 +167,7 @@ player:
   join: "%s joined the game."
   joinGame: "%s joined %s."
   left: "%s left the game."
+  unknownName: 'Unknown name'
   warn:
     badNet: '%s is now logging in. However, with his network not good, this may take a few seconds.'
   error:
@@ -267,7 +268,11 @@ ui:
     sec: "s"
   statics:
     title: "Server Statics"
-    face: "Welcome, %s"
+    face:
+      title: "Welcome, %s"
+      tip: "Click to check player charts."
+      chart: "You are top %s in daily charts."
+      noChar: "You doesn't join the charts."
     clock: "You have played in server for %s."
     gold: "You own %s coin(s), which equals %s diamonds."
   miniGame:
@@ -319,6 +324,7 @@ ui:
     tip: 'Click to teleport.'
     click: 'Click to check.'
   friend:
+    booting: 'Booting Friend List'
     title: 'Friend List'
     check: 'Click to check.'
     click: 'Click to interact.'
@@ -346,6 +352,14 @@ ui:
       sharer: 'Sharer: %s'
     location:
       title: 'Player Location'
+  chart:
+    title: 'Player Charts'
+    click: 'Click to check.'
+    booting: 'Booting Player Charts'
+    pos: 'Top %s'
+    self: 'You Are Here'
+    daily: 'Daily Charts'
+    all: 'Global Charts'
 trade:
   tutorial:
     1:
@@ -567,6 +581,13 @@ npc:
     parConflict: "Parameter conflict: %s."
     returnWrongType: "%s's return is of a wrong type."
 lobby:
+  like: 'Like this lobby'
+  dislike: 'Dislike this lobby'
+  cancel: 'Click to cancel.'
+  yours: 'Your Lobby'
+  get:
+    like: '%s players like this lobby.'
+    dislike: '%s players dislike this lobby.'
   warn:
     noSpawnpoint: "%s's lobby doesn't have a spawn point. Teleporting to the default location..."
   error:
@@ -620,3 +641,7 @@ bank:
     1: '---Here are all banks---'
     2: 'The nearest one is at %s.'
     none: 'No bank was found.'
+
+chart:
+  award: "Congratulations! You've done a top job in yesterday's Daily Charts. You'll receive %s as a award."
+  showOff: "Congratulations to %s1 on getting top %s3 in charts of %s2!"

@@ -5,7 +5,7 @@ import java.io.File
 import java.nio.file.Paths
 import java.util.*
 
-class RegisteredInfo(uuid: UUID) : WebInfo(false, uuid) {
+open class RegisteredInfo(uuid: UUID, createNew: Boolean = false) : WebInfo(createNew, uuid) {
     companion object {
         fun exists(uuid: UUID): Boolean {
             val file = Paths.get("plugins", "tag", "$uuid.yml").toFile()
@@ -21,10 +21,30 @@ class RegisteredInfo(uuid: UUID) : WebInfo(false, uuid) {
     }
 
     override val tagFile: File
-        get() = Paths.get("plugins", "tag", "$uuid.yml").toFile()
+        get() = Paths.get("plugins", "tag", "$uuid.yml").toFile().also { register ->
+            if (!register.exists()) {
+                val preregister =
+                    Paths.get(
+                        register.parent, "preregister", "${offlinePlayer.name}.yml"
+                    ).toFile()
+                if (preregister.exists()) {
+                    preregister.apply {
+                        renameTo(register)
+                        delete()
+                    }
+                }
+            }
+        }
     override val playerDir: File
         get() = Paths.get("plugins", "playerDir", uuid.toString()).toFile().also {
             if (!it.exists()) it.mkdirs()
+            val preregister = Paths.get(it.parentFile.path, "preregister", uuid.toString()).toFile()
+            if (preregister.exists()) {
+                if (it.exists()) it.deleteRecursively()
+                preregister.renameTo(it)
+            } else {
+                if (!it.exists()) it.mkdirs()
+            }
         }
 
     override val id: String

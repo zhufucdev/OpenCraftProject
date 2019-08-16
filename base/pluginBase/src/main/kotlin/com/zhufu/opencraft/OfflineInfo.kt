@@ -1,10 +1,8 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.player_community.PlayerStatics
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
-import javax.security.auth.DestroyFailedException
 
 open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(createNew, uuid) {
     companion object {
@@ -86,12 +84,7 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
                 }
             }
 
-
     override fun destroy() {
-        if (isDestroyed) {
-            throw DestroyFailedException()
-        }
-        PlayerStatics.remove(uuid!!)
         cacheList.removeAll { it.uuid == uuid }
         super.destroy()
     }

@@ -66,7 +66,10 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         1 -> {
                             val friend = info.friendship[args.first()]
                             if (friend != null) {
-                                friend.printStatics(sender, getter)
+                                if (friend.isFriend)
+                                    friend.printStatics(sender, getter)
+                                else
+                                    sender.error(getter["user.friend.error.notAccepted", args.first()])
                             } else {
                                 sender.error(getter["user.friend.error.noSuchFriend", args.first()])
                             }

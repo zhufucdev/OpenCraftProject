@@ -19,14 +19,15 @@ class PlayerUtil : JavaPlugin() {
     override fun onEnable() {
         Everything.init(this)
         PortalHandler.init(this)
+        ChartHandler.init(this)
 
         ServerCaller["SolveLobbyVisitor"] = {
             val info = (it.firstOrNull()
                 ?: throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
             info.player.sendActionText(info.getter()["ui.visitor.booting"].toInfoMessage())
             Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
-                val ui = LobbyVisitor(this,info)
-                Bukkit.getScheduler().runTask(this) { _ ->
+                val ui = LobbyVisitor(this, info)
+                Bukkit.getScheduler().callSyncMethod(this) {
                     ui.show(info.player)
                 }
             }
@@ -36,6 +37,7 @@ class PlayerUtil : JavaPlugin() {
     override fun onDisable() {
         Everything.onServerClose()
         PortalHandler.onServerClose()
+        ChartHandler.cleanUp()
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -49,35 +51,41 @@ class PlayerUtil : JavaPlugin() {
                 sender.error(getter["command.error.playOnly"])
                 return true
             }
-            if (args.size < 7) {
-                sender.error(getter["command.error.usage"])
-                return false
-            }
-            val x1 = args[1].toIntOrNull()
-            val y1 = args[2].toIntOrNull()
-            val z1 = args[3].toIntOrNull()
-            val x2 = args[4].toIntOrNull()
-            val y2 = args[5].toIntOrNull()
-            val z2 = args[6].toIntOrNull()
-            if (x1 == null || y1 == null || z1 == null || x2 == null || y2 == null || z2 == null) {
-                sender.sendMessage(TextUtil.error("坐标值必须为整数"))
-                return true
-            }
-            val from = Location(sender.world, x1.toDouble(), y1.toDouble(), z1.toDouble())
-            val to = Location(sender.world, x2.toDouble(), y2.toDouble(), z2.toDouble())
-            when (args.first()) {
-                "DTWB" -> {
-                    Everything.createDTWB(from, to)
+            if (args.isNotEmpty()) {
+                if (args.first() == "CRT") {
+                    Everything.createCRT(sender.location)
                 }
-                "RP" -> {
-
-                }
-                "TP" -> {
-                    Everything.createTP(from, to)
-                }
-                else -> {
-                    sender.error(getLang(sender, "command.error.usage"))
+            } else {
+                if (args.size < 7) {
+                    sender.error(getter["command.error.usage"])
                     return false
+                }
+                val x1 = args[1].toIntOrNull()
+                val y1 = args[2].toIntOrNull()
+                val z1 = args[3].toIntOrNull()
+                val x2 = args[4].toIntOrNull()
+                val y2 = args[5].toIntOrNull()
+                val z2 = args[6].toIntOrNull()
+                if (x1 == null || y1 == null || z1 == null || x2 == null || y2 == null || z2 == null) {
+                    sender.sendMessage(TextUtil.error("坐标值必须为整数"))
+                    return true
+                }
+                val from = Location(sender.world, x1.toDouble(), y1.toDouble(), z1.toDouble())
+                val to = Location(sender.world, x2.toDouble(), y2.toDouble(), z2.toDouble())
+                when (args.first()) {
+                    "DTWB" -> {
+                        Everything.createDTWB(from, to)
+                    }
+                    "RP" -> {
+
+                    }
+                    "TP" -> {
+                        Everything.createTP(from, to)
+                    }
+                    else -> {
+                        sender.error(getLang(sender, "command.error.usage"))
+                        return false
+                    }
                 }
             }
         } else if (command.name == "pu") {

@@ -14,6 +14,7 @@ import org.bukkit.permissions.ServerOperator
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
+import javax.security.auth.DestroyFailedException
 import javax.security.auth.Destroyable
 import kotlin.collections.HashMap
 
@@ -177,7 +178,10 @@ abstract class ServerPlayer(
 
     var currency: Long
         get() = tag.getLong("currency", 0)
-        set(value) = tag.set("currency", value)
+        set(value) {
+            statics?.setCurrency(value)
+            tag.set("currency", value)
+        }
     var territoryID: Int
         get() = tag.getInt("territoryID", -1).let {
             if (it == -1) {
@@ -201,6 +205,9 @@ abstract class ServerPlayer(
     var gameTime: Long
         get() = tag.getLong("gameTime", 0)
         set(value) = tag.set("gameTime", value)
+    var damageDone: Double
+        get() = tag.getDouble("damage", 0.0)
+        set(value) = tag.set("damage", value)
     val remainingDemoTime: Long
         get() = 90 * 60 * 1000L - gameTime
     var remainingSurveyChance: Int
@@ -249,11 +256,10 @@ abstract class ServerPlayer(
         set(value) {
             tag.set("isSurvivor", value)
         }
-    val skullItem get() = ItemStack(Material.PLAYER_HEAD).updateItemMeta<SkullMeta> {
-        Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore) { _ ->
+    val skullItem
+        get() = ItemStack(Material.PLAYER_HEAD).updateItemMeta<SkullMeta> {
             owningPlayer = offlinePlayer
         }
-    }
 
     override fun isOp(): Boolean = try {
         offlinePlayer.isOp
@@ -274,10 +280,17 @@ abstract class ServerPlayer(
     private var isDestroyed = false
     override fun isDestroyed(): Boolean = isDestroyed
     override fun destroy() {
+        if (isDestroyed) {
+            throw DestroyFailedException()
+        }
+
         saveTag()
         friendship.destroy()
         MessagePool.remove(this)
-        if (uuid != null) memory.remove(uuid)
+        if (uuid != null) {
+            memory.remove(uuid)
+            PlayerStatics.remove(uuid)
+        }
         isDestroyed = true
     }
 
