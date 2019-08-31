@@ -236,8 +236,11 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
             ServerCaller["SolvePlayerLogin"]!!(listOf(thisInfo))
         } else {
             if (targetInfo.status == Info.GameStatus.InLobby) {
-                thisInfo.inventory.create(DualInventory.RESET).load()
-                PlayerLobbyManager.targetMap[this] = PlayerLobbyManager[targetInfo]
+                thisInfo.apply {
+                    inventory.create(DualInventory.RESET).load()
+                    status = Info.GameStatus.InLobby
+                }
+                PlayerLobbyManager[targetInfo].tpHere(this)
             }
 
             player.isInvulnerable = true
@@ -351,6 +354,19 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     return true
                 }
                 if (args.size == 2 && args[1] == "back") {
+                    val dest = try {
+                        info.tag.getSerializable("surviveSpawn", Location::class.java)
+                            ?: throw IllegalArgumentException()
+                    } catch (e: Exception) {
+                        sender.sendMessage(
+                            arrayOf(
+                                TextUtil.error(getter["user.error.spawnpointNotFound"]),
+                                getter["gameWarn"]
+                            )
+                        )
+                        return true
+                    }
+                    dest.chunk.load()
                     PaymentDialog(
                         sender,
                         SellingItemInfo(
@@ -365,17 +381,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     )
                         .setOnPayListener { success ->
                             if (success) {
-                                val dest = try {
-                                    info.tag.getSerializable("surviveSpawn", Location::class.java)
-                                } catch (e: Exception) {
-                                    sender.sendMessage(
-                                        arrayOf(
-                                            TextUtil.error(getter["user.error.spawnpointNotFound"]),
-                                            getter["gameWarn"]
-                                        )
-                                    )
-                                    return@setOnPayListener false
-                                }
+
                                 val event =
                                     PlayerTeleportedEvent(sender, sender.location, dest)
                                 Bukkit.getPluginManager().callEvent(event)
@@ -460,6 +466,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
 
                 fun gotoCheckpoint(info: ServerPlayer, id: String): Boolean {
                     val point = info.checkpoints.firstOrNull { it.name == id } ?: return false
+                    point.location.chunk.load()
                     PaymentDialog(
                         sender,
                         SellingItemInfo(

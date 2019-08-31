@@ -12,3 +12,6 @@ commands:
   pu:
     usage: /pu
     description: 玩家工具，显示一个交互界面
+  lobby:
+    usage: /lobby <玩家ID> [go|permit|forbid]
+    description: 查看或拜访某人的主城，授权或禁止某人某人在主城协同建筑。

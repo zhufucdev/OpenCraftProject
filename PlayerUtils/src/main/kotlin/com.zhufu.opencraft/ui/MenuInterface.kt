@@ -286,8 +286,8 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                     close()
                 } else {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
-                        val ui = FriendListUI(info, plugin, this)
                         player.sendActionText(getter["ui.friend.booting"].toInfoMessage())
+                        val ui = FriendListUI(info, plugin, this)
                         Bukkit.getScheduler().callSyncMethod(plugin) {
                             ui.show(player)
                         }

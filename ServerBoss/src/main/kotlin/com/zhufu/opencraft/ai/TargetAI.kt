@@ -14,6 +14,7 @@ import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
@@ -22,7 +23,13 @@ import org.bukkit.projectiles.ProjectileSource
 import org.bukkit.util.Vector
 import kotlin.math.roundToInt
 
-class TargetAI(val npc: NPC, private val radius: Double, private val difficulty: Long, private val plugin: Plugin) :
+class TargetAI(
+    val npc: NPC,
+    private val radius: Double,
+    private val difficulty: Long,
+    private val plugin: Plugin,
+    private val spawnLocation: Location
+) :
     BehaviorGoalAdapter(), Listener {
     init {
         Bukkit.getPluginManager().registerEvents(this, plugin)
@@ -49,6 +56,11 @@ class TargetAI(val npc: NPC, private val radius: Double, private val difficulty:
         if (!chunk.isLoaded) {
             chunk.load(true)
         }
+        if (npc.entity.location.let { it.world == spawnLocation.world && it.distance(spawnLocation) >= radius * 3 }) {
+            npc.teleport(spawnLocation, PlayerTeleportEvent.TeleportCause.PLUGIN)
+            return BehaviorStatus.FAILURE
+        }
+
         val target = target
         return when {
             target != null -> {
@@ -70,16 +82,18 @@ class TargetAI(val npc: NPC, private val radius: Double, private val difficulty:
                         return BehaviorStatus.RUNNING
                 }
 
-                npc.entity.apply {
-                    if (target.isFlying) {
-                        NavigateUtility.targetFlyable(this, target)
-                        if (distanceToTarget > radius * 0.3) {
-                            NavigateUtility.dashTo(this, target.location, 0.2)
+                if (npc.entity.world == npc.storedLocation.world)
+
+                    npc.entity.apply {
+                        if (target.isFlying) {
+                            NavigateUtility.targetFlyable(this, target)
+                            if (distanceToTarget > radius * 0.3) {
+                                NavigateUtility.dashTo(this, target.location, 0.2)
+                            }
+                        } else {
+                            setGravity(true)
                         }
-                    } else {
-                        setGravity(true)
                     }
-                }
 
                 if (isSpinner && distanceToTarget <= 6) {
                     if (tickShooting >= shotSpeed) {
@@ -165,18 +179,18 @@ class TargetAI(val npc: NPC, private val radius: Double, private val difficulty:
                                 PotionEffect(
                                     PotionEffectType.INCREASE_DAMAGE,
                                     Int.MAX_VALUE,
-                                    NPCController.strengthForCurrent(),
+                                    1,
                                     true,
                                     true
                                 )
                             )
                         }
+                        if (madness > 2) {
+                            navigator.localParameters.speedModifier(1.2F)
+                        }
                     }
                     if (madness > 0 && showSpawnFire) {
                         spawnFire()
-                    }
-                    if (madness > 2) {
-                        navigator.localParameters.speedModifier(1.2F)
                     }
                     BehaviorStatus.RUNNING
                 }
@@ -301,9 +315,11 @@ class TargetAI(val npc: NPC, private val radius: Double, private val difficulty:
             } ?: 0
 
     private lateinit var lastFireSpawn: Location
-    private val showSpawnFire get() =
-        !::lastFireSpawn.isInitialized
-                || npc.entity.let { it.world != lastFireSpawn.world || it.location.distance(lastFireSpawn) >= radius }
+    private val showSpawnFire
+        get() =
+            !::lastFireSpawn.isInitialized
+                    || npc.entity.let { it.world != lastFireSpawn.world || it.location.distance(lastFireSpawn) >= radius }
+
     private fun spawnFire() {
         val base = npc.entity.location
         lastFireSpawn = base

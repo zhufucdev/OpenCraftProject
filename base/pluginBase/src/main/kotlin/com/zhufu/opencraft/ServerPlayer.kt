@@ -256,10 +256,13 @@ abstract class ServerPlayer(
         set(value) {
             tag.set("isSurvivor", value)
         }
-    val skullItem
-        get() = ItemStack(Material.PLAYER_HEAD).updateItemMeta<SkullMeta> {
+    private val skull by lazy {
+        ItemStack(Material.PLAYER_HEAD).updateItemMeta<SkullMeta> {
             owningPlayer = offlinePlayer
         }
+    }
+    val skullItem
+        get() = skull.clone()
 
     override fun isOp(): Boolean = try {
         offlinePlayer.isOp

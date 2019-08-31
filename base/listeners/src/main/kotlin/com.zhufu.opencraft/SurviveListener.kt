@@ -423,7 +423,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             event.isCancelled = true
             sendPlayerOutOfSpawnMessage(event.player)
         } else if (info.status == InLobby && event.block.world == lobby) {
-            if (!PlayerLobbyManager.isInOwnLobby(info) && !event.player.isOp) {
+            if (!PlayerLobbyManager.isInOwnLobby(info) && !event.player.isOp && PlayerLobbyManager.targetOf(event.player)?.canBuildBy(event.player) != true) {
                 event.isCancelled = true
                 event.player.sendActionText(info.getter()["lobby.error.breakNotPermitted"].toErrorMessage())
                 ServerCaller["SolveLobbyVisitor"]!!(listOf(info))
@@ -456,7 +456,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 ) {
                     event.isCancelled = true
                 }
-            } else if (!event.player.isOp) {
+            } else if (!event.player.isOp && PlayerLobbyManager.targetOf(event.player)?.canBuildBy(event.player) != true) {
                 event.isCancelled = true
                 event.player.sendActionText(info.getter()["lobby.error.buildNotPermitted"].toErrorMessage())
                 ServerCaller["SolveLobbyVisitor"]!!(listOf(info))

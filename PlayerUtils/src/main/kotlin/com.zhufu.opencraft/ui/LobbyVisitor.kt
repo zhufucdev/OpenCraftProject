@@ -31,20 +31,37 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
             get() = true
         val review get() = PlayerLobbyManager.targetOf(info.player)!!.reviewedBy(info)
 
+        var isGathering = false
+
         private fun getReviewMsg(forWhich: PlayerLobby) =
             getter["lobby.get.${if (forWhich.likesInAll >= 0) "like" else "dislike"}", forWhich.likesInAll.absoluteValue]
                 .toSuccessMessage()
 
         override fun getItem(index: Int, currentPage: Int): ItemStack =
             if (index < list.size)
-                list[index].let {
-                    ItemStack(Material.PLAYER_HEAD).updateItemMeta<SkullMeta> {
-                        owningPlayer = it.owner.offlinePlayer
-                        setDisplayName(it.owner.name ?: getter["player.unknownName"])
-                        lore = listOf(
-                            getter["ui.visitor.located", "(${it.x}, ${it.z})"].toInfoMessage(),
-                            getReviewMsg(it)
-                        )
+                list[index].let { lobby ->
+                    lobby.owner.skullItem.updateItemMeta<ItemMeta> {
+                        setDisplayName(lobby.owner.name ?: getter["player.unknownName"])
+                        lore =
+                            if (!isGathering)
+                                listOf(
+                                    getter["ui.visitor.located", "(${lobby.x}, ${lobby.z})"].toInfoMessage(),
+                                    getter["lobby.get.views", lobby.views],
+                                    getReviewMsg(lobby)
+                                )
+                            else {
+                                val name = lobby.owner.name ?: return@updateItemMeta
+                                listOf(
+                                    getter["lobby.gather." +
+                                            if (PlayerLobbyManager[info].partners().contains(name)) "forbid" else {
+                                                addEnchant(Enchantment.ARROW_INFINITE, 1, true)
+                                                addItemFlags(ItemFlag.HIDE_ENCHANTS)
+                                                "permit"
+                                            }]
+                                        .toTipMessage()
+                                )
+                            }
+
                     }
                 }
             else
@@ -78,6 +95,19 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
                     setDisplayName(getter["lobby.yours"].toInfoMessage())
                     lore = listOf(getReviewMsg(PlayerLobbyManager[info]))
                 }
+            } else if (index == 5) {
+                if (!isGathering)
+                    ItemStack(Material.GRASS_BLOCK).updateItemMeta<ItemMeta> {
+                        setDisplayName(getter["lobby.gather.title"].toInfoMessage())
+                        lore = listOf(
+                            getter["lobby.gather.info", PlayerLobbyManager[info].partners().size],
+                            getter["lobby.gather.click"].toTipMessage()
+                        )
+                    }
+                else
+                    Widgets.back.updateItemMeta<ItemMeta> {
+                        setDisplayName(getter["ui.back"].toInfoMessage())
+                    }
             } else {
                 super.getToolbarItem(index)
             }
@@ -86,12 +116,25 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
 
     init {
         setOnItemClickListener { index, _ ->
-            val item: PlayerLobby = if (index < list.size) {
-                list[index]
+            if (!adapter.isGathering) {
+                val lobby: PlayerLobby = if (index < list.size) {
+                    list[index]
+                } else {
+                    PlayerLobbyManager[info]
+                }
+                lobby.tpHere(info.player)
             } else {
-                PlayerLobbyManager[info]
+                val target = list[index].owner
+                if (target.name != null) {
+                    PlayerLobbyManager[info].apply {
+                        if (partners().contains(target.name!!))
+                            removePartner(target)
+                        else
+                            addPartner(target)
+                    }
+                    refresh(index)
+                }
             }
-            item.tpThere(info.player)
         }
 
         setOnToolbarItemClickListener { index, _ ->
@@ -119,6 +162,11 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
                         }
                         refresh()
                     }
+                }
+            else
+                if (index == 5) {
+                    adapter.isGathering = !adapter.isGathering
+                    refresh()
                 }
         }
     }

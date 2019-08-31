@@ -26,17 +26,20 @@ abstract class WebInfo(createNew: Boolean, uuid: UUID? = null, nameToExtend: Str
             streamsReturned++
 
             val returned = streamsReturned
+            var i = 0
             while (returned != exchanges) {
                 Thread.sleep(200)
                 if (streamsReturned - exchanges
                     >= (ServerCaller["GetWebConfig"]!!(listOf())
                             as ConfigurationSection).getInt("chatPackLossThreshold")
                     || exchanges > returned
+                    || i >= 25
                 ) {
                     streamsReturned = 1
                     exchanges = 1
                     break
                 }
+                i++
             }
             return WebOutputStream(this)
         }

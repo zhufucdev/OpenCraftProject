@@ -75,8 +75,10 @@ class Core : JavaPlugin(), Listener {
         lobby = server.getWorld("world")!!
         lobby.peace()
 
-        surviveWorld.setGameRule(GameRule.KEEP_INVENTORY, false)
-
+        surviveWorld.apply {
+            setGameRule(GameRule.KEEP_INVENTORY, false)
+            difficulty = Difficulty.HARD
+        }
         env =
             try {
                 YamlConfiguration.loadConfiguration(File(dataFolder, "env").also {
@@ -124,7 +126,7 @@ class Core : JavaPlugin(), Listener {
         ServerCaller["SolvePlayerLobby"] = {
             val info = (it.firstOrNull()
                 ?: throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
-            PlayerLobbyManager[info].also { lobby -> if (!lobby.isInitialized) lobby.initialize() }.tpThere(info.player)
+            PlayerLobbyManager[info].also { lobby -> if (!lobby.isInitialized) lobby.initialize() }.tpHere(info.player)
         }
         if (!server.pluginManager.isPluginEnabled("Citizens")) {
             logger.warning("Citizens is not enabled.")

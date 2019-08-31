@@ -43,6 +43,7 @@ open class PageInventory<T : PageInventory.Adapter> : ClickableInventory {
         open fun getToolbarItem(index: Int): ItemStack {
             return ItemStack(Material.AIR)
         }
+        open fun onRefresh(){}
     }
 
     open val id = Companion.id++
@@ -53,14 +54,18 @@ open class PageInventory<T : PageInventory.Adapter> : ClickableInventory {
     fun refresh() {
         if (adapterCreator != null)
             adapter = adapterCreator.invoke()
+        else
+            adapter.onRefresh()
         page(currentPage)
     }
 
     fun refresh(index: Int) {
         if (index < adapter.size) {
             val pageIndex = index - currentPage * (itemsOnePage - 9)
-            if (pageIndex in 0..itemsOnePage - 9)
+            if (pageIndex in 0..itemsOnePage - 9) {
+                adapter.onRefresh()
                 inventory.setItem(pageIndex, adapter.getItem(index, currentPage))
+            }
         }
     }
 

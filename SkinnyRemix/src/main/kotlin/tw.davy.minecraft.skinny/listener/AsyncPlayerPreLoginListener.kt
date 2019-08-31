@@ -22,9 +22,10 @@ class AsyncPlayerPreLoginListener(private val mPlugin: Skinny) : Listener {
             return
 
         val playerName = preLoginEvent.name
+        val info = PlayerManager.findOfflinePlayer(preLoginEvent.uniqueId)
         var skin = Skinny.instance.cache.getOrDefault(playerName, null)
         if (skin == null) {
-            val customTarget = PlayerManager.findOfflinePlayer(preLoginEvent.uniqueId)?.skin
+            val customTarget = info?.skin
             if (customTarget != null) {
                 skin = mPlugin.providerManager.getSkin(customTarget)
                 skin!!.isCustomize = true
@@ -34,14 +35,19 @@ class AsyncPlayerPreLoginListener(private val mPlugin: Skinny) : Listener {
         }
 
         //Added by zhufucdev for server use.
-        val info = PlayerManager.findOfflinePlayer(preLoginEvent.uniqueId)
         if (skin != null) {
             if (skin.isCustomize && info != null)
-                MessagePool.instance.sendMessageToPlayer(preLoginEvent.uniqueId, TextUtil.info(getLang(info,"skinny.working")))
+                MessagePool.instance.sendMessageToPlayer(
+                    preLoginEvent.uniqueId,
+                    TextUtil.info(getLang(info, "skinny.working"))
+                )
             mPlugin.cache[playerName] = skin
             preLoginEvent.playerProfile.setProperty(ProfileProperty("textures", skin.value, skin.signature))
-        } else if (info != null){
-            MessagePool.instance.sendMessageToPlayer(preLoginEvent.uniqueId, TextUtil.error(getLang(info,"skinny.error.load")))
+        } else if (info != null) {
+            MessagePool.instance.sendMessageToPlayer(
+                preLoginEvent.uniqueId,
+                TextUtil.error(getLang(info, "skinny.error.load"))
+            )
         }
     }
 }

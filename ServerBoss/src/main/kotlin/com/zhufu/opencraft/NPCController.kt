@@ -130,7 +130,7 @@ object NPCController : Listener {
             }
             defaultGoalController.apply {
                 addBehavior(
-                    TargetAI(currentNPC, radiusForCurrent(), difficulty, mPlugin),
+                    TargetAI(currentNPC, radiusForCurrent(), difficulty, mPlugin, spawnLocation),
                     1
                 )
             }
@@ -265,7 +265,6 @@ object NPCController : Listener {
     fun littleBossMaxSpawnCount() = -1008.0 / (difficulty + 111) + 10
     fun expForCurrent() = -10000.0 / (difficulty - 9.0 / 59) + 12000
     fun fireSpawnRateForCurrent() = -56F / (difficulty + 79) + 0.8F
-    fun strengthForCurrent() = (1000.0 / (difficulty + 199) + 6).roundToInt()
 
     val spawnListeners = HashMap<NPC, () -> Unit>()
     @EventHandler

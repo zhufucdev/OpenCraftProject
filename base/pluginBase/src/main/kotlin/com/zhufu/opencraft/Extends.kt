@@ -192,3 +192,9 @@ val Location.blockLocation: Location
     }
 val Location.center: Location
     get() = clone().add(Vector(0.5, 0.0, 0.5))
+
+fun List<Any>.toString(split: String) = buildString {
+    forEach {
+        append(it.toString() + split)
+    }
+}.removeSuffix(split)

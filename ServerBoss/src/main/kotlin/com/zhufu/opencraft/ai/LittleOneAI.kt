@@ -14,6 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import kotlin.math.abs
@@ -72,6 +73,8 @@ class LittleOneAI(private val parent: TargetAI, private val npc: NPC, plugin: Pl
         } else {
             when (target) {
                 npc.navigator.entityTarget?.target -> {
+                    if (target?.isDead == true)
+                        return BehaviorStatus.SUCCESS
                     npc.entity.apply {
                         if (target!!.isFlying) {
                             NavigateUtility.targetFlyable(this, target!!)
@@ -94,6 +97,7 @@ class LittleOneAI(private val parent: TargetAI, private val npc: NPC, plugin: Pl
 
     override fun reset() {
         npc.navigator.cancelNavigation()
+        target = null
     }
 
     override fun shouldExecute(): Boolean {
@@ -114,6 +118,13 @@ class LittleOneAI(private val parent: TargetAI, private val npc: NPC, plugin: Pl
                 target = damager
             else if (damager is Projectile && damager.shooter is Player)
                 target = damager.shooter as Player
+        }
+    }
+
+    @EventHandler
+    fun onTargetDeath(event: PlayerDeathEvent) {
+        if (event.entity == target) {
+            target = null
         }
     }
 }

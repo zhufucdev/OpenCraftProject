@@ -585,14 +585,36 @@ lobby:
   dislike: 'Dislike this lobby'
   cancel: 'Click to cancel.'
   yours: 'Your Lobby'
+  gather:
+    title: 'Gather Build of Lobby'
+    click: 'Click to manage'
+    info: '%s players take part.'
+    permit: 'Click to permit this player to build in your lobby.'
+    forbid: 'Click to forbid this player to build in your lobby.'
   get:
     like: '%s players like this lobby.'
     dislike: '%s players dislike this lobby.'
+    views: '%s views are present.'
   warn:
     noSpawnpoint: "%s's lobby doesn't have a spawn point. Teleporting to the default location..."
+  statics:
+    title: "-----%s's Player Lobby-----"
+    like:
+      content: '%s, %s players in all like this lobby.'
+      empty: 'No players like this lobby.'
+    dislike:
+      content: '%s, %s players in all dislike this lobby.'
+      empty: 'No players dislike this lobby.'
+    gather:
+      content: '%s, %s players in all take part in your gather build.'
+      empty: 'Nobody builds with you together.'
+  permitted: 'Permit %s to build together on your lobby.'
+  forbid: 'Forbid %s to build in your lobby.'
   error:
     buildNotPermitted: 'You are not permitted to place block here.'
     breakNotPermitted: 'You are not permitted to break the block.'
+    alreadyPermitted: '%s has already been permitted to build together.'
+    alreadyForbidden: "%s hasn't been permitted to build together."
   spawnpointSet: "Spawn point is set here. Then visitors will enter from this position."
   speeches:
     1: "You have woken up."

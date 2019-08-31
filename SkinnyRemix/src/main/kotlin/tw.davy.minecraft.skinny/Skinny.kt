@@ -1,5 +1,6 @@
 package tw.davy.minecraft.skinny
 
+import com.destroystokyo.paper.profile.PlayerProfile
 import com.destroystokyo.paper.profile.ProfileProperty
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
@@ -51,6 +52,25 @@ class Skinny : JavaPlugin(), Listener {
         server.pluginManager.apply {
             registerEvents(AsyncPlayerPreLoginListener(this@Skinny), this@Skinny)
             registerEvents(MessagePool(), this@Skinny)
+        }
+
+        ServerCaller["SolvePlayerSkinProfile"] = {
+            val profile = it.first() as PlayerProfile
+            val name = it[1] as String
+            var skin = cache.getOrDefault(name, null)
+            if (skin == null) {
+                val uuid = profile.id
+                val customTarget =
+                    (if (uuid != null) OfflineInfo.findByUUID(uuid) else OfflineInfo.findByName(name))?.skin
+                if (customTarget != null) {
+                    skin = providerManager.getSkin(customTarget)
+                    skin!!.isCustomize = true
+                } else {
+                    skin = providerManager.getSkin(name)
+                }
+                cache[name] = skin
+            }
+            profile.setProperty(ProfileProperty("textures", skin.value, skin.signature))
         }
     }
 

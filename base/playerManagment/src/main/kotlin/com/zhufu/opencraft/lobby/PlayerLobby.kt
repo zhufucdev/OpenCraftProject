@@ -50,6 +50,16 @@ class PlayerLobby(val owner: OfflineInfo) {
         set(value) {
             tag.set("spawnpoint", value)
         }
+    var views: Long
+        get() = tag.getLong("views", 0L)
+        set(value) = tag.set("views", value)
+
+    fun reviews(): List<Pair<String, Boolean>> = arrayListOf<Pair<String, Boolean>>().apply {
+        val configuration = tag.getConfigurationSection("review") ?: return@apply
+        configuration.getKeys(false).forEach {
+            add(it to configuration.getBoolean(it, true))
+        }
+    }
 
     fun likeBy(who: ServerPlayer): Boolean {
         if (reviewedBy(who) == null) {
@@ -67,12 +77,49 @@ class PlayerLobby(val owner: OfflineInfo) {
         return false
     }
 
+    fun partners(): List<String> = tag.getStringList("partners")
+    fun canBuildBy(player: Player) = partners().contains(player.name)
+
+    fun addPartner(who: ServerPlayer): Boolean {
+        if (who == owner)
+            return false
+        val r = arrayListOf<String>()
+        r.addAll(tag.getStringList("partners"))
+        val name = who.name
+        if (name != null) {
+            if (r.contains(name))
+                return false
+            r.add(name)
+            tag.set("partners", r)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    fun removePartner(who: ServerPlayer): Boolean {
+        if (who == owner)
+            return false
+        val r = arrayListOf<String>()
+        r.addAll(tag.getStringList("partners"))
+        val name = who.name
+        if (name != null) {
+            if (!r.remove(name))
+                return false
+            tag.set("partners", r)
+            return true
+        } else {
+            return false
+        }
+    }
+
     fun cancelReviewFor(who: ServerPlayer) = tag.set("review.${who.name}", null)
     /**
      * @return true when getting a like, false when getting a dislike, or null when getting nothing
      */
     fun reviewedBy(who: ServerPlayer) =
         if (tag.isSet("review.${who.name}")) tag.getBoolean("review.${who.name}") else null
+
     val likesInAll: Int
         get() {
             val review = tag.getConfigurationSection("review") ?: return 0
@@ -159,7 +206,7 @@ class PlayerLobby(val owner: OfflineInfo) {
         }
     }
 
-    fun tpThere(player: Player) {
+    fun tpHere(player: Player) {
         Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore) { _ ->
             while (isInitializing) {
                 Thread.sleep(200)
@@ -198,6 +245,9 @@ class PlayerLobby(val owner: OfflineInfo) {
                         }
                     }
                 }
+
+                if (player.uniqueId != owner.uuid)
+                    views ++
             }
         }
     }

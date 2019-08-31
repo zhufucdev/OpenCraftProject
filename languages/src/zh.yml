@@ -604,15 +604,37 @@ lobby:
   dislike: '不喜欢这个主城'
   cancel: '点击以取消'
   yours: '您的主城'
+  gather:
+    title: '主城协同建筑'
+    click: '点击以管理'
+    info: '%s名玩家参与'
+    permit: '点击以允许该玩家在您的主城建筑'
+    forbid: '点击以禁止该玩家在您的主城建筑'
   get:
     like: '%s名玩家喜欢这个主城'
     dislike: '%s名玩家不喜欢这个主城'
+    views: '%s浏览量'
   warn:
     noSpawnpoint: '%s的主城没有设置出生点，传送到默认位置'
   error:
     buildNotPermitted: '您没有权限在此放置方块'
     breakNotPermitted: '您没有权限破坏此方块'
+    alreadyPermitted: '%s 已经被授予协同建筑权限'
+    alreadyForbidden: '%s 尚未被授予协同建筑权限'
   spawnpointSet: '已将该位置设置为出生点。拜访者将从此进入。'
+  statics:
+    title: '-----%s 的玩家主城-----'
+    like:
+      content: '%s 等 %s 名玩家喜欢这个主城'
+      empty: '没有人喜欢这个主城'
+    dislike:
+      content: '%s 等 %s 名玩家不喜欢这个主城'
+      empty: '没有人不喜欢这个主城'
+    gather:
+      content: '%s 等 %s 名玩家参与您的主城协同建筑'
+      empty: '没有人与您协同建筑'
+  permitted: '允许 %s 在您的主城协同建筑'
+  forbid: '禁止 %s 在您的主城建筑'
   speeches:
     1: '您醒来了'
     2: "<%s> 哦，我可爱的家！"

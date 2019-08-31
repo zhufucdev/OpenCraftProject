@@ -1,5 +1,7 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.lobby.PlayerLobby
+import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.script.PlayerScript
 import com.zhufu.opencraft.special_item.*
 import com.zhufu.opencraft.ui.LobbyVisitor
@@ -232,8 +234,124 @@ class PlayerUtil : JavaPlugin() {
                     }
                 }
             }
-        }
+        } else if (command.name == "lobby") {
+            fun printStatics(lobby: PlayerLobby) {
+                sender.apply {
+                    val header = "lobby.statics"
+                    tip(getter["$header.title", lobby.owner.name])
+                    var likes = 0
+                    var dislikes = 0
+                    var gatherBuilders = 0
+                    val playersLiking = StringBuilder()
+                    val playerDisliking = StringBuilder()
+                    val gatherBuilding = StringBuilder()
+                    lobby.reviews().forEach {
+                        if (it.second) {
+                            likes++
+                            playersLiking.append(it.first + ", ")
+                        } else {
+                            dislikes++
+                            playerDisliking.append(it.first + ", ")
+                        }
+                    }
+                    lobby.partners().forEach {
+                        gatherBuilders++
+                        gatherBuilding.append("$it, ")
+                    }
+                    info(getter["lobby.get.views", lobby.views])
+                    info(
+                        if (likes == 0)
+                            getter["$header.like.empty"]
+                        else
+                            getter["$header.like.content", playersLiking.removeSuffix(", "), likes]
+                    )
+                    info(
+                        if (dislikes == 0)
+                            getter["$header.dislike.empty"]
+                        else
+                            getter["$header.dislike.content", playerDisliking.removeSuffix(", "), dislikes]
+                    )
+                    if (sender !is Player || lobby.owner.uuid == sender.uniqueId) {
+                        info(
+                            if (gatherBuilders == 0)
+                                getter["$header.gather.empty"]
+                            else
+                                getter["$header.gather.content", gatherBuilding.removeSuffix(", "), gatherBuilders]
+                        )
+                    }
+                }
+            }
 
+            fun printUsage() = sender.tip(getCommand("lobby")!!.usage)
+            when (args.size) {
+                0 -> {
+                    if (sender !is Player)
+                        sender.error(getter["command.error.playerOnly"])
+                    else {
+                        val info = sender.info()
+                        if (info == null) {
+                            sender.error(getter["player.error.unknown"])
+                        } else {
+                            printStatics(PlayerLobbyManager[info])
+                        }
+                    }
+                }
+                1 -> {
+                    val target = OfflineInfo.findByName(args.first())
+                    if (target == null) {
+                        sender.error(getter["player.error.notFound", args.first()])
+                    } else {
+                        printStatics(PlayerLobbyManager[target])
+                    }
+                }
+                2 -> {
+                    if (sender !is Player) {
+                        sender.error(getter["command.error.playerOnly"])
+                        return true
+                    }
+                    val target = OfflineInfo.findByName(args.first())
+                    if (target == null) {
+                        sender.error(getter["player.error.notFound", args.first()])
+                    } else {
+                        when (args.last()) {
+                            "go" -> {
+                                PlayerLobbyManager[target].tpHere(sender)
+                            }
+                            else -> {
+                                val info = sender.info()
+                                if (info == null) {
+                                    sender.error(getter["player.error.unknown"])
+                                } else {
+                                    val lobby = PlayerLobbyManager[info]
+                                    when (args.last()) {
+                                        "permit" -> {
+                                            if (lobby.addPartner(target))
+                                                sender.success(getter["lobby.permitted", target.name])
+                                            else
+                                                sender.error(getter["lobby.error.alreadyPermitted", target.name])
+                                        }
+                                        "forbid" -> {
+                                            if (lobby.removePartner(target))
+                                                sender.success(getter["lobby.forbid", target.name])
+                                            else
+                                                sender.error(getter["lobby.error.alreadyForbidden", target.name])
+                                        }
+                                        else -> {
+                                            sender.error(getter["command.error.usage"])
+                                            printUsage()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    sender.error(getter["command.error.usage"])
+                    printUsage()
+                }
+            }
+        }
         return true
     }
 
@@ -279,7 +397,7 @@ class PlayerUtil : JavaPlugin() {
                     )
                 }
             }
-        } else {
+        } else if (command.name == "pu") {
             if (args.size == 1) {
                 val all = mutableListOf("rename", "menu", "script", "message").apply { if (sender.isOp) add("si") }
                 return if (args.first().isEmpty())
@@ -314,6 +432,31 @@ class PlayerUtil : JavaPlugin() {
                         }
                     }
                     return r
+                }
+            }
+        } else if (command.name == "lobby") {
+            when (args.size) {
+                1 -> {
+                    val players = mutableListOf<String>().apply {
+                        PlayerLobbyManager.list().forEach {
+                            add(it.owner.name ?: return@forEach)
+                        }
+                    }
+                    return if (args.first().isEmpty()) players
+                    else players.filter { it.startsWith(args.first()) }.toMutableList()
+                }
+                2 -> {
+                    if (sender is Player) {
+                        val target = OfflineInfo.findByName(args.first())
+                        if (target != null) {
+                            val commands = mutableListOf("go")
+                            if (target.uuid != sender.uniqueId)
+                                commands.addAll(listOf("permit", "forbid"))
+
+                            return if (args.last().isEmpty()) commands
+                            else commands.filter { it.startsWith(args.last()) }.toMutableList()
+                        }
+                    }
                 }
             }
         }
