@@ -11,7 +11,7 @@
 # Docs: https://paper.readthedocs.org/ 
 
 verbose: false
-config-version: 19
+config-version: 20
 settings:
   load-permissions-yml-before-plugins: true
   bungee-online-mode: true
@@ -36,6 +36,9 @@ settings:
   book-size:
     page-max: 2560
     total-multiplier: 0.98
+  async-chunks:
+    enable: true
+    load-threads: -1
 messages:
   no-permission: '&cI''m sorry, but you do not have permission to perform this command.
     Please contact the server administrators if you believe that this is in error.'
@@ -56,6 +59,10 @@ timings:
   server-name: Unknown Server
 world-settings:
   default:
+    fix-zero-tick-instant-grow-farms: true
+    portal-create-radius: 16
+    entities-target-with-follow-range: false
+    per-player-mob-spawns: false
     count-all-mobs-for-spawning: false
     auto-save-interval: -1
     max-auto-save-chunks-per-tick: 24
@@ -102,6 +109,7 @@ world-settings:
     remove-corrupt-tile-entities: false
     fixed-chunk-inhabited-time: -1
     game-mechanics:
+      disable-pillager-patrols: false
       disable-relative-projectile-velocity: false
       disable-player-crits: false
       disable-sprint-interruption-on-attack: false
@@ -166,3 +174,6 @@ world-settings:
       enabled: false
       items:
         COBBLESTONE: 300
+    generator-settings:
+      flat-bedrock: false
+    baby-zombie-movement-modifier: 0.5

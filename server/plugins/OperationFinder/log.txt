@@ -13525,3 +13525,7 @@
 {"time":1566097769796,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
 {"time":1566097769944,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
 {"time":1566097770094,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
+{"time":1579436324362,"player":"zhufucdev","type":"MOVE","data":{"x":-13.898014705976248,"y":126.88240706215085,"z":-12.698267464705145,"world":"world"}}
+{"time":1579436384344,"player":"zhufucdev","type":"MOVE","data":{"x":-13.898014705976248,"y":126.88240706215085,"z":-12.698267464705145,"world":"world"}}
+{"time":1579436444344,"player":"zhufucdev","type":"MOVE","data":{"x":-13.898014705976248,"y":126.88240706215085,"z":-12.698267464705145,"world":"world"}}
+{"time":1579436504345,"player":"zhufucdev","type":"MOVE","data":{"x":-13.898014705976248,"y":126.88240706215085,"z":-12.698267464705145,"world":"world"}}

@@ -1,26 +1,35 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.41'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.61'
+    id "de.undercouch.download" version '4.0.2'
 }
 
-File getJar(Project project){
+def serverPath = project.projectDir.path + '/server'
+
+File getJar(Project project) {
     return file(project.projectDir.path + '/build/libs/' + project.name + '-' + project.version + '.jar')
+}
+
+task download(type: Download) {
+    src 'https://papermc.io/api/v1/paper/1.15.1/latest/download'
+    dest serverPath + '/paper.jar'
+    overwrite true
 }
 
 ext {
     citizens_version = '2.0.25-SNAPSHOT'
-    we_version = '7.0.0-SNAPSHOT'
+    we_version = '7.1.0-SNAPSHOT'
 }
 
 allprojects {
     group 'com.zhufu.opencraft'
     version '1.0-SNAPSHOT'
-    
+
     apply plugin: 'java'
     apply plugin: 'kotlin'
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-        compile "com.destroystokyo.paper:paper-api:1.14.4-R0.1-SNAPSHOT"
+        compile "com.destroystokyo.paper:paper-api:1.15.1-R0.1-SNAPSHOT"
         compile "org.jetbrains.kotlin:kotlin-reflect:1.3.40"
         compileOnly fileTree(dir: 'lib', includes: ['*.jar'])
         testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -36,19 +45,19 @@ allprojects {
 
     repositories {
         mavenCentral()
-        
+
         maven { url 'https://papermc.io/repo/repository/maven-public/' }
         maven { url 'https://libraries.minecraft.net/' }
         maven { url 'http://repo.citizensnpcs.co/' }
         maven { url 'https://repo.codemc.org/repository/maven-public/' }
         maven { url 'http://maven.enginehub.org/repo/' }
     }
-    
+
     if (project.name.charAt(0).isUpperCase() && project != rootProject) {
         beforeEvaluate {
             copyJar.shouldRunAfter(build)
         }
-        
+
         def jarFile = getJar(project)
         def jarName = getJar(project).name
         println jarFile
@@ -57,9 +66,9 @@ allprojects {
             from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
         }
         clean {
-            delete(rootDir.path + '/server/plugins/' + jarName,projectDir.path + '/build',projectDir.path + '/out')
+            delete(serverPath + '/plugins/' + jarName, projectDir.path + '/build', projectDir.path + '/out')
         }
-        
+
         task copyJar(type: Copy) {
             dependsOn build
             from getJar(project)?.path ?: project.rootDir.path + '/build/libs/' + jarName

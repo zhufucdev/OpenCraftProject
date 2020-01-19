@@ -29,7 +29,6 @@
             <option value="$PROJECT_DIR$/UserManager" />
             <option value="$PROJECT_DIR$/WorldGenerator" />
             <option value="$PROJECT_DIR$/WorldTeleporter" />
-            <option value="$PROJECT_DIR$/base/.DS_Store" />
             <option value="$PROJECT_DIR$/base/ItemManager" />
             <option value="$PROJECT_DIR$/base/blockManagment" />
             <option value="$PROJECT_DIR$/base/inventoryBase" />

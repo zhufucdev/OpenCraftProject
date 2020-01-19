@@ -1,6 +1,8 @@
 package com.baidu.translate;
 
-import java.io.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -24,49 +26,8 @@ public class MD5 {
         }
     }
 
-    public static String md5(File file) {
-        try {
-            if (!file.isFile()) {
-                System.err.println("文件" + file.getAbsolutePath() + "不存在或者不是文件");
-                return null;
-            }
-
-            FileInputStream in = new FileInputStream(file);
-
-            String result = md5(in);
-
-            in.close();
-
-            return result;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public static String md5(InputStream in) {
-
-        try {
-            MessageDigest messagedigest = MessageDigest.getInstance("MD5");
-
-            byte[] buffer = new byte[1024];
-            int read = 0;
-            while ((read = in.read(buffer)) != -1) {
-                messagedigest.update(buffer, 0, read);
-            }
-
-            in.close();
-
-            return byteArrayToHex(messagedigest.digest());
-        } catch (NoSuchAlgorithmException | IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
+    @NotNull
+    @Contract("_ -> new")
     private static String byteArrayToHex(byte[] byteArray) {
         char[] resultCharArray = new char[byteArray.length * 2];
         int index = 0;

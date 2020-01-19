@@ -3,6 +3,8 @@ package com.zhufu.opencraft
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import org.bukkit.Bukkit
+import org.bukkit.Server
 import java.nio.file.Paths
 
 object ServerStatics {
@@ -26,8 +28,14 @@ object ServerStatics {
             }
             save.createNewFile()
             JsonObject()
-        } else
-            JsonParser().parse(save.reader()).asJsonObject
+        } else {
+            try {
+                JsonParser().parse(save.reader()).asJsonObject
+            }catch (e: Exception){
+                Bukkit.getLogger().warning("Server statics save could not be loaded. Use an empty file.")
+                JsonObject()
+            }
+        }
     }
 
     fun save() {
