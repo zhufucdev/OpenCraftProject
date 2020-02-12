@@ -26,7 +26,7 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
 
         val strangers by lazy {
             val r = arrayListOf<ServerPlayer>()
-            ServerPlayer.forEach {
+            ServerPlayer.forEachSaved {
                 if (it.name != null && it != info && !friendship.contains(it))
                     r.add(it)
             }

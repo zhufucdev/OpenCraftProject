@@ -343,7 +343,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     info.friendship.forEach {
                         names.add(it.name ?: return@forEach)
                     }
-                    ServerPlayer.forEach {
+                    ServerPlayer.forEachSaved {
                         val n = it.name
                         if (n != null && names.contains(n)) {
                             names.add(n)

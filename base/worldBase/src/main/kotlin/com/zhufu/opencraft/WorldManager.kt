@@ -12,7 +12,24 @@ object WorldManager {
         config = configuration
     }
 
-    class mWorld(val world: World, val per: WorldPermissions, val description: String = "")
+    class mWorld(val world: World, permission: WorldPermissions, description: String = "") {
+        private var mPermission = permission
+        var permission: WorldPermissions
+            get() = mPermission
+            set(value) {
+                mPermission = value
+                config["${world.name}.permission"] = mPermission.name
+            }
+
+        private var mDescription = description
+        var description: String
+            get() = mDescription
+            set(value) {
+                mDescription = value
+                config["${world.name}.description"] = mDescription
+            }
+    }
+
     enum class WorldPermissions {
         PUBLIC, PRIVATE, PROTECTED;
 

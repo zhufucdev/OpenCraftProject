@@ -10,7 +10,7 @@ import org.bukkit.plugin.Plugin
 
 class WorldUI(plugin: Plugin, info: Info, override val parentInventory: ClickableInventory) : PageInventory<WorldUI.Adapter>(
     title = getLang(info, "ui.world.title").toInfoMessage(),
-    adapter = Adapter(WorldManager.getAvailableWorlds().filter { it.per.canUse(info.player) }, info.getter()),
+    adapter = Adapter(WorldManager.getAvailableWorlds().filter { it.permission.canUse(info.player) }, info.getter()),
     itemsOnePage = 36,
     plugin = plugin
 ), Backable {

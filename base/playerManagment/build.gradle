@@ -1,7 +1,11 @@
 group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
+repositories {
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+}
+
 dependencies {
     compile project(':pluginBase')
-    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.0.1-SNAPSHOT'
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.1.1-SNAPSHOT'
 }

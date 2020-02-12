@@ -50,9 +50,9 @@ class WorldTeleporter : JavaPlugin() {
                 val sb = ArrayList<String>()
                 sb.add(TextUtil.info("-----以下是所有可能的世界-----") + "\n")
                 WorldManager.getAvailableWorlds().forEach {
-                    if (it.per.canSee(sender))
+                    if (it.permission.canSee(sender))
                         sb.add(
-                            when (it.per) {
+                            when (it.permission) {
                                 WorldPermissions.PUBLIC -> TextUtil.getColoredText(
                                     ">${it.world.name}",
                                     TextUtil.TextColor.BLUE,
@@ -84,7 +84,7 @@ class WorldTeleporter : JavaPlugin() {
                     sender.sendMessage(TextUtil.error("参数错误"))
                     return false
                 }
-                val world: World? = Bukkit.getWorld(args[1])
+                val world = WorldManager.getAvailableWorlds().firstOrNull { it.world.name == args[1] }
                 if (world == null) {
                     sender.sendMessage(TextUtil.error("世界不存在"))
                     return false
@@ -97,17 +97,17 @@ class WorldTeleporter : JavaPlugin() {
                         description.append(' ')
                     }
                     description.deleteCharAt(description.length - 1)
-                    config.set("${world.name}.description", description.toString())
+                    world.description = description.toString()
                     sender.sendMessage(TextUtil.info("成功将世界介绍更改为\"$description\""))
                 } else {
-                    if (args[2] != "public" && args[2] != "private" && args[2] != "protected") {
+                    if (!WorldPermissions.values().any { it.name.equals(args[2], true) }) {
                         sender.sendMessage(TextUtil.error("未知权限: ${args[2]},使用/help wt set 查看帮助"))
                         return true
                     }
-                    config.set("${world.name}.permission", args[2])
+                    world.permission = WorldPermissions.valueOf(args[2].toUpperCase())
                     sender.sendMessage(TextUtil.info("成功将世界权限更改为\"${args[2]}\""))
                 }
-                config.save(File(dataFolder, "worlds.yml"))
+                saveConfig()
             } else if (args.first() == "new") {
                 if (!sender.isOp) {
                     sender.error(getter["command.error.permission"])
@@ -276,7 +276,7 @@ class WorldTeleporter : JavaPlugin() {
                             t.add("unload")
                         }
                         WorldManager.getAvailableWorlds().forEach {
-                            if (it.per.canUse(sender))
+                            if (it.permission.canUse(sender))
                                 t.add(it.world.name)
                         }
                         return if (first.isNotEmpty()) {

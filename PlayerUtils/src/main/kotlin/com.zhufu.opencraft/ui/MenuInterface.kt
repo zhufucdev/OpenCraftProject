@@ -229,19 +229,6 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                     }
                 }
             )
-            setItem(
-                30,
-                ItemStack(Material.CHAIN_COMMAND_BLOCK).updateItemMeta<ItemMeta> {
-                    setDisplayName(TextUtil.getColoredText(getter["ui.others.cb.title"], AQUA))
-                    val rename = TextUtil.formatLore(getter["ui.others.cb.subtitle"])
-                    val r = arrayListOf<String>()
-                    rename.forEach {
-                        r.add(it.toInfoMessage())
-                    }
-                    r.add(getter["ui.others.cb.click"].toTipMessage())
-                    lore = r
-                }
-            )
         }
     }
 
@@ -301,14 +288,6 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
             29 -> {
                 player.tip(getter["ui.others.armor.click"])
                 close()
-            }
-            30 -> {
-                val info = player.info()
-                if (info == null) {
-                    close()
-                } else {
-                    ServerScriptUI(info, plugin, this).show(player)
-                }
             }
         }
     }

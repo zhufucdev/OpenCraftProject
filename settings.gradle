@@ -10,7 +10,3 @@ rootDir.listFiles().each {
     }
 }
 
-include 'languages'
-include 'RemoteRedirector'
-include 'ServerBoss'
-

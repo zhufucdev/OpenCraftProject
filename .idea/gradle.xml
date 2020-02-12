@@ -4,10 +4,11 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="delegatedBuild" value="false" />
-        <option name="testRunner" value="PLATFORM" />
+        <option name="delegatedBuild" value="true" />
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="/usr/local/Cellar/gradle/6.1/libexec" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -24,6 +25,7 @@
             <option value="$PROJECT_DIR$/RemoteRedirector" />
             <option value="$PROJECT_DIR$/ServerBoss" />
             <option value="$PROJECT_DIR$/ServerCore" />
+            <option value="$PROJECT_DIR$/ServerScript" />
             <option value="$PROJECT_DIR$/SkinnyRemix" />
             <option value="$PROJECT_DIR$/TenMinSur" />
             <option value="$PROJECT_DIR$/UserManager" />
@@ -41,7 +43,6 @@
             <option value="$PROJECT_DIR$/base/utils" />
             <option value="$PROJECT_DIR$/base/webBase" />
             <option value="$PROJECT_DIR$/base/worldBase" />
-            <option value="$PROJECT_DIR$/languages" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

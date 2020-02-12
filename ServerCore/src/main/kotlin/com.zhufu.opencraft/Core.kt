@@ -14,15 +14,11 @@ import com.zhufu.opencraft.PlayerManager.showPlayerOutOfDemoTitle
 import com.zhufu.opencraft.chunkgenerator.VoidGenerator
 import com.zhufu.opencraft.events.PlayerInventorySaveEvent
 import com.zhufu.opencraft.events.PlayerJoinGameEvent
-import com.zhufu.opencraft.headers.ServerHeaders
-import com.zhufu.opencraft.headers.server_wrap.SimpleServerListPingEvent
 import com.zhufu.opencraft.listener.NPCListener
 import com.zhufu.opencraft.listener.NPCSelectListener
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
-import com.zhufu.opencraft.script.AbstractScript
-import com.zhufu.opencraft.script.ServerScript
 import com.zhufu.opencraft.survey.SurveyManager
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.SpawnReason
@@ -36,7 +32,9 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
@@ -51,6 +49,7 @@ import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
 import kotlin.math.roundToLong
+import kotlin.reflect.full.functions
 
 class Core : JavaPlugin(), Listener {
     companion object {
@@ -106,18 +105,8 @@ class Core : JavaPlugin(), Listener {
             PlayerManager.init(this)
             TradeManager.init(this)
             PlayerObserverListener.init(this)
-            AbstractScript.threadPool = Executors.newCachedThreadPool()
             PlayerLobbyManager.init()
-            Scripting
-            try {
-                ServerScript.INSTANCE.call()
-                ServerHeaders.serverSelf.onServerBoot.forEach {
-                    it.apply(null)
-                }
-            } catch (e: Exception) {
-                logger.warning("Failed to execute AutoExec script.")
-                e.printStackTrace()
-            }
+            BuilderListener.init(this)
         } catch (e: Throwable) {
             logger.warning("Error while initializing Server Core.")
             e.printStackTrace()
@@ -133,7 +122,6 @@ class Core : JavaPlugin(), Listener {
             logger.warning("Disabling NPC functionality.")
         } else {
             Bukkit.getScheduler().runTaskLater(this, { _ ->
-                BuilderListener.init(this)
                 spawnNPC()
             }, 40)
         }
@@ -153,7 +141,7 @@ class Core : JavaPlugin(), Listener {
                 period = 10
             ) {
                 val chart = Game.dailyChart
-                for (i in 0 .. (2 to chart.lastIndex).smaller()) {
+                for (i in 0..(2 to chart.lastIndex).smaller()) {
                     val award = -300 * i + 1000
                     chart[i].apply {
                         messagePool.add(
@@ -193,7 +181,6 @@ class Core : JavaPlugin(), Listener {
         PlayerStatics.cleanUp()
         Base.publicMsgPool.serialize().save(Base.msgPoolFile)
         PlayerLobbyManager.onServerClose()
-        Scripting.cleanUp()
         ServerStatics.save()
     }
 
@@ -571,14 +558,18 @@ class Core : JavaPlugin(), Listener {
                             }
                             "ss" -> {
                                 sender.info("正在重载脚本")
-                                result = try {
-                                    ServerScript.reload()
-                                    ServerScript.INSTANCE.call()
-                                    true
+                                try {
+                                    val plugin = Bukkit.getPluginManager().getPlugin("ServerScript")
+                                    if (plugin != null) {
+                                        plugin::class.functions.first { kFunction -> kFunction.name == "initScripting" }
+                                            .call(plugin)
+                                        result = true
+                                    } else {
+                                        Bukkit.getLogger().warning("ServerScript plugin isn't loaded")
+                                    }
                                 } catch (e: Exception) {
                                     sender.error("${e.javaClass.simpleName}: ${e.message}")
                                     e.printStackTrace()
-                                    false
                                 }
                             }
                             "builder" -> {
@@ -715,6 +706,8 @@ class Core : JavaPlugin(), Listener {
                             deleteCharAt(lastIndex)
                         }
                     }
+                    TODO()
+                    /*
                     Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
                         val timeBegin = System.currentTimeMillis()
                         val result = ServerScript.INSTANCE.runLine(
@@ -728,6 +721,7 @@ class Core : JavaPlugin(), Listener {
                             sender.success(getter["scripting.returnSomething", (timeEnd - timeBegin) / 1000.0, result.toString()])
                         }
                     }
+                     */
                 }
             }
         } else if (command.name == "survey") {
@@ -905,7 +899,7 @@ class Core : JavaPlugin(), Listener {
                             return mutableListOf()
                         }
 
-                        when(args.size) {
+                        when (args.size) {
                             1 -> return varNames.toMutableList()
                             2 -> {
                                 val result = ArrayList<String>()
@@ -1027,13 +1021,5 @@ class Core : JavaPlugin(), Listener {
             return
         }
         info.tag.set("gamePlayer", gamePlay + 1)
-    }
-
-    @EventHandler
-    @Synchronized
-    fun onServerListPing(event: PaperServerListPingEvent) {
-        ServerHeaders.serverSelf.onServerPing.forEach {
-            it.apply(arrayOf(SimpleServerListPingEvent(event)))
-        }
     }
 }

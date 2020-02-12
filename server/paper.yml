@@ -59,6 +59,7 @@ timings:
   server-name: Unknown Server
 world-settings:
   default:
+    seed-based-feature-search: true
     fix-zero-tick-instant-grow-farms: true
     portal-create-radius: 16
     entities-target-with-follow-range: false

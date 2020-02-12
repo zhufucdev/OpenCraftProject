@@ -1,11 +1,17 @@
 group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
+task copyJar(type: Copy) {
+    from file('src/ss_modules')
+    into file(rootProject.serverPath + '/plugins/ss_modules')
+}
+
 dependencies {
-    compile project(':pluginBase')
-    compile project(':playerManagment')
-    compile 'org.graalvm:graal-sdk:1.0.0-rc7'
-    compile 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
-    implementation 'org.graalvm.truffle:truffle-api:19.0.0'
+    implementation project(':pluginBase')
+    implementation project(':playerManagment')
+    implementation project(':worldBase')
+    implementation 'org.graalvm.sdk:graal-sdk:19.3.1'
+    implementation 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
+    implementation 'org.graalvm.truffle:truffle-api:19.3.1'
     //compile 'org.graalvm.truffle:truffle-dsl-processor:1.0.0-rc8'
 }

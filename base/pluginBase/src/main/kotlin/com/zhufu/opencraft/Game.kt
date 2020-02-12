@@ -22,7 +22,7 @@ object Game {
     val chart: List<ServerPlayer>
         get() {
             val b = arrayListOf<Pair<ServerPlayer, Double>>()
-            ServerPlayer.forEach {
+            ServerPlayer.forEachSaved {
                 if (!it.isOp) {
                     var weight =
                         sqrt(it.currency.toDouble()) - 1200000.0 /   (it.gameTime / 1000.0 + 400) + 3000 + sqrt(it.damageDone)
@@ -46,7 +46,7 @@ object Game {
     val dailyChart: List<ServerPlayer>
         get() {
             val b = arrayListOf<Pair<ServerPlayer, Double>>()
-            ServerPlayer.forEach {
+            ServerPlayer.forEachSaved {
                 if (!it.isOp) {
                     val static = it.statics
 

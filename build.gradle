@@ -3,22 +3,21 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.61'
     id "de.undercouch.download" version '4.0.2'
 }
-
-def serverPath = project.projectDir.path + '/server'
-
 File getJar(Project project) {
     return file(project.projectDir.path + '/build/libs/' + project.name + '-' + project.version + '.jar')
 }
 
-task download(type: Download) {
-    src 'https://papermc.io/api/v1/paper/1.15.1/latest/download'
-    dest serverPath + '/paper.jar'
-    overwrite true
-}
-
-ext {
+project.ext {
+    mcVersion = '1.15.2'
+    serverPath = project.projectDir.path + '/server'
     citizens_version = '2.0.25-SNAPSHOT'
     we_version = '7.1.0-SNAPSHOT'
+}
+
+task download(type: Download) {
+    src 'https://papermc.io/api/v1/paper/' + project.ext.mcVersion + '/latest/download'
+    dest project.ext.serverPath + '/paper.jar'
+    overwrite true
 }
 
 allprojects {
@@ -28,11 +27,11 @@ allprojects {
     apply plugin: 'java'
     apply plugin: 'kotlin'
     dependencies {
-        compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-        compile "com.destroystokyo.paper:paper-api:1.15.1-R0.1-SNAPSHOT"
-        compile "org.jetbrains.kotlin:kotlin-reflect:1.3.40"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+        implementation "com.destroystokyo.paper:paper-api:" + rootProject.ext.mcVersion + "-R0.1-SNAPSHOT"
+        implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.40"
         compileOnly fileTree(dir: 'lib', includes: ['*.jar'])
-        testCompile group: 'junit', name: 'junit', version: '4.12'
+        testImplementation group: 'junit', name: 'junit', version: '4.12'
     }
 
     sourceCompatibility = 1.8
@@ -58,15 +57,13 @@ allprojects {
             copyJar.shouldRunAfter(build)
         }
 
-        def jarFile = getJar(project)
         def jarName = getJar(project).name
-        println jarFile
 
         jar {
             from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
         }
         clean {
-            delete(serverPath + '/plugins/' + jarName, projectDir.path + '/build', projectDir.path + '/out')
+            delete(rootProject.ext.serverPath + '/plugins/' + jarName, projectDir.path + '/build', projectDir.path + '/out')
         }
 
         task copyJar(type: Copy) {
@@ -80,3 +77,4 @@ allprojects {
         }
     }
 }
+

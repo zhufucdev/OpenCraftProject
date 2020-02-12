@@ -2,7 +2,6 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.lobby.PlayerLobby
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
-import com.zhufu.opencraft.script.PlayerScript
 import com.zhufu.opencraft.special_item.*
 import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
@@ -202,35 +201,6 @@ class PlayerUtil : JavaPlugin() {
                     sender.success(getter["command.done"])
                     if (player != sender) {
                         player.info(getter["si.given", itemName, amount])
-                    }
-                }
-                "script" -> {
-                    if (args.size < 2 || args[1].isEmpty()) {
-                        sender.error(getter["command.error.usage"])
-                        return true
-                    }
-                    val src = buildString {
-                        for (i in 1 until args.size) {
-                            append(args[i] + ' ')
-                        }
-                        if (isNotEmpty()) {
-                            deleteCharAt(lastIndex)
-                        }
-                    }
-                    Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
-                        val info = sender.info()
-                        if (info == null) {
-                            sender.error(getter["command.error.unknown"])
-                            return@runTaskAsynchronously
-                        }
-                        with(PlayerScript(info, name = "Console")) {
-                            this.src = src
-                            call()
-
-                            Bukkit.getScheduler().runTaskLater(this@PlayerUtil, { _ ->
-                                close()
-                            }, 100)
-                        }
                     }
                 }
             }

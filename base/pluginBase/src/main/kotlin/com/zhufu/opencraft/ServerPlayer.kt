@@ -38,7 +38,7 @@ abstract class ServerPlayer(
                 return r
             }
 
-        fun forEach(l: (ServerPlayer) -> Unit) {
+        fun forEachSaved(l: (ServerPlayer) -> Unit) {
             Paths.get("plugins", "tag").toFile().listFiles()?.forEach {
                 if (!it.isHidden && !it.isDirectory)
                     l(OfflineInfo(UUID.fromString(it.nameWithoutExtension)))
@@ -277,7 +277,6 @@ abstract class ServerPlayer(
     open fun delete() {
         tagFile.delete()
         inventoriesFile.delete()
-
     }
 
     private var isDestroyed = false
