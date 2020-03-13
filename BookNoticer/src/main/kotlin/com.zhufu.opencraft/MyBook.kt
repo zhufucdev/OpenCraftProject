@@ -4,9 +4,9 @@ import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import io.netty.buffer.Unpooled
-import net.minecraft.server.v1_14_R1.*
+import net.minecraft.server.v1_15_R1.*
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta

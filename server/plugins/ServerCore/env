@@ -1,9 +1,0 @@
-reloadDelay: 2400
-inventorySaveDelay: 4800
-prisePerBlock: 10
-backToDeathPrise: 3
-countOfSurveyQuestion: 6
-secondsPerQuestion: 30
-url: https://www.open-craft.cn
-diamondExchange: 60
-debug: true

@@ -16,7 +16,8 @@ object Game {
         "notice",
         "url",
         "diamondExchange",
-        "debug"
+        "debug",
+        "ssHotReload"
     )
 
     val chart: List<ServerPlayer>

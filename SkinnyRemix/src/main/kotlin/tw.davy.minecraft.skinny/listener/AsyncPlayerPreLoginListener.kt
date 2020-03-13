@@ -22,7 +22,7 @@ class AsyncPlayerPreLoginListener(private val mPlugin: Skinny) : Listener {
             return
 
         val playerName = preLoginEvent.name
-        val info = PlayerManager.findOfflinePlayer(preLoginEvent.uniqueId)
+        val info = PlayerManager.findOfflineInfoByPlayer(preLoginEvent.uniqueId)
         var skin = Skinny.instance.cache.getOrDefault(playerName, null)
         if (skin == null) {
             val customTarget = info?.skin

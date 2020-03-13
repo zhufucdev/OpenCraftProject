@@ -1,6 +1,5 @@
 package com.zhufu.opencraft
 
-import com.destroystokyo.paper.event.server.PaperServerListPingEvent
 import com.zhufu.opencraft.Base.Extend.isDigit
 import com.zhufu.opencraft.Base.endWorld
 import com.zhufu.opencraft.Base.lobby
@@ -32,9 +31,7 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.world.WorldLoadEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
@@ -45,7 +42,6 @@ import java.nio.charset.Charset
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
 import kotlin.math.roundToLong
@@ -187,22 +183,17 @@ class Core : JavaPlugin(), Listener {
     private var urlLooper = 0
     private var looperDirection = true
     private fun handleTasks() {
-        if (!env.isSet("reloadDelay"))
-            env.set("reloadDelay", 2 * 60 * 20)
-        if (!env.isSet("inventorySaveDelay"))
-            env.set("inventorySaveDelay", 4 * 60 * 20)
-        if (!env.isSet("prisePerBlock"))
-            env.set("prisePerBlock", 10)
-        if (!env.isSet("backToDeathPrise"))
-            env.set("backToDeathPrise", 3)
-        if (!env.isSet("countOfSurveyQuestion"))
-            env.set("countOfSurveyQuestion", 6)
-        if (!env.isSet("secondsPerQuestion"))
-            env.set("secondsPerQuestion", 30)
-        if (!env.isSet("url"))
-            env.set("url", "https://www.open-craft.cn")
-        if (!env.isSet("debug"))
-            env.set("debug", false)
+        env.addDefaults(mapOf(
+            "reloadDelay" to 2 * 60 * 20,
+            "inventorySaveDelay" to 4 * 60 * 20,
+            "prisePerBlock" to 10,
+            "backToDeathPrise" to 3,
+            "countOfSurveyQuestion" to 6,
+            "secondsPerQuestion" to 30,
+            "url" to "https://www.open-craft.cn",
+            "debug" to false,
+            "ssHotReload" to false
+        ))
         env.save(File(dataFolder, "env"))
         saveTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, Runnable {
             Bukkit.getPluginManager().callEvent(PlayerInventorySaveEvent())
@@ -625,6 +616,15 @@ class Core : JavaPlugin(), Listener {
                             env.set("debug", false)
                             sender.success("已关闭调试模式")
                         }
+                    } else if (args[1] == "ssHotReload") {
+                        val content = "服务器脚本动态刷新，重载服务器脚本以生效"
+                        if (args[2] == "true") {
+                            env.set("ssHotReload", true)
+                            sender.success("已启用$content")
+                        } else {
+                            env.set("ssHotReload", false)
+                            sender.success("已关闭$content")
+                        }
                     } else {
                         fun checkIntOverZero(): Boolean {
                             if (!args[2].isDigit()) {
@@ -644,13 +644,13 @@ class Core : JavaPlugin(), Listener {
                         if (checkIntOverZero()) {
                             env.set(args[1], args[2].toIntOrNull())
                             sender.sendMessage(TextUtil.success("已将服务器环境变量${args[1]}设置为${args[2]}"))
-                            env.save(File(dataFolder, "env"))
 
                             reloadTask?.cancel()
                             saveTask?.cancel()
                             handleTasks()
                         }
                     }
+                    env.save(File(dataFolder, "env"))
                 }
                 args.first() == "notice" -> {
                     if (args.size <= 1 && sender is Player && sender.isOp) {
@@ -736,7 +736,7 @@ class Core : JavaPlugin(), Listener {
                 }
                 when (args.first()) {
                     "pass" -> {
-                        val it = PlayerManager.findOfflinePlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
+                        val it = PlayerManager.findOfflineInfoByPlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
                         if (it == null) {
                             sender.sendMessage(TextUtil.error("找不到玩家"))
                             return true
@@ -747,7 +747,7 @@ class Core : JavaPlugin(), Listener {
                         it.isSurveyPassed = true
                     }
                     "rollback" -> {
-                        val it = PlayerManager.findOfflinePlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
+                        val it = PlayerManager.findOfflineInfoByPlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
                         if (it == null) {
                             sender.sendMessage(TextUtil.error("找不到玩家"))
                             return true
@@ -758,7 +758,7 @@ class Core : JavaPlugin(), Listener {
                         it.isSurveyPassed = false
                     }
                     "giveChance" -> {
-                        val it = PlayerManager.findOfflinePlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
+                        val it = PlayerManager.findOfflineInfoByPlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
                         if (it == null) {
                             sender.sendMessage(TextUtil.error("找不到玩家"))
                             return true

@@ -1,4 +1,4 @@
-'use object, requireJava, getJavaClass, listJava';
+'use object, requireJava, getJavaClass, listJava, isModuleLoaded';
 module.exports = {
     /**
      * Create an {@link #Object} with getters and setters.
@@ -9,7 +9,7 @@ module.exports = {
     /**
      * Require a Java object.
      * @param packageName {string} of the object to require.
-     * @return {Object}
+     * @return {JavaObject}
      */
     fromJava: (packageName) => requireJava(packageName),
     /**
@@ -21,16 +21,16 @@ module.exports = {
     /**
      * Gets the Java Class of a Java Object.
      * @param javaObject {Object} instance of the Java Object to get.
-     * @return {Object} Java Class for reflections.
+     * @return {JavaClass} Java Class for reflections.
      */
     javaClass: (javaObject) => getJavaClass(javaObject),
     /**
      * Gets whether the object is or of subclass of the given package.
-     * @param obj {Object} the object.
-     * @param packageName {string} the Java package name.
+     * @param obj {JavaObject} the object.
+     * @param packageName {string|JavaObject} the Java package name.
      * @return {boolean} True if the object is of the given package.
      */
-    isOfClass: (obj, packageName) =>  requireJava(packageName).javaClass.isAssignableFrom(getJavaClass(obj)),
+    isOfClass: (obj, packageName) => (typeof packageName === 'string' ? requireJava(packageName) : packageName).javaClass.isAssignableFrom(getJavaClass(obj)),
     /**
      * Adds members to the give object.
      * @param obj {Object} the object to be extended.
@@ -41,5 +41,18 @@ module.exports = {
             obj[key] = extension[key]
         }
         return obj;
-    }
+    },
+    /**
+     * Gets all keys of a object.
+     * @param obj {Object} The object to get keys from.
+     * @returns {[string|number]} Array of the keys.
+     */
+    keyOf: (obj) => {
+        const r = [];
+        for (let key in obj) {
+            r.push(key);
+        }
+        return r
+    },
+    isModuleLoaded: (name) => isModuleLoaded(name)//TODO: Seperate into another package
 };

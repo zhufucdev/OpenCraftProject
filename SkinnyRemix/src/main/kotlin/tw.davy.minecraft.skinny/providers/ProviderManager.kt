@@ -41,9 +41,13 @@ class ProviderManager(enableStorages: List<String>) {
 
     fun getSkin(name: String): SignedSkin? {
         for (provider in mProviders) {
-            val skin = provider.getSkinData(name)
-            if (skin != null)
-                return skin
+            try {
+                val skin = provider.getSkinData(name)
+                if (skin != null)
+                    return skin
+            } catch (ignored: Exception) {
+
+            }
         }
 
         return null

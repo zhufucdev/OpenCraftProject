@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.Info.Companion.cache
@@ -39,15 +41,17 @@ object PlayerManager : Listener {
 
     fun findInfoByPlayer(player: Player) = Info.findByPlayer(player)
     fun findInfoByPlayer(uuid: UUID) = Info.findByPlayer(uuid)
-    fun findOfflinePlayer(uuid: UUID): OfflineInfo? = cache.firstOrNull { it.uuid == uuid }
+    fun findInfoByName(name: String) = Info.findByName(name)
+    fun findOfflineInfoByPlayer(uuid: UUID): OfflineInfo? = cache.firstOrNull { it.uuid == uuid }
         ?: cacheList.firstOrNull { it.uuid == uuid }
         ?: try {
             OfflineInfo(uuid).also { cacheList.add(it) }
         } catch (e: Exception) {
             null
         }
+    fun findOfflineInfoByName(name: String) = OfflineInfo.findByName(name)
 
-    fun createOfflinePlayer(uuid: UUID) = findOfflinePlayer(uuid)
+    fun createOfflinePlayer(uuid: UUID) = findOfflineInfoByPlayer(uuid)
         ?: OfflineInfo(uuid, true).also { cacheList.add(it) }
 
     fun forEachPlayer(l: (Info) -> Unit) = cache.forEach(l)

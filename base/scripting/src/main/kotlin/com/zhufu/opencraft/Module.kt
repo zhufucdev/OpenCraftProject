@@ -1,67 +1,110 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.Scripting.BUKKIT_PREFIX
+import com.zhufu.opencraft.Scripting.SS_PREFIX
 import com.zhufu.opencraft.lang.JSContainer
 import com.zhufu.opencraft.lang.JavaClass4JS
 import com.zhufu.opencraft.lang.ProxyWrap
 import org.bukkit.Bukkit
+import org.bukkit.event.EventPriority
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
+import org.bukkit.event.server.PluginEnableEvent
 import org.bukkit.plugin.EventExecutor
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Source
 import org.graalvm.polyglot.Value
 import org.graalvm.polyglot.proxy.*
-import java.io.File
 import java.io.Reader
 import java.io.Writer
-import java.util.function.Function
 import kotlin.concurrent.thread
 
-class Module(val file: File, internal var requester: Module? = null) {
-    val path: String = file.relativeTo(File("plugins")).path
-    val name =
-        if (file.extension != "js")
-            throw IllegalArgumentException("[file] must be named as .js")
-        else if (file.parentFile.parentFile == Scripting.modulesDir && file.name == "main.js")
-            file.parentFile.nameWithoutExtension
-        else
-            file.nameWithoutExtension
-    val isDependency = file.parentFile != File("plugins") && file.parentFile.parentFile != Scripting.modulesDir
+class Module(val loader: ModuleLoader, internal var requester: Module? = null) {
+    val path: String get() = loader.path
+    val name get() = loader.name
+    val isDependency get() = loader.isDependency
 
-    private val requireFunc: Function<String, Any?> = Function { r ->
-        var result: Module? = null
-        if (r.contains('/')) {
-            result = Scripting.indexAbsolutelyOf(r)
+    private val requireFunc = ProxyExecutable { r ->
+        if (r.isEmpty() || !r.first().isString) {
+            throw RuntimeException("Arguments must contain a {string}.")
         }
-        if (result == null) {
-            result = Scripting.loaded.firstOrNull { m ->
-                m.name == r && File("plugins", m.path).parentFile == file.parentFile
-            }
-                ?: Scripting.load(File(file.parentFile, "$r.js"), this)
-        }
-        if (result == null) {
-            val test = if (r.contains('/')) File("plugins", r) else File(Scripting.modulesDir, "$r/main.js")
-            if (test.exists())
-                result = Scripting.indexAbsolutelyOf(test.relativeTo(File("plugins")).path)
-                    ?: Scripting.load(test, this)
-        }
-        return@Function result?.let {
-            val v = result.module.getMember("exports")
+        val index = r.first().asString()
+        val loader = Scripting.indexFriendly(index, loader.file, this)
+        if (!loader.canLoad)
+            throw RuntimeException("No such module: $index")
+
+        return@ProxyExecutable loader.load()?.let {
+            if (requester?.context == it.context && !isInitialized)
+                throw RuntimeException(
+                    "Circle Depend. The requester of this module is ${requester!!.name}, " +
+                            "which is required by this module."
+                )
+            val v = it.module.getMember("exports")
             if (v != null)
                 javalize(v, context)
             else
                 null
         }
     }
-    val context =
+    private val afterFunc = ProxyExecutable {
+        if (it.size < 2 || !it.first().isString || !it[1].canExecute()) {
+            throw RuntimeException("Arguments must contains a {string} and a {function}.")
+        }
+        var what = it.first().asString()
+        val execute = it[1]
+        fun notifyLoad() {
+            thread {
+                Scripting.syncCall(context) {
+                    execute.executeVoid()
+                }
+            }
+        }
+        if (what.startsWith(BUKKIT_PREFIX)) {
+            what = what.removePrefix(BUKKIT_PREFIX)
+            Bukkit.getPluginManager().apply {
+                if (getPlugin(what) == null) throw RuntimeException("Bukkit plugin $what doesn't exist.")
+
+                if (isPluginEnabled(what)) {
+                    notifyLoad()
+                } else {
+                    registerEvent(PluginEnableEvent::class.java, object : Listener {}, EventPriority.NORMAL, { l, e ->
+                        val event = e as PluginEnableEvent
+                        if (event.plugin.name == what) {
+                            notifyLoad()
+                            HandlerList.unregisterAll(l)
+                        }
+                    }, Scripting.plugin)
+                }
+            }
+        } else {
+            if (what.startsWith(SS_PREFIX)) {
+                what = what.removePrefix(SS_PREFIX)
+            }
+            val loader = Scripting.indexFriendly(what, loader.file)
+            if (!loader.canLoad)
+                throw RuntimeException("The module $what doesn't exist or cannot be loaded.")
+
+            if (loader.isLoaded) notifyLoad()
+            else {
+                loader.addPostLoadListener {
+                    notifyLoad()
+                }
+            }
+        }
+        return@ProxyExecutable null
+    }
+    internal val context =
         Context.newBuilder("js")
             .allowAllAccess(true)
             .build()
-    val binding = context.getBindings("js")
+    private val binding = context.getBindings("js")
     val module: Value
         get() = binding.getMember("module")
+    private var isInitialized = false
 
     init {
-        Bukkit.getLogger().info("Context for module $name is ${this.context}.")
+        if (Game.env.getBoolean("debug"))
+            Bukkit.getLogger().info("Context for module $name is ${this.context}.")
         binding.putMember(
             "module", ProxyObject.fromMap(
                 mapOf(
@@ -72,14 +115,14 @@ class Module(val file: File, internal var requester: Module? = null) {
             )
         )
         binding.putMember("require", requireFunc)
+        binding.putMember("after", afterFunc)
     }
 
     internal fun init() {
         val source = Source
-            .newBuilder("js", file.reader(), name)
+            .newBuilder("js", loader.file.reader(), name)
             .build()
 
-        file.bufferedReader().readText()
         source.getCharacters(1).let { l1 ->
             if (l1.startsWith("'use ")) {
                 val start = l1.indexOf(' ') + 1
@@ -97,12 +140,20 @@ class Module(val file: File, internal var requester: Module? = null) {
         Scripting.syncCall(context) {
             context.eval(source)
         }
+        if (!isDependency)
+            Bukkit.getLogger().info("Initialized $name.")
+        isInitialized = true
     }
 
     @Suppress("UNCHECKED_CAST")
     fun disable() {
-        val close = module.getMember("onDisable");
+        if (Scripting.lockers.containsKey(context)) {
+            Scripting.lockers[context]!!.interrupt()
+        }
+        val close = module.getMember("onDisable")
         if (close != null) {
+            if (!isDependency)
+                Bukkit.getLogger().info("Disabling $name.")
             Scripting.syncCall(context) {
                 try {
                     close.execute()
@@ -209,12 +260,65 @@ class Module(val file: File, internal var requester: Module? = null) {
                 f.execute(listener, event)
             }
         }
+        "isModuleLoaded" -> usage to ProxyExecutable {
+            var name = it.first().asString()
+            if (name.startsWith(BUKKIT_PREFIX)) {
+                name = name.removePrefix(BUKKIT_PREFIX)
+                return@ProxyExecutable Bukkit.getPluginManager().isPluginEnabled(name)
+            } else {
+                if (name.startsWith(SS_PREFIX))
+                    name = name.removePrefix(SS_PREFIX)
+                val loader = Scripting.indexFriendly(name, loader.file)
+                return@ProxyExecutable loader.isLoaded
+            }
+        }
         else -> null
+    }
+
+    override fun equals(other: Any?): Boolean = other is Module && other.loader == loader && other.context == context
+    override fun hashCode(): Int {
+        var result = loader.hashCode()
+        result = 31 * result + (requester?.hashCode() ?: 0)
+        result = 31 * result + (context?.hashCode() ?: 0)
+        return result
     }
 
     companion object {
         @Suppress("UNCHECKED_CAST")
-        fun javalize(jsObject: Value, wrapper: Context): Any? {
+        fun javalize(jsObject: Value, wrapper: Context, createProxy: Boolean = true): Any? {
+            fun asMembers(): ProxyObject {
+                if (jsObject.memberKeys.contains("prototype")) {
+                    val prototype = jsObject.getMember("prototype")
+                    if (prototype.isProxyObject) {
+                        try {
+                            val cast = prototype.asProxyObject<JSContainer>()
+                            val map = hashMapOf<String, JSContainer.Member>()
+
+                            map.putAll(cast.map)
+                            jsObject.memberKeys.forEach {
+                                if (it != "prototype") {
+                                    map[it] = JSContainer.Direct(jsObject.getMember(it), wrapper)
+                                }
+                            }
+
+                            return JSContainer(map, wrapper)
+                        } catch (ignore: Exception) {
+                        }
+                    }
+                }
+                val map = LinkedHashMap<String, Any?>()
+                jsObject.memberKeys.forEach {
+                    if (it == "prototype") {
+                        val prototype = jsObject.getMember(it)
+                        prototype.memberKeys.forEach { prototypeMember ->
+                            map[prototypeMember] = javalize(prototype.getMember(prototypeMember), wrapper)
+                        }
+                    } else {
+                        map[it] = javalize(jsObject.getMember(it), wrapper)
+                    }
+                }
+                return ProxyObject.fromMap(map)
+            }
             return when {
                 jsObject.isNull -> null
                 jsObject.isProxyObject -> {
@@ -222,7 +326,7 @@ class Module(val file: File, internal var requester: Module? = null) {
                         val cast = jsObject.asProxyObject<ProxyWrap>()
                         cast.rewrap(wrapper)
                     } catch (ignore: Exception) {
-                        jsObject
+                        return if (jsObject.hasMembers()) asMembers() else jsObject
                     }
                 }
                 jsObject.isHostObject -> jsObject.asHostObject()
@@ -236,48 +340,19 @@ class Module(val file: File, internal var requester: Module? = null) {
                     for (i in 0 until jsObject.arraySize) {
                         array.add(javalize(jsObject.getArrayElement(i), wrapper))
                     }
-                    ProxyArray.fromList(array)
+                    if (createProxy)
+                        ProxyArray.fromList(array)
+                    else
+                        array.toArray()
                 }
-                jsObject.hasMembers() -> {
-                    if (jsObject.memberKeys.contains("prototype")) {
-                        val prototype = jsObject.getMember("prototype")
-                        if (prototype.isProxyObject) {
-                            try {
-                                val cast = prototype.asProxyObject<JSContainer>()
-                                val map = hashMapOf<String, JSContainer.Member>()
-
-                                map.putAll(cast.map)
-                                jsObject.memberKeys.forEach {
-                                    if (it != "prototype") {
-                                        map[it] = JSContainer.Direct(jsObject.getMember(it), wrapper)
-                                    }
-                                }
-
-                                return JSContainer(map, wrapper)
-                            } catch (ignore: Exception) {
-                            }
-                        }
-                    }
-                    val map = LinkedHashMap<String, Any?>()
-                    jsObject.memberKeys.forEach {
-                        if (it == "prototype") {
-                            val prototype = jsObject.getMember(it)
-                            prototype.memberKeys.forEach { prototypeMember ->
-                                map[prototypeMember] = javalize(prototype.getMember(prototypeMember), wrapper)
-                            }
-                        } else {
-                            map[it] = javalize(jsObject.getMember(it), wrapper)
-                        }
-                    }
-                    ProxyObject.fromMap(map)
-                }
+                jsObject.hasMembers() -> if (createProxy) asMembers() else UnsupportedOperationException("Object with members cannot be converted into Java object")
                 else -> null
             }
         }
 
-        fun javalize(objects: Array<Value?>, wrapper: Context): Array<Any?> {
+        fun javalize(objects: Array<Value?>, wrapper: Context, createProxy: Boolean = true): Array<Any?> {
             val r = arrayListOf<Any?>()
-            objects.forEach { r.add(if (it != null) javalize(it, wrapper) else null) }
+            objects.forEach { r.add(if (it != null) javalize(it, wrapper, createProxy) else null) }
             return r.toArray()
         }
     }

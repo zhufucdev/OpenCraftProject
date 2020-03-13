@@ -5,10 +5,10 @@ import com.zhufu.opencraft.ChatInfo
 import com.zhufu.opencraft.Language
 import com.zhufu.opencraft.player_community.PlayerOutputStream
 import com.zhufu.opencraft.getter
-import net.minecraft.server.v1_14_R1.IChatBaseComponent
-import net.minecraft.server.v1_14_R1.PacketPlayOutChat
+import net.minecraft.server.v1_15_R1.IChatBaseComponent
+import net.minecraft.server.v1_15_R1.PacketPlayOutChat
 import org.bukkit.ChatColor
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer
 import org.bukkit.entity.Player
 import java.io.File
 

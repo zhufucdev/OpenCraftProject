@@ -30,6 +30,7 @@ function searchForClass(name) {
         search = searchRoot('com.zhufu.opencraft.events');
         return search;
     } else {
+        name = name.replace('$opencraft', 'com.zhufu.opencraft.events')
         try {
             object.fromJava(name);
             return name
@@ -40,6 +41,14 @@ function searchForClass(name) {
 }
 
 let listeners = [];
+const bukkitEventPackage = 'org.bukkit.event';
+function suggest(element) {
+    if (object.isOfClass(element, bukkitEventPackage + '.player.PlayerLoginEvent')) {
+        logger.warn('Listening %s.player.PlayerLoginEvent is deprecated because it is called ' +
+            'earlier than the OpenCraft Player Info is generated. ' +
+            'Use PlayerJoinEvent instead.', bukkitEventPackage)//TODO: Improve.
+    }
+}
 
 function Listener(wrap) {
     listeners.push(this);
@@ -53,7 +62,7 @@ function Listener(wrap) {
      * One listener can listen the same event for many times.
      * @param event {string} name of event to listen.
      * @example 'PlayerLoginEvent' for org.bukkit.event.player.PlayerLoginEvent,
-     *  or 'com.zhufu.opencraft.events.PlayerLoginEvent'
+     *  or '$opencraft.PlayerLoginEvent' for com.zhufu.opencraft.events.PlayerLoginEvent
      * @param onTriggered {function(Event)} Called when the event is called by server.
      * @param priority {bukkitEvent.priority} The priority of this listening.
      * @default bukkitEvent.priority.normal
@@ -62,7 +71,8 @@ function Listener(wrap) {
         const e = object.fromJava(searchForClass(event));
         if (!priority) priority = bukkitEvent.priority.normal;
         if (e) {
-            logger.info("Listening event " + e.javaClass.getSimpleName() + ".");
+            logger.info("Listening event " + e.javaClass.getName());
+            suggest(e);
             pluginManager.registerEvent(
                 e.javaClass,
                 wrap,
@@ -94,7 +104,7 @@ module.exports = object.withProperties({
      * @param event {string} name of event to listen.
      * @param trigger {function(Event)} called when the specific event is listened.
      * @param priority {bukkitEvent.priority} The priority of this listening.
-     * @return {Listener} listening this event which can be unregistered to cancel listening or listen other events.
+     * @return {Listener} Listener listening this event which can be unregistered to cancel listening or listen other events.
      */
     listen: function (event, trigger, priority) {
         const n = newListener();
@@ -103,17 +113,20 @@ module.exports = object.withProperties({
         return listener;
     },
     /**
-     * @return {string} Representing the version of Bukkit server.
+     * @return {string} String representing the version of Bukkit server.
      */
     version: {
         getter: () => bukkit.getVersion()
     },
     /**
-     * @return {OpenCraftServer} representing the server.
+     * @return {OpenCraftServer} Object representing the server.
      * @see OpenCraftServer
      */
     server: {
         getter: () => server
+    },
+    Event: {
+        getter: () => require('Event')
     }
 });
 

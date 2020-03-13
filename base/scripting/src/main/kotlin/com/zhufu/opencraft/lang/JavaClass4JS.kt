@@ -84,15 +84,16 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
         }
         f.forEach { (k, v) ->
             functions[k] = ProxyExecutable { arguments ->
-                fun typeMatch(a: KParameter, b: Value) =
-                    b.isNull || a.type.isSupertypeOf(b.`as`(Any::class.java)::class.defaultType)
+                val args = Module.javalize(arguments, wrapper, false)
+                fun typeMatch(a: KParameter, b: Any?) =
+                    b == null || a.type.isSupertypeOf(b::class.defaultType)
 
                 val filter: (KFunction<*>) -> Boolean = if (static) {
                     {
-                        if (it.parameters.size == arguments.size) {
+                        if (it.parameters.size == args.size) {
                             var result = true
-                            for (i in arguments.indices) {
-                                if (!typeMatch(it.parameters[i], arguments[i])) {
+                            for (i in args.indices) {
+                                if (!typeMatch(it.parameters[i], args[i])) {
                                     result = false
                                     break
                                 }
@@ -104,10 +105,10 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
                     }
                 } else {
                     {
-                        if (it.parameters.size - 1 == arguments.size) {
+                        if (it.parameters.size - 1 == args.size) {
                             var result = true
-                            for (i in arguments.indices) {
-                                if (!typeMatch(it.parameters[i + 1], arguments[i])) {
+                            for (i in args.indices) {
+                                if (!typeMatch(it.parameters[i + 1], args[i])) {
                                     result = false
                                     break
                                 }
@@ -122,14 +123,13 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
                     ?: throw RuntimeException(
                         "No such function: $k(${
                         buildString {
-                            arguments.forEach {
-                                append(it.`as`(Any::class.java)::class.simpleName)
+                            args.forEach {
+                                append(if (it == null) "Any" else it::class.simpleName)
                                 append(", ")
                             }
                         }.removeSuffix(", ")
                         })."
                     )).let {
-                    val args = Module.javalize(arguments, wrapper)
                     if (static)
                         it.call(*args)
                     else

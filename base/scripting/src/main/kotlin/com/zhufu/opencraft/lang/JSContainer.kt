@@ -91,7 +91,7 @@ class JSContainer : ProxyObject, ProxyExecutable, ProxyInstantiable, ProxyWrap {
             }
         }
 
-        override fun toString(): String = "function{ [native code] }"
+        override fun toString(): String = "function { [native code] }"
     }
 
     constructor(from: Value, wrapper: Context) {
@@ -216,7 +216,7 @@ class JSContainer : ProxyObject, ProxyExecutable, ProxyInstantiable, ProxyWrap {
         val args = arrayListOf<Any?>()
         arguments.forEach {
             if (it != null) {
-                args.add(Module.javalize(it, wrapper))
+                args.add(Module.javalize(it, executable!!.context))
             } else {
                 args.add(null)
             }

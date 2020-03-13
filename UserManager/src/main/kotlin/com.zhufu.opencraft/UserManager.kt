@@ -1,19 +1,14 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.Base.Extend.toPrettyString
 import com.zhufu.opencraft.Base.spawnWorld
-import com.zhufu.opencraft.events.*
-import com.zhufu.opencraft.inventory.PaymentDialog
+import com.zhufu.opencraft.events.PlayerLoginEvent
+import com.zhufu.opencraft.events.PlayerLogoutEvent
+import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.Friend
-import com.zhufu.opencraft.player_community.FriendWrap
-import com.zhufu.opencraft.player_community.MessagePool
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -21,11 +16,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
-import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.KVisibility
-import kotlin.reflect.full.memberProperties
 
 class UserManager : JavaPlugin(), Listener {
     private lateinit var boardLocation: Location
@@ -135,6 +126,12 @@ class UserManager : JavaPlugin(), Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun playerLogin(event: org.bukkit.event.player.PlayerLoginEvent) {
+        val info = Info(event.player)
+        PlayerManager.add(info)
+    }
+
     @EventHandler
     fun onOpPrelogin(event: AsyncPlayerPreLoginEvent) {
         if (!Game.env.getBoolean("debug")
@@ -155,8 +152,7 @@ class UserManager : JavaPlugin(), Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        val info = Info(event.player)
-        PlayerManager.add(info)
+        val info = PlayerManager.findInfoByPlayer(event.player) ?: return
         event.joinMessage = ""
         if (!info.isUserLanguageSelected) {
             info.doNotTranslate = true

@@ -1,5 +1,6 @@
 package com.zhufu.opencraft.events;
 
+import com.zhufu.opencraft.Info;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
@@ -9,6 +10,7 @@ public class PlayerLoginEvent extends PlayerEvent {
 
     public PlayerLoginEvent(Player who) {
         super(who);
+
     }
 
     @Override

@@ -5,8 +5,6 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import java.util.*
 import javax.security.auth.Destroyable
 
@@ -84,7 +82,7 @@ class TradeInfo : Cloneable, Destroyable {
         if (!cost)
             info.currency -= prise
         if (seller != "server") {
-            val seller = PlayerManager.findOfflinePlayer(UUID.fromString(seller!!)) ?: return false
+            val seller = PlayerManager.findOfflineInfoByPlayer(UUID.fromString(seller!!)) ?: return false
             seller.currency += prise
             if (seller.isOnline) {
                 seller.onlinePlayerInfo!!.player.sendMessage(TextUtil.info("${it.name}购买了您的${items!!.item.type}×$howMany，从而使您获得了${prise}个货币"))
