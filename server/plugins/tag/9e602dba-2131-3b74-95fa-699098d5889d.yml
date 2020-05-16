@@ -1,0 +1,15 @@
+lang: en
+territoryID: 0
+password: '233'
+address: localhost
+gameTime: 104000
+isSurvivor: true
+surviveSpawn:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: -107.41645696229946
+  y: 68.0
+  z: 2857.2799033711835
+  pitch: 19.05004
+  yaw: 81.75003
+isSurveyPassed: true

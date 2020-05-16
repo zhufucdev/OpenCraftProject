@@ -1,0 +1,10 @@
+name: Skinny
+main: tw.davy.minecraft.skinny.Skinny
+load: STARTUP
+version: 1.1-SNAPSHOT
+authors: [Davy]
+api-version: 1.13
+commands:
+  sc:
+    usage: /<command> <目标玩家名称>
+    description: 修改自己的皮肤，使之变为指定玩家的(只支持Mojang API)

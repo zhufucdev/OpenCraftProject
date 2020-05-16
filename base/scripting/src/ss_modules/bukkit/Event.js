@@ -5,6 +5,11 @@ const EventPriority = object.fromJava('org.bukkit.event.EventPriority');
 
 const bukkitEventPackage = 'org.bukkit.event'
 
+/**
+ * Event rewrap
+ * @param wrapper
+ * @constructor
+ */
 function Event(wrapper) {
     const constructor = {};
     function is(packageName) {

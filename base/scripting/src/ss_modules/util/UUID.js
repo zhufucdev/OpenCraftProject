@@ -34,3 +34,4 @@ function UUID(string) {
 }
 
 module.exports = UUID;
+module.shareContext = false;

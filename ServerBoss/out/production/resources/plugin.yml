@@ -1,0 +1,17 @@
+name: ServerBoss
+main: com.zhufu.opencraft.ServerBoss
+version: '1.0'
+api-version: '1.14'
+softdepend:
+  - ServerCore
+commands:
+  boss:
+    usage: /boss
+    description: 传送到服务器boss
+  boss spawn:
+    usage: /boss spawn
+    description: 生成服务器boss
+    permission: op
+  boss difficulty:
+    usage: /boss difficulty
+    description: 查询boss当前难度

@@ -1,11 +1,11 @@
 const object = require('object');
 const manager = object.fromJava('com.zhufu.opencraft.PlayerManager');
-const UUID = require('util/UUID');
-const entitify = require('Entitify');
-const format = require('util/Format');
-const Pattern = require('MessagePattern');
 
 function Player(id) {
+    const UUID = require('util/UUID');
+    const entitify = require('Entitify');
+    const format = require('util/Format');
+    const Pattern = require('MessagePattern');
     const Location = require('World').Location;
 
     function update() {
@@ -77,3 +77,4 @@ function Player(id) {
 }
 
 module.exports = Player;
+module.shareContext = false;

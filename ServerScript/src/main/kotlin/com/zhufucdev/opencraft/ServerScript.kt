@@ -12,23 +12,25 @@ class ServerScript : JavaPlugin() {
     @Suppress("MemberVisibilityCanBePrivate")
     fun initScripting() {
         logger.info("Loading scripts under plugins directory.")
-        val start = System.currentTimeMillis()
-        Scripting.cleanUp()
-        Scripting.init(this).let { failures ->
-            if (failures.isEmpty()) return
-            logger.warning {
-                buildString {
-                    append("Failed to load following server scripts: ")
-                    failures.forEach {
-                        append(it.nameWithoutExtension)
-                        append(", ")
-                    }
-                }.removeSuffix(", ")
+        thread(name = "ServerScript Initialization") {
+            val start = System.currentTimeMillis()
+            Scripting.cleanUp()
+            Scripting.init(this).let { failures ->
+                if (failures.isEmpty()) return@let
+                logger.warning {
+                    buildString {
+                        append("Failed to load following server scripts: ")
+                        failures.forEach {
+                            append(it.nameWithoutExtension)
+                            append(", ")
+                        }
+                    }.removeSuffix(", ")
+                }
             }
-        }
-        val end = System.currentTimeMillis()
-        if (Game.env.getBoolean("debug")) {
-            print("Finished in ${end - start}ms.")
+            val end = System.currentTimeMillis()
+            if (Game.env.getBoolean("debug")) {
+                print("Finished in ${end - start}ms.")
+            }
         }
         if (Game.env.getBoolean("ssHotReload")) {
             startWatchService()

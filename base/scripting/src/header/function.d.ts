@@ -30,7 +30,7 @@ declare function after(plugin: string, action: () => any);
  * @param module Name of the module to require.
  * @exception CircleDepend When the requester of this module is required by this module before this module exports.
  */
-declare function require(module: string): any;
+declare function require(module: string): any
 
 /**
  * @deprecated Use {@link require('object').javaClass} instead.

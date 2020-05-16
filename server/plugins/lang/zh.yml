@@ -1,0 +1,689 @@
+info:
+  name: 中文(简体)
+  default: true
+  code: zh
+
+gameWarn: '§c您的游戏遇到问题，这很可能会影响您的游戏体验，请重新进入服务器，或联系服务器管理员'
+game:
+  waiting: '游戏还有%s秒开始'
+  upcoming: '游戏即将开始'
+  win: '恭喜，您获得了游戏的胜利'
+  win.result: '您的队伍共有%s人，击败了其他队伍%s人，击败一人奖励%s个货币，则每人分得奖励%s个货币'
+  reset: '游戏即将重置'
+  error.alreadyIn: '您已经加入游戏了'
+  error.roomFull: '抱歉，服务器已满'
+  cancelTimer: '倒计时取消'
+  teamScore: '队伍分数'
+  timeRemainingInSec: '%s时间剩余%s'
+
+user:
+  toSelectLang: '请选择您的语言(在聊天栏输入以选择)。Please choose the language you use through the chat:'
+  loginWithIP: '使用上一次的IP地址自动登录'
+  login1: '您还没有在服务器登录'
+  login2: '使用%s 来登录'
+  login.timeout: '验证超时'
+  login.success: '您已成功登录'
+  pwd.changed: '密码修改成功'
+  reg1: '您还没有在服务器注册身份'
+  reg2: '使用%s来注册'
+  error.alreadyReg: '您已经注册'
+  toRegister: '您还没有在服务器注册'
+  invitation.receive: '%s想要传送到您所在的位置'
+  invitation.toAccept: '使用/user accept%s来接受'
+  tpToSpawn: '已将您传送到重生点'
+  teleport.cancelled: '传送已取消'
+  login.failed: '输入的密码与ID不匹配'
+  coinRemaining: '您还有货币%s个'
+  transfer:
+    tip: '如果您原来在服务器游玩过，但出现了数据丢失，可使用/user transfer <旧密码> <当前密码> 来找回数据'
+    overOne: '服务器现存的持有该密码的用户有多个，故无法确认您的身份，请联系服务器管理员。'
+    zero: '找不到持有该密码的玩家'
+    online: '该玩家在线，您无法找回他的数据'
+    success: '成功加载了原有数据'
+    failure: '无法加载%s的数据，请联系服务器管理员'
+  friend:
+    list: '-----您的好友列表-----'
+    empty: '您还没有好友'
+    sharingInventory: '共享物品栏'
+    sharingCheckpoints: '共享%s个记录点'
+    inventory:
+      created: '已创建共享物品栏'
+      cancelled: '物品栏交易已取消'
+    sent: '请求已发送'
+    added: '您已与%s成为好友'
+    removed: '已移除好友%s'
+    wasRemoved: '您的好友 %s 将您从好友列表移除'
+    messaged: '已向 %s 发送该消息'
+    transfer:
+      out: '您向好友 %s2 转账了%s1元'
+      in: '您的好友 %s 向您转账了%s元'
+      cancel: '转账已取消'
+    point:
+      start: '开始与 %s2 分享记录点%s1'
+      stop: '停止与 %s2 分享记录点%s1'
+    location:
+      start: '开始与 %s 分享位置，传送将无需同意'
+      stop: '停止与 %s 分享位置'
+    request:
+      title: '%s 想要与您成为好友'
+      tip: '使用/friend %s add 来通过请求，或者/friend %s del 来拒绝'
+    error:
+      noSuchFriend: '没有这样的好友: %s'
+      notRemoved: '无法移除好友%s'
+      notAccepted: '%s 还没有接受您的好友请求'
+      blankMessage: '消息不能为空'
+      object: '未知对象: %s'
+    info:
+      title: '-----%s的好友信息-----'
+      time: '你们在 %s 成为了好友'
+      transfer: '你们有%s的转账数目'
+      noInventory: '你们之间还没用共享物品栏'
+      inventory: '在你们的共享物品栏中有%s个物品'
+      checkpoints: '你们之间有%s共享记录点'
+  error:
+    translationNotFound: '没有这样的翻译: %s，请联系服务器管理员。'
+    invitationTimeout: '您的请求已过期'
+    whileLoading: '抱歉，但我们无法加载以下内容: %s'
+    invitationInGame: '您无法在游戏中接受请求'
+    invitationInObser: '您无法在观战中接受请求'
+    alreadyLogin: '您已经登录'
+    notLoginYet: '您还尚未登录'
+    toRegister: '您可以尝试重新注册，但这可能会丢失您的一部分数据。请谨慎使用%s'
+    wrongOldPwd: '旧密码验证失败'
+    pointedBedNotFound: '未发现指针指向床方块'
+    spawnpointNotFound: '抱歉，但我们无法找到您的重生点'
+    nonObserving: '您未在观战'
+    invitationAlreadySent: '您的请求已发送'
+    checkpointNotFound: '记录点不存在'
+    checkpointOrPlayerNotFound: '记录点或玩家不存在'
+    pwdDismatch: '两次输入的密码不相符'
+    langSelected: '您的语言已被设置为%s'
+    invitationUnacceptable: '您不能在此时接受请求'
+    noInvitations: '您没有收到传送请求'
+    moreThanOneInvitations:
+      1: '您收到不止一封请求'
+      2: '使用此命令时，可使用TAB键补全请求'
+      3: '您收到如下请求:'
+    noSuchInvitation: '请求不存在'
+    noSoManyCoins: '您的货币数量不足'
+    langNotFound: "语言不存在。No such language."
+    noSuchPreference: '没有这样的首选项: %s'
+  preferred: '已将首选项 %s 更新为 %s'
+  checkpoint:
+    saved: '已将%s保存为ID为%s的记录点'
+    failed: '抱歉，但您不能在此处设置传送点'
+    alreadyExist: 'ID为%s的记录点已存在'
+    notFound: '记录点不存在'
+    del: '已删除ID为%s的记录点'
+    tpSucceed: '已将您传送至记录点'
+    toGo: '使用/user goto %s 传送到记录点'
+  spawnpoint:
+    saved: '已保存重生点'
+  lastDeath:
+    title: '上次的死亡记录'
+    time: '时间'
+    location: '地点'
+    reason: '原因'
+    noRecord: '未找到相关记录'
+    last: '您上次的死亡地点位于%s'
+    toGo: '使用%s来确认回到上次的死亡地点，然而这会消耗您%s个货币'
+    goTo: '您已使用%s个货币回到上次的死亡地点'
+  langChangeSucceed: '您的语言已更改为%s'
+
+helpDoc:
+  notFound: '找不到帮助文件，请联系服务器管理员'
+  title: '>>用户帮助文档'
+
+survey:
+  notMemberYet: '您尚未成为正式会员'
+  toBeMember: '使用/survey 参加服务器调查以成为正式会员'
+  title: '您的服务器试玩已用尽'
+  outOfSpawn: '您已退出出生范围，您将失去方块破坏、放置和交互的权限'
+  intoSpawn: '您已进入出生范围'
+  outOfSpawn2: '您已退出出生范围'
+  toPlaceBlock: '要放置方块，请使用/survey 参加服务器调查以成为正式会员'
+
+player:
+  join: '%s加入了游戏'
+  joinGame: '%s加入了%s'
+  left: '%s离开了游戏'
+  unknownName: '未知名称'
+  warn:
+    badNet: '%s正在登录，然而由于网络问题，这可能需要几秒钟'
+  error:
+    unknown: "抱歉，但我们无法确定你是谁。您的游戏出现问题，请联系服务器管理员。Sorry, but we can't make sure that who you are. Your game seemed to go wrong, please contact the server operator."
+    unknownBy: "您的服务器信息未找到，但%s1需要该信息。很抱歉对您的游戏造成不便，请联系服务器管理员。Your info in server was not found, but was needed by %s1. Sorry for troubling your game. Please contact the server operator,"
+    opNotLoginOnWeb: '管理员必须先在网页登录，再在游戏中登录'
+    notFound: '没有这样的玩家: %s'
+
+command:
+  error:
+    playerOnly: '只有玩家才能使用此命令'
+    usage: '用法错误'
+    permission: '您没有权限使用此命令'
+    playerNotFound: '玩家不存在'
+    argNonDigit: '参数不是数字'
+    world: '您不能在此世界使用该命令'
+    unknown: '未知'
+    failed: '失败'
+    tooFewArgs: '缺少参数(需要%s个)'
+    noSuchItem: '没有这样的物品: %s'
+    typeError: '类型错误, 期望得到%s'
+  done: '完成'
+  unnamed: '未命名'
+
+server:
+  saveInventory: '成功保存了您的物品栏'
+  statics:
+    title: 'OpenCraft统计'
+    coinCount: '货币数量: %s'
+    demoTime: '试玩时间: %s分钟'
+    builderLevel: '建筑者等级: %s'
+    flyRemaining: '飞行时间剩余: %s秒'
+
+trade:
+  tutorial:
+    1.title: '欢迎来到交易世界！'
+    1.subtitle: '您将同其他玩家一道，进行线上交易'
+    2.title: '这是服务器商人'
+    2.subtitle: '您可以同他兑换绿宝石、钻石等矿物以获得基础货币'
+    3.title: '这是您的领地'
+    3.subtitle: '您可以在此处进行建筑'
+    4.subtitle: '以建立自己的商铺，与其他玩家进行买卖'
+    5.title: '指令的使用'
+    5.subtitle: '您可以随时使用/trade back 以回到自己的领地'
+    6.subtitle: '或是/trade center 回到交易世界枢纽'
+    7.subtitle: '要阅读详细信息，例如如何建造商店，使用/trade help'
+  help.title: '经济系统 帮助文档'
+  giveCurrency.objective: '已给予%s %s货币'
+  giveCurrency.subjective: '您已被给予%s货币，您现在有%s个货币'
+  error:
+    pwdUnset: '密码未设定'
+    chunkNotFound: '抱歉，但我们无法找到您的领地'
+    inventoryFull: '交易失败: 您的物品栏没有足够的剩余空间'
+    poor: '交易失败: 您没有足够的货币'
+    lackOfItem: '交易失败: 您没有足够的物品'
+  pwd.setTo: '已将服务器密码设置为%s'
+  explorer: '交易浏览器'
+  cancelled: '交易已取消'
+  pay:
+    title: '确认支付'
+    amount: '数量为%s'
+    currencyConsume: '这将消耗您%s个货币'
+    saving: '使用存款'
+    cash: '使用现款'
+  input:
+    title: '选择支付'
+    error:
+      outOfBound: '您一次至多能支付%s元'
+
+builder.error:
+  block: '抱歉，但您没有权限放置此方块'
+  breakBlock: '抱歉，但您不能破坏建筑师放置的方块'
+  dropItem: '抱歉，但您没有权限丢弃物品'
+  inventory: '抱歉，但您没有权限打开物品栏'
+
+translator:
+  usingLang: '您使用的是%s'
+  containsExpr: '带有表达式'
+  containsColor: '带有自定义颜色代码'
+  containsLang: '带有语言引用'
+  translating: '正在翻译'
+  withImages: '这是来自Mobile的图片消息，点击查看: %s'
+  withJson: '这是带有JSON的数据，因其特殊性无法解析: %s'
+pu:
+  error:
+    unselected: '您未选中任何可重命名的项目'
+  compass: '玩家实用工具'
+skinny:
+  error:
+    emptyTarget: '目标玩家不能为空'
+    targetNotFound: '找不到该玩家'
+    load: '抱歉，但是我们无法加载您的线上皮肤'
+  success: '成功将您的皮肤更改为%s'
+  tip: '您可能需要重新进入服务器以应用更改'
+  working: '正在加载您的自定义皮肤'
+ui:
+  tpToSpawn: '传送回重生点'
+  delete: '删除'
+  manage: '管理'
+  teleport: '传送'
+  rename: '重命名'
+  confirm: '确定'
+  cancel: '取消'
+  close: '关闭'
+  back: '返回'
+  puTitle: '玩家实用工具'
+  blockTitle: '方块实用工具'
+  clickToDelete: '点击以删除'
+  clickToRename: '点击以重命名'
+  renamed: '已将%s重命名为%s.'
+  block:
+    nobodyAccessible: '无他人'
+    accessible: '%s可访问'
+    located: '位于%s'
+    click: '点击查看和管理'
+    new: '购买方块所有权'
+    group:
+      noChild: '无子方块'
+      children: '子方块包括%s'
+      new: '新建组'
+    deleteAlert: '此操作无法撤销，且不会将相应的货币退回'
+    renameTip: '在聊天栏输入/bl rename <新ID> 以命名方块'
+    selecting:
+      title: '选中'
+      done: '已选中%s'
+      tip:
+        1: '选中该方块或方块组后，您可以执行以下操作:'
+        2: '通过/bl rename <新ID> 以命名方块'
+        3: '通过/bl set <玩家ID> 给予某玩家该方块的访问权限'
+        4: '通过/bl unset <玩家ID> 取消某玩家对方块对访问权限'
+        5: '通过/bl check 查看该方块的访问记录'
+        6: '通过/bl del 删除该方块'
+    ungroup: '取消成组'
+    grouping:
+      title: '成组'
+      subtitle: '把若干方块组合在一起，方便管理'
+      select: '点击选中'
+      cancel: '点击取消选中'
+      join: '点击将选中方块加入该组'
+      done: '已将%s个方块加入%s组中'
+  checkpoint:
+    title: '记录点'
+    click: '点击传送'
+    toManage: '使用下方按钮选择管理选项'
+    new:
+      title: '新建记录点'
+      subtitle: '以当前位置作为记录点'
+    delete:
+      do: '点击以删除'
+      undo: '点击取消删除'
+      done: '已删除%s个记录点'
+    rename:
+      do: '点击重命名'
+      tip: '使用/pu rename <新ID> 来为记录点重命名'
+  time:
+    day: '天'
+    hour: '小时'
+    min: '分钟'
+    sec: '秒'
+  statics:
+    title: '服务器统计'
+    face:
+      title: '欢迎, %s'
+      tip: '点击查看排行'
+      chart: '您处于每日排行榜第%s位'
+      noChart: '您不参与排行'
+    clock: '您已经在服务器玩了%s'
+    gold: '您拥有%s货币, 相当于%s颗钻石'
+  miniGame:
+    title: '小游戏'
+    cw:
+      title: '区块战墙'
+      subtitle: '您将与最多20人，在10分钟内共同生存、竞争。玩家会被分成4组，每组在一个区块大小的原版世界中挖矿并获得升级。在此过程中，若玩家死亡则会失去所有物品。10分钟后，地图中央的墙会消失，玩家将进行最后的决斗。'
+    tms:
+      title: '10分钟生存挑战'
+      subtitle: '您将于最多20人，在10分钟内生存。玩家5人为一组，在原版地图中随机出生。10分钟后，所以玩家将被聚集起来进行PVP。结果由每个队伍的分数决定，分数最高的组胜出。挖矿和PVP可获得不同的分值。'
+    paper: '仍在开发...'
+    click: '点击加入'
+  survival:
+    title: '生存'
+    grass:
+      title: '方块所有权'
+      subtitle: '您拥有%s个方块'
+      click: '点击管理'
+    pearl:
+      title: '记录点'
+      subtitle: '方便您到达设定的坐标点'
+      click: '点击查看和管理'
+  others:
+    title: '其他工具'
+    snowball:
+      title: '自定义教程'
+      subtitle: '方便您向他人展示某处'
+      click: '点击查看、创建和管理'
+    armor:
+      title: '皮肤'
+      subtitle: '您目前的皮肤是%s'
+      click: '使用/sc <正版ID> 来更换'
+    cb:
+      title: 'Server Script'
+      subtitle: '给玩家和管理员助力 是 ServerScript 的目标。ServerScript, 即 SS, 是一个基于JavaScript的, 应用于OpenCraft服务器, 为每个成员提供服务的脚本语言。有了它, 你可以仅用几行代码完成许多麻烦和无聊的工作。'
+      click: '点击查看、创建和管理'
+      edit:
+        title: '编辑'
+        click: '点击编辑该脚本'
+      rename:
+        tip: '使用/pu rename <新名称> 来为脚本命名'
+  visitor:
+    title: '主城访问器'
+    located: '主城编号 %s'
+    back: '返回自己的主城'
+    booting: '正在启动主城访问器'
+  world:
+    title: '世界传送器'
+    tip: '点击以传送'
+    click: '点击以查看'
+  friend:
+    booting: '正在启动好友列表'
+    title: '好友列表'
+    check: '点击以查看'
+    click: '点击以交互'
+    add: '添加好友'
+    del: '删除好友'
+    send: '发送好友请求'
+    count: '他（她）有%s好友'
+    transfer:
+      title: '转账'
+      click: '点击以转账'
+    msg:
+      title: '发消息'
+      tip: '使用/friend %s msg <内容> 来留言'
+    inventory:
+      title: '共享物品栏'
+      buy: '点击以购买'
+      check: '点击以查看'
+    share:
+      title: '共享内容'
+      click: '点击以管理'
+      start: '点击以开始共享'
+      stop: '点击以停止共享'
+    point:
+      title: '记录点'
+      sharer: '分享者: %s'
+    location:
+      title: '玩家位置'
+  chart:
+    title: '玩家排行'
+    click: '点击以查看'
+    booting: '正在启动玩家排行'
+    pos: '第%s名'
+    self: '您的位置'
+    daily: '每日排行榜'
+    all: '总排行'
+welcome:
+  1:
+    title: '欢迎来到OpenCraft!'
+    subtitle: '此向导将会向您介绍此服务器'
+  2:
+    title: '这是主城'
+    subtitle: '您将在此开始游戏'
+  3:
+    title: '这是服务器公告栏'
+    subtitle: '此处展示服务器各项须知及要求'
+  4:
+    title: '此外'
+    subtitle: '还有服每日须知作为书在物品栏中，用于关注服务器最新动向'
+  5:
+    title: '这是游戏选择器'
+    subtitle: '右键NPC以开始小游戏'
+  6:
+    title: '这是交易世界传送者'
+    subtitle: '右键以进入交易世界'
+  7:
+    title: '这是"别踩白块"小游戏'
+    subtitle: '左键内容方块以开始'
+  8:
+    title: '要开始生存'
+    subtitle: '直接跳下主城即可'
+  9:
+    title: '那么，我们开始吧！'
+
+tutorial:
+  incoming: '即将向您播放名为%s的教程'
+  begin: '那么，我们开始吧！'
+
+block:
+  block: '方块'
+  group: '方块组'
+  accessAdded: '已为%s添加访问%s的%s的访问权限'
+  addedAccess: '您被给予对名为%s的%s的访问权限'
+  accessCleared: '已清除%s对%s的%s的访问权限'
+  clearedAccess: '您被取消对名为%s的%s的访问权限'
+  accessEmptyed: '已清除%s对%s的访问权限'
+  emptyedAccess: '您已被清除对%s的访问权限'
+  delete: '已删除名为%s的%s'
+  deleted: '%s删除了您所有的名为%s的%s'
+  size: '此区块有%s个方块，需要%s个货币，然而您拥有%s个货币'
+  success: '已将%s%s的所有者设为%s'
+  cancel: '领地交易已取消'
+  rename:
+    title: '重命名'
+    done: '已将%s重命名为%s'
+  statics:
+    empty: '未找到相关记录'
+    title: '---------%s的访问记录---------'
+    piece: '%s于%s访问了该%s'
+    among: '其中,'
+    conclusion: '%s访问了%s次,'
+  grouping:
+    giveUp: '放弃'
+    reason: '预期类为%s，却得到%s'
+    or: '%s或 %s'
+    modeUnknown: '模式未指定'
+    createAs: '组名将被创建为%s'
+    nameUnknown: '组名未指定'
+    because: '因为: %s'
+    alreadyExist: '%s已存在于此组中'
+    notExist: '%s不存在于此组中'
+    done: '完成'
+  error:
+    groupNotFound: '方块或组不存在'
+    notOwnBlock: '您不是方块所有者'
+    inTradeWorld: '您不能在交易世界获得额外领地'
+    inLobby: '您没有权限使用此命令(小伙子想法很危险啊)'
+    notDigit: '%s不是数字(整数)'
+    illegalKeyword: '非法的关键词: clear'
+    noEnoughCoin: '您的货币数量不足'
+    duplicated: '方块重叠: %s'
+    playerNotFound: '玩家不存在: %s'
+    name: '名为%s的方块已存在'
+    inaccessible: '您没有权限访问此方块'
+    selectedNothing: '您尚未选中任何方块。右键一个容器方块来选中'
+  tip:
+    new: '右键容器方块来选中或取消选中。左键以放弃交易。在聊天栏输入/bl 来确认购买您所选的方块。'
+    accessible: '可访问'
+    inaccessible: '无权访问'
+    enter: '您正在进入名为%s的%s(%s)'
+    oneEnter: '%s正在进入您的%s方块'
+
+book:
+  empty: '您没有未阅读的通知'
+  author: 'OpenCraft团队'
+  title: 'OpenCraft每日须知'
+
+survival:
+  compe:
+    1: '抱歉，但我们无法加载您的生存存档点'
+    2: '我们会为您重新选择一个出生点，并给予您 钻石×2 的赔偿'
+    3: '如果您认为此赔偿不足以挽回您的损失，请联系服务器管理员，提出加量的要求'
+  saveNotFound:
+    1: '无法找到您的生存世界存档点'
+    2: '将您传送到重生点'
+  spawnNotFound:
+    1: '无法找到您的生存世界重生点'
+    2: '将您的重生点设置到存档点'
+  loseProtect: '您已失去出生保护'
+  setSpawn: '同时，您的重生点被设置到您的当前位置'
+  bed:
+    title: '检测到指针指向床'
+    subtitle: '使用%s 在此处保存重生点'
+  teleport: '您无法主动传送到生存世界'
+  notRegistered:
+    1: '抱歉，但您还没有创建生存存档'
+    2: '请跳下主城，开始您的生存存档'
+  tip:
+    1: '欢迎来到生存模式！'
+    2: '左键三次、右键一次来打开玩家实用工具。'
+
+web:
+  header: '-----Web服务器状态-----'
+  running: '正在运行'
+  stopped: '已停止'
+  rootPath: '根路径: %s'
+  keyPath: '密钥路径: %s'
+  key: '密钥: %s'
+  httpPort: 'HTTP端口: %s'
+  httpsPort: 'HTTPS端口: %s'
+  started: '已启动'
+  set: '已将%s 设置为%s'
+  error:
+    whileInit: '无法初始化%s服务器: %s: %s'
+    whileStarting: '无法启动%s服务器: %s: %s'
+    whileStopping: '无法关闭%s服务器: %s: %s'
+    unknownArg: '未知参数: %s'
+    illegalArg: '非法参数: %s (需要%s)'
+    notConnected: '服务器未连接'
+si:
+  given: '您已被给予%s×%s'
+wand:
+  name: '飞行权杖'
+  title: '一支让您飞行的权杖'
+  subtitle: '剩余%s秒'
+portal:
+  name: '传送门'
+  title: '使您能够无限次地在两点之间传送'
+  subtitle: '放置以使用'
+  tip: '抱歉，但您不能重复使用传送门'
+  place: '放置另一个方块来创建传送门，或左键已放置的方块来取消。'
+  dropSecondary: '抱歉，但您不能丢弃二级传送门物品。'
+  spawned: '传送门已创建'
+  notOwn: '您不是传送门所有者'
+  loadChunk: '正在加载目标区块'
+  mustPlaceFirst: '您必须先创建传送门，或左键已经放置的方块以取消。'
+coin:
+  name: '硬币'
+  title: 'OpenCraft实体货币'
+insurance:
+  name: '保险'
+  applied: '保险已生效'
+  tip: '去交易世界购买保险可以减少您的损失。'
+  content:
+    1: '承保人: %s'
+    2: '保证人: OpenCraft 团队'
+    3: '此保险担保，在您死亡后，将有80%的物品被保留。'
+
+msg:
+  read: '已读'
+  clickToRead: '点击标记为已读'
+  markAsRead: '已标记为已读'
+  alreadyRead: '目标以被标记为已读'
+  list: '-----您的消息-----'
+  empty: '您还没有收到消息'
+
+scripting:
+  toRun:
+    1: '-------ServerScript 执行器-------'
+    2: '版本: %s, 执行者: %s, 脚本名称: %s'
+    3: '== 输出流:'
+  returnNull: '在%s秒内完成。返还空对象。'
+  returnSomething: '在%s秒内完成。返还: %s'
+  unnamed: '未命名'
+  error:
+    offline: '指定玩家必须在线!'
+    nullValue: '%s 不能为空!'
+    log: '无法保存日志'
+    executionOutOfBound: '您仅有权执行%s次循环。'
+    parWhenOffline: '参数[%s]必须给出，因为您不在服务器。'
+    scriptNotFound: '没有找到名为%s的脚本'
+  ui:
+    title: '服务器脚本'
+    new: '新建脚本'
+    clickToExec: '点击执行'
+    tip:
+      editBook: '编辑手中的书，其内容将被写入脚本。要取消，丢弃该物品。'
+npc:
+  error:
+    parNotFound: '参数必须包含%s'
+    wrongClass: '参数%s 类型错误'
+    spawnTooFar: '出生点距离太远。离玩家不应超过7个方块'
+    parConflit: '参数冲突: %s'
+    returnWrongType: '%s的返回值类型错误'
+lobby:
+  like: '喜欢这个主城'
+  dislike: '不喜欢这个主城'
+  cancel: '点击以取消'
+  yours: '您的主城'
+  gather:
+    title: '主城协同建筑'
+    click: '点击以管理'
+    info: '%s名玩家参与'
+    permit: '点击以允许该玩家在您的主城建筑'
+    forbid: '点击以禁止该玩家在您的主城建筑'
+  get:
+    like: '%s名玩家喜欢这个主城'
+    dislike: '%s名玩家不喜欢这个主城'
+    views: '%s浏览量'
+  warn:
+    noSpawnpoint: '%s的主城没有设置出生点，传送到默认位置'
+  error:
+    buildNotPermitted: '您没有权限在此放置方块'
+    breakNotPermitted: '您没有权限破坏此方块'
+    alreadyPermitted: '%s 已经被授予协同建筑权限'
+    alreadyForbidden: '%s 尚未被授予协同建筑权限'
+  spawnpointSet: '已将该位置设置为出生点。拜访者将从此进入。'
+  statics:
+    title: '-----%s 的玩家主城-----'
+    like:
+      content: '%s 等 %s 名玩家喜欢这个主城'
+      empty: '没有人喜欢这个主城'
+    dislike:
+      content: '%s 等 %s 名玩家不喜欢这个主城'
+      empty: '没有人不喜欢这个主城'
+    gather:
+      content: '%s 等 %s 名玩家参与您的主城协同建筑'
+      empty: '没有人与您协同建筑'
+  permitted: '允许 %s 在您的主城协同建筑'
+  forbid: '禁止 %s 在您的主城建筑'
+  speeches:
+    1: '您醒来了'
+    2: "<%s> 哦，我可爱的家！"
+    3: "提示: 下楼寻找一台电脑，点击其附近的按钮以开始多人游戏。"
+
+wiki:
+  thanks: '感谢 %s 更新Wiki的 %s 文章!'
+
+boss:
+  spawned:
+    1: '服务器boss已生成！'
+    2: '前往坐标为(%s, %s, %s)的位置附近，或使用/boss 进行传送'
+  difficulty: '当前难度为 %s'
+  difChanged: '将难度设置为 %s'
+  award: '服务器Boss被消灭。您对其造成了 %s 点伤害，占总数的 %s，而货币总数为 %s，所以您被分配到 %s 个货币。'
+  next: '下一次刷新在 %s'
+  teleport: '将您传送至服务器Boss所在'
+  error:
+    notSpawned: '服务器boss未生成'
+    building: '抱歉，但您不能在建筑者模式中攻击Boss。'
+
+bank:
+  title: 'OpenCraft银行'
+  tip: '将货币存放于此，或从中取出货币'
+  bankerName: '店员'
+  created: '银行 %s 已创建'
+  createdBanker: '店员就地添加'
+  removed: '名为%s的银行已被移除'
+  removedBanker: '附近的一位店员已被移除'
+  mode:
+    deposit:
+      title: '存款模式'
+      subtitle: '将货币存入银行'
+      done: '将%s存入银行'
+    withdraw:
+      title: '取款模式'
+      subtitle: '从账户中取出存款'
+      done: '从存款中取出%s'
+    tip: '点击以切换'
+  error:
+    illegalName: '非法名称: %s，包含关键字":"。'
+    noBankersNearby: '附近未找到店员'
+    outOfBound: '您最多能交换%s个货币'
+    coinCraft: '抱歉，但您不能用货币进行合成'
+  found:
+    1: '---以下是所有银行---'
+    2: '最近的一个位于 %s'
+    none: '未找到银行'
+
+chart:
+  award: '恭喜！您在昨天的每日排行中名列前茅，服务器奖励您%s货币'
+  showOff: '恭喜 %s 在%s的每日排行中获得第%s名！'

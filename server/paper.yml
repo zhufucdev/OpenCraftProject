@@ -13,6 +13,7 @@
 verbose: false
 config-version: 20
 settings:
+  chunk-tasks-per-tick: 1000
   load-permissions-yml-before-plugins: true
   bungee-online-mode: true
   enable-player-collisions: true
@@ -38,7 +39,7 @@ settings:
     total-multiplier: 0.98
   async-chunks:
     enable: true
-    load-threads: -1
+    threads: -1
 messages:
   no-permission: '&cI''m sorry, but you do not have permission to perform this command.
     Please contact the server administrators if you believe that this is in error.'
@@ -54,11 +55,17 @@ timings:
   hidden-config-entries:
   - database
   - settings.bungeecord-addresses
+  - settings.velocity-support.secret
   history-interval: 300
   history-length: 3600
   server-name: Unknown Server
 world-settings:
   default:
+    light-queue-size: 20
+    iron-golems-can-spawn-in-air: false
+    zombie-villager-infection-chance: -1.0
+    phantoms-do-not-spawn-on-creative-players: true
+    phantoms-only-attack-insomniacs: true
     seed-based-feature-search: true
     fix-zero-tick-instant-grow-farms: true
     portal-create-radius: 16
@@ -110,6 +117,7 @@ world-settings:
     remove-corrupt-tile-entities: false
     fixed-chunk-inhabited-time: -1
     game-mechanics:
+      nerf-pigmen-from-nether-portals: false
       disable-pillager-patrols: false
       disable-relative-projectile-velocity: false
       disable-player-crits: false
@@ -119,6 +127,14 @@ world-settings:
       disable-unloaded-chunk-enderpearl-exploit: true
       disable-chest-cat-detection: false
       scan-for-legacy-ender-dragon: true
+      pillager-patrols:
+        spawn-chance: 0.2
+        spawn-delay:
+          per-player: false
+          ticks: 12000
+        start:
+          per-player: false
+          day: 5
     squid-spawn-height:
       maximum: 0.0
     max-growth-height:
@@ -178,3 +194,5 @@ world-settings:
     generator-settings:
       flat-bedrock: false
     baby-zombie-movement-modifier: 0.5
+    viewdistances:
+      no-tick-view-distance: -1

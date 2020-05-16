@@ -18,11 +18,19 @@ import org.graalvm.polyglot.proxy.*
 import java.io.Reader
 import java.io.Writer
 import kotlin.concurrent.thread
+import kotlin.reflect.full.callSuspend
+import kotlin.reflect.full.functions
+import kotlin.reflect.full.memberExtensionFunctions
 
 class Module(val loader: ModuleLoader, internal var requester: Module? = null) {
     val path: String get() = loader.path
     val name get() = loader.name
     val isDependency get() = loader.isDependency
+    val shareContext
+        get() = module.getMember("shareContext").let {
+            if (it?.isBoolean == true) it.asBoolean()
+            else true
+        }
 
     private val requireFunc = ProxyExecutable { r ->
         if (r.isEmpty() || !r.first().isString) {
@@ -167,49 +175,8 @@ class Module(val loader: ModuleLoader, internal var requester: Module? = null) {
     }
 
     private fun extraMember(usage: String): Pair<String, Any?>? = when (usage) {
-        "thread" -> usage to ProxyExecutable { args ->
-            val e = args.first()
-            fun execute(func: Value) {
-                if (func.isProxyObject) {
-                    try {
-                        val cast = func.asProxyObject<JSContainer>()
-                        execute(cast.executable!!)
-                        return
-                    } catch (ignored: Exception) {
-                    }
-                }
-                Scripting.syncCall(func.context) {
-                    func.execute()
-                }
-            }
-            if (args.size >= 2) {
-                thread(start = false, name = args[1].asString()) { execute(e) }
-            } else {
-                thread(start = false) { execute(e) }
-            }
-        }
-        "readerToString" -> usage to ProxyExecutable {
-            val reader = it.first().asHostObject<Reader>()
-            reader.readText()
-        }
-        "copyReader" -> usage to ProxyExecutable {
-            val reader = it.first().asHostObject<Reader>()
-            val writer = it[1].asHostObject<Writer>()
-            reader.use {
-                var b = reader.read()
-                while (b != -1) {
-                    writer.write(b)
-                    b = reader.read()
-                }
-                writer.flush()
-                writer.close()
-            }
-        }
         "requester" -> usage to ProxyExecutable {
             requester?.let { javalize(it.module, context) }
-        }
-        "newListener" -> usage to ProxyExecutable {
-            return@ProxyExecutable object : Listener {}
         }
         "javaPlugin" -> usage to Scripting.plugin
         "listJava" -> usage to ProxyExecutable { args ->
@@ -272,6 +239,35 @@ class Module(val loader: ModuleLoader, internal var requester: Module? = null) {
                 return@ProxyExecutable loader.isLoaded
             }
         }
+        /*
+        To call a Java function in an object async, meaning this function will finish immediately.
+         */
+        "callAsyncIn" -> usage to ProxyExecutable {
+            val instance = it.first().let { value ->
+                if (value.isProxyObject)
+                    value.asProxyObject<JavaClass4JS>().instance
+                else
+                    value.asHostObject<Any?>()
+            }
+                ?: throw RuntimeException("Instance hasn't been initialized or is null.")
+            val method = it[1].asString()
+            val args = if (it.size >= 3) {
+                val array = it[2]
+                arrayListOf<Any>().apply {
+                    add(instance)
+                    for (i in 0 until array.arraySize)
+                        add(array.getArrayElement(i).`as`(Any::class.java))
+                }.toArray()
+            } else arrayOf(instance)
+            val callback = if (it.size >= 4) it[3] else null
+            val name = if (it.size >= 5) it[4] else null
+            thread(name = if (name?.isString == true) name.asString() else null, start = false) {
+                val f = instance::class.functions.firstOrNull { m -> m.name == method && m.parameters.size == args.size }
+                    ?: throw RuntimeException("No function matching.")
+                if (callback?.canExecute() == true)
+                    callback.executeVoid(f.call(*args)?.let { it1 -> JavaClass4JS(it1, context) })
+            }
+        }
         else -> null
     }
 
@@ -286,7 +282,7 @@ class Module(val loader: ModuleLoader, internal var requester: Module? = null) {
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun javalize(jsObject: Value, wrapper: Context, createProxy: Boolean = true): Any? {
-            fun asMembers(): ProxyObject {
+            fun asMembers(): Any {
                 if (jsObject.memberKeys.contains("prototype")) {
                     val prototype = jsObject.getMember("prototype")
                     if (prototype.isProxyObject) {
@@ -317,16 +313,24 @@ class Module(val loader: ModuleLoader, internal var requester: Module? = null) {
                         map[it] = javalize(jsObject.getMember(it), wrapper)
                     }
                 }
-                return ProxyObject.fromMap(map)
+                return if (createProxy) ProxyObject.fromMap(map) else map
             }
             return when {
                 jsObject.isNull -> null
                 jsObject.isProxyObject -> {
                     try {
-                        val cast = jsObject.asProxyObject<ProxyWrap>()
-                        cast.rewrap(wrapper)
+                        val cast = jsObject.asProxyObject<JavaClass4JS>()
+                        if (createProxy)
+                            cast.rewrap(wrapper)
+                        else
+                            cast.instance
                     } catch (ignore: Exception) {
-                        return if (jsObject.hasMembers()) asMembers() else jsObject
+                        try {
+                            val cast = jsObject.asProxyObject<ProxyWrap>()
+                            cast.rewrap(wrapper)
+                        } catch (ignore: Exception) {
+                            return if (jsObject.hasMembers()) asMembers() else jsObject
+                        }
                     }
                 }
                 jsObject.isHostObject -> jsObject.asHostObject()

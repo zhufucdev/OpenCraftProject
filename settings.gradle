@@ -1,5 +1,6 @@
 rootProject.name = 'OpenCraft'
 file('base').listFiles().each {
+    if (it.isHidden()) return
     include it.name
     project(':' + it.name).projectDir = it
 }

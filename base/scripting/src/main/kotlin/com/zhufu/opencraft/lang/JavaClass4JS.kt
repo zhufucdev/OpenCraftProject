@@ -14,7 +14,7 @@ import kotlin.reflect.full.*
 class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
     internal val clazz: Class<*>
     private val wrapper: Context
-    private var instance: Any? = null
+    internal var instance: Any? = null
     /* Static Fields */
     private val extends = hashMapOf<String, Value?>()
     private val functions = hashMapOf<String, ProxyExecutable>()
@@ -134,8 +134,12 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
                         it.call(*args)
                     else
                         it.call(*arrayListOf(instance).apply { addAll(args) }.toArray())
+                }?.let {
+                    if (shouldBePutInto(it))
+                        JavaClass4JS(it, wrapper)
+                    else
+                        it
                 }
-
             }
         }
     }
@@ -159,7 +163,7 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
 
     override fun getMember(key: String): Any? = when {
         key == "javaClass" -> clazz
-        getters.containsKey(key) -> getters[key]!!.invoke()
+        getters.containsKey(key) -> getters[key]!!.invoke()?.let { if (shouldBePutInto(it)) JavaClass4JS(it, wrapper) else it }
         functions.containsKey(key) -> functions[key]
         extends.containsKey(key) -> extends[key]
         clazz.classes.any { it.simpleName == key } -> JavaClass4JS(
@@ -175,7 +179,7 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
 
     override fun newInstance(vararg arguments: Value?): Any {
         val argsJavalized =
-            Module.javalize(arrayOf(*arguments), wrapper)
+            Module.javalize(arrayOf(*arguments), wrapper, false)
         val argsTyped = argsJavalized.map { it?.let { it::class.java } ?: Any::class.java }
         val constructor: Constructor<*> = clazz.declaredConstructors.firstOrNull {
             if (it.parameterCount == argsTyped.size) {
@@ -202,4 +206,8 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
 
     override fun rewrap(newWrapper: Context): ProxyWrap =
         if (instance == null) JavaClass4JS(clazz, newWrapper) else JavaClass4JS(instance!!, newWrapper)
+
+    companion object {
+        fun shouldBePutInto(v: Any): Boolean = v !is Boolean && v !is Number && v !is String && v !is Function<*>
+    }
 }

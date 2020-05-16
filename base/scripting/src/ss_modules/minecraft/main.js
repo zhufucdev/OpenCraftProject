@@ -1,5 +1,5 @@
 const Material = require('Material');
-const world = require('World');
+const World = require('World');
 const Vector = require('Vector');
 const text = require('Text');
 const GameRule = require('GameRule');
@@ -16,22 +16,22 @@ module.exports = {
      * @param name {string} name of the world.
      * @return {World} representing the instance of the world.
      */
-    world: (name) => new world.World(name),
+    world: (name) => new World.World(name),
     /**
      * Gets an object representing a coordinate in a specific Minecraft world.
-     * @param world {World} for the coordinate to be in.
+     * @param world {World|string} for the coordinate to be in.
      * @param x {number} The East.
      * @param y {number} The Height.
      * @param z {number} The South.
      * @return {Location}
      */
     location: (world, x, y, z) => {
-        const r = new world.Location(typeof world === 'string' ? new world.World(world) : world, x, y, z);
+        const r = new World.Location(typeof world === 'string' ? new World.World(world) : world, x, y, z);
         r.toVector = () => new Vector(r.x, r.y, r.z);
         return r
     },
     /**
-     * Gets an object with directions.
+     * Gets a direction.
      * @param x {number}
      * @param y {number}
      * @param z {number}
@@ -39,9 +39,10 @@ module.exports = {
      */
     vector: (x, y, z) => {
         const r = new Vector(x, y, z);
-        r.toLocation = (world) => new world.Location(typeof world === 'string' ? new world.World(world) : world, r.x, r.y, r.z);
+        r.toLocation = (world) => new World.Location(typeof world === 'string' ? new World.World(world) : world, r.x, r.y, r.z);
         return r
     },
+    defineItem: (id, definition) => require('CustomItem').define(id, definition),
     /**
      * An object for text format.
      * @type {Object}
@@ -54,3 +55,4 @@ module.exports = {
      */
     GameRule: GameRule,
 };
+module.shareContext = false;

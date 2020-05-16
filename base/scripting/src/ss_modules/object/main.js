@@ -37,6 +37,7 @@ module.exports = {
      * @param extension {Object} members to extend.
      */
     extend: (obj, extension) => {
+        if (typeof extension !== 'object') return;
         for (let key in extension) {
             obj[key] = extension[key]
         }
@@ -56,3 +57,5 @@ module.exports = {
     },
     isModuleLoaded: (name) => isModuleLoaded(name)//TODO: Seperate into another package
 };
+
+module.shareContext = true;

@@ -1,0 +1,16 @@
+name: ItemManager
+author: zhufucomcom
+main: com.zhufu.opencraft.ItemManager
+version: 1.0
+softdepend: [ServerCore]
+api-version: 1.13
+commands:
+  im:
+    usage: /im
+    description: 物品管理器核心指令
+  im delay:
+    usage: /im delay <自然数>
+    description: 设置清理物品的间隔时间
+  im clean:
+    usage: /im clean
+    description: 立刻清理物品

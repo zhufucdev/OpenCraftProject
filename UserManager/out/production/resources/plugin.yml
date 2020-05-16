@@ -1,0 +1,58 @@
+name: UserManager
+main: com.zhufu.opencraft.UserManager
+author: zhufucomcom
+version: '1.0'
+softdepend: [ServerCore,CurrencySystem]
+api-version: '1.14'
+commands:
+  user:
+    usage: /user <log|reg|pwd|save|observe|deobserve|goto|accept|death|help|lang|transfer|prefer> ...
+    description: 用户管理器，使您能在服务器登陆、注册等
+  user log:
+    usage: /user log(亦缩写作'l') <密码>
+    description: 登陆用户以使用服务器进度
+  user reg:
+    usage: /user reg <密码> <重复 密码>
+    description: 注册用户在服务器身份
+  user pwd:
+    usage: /user pwd <旧密码> <新密码> <重复 新密码>
+    description: 修改用户在服务器密码
+  user save:
+    usage: /user save back
+    description: 回到保存的重生点
+  user saveas:
+    usage: /user saveas <ID>
+    description: 保存为用户记录点，并给予其唯一ID
+  user delsave:
+    usage: /user delsave <记录点ID>
+    description: 删除用户记录点
+  user observe:
+    usage: /user observe <玩家> (also user deobserve 来退出观战)
+    description: 对某位玩家进行观战
+  user deobserve:
+    usage: /user deobserve
+    description: 退出观战
+  user goto:
+    usage: /user goto <玩家|记录点ID>
+    description: 请求传送到某个玩家或记录点
+  user accept:
+    usage: /user accept <玩家>
+    description: 同意某个玩家发送到传送请求
+  user death:
+    usage: /user death <check|back(亦所写作'/user bd')>
+    description: 查看上次死亡信息和返回死亡地点
+  user bd:
+    usage: /user bd
+    description: 不加提示地返回上次死亡地点
+  user lang:
+    usage: /user lang <语言名称>
+    description: 设置用户自定义语言
+  user transfer:
+    usage: /user transfer <旧密码> <当前密码>
+    description: 转移玩家数据
+  user prefer:
+    usage: /user prefer <选项> [off|on|其他数据值]
+    description: 查看或更新玩家首选项
+  friend:
+    usage: /friend <好友ID> [add|del|transfer|msg|inventory|share]
+    description: 查看好友信息，添加、删除好友，或者与指定好友交互

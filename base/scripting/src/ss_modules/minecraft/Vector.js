@@ -1,5 +1,6 @@
 const object = require('object');
 const vector = object.fromJava('org.bukkit.util.Vector');
+
 function Vector(x, y, z) {
     let wrapper;
     if (object.isOfClass(x, 'org.bukkit.util.Vector')) {
@@ -29,10 +30,17 @@ function Vector(x, y, z) {
             }
         } else {
             switch (axis) {
-                case 'x': wrapper.rotateAroundX(angle);break;
-                case 'y': wrapper.rotateAroundY(angle);break;
-                case 'z': wrapper.rotateAroundZ(angle);break;
-                default: throw "Unknown axis: " + axis + ". Use a Vector or 'x'|'y'|'z' instead."
+                case 'x':
+                    wrapper.rotateAroundX(angle);
+                    break;
+                case 'y':
+                    wrapper.rotateAroundY(angle);
+                    break;
+                case 'z':
+                    wrapper.rotateAroundZ(angle);
+                    break;
+                default:
+                    throw "Unknown axis: " + axis + ". Use a Vector or 'x'|'y'|'z' instead."
             }
         }
     };
@@ -58,3 +66,4 @@ function Vector(x, y, z) {
 }
 
 module.exports = Vector;
+module.shareContext = false;

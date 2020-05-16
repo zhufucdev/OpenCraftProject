@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="base.item1.main" target="1.8" />
       <module name="base.item1.test" target="1.8" />
       <module name="com.zhufu.opencraft.base.main" target="1.8" />
@@ -22,8 +22,8 @@
       <module name="OpenCraft.PlayerManager.test" target="1.8" />
       <module name="OpenCraft.WebInterface.main" target="1.8" />
       <module name="OpenCraft.webInterface.main" target="1.8" />
-      <module name="OpenCraft.WebInterface.test" target="1.8" />
       <module name="OpenCraft.webInterface.test" target="1.8" />
+      <module name="OpenCraft.WebInterface.test" target="1.8" />
       <module name="OpenCraftGradle.item1.main" target="1.8" />
       <module name="OpenCraftGradle.item1.test" target="1.8" />
     </bytecodeTargetLevel>
