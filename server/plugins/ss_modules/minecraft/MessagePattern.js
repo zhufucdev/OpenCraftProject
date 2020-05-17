@@ -3,6 +3,16 @@ const object = require('object');
 const textFormats = require('Text');
 const lang = object.fromJava('com.zhufu.opencraft.Language');
 
+/**
+ * An object representing Minecraft-formated Text.
+ * @param from {Array|Object} The pattern.
+ * <p> {text: "Hello World", color: 'green'} => <strong style="color: green">Hello World</strong> </p>
+ * <p> [{text: "Hi", color: 'green'}, {text: "World", color: 'purple'}] => <strong style="color: green">Hi</strong>
+ * <strong style="color: purple">World</strong> </p>
+ * @param toWhom
+ * @return {string|string|*}
+ * @constructor
+ */
 function MessagePattern(from, toWhom) {
     if (typeof from !== 'object')
         return from;
@@ -10,14 +20,15 @@ function MessagePattern(from, toWhom) {
         return from.getString();
     let result = "", isRaw = false;
 
-
     function select(selection) {
         function append(what) {
             result += what;
         }
+
         function includes(name) {
             return selection[name] !== undefined;
         }
+
         // Handle format
         if (!includes('raw')) {
             if (includes('format')) {
@@ -35,7 +46,7 @@ function MessagePattern(from, toWhom) {
                 toWhom === undefined ? (includes('name') ? selection.name : lang.defaultLangCode) : toWhom.getUserLanguage(),
                 selection.lang,
                 includes('args') ? args : []
-                ))
+            ))
         } else if (includes('text')) {
             append(selection.text);
         } else if (includes('raw')) {

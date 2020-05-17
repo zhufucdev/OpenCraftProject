@@ -13772,3 +13772,8 @@
 {"time":1589583820392,"player":"zhufucdev","type":"MOVE","data":{"x":-16.0,"y":128.0,"z":-16.0,"world":"world"}}
 {"time":1589583880393,"player":"zhufucdev","type":"MOVE","data":{"x":-16.0,"y":128.0,"z":-16.0,"world":"world"}}
 {"time":1589583940395,"player":"zhufucdev","type":"MOVE","data":{"x":-16.0,"y":128.0,"z":-16.0,"world":"world"}}
+{"time":1589694867553,"player":"zhufucdev","type":"MOVE","data":{"x":-16.0,"y":128.0,"z":-16.0,"world":"world"}}
+{"time":1589694927553,"player":"zhufucdev","type":"MOVE","data":{"x":-16.0,"y":128.0,"z":-16.0,"world":"world"}}
+{"time":1589694987555,"player":"zhufucdev","type":"MOVE","data":{"x":-16.0,"y":128.0,"z":-16.0,"world":"world"}}
+{"time":1589695047561,"player":"zhufucdev","type":"MOVE","data":{"x":-16.0,"y":128.0,"z":-16.0,"world":"world"}}
+{"time":1589695107563,"player":"zhufucdev","type":"MOVE","data":{"x":-16.0,"y":128.0,"z":-16.0,"world":"world"}}

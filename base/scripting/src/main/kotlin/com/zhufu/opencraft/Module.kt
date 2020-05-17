@@ -221,12 +221,6 @@ class Module(val loader: ModuleLoader, internal var requester: Module? = null) {
                 throw RuntimeException("Parameter doesn't have members.")
             JSContainer(selections, context)
         }
-        "createEventExecutor" -> usage to ProxyExecutable {
-            val f = it.first()
-            EventExecutor { listener, event ->
-                f.execute(listener, event)
-            }
-        }
         "isModuleLoaded" -> usage to ProxyExecutable {
             var name = it.first().asString()
             if (name.startsWith(BUKKIT_PREFIX)) {
@@ -262,8 +256,9 @@ class Module(val loader: ModuleLoader, internal var requester: Module? = null) {
             val callback = if (it.size >= 4) it[3] else null
             val name = if (it.size >= 5) it[4] else null
             thread(name = if (name?.isString == true) name.asString() else null, start = false) {
-                val f = instance::class.functions.firstOrNull { m -> m.name == method && m.parameters.size == args.size }
-                    ?: throw RuntimeException("No function matching.")
+                val f =
+                    instance::class.functions.firstOrNull { m -> m.name == method && m.parameters.size == args.size }
+                        ?: throw RuntimeException("No function matching.")
                 if (callback?.canExecute() == true)
                     callback.executeVoid(f.call(*args)?.let { it1 -> JavaClass4JS(it1, context) })
             }
@@ -334,7 +329,9 @@ class Module(val loader: ModuleLoader, internal var requester: Module? = null) {
                     }
                 }
                 jsObject.isHostObject -> jsObject.asHostObject()
-                jsObject.canExecute() -> JSContainer(jsObject, wrapper)
+                jsObject.canExecute() ->
+                    if (createProxy) JSContainer(jsObject, wrapper)
+                    else jsObject.`as`(Function::class.java)
                 jsObject.isString -> jsObject.asString()
                 jsObject.isNumber -> jsObject.`as`(Number::class.java)
                 jsObject.isBoolean -> jsObject.asBoolean()

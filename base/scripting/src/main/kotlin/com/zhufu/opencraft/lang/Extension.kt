@@ -4,6 +4,7 @@ package com.zhufu.opencraft.lang
 
 import com.zhufu.opencraft.Scripting
 import org.bukkit.event.Listener
+import org.bukkit.plugin.EventExecutor
 import org.graalvm.polyglot.Value
 import org.graalvm.polyglot.proxy.ProxyExecutable
 import java.io.Reader
@@ -48,4 +49,10 @@ object Extension {
         }
     }
     fun newListener() = object : Listener {}
+    val createEventExecutor get() = ProxyExecutable {
+        val f = it.first()
+        EventExecutor { listener, event ->
+            f.execute(listener, event)
+        }
+    }
 }

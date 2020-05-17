@@ -9,3 +9,4 @@ module.exports = function(from, ...args) {
     }
     return from;
 };
+module.shareContext = false;

@@ -3,18 +3,17 @@ package com.zhufu.opencraft.lang
 import com.zhufu.opencraft.Module
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Value
-import org.graalvm.polyglot.proxy.ProxyArray
-import org.graalvm.polyglot.proxy.ProxyExecutable
-import org.graalvm.polyglot.proxy.ProxyInstantiable
-import org.graalvm.polyglot.proxy.ProxyObject
+import org.graalvm.polyglot.proxy.*
 import java.lang.reflect.Constructor
 import kotlin.reflect.*
 import kotlin.reflect.full.*
+import kotlin.reflect.jvm.jvmErasure
 
 class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
     internal val clazz: Class<*>
     private val wrapper: Context
     internal var instance: Any? = null
+
     /* Static Fields */
     private val extends = hashMapOf<String, Value?>()
     private val functions = hashMapOf<String, ProxyExecutable>()
@@ -86,7 +85,7 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
             functions[k] = ProxyExecutable { arguments ->
                 val args = Module.javalize(arguments, wrapper, false)
                 fun typeMatch(a: KParameter, b: Any?) =
-                    b == null || a.type.isSupertypeOf(b::class.defaultType)
+                    b == null || a.type.jvmErasure.let { it == b::class || it.isSuperclassOf(b::class) }
 
                 val filter: (KFunction<*>) -> Boolean = if (static) {
                     {
@@ -124,7 +123,7 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
                         "No such function: $k(${
                         buildString {
                             args.forEach {
-                                append(if (it == null) "Any" else it::class.simpleName)
+                                append(if (it == null) "Any" else it::class.simpleName ?: "[unknown]")
                                 append(", ")
                             }
                         }.removeSuffix(", ")
@@ -163,7 +162,8 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
 
     override fun getMember(key: String): Any? = when {
         key == "javaClass" -> clazz
-        getters.containsKey(key) -> getters[key]!!.invoke()?.let { if (shouldBePutInto(it)) JavaClass4JS(it, wrapper) else it }
+        getters.containsKey(key) -> getters[key]!!.invoke()
+            ?.let { if (shouldBePutInto(it)) JavaClass4JS(it, wrapper) else it }
         functions.containsKey(key) -> functions[key]
         extends.containsKey(key) -> extends[key]
         clazz.classes.any { it.simpleName == key } -> JavaClass4JS(
@@ -208,6 +208,7 @@ class JavaClass4JS : ProxyObject, ProxyInstantiable, ProxyWrap {
         if (instance == null) JavaClass4JS(clazz, newWrapper) else JavaClass4JS(instance!!, newWrapper)
 
     companion object {
-        fun shouldBePutInto(v: Any): Boolean = v !is Boolean && v !is Number && v !is String && v !is Function<*>
+        fun shouldBePutInto(v: Any): Boolean =
+            v !is Boolean && v !is Number && v !is String && v !is Function<*> && v !is Proxy
     }
 }

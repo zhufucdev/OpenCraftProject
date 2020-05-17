@@ -8,10 +8,13 @@ module.exports = {
     withProperties: (config) => object(config),
     /**
      * Require a Java object.
-     * @param packageName {string} of the object to require.
+     * @param packageName {string} of the object to require. "$opencraft" stands for "com.zhufu.opencraft".
      * @return {JavaObject}
      */
-    fromJava: (packageName) => requireJava(packageName),
+    fromJava: (packageName) => {
+        packageName = packageName.replace(/\$opencraft/g, 'com.zhufu.opencraft')
+        return requireJava(packageName)
+    },
     /**
      * Gets an {@link #Array} of java packages whose name starts with the given prefix.
      * @param prefix {string} name of packages to start with.
@@ -37,6 +40,7 @@ module.exports = {
      * @param extension {Object} members to extend.
      */
     extend: (obj, extension) => {
+        if (typeof extension !== 'object') return;
         for (let key in extension) {
             obj[key] = extension[key]
         }

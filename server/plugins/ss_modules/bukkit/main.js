@@ -1,10 +1,11 @@
-'use javaPlugin, createEventExecutor';
+'use javaPlugin';
 const object = require('object');
 const bukkit = object.fromJava('org.bukkit.Bukkit');
 const HandlerList = object.fromJava('org.bukkit.event.HandlerList');
 const logger = require('logger');
 const pluginManager = bukkit.getPluginManager();
 const bukkitEvent = require('bukkitEvent');
+const createEventExecutor = object.fromJava('$opencraft.lang.Extension').createEventExecutor;
 
 function searchForClass(name) {
     function searchRoot(root) {
@@ -97,7 +98,7 @@ function Listener(wrap) {
 }
 
 const server = require('Server');
-const newListener = object.fromJava('com.zhufu.opencraft.lang.Extension').newListener;
+const newListener = object.fromJava('$opencraft.lang.Extension').newListener;
 module.exports = object.withProperties({
     /**
      * Listen all events of given name.
