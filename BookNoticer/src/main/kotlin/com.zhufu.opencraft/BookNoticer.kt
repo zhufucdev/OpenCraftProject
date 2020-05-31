@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.Base.Extend.isDigit
 import com.zhufu.opencraft.Base.lobby
-import com.zhufu.opencraft.events.PlayerLoginEvent
+import com.zhufu.opencraft.events.UserLoginEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -30,7 +30,7 @@ class BookNoticer : JavaPlugin(), Listener {
     }
 
     @EventHandler
-    fun onPlayerLogin(event: PlayerLoginEvent) {
+    fun onPlayerLogin(event: UserLoginEvent) {
         event.player.info()
             ?.apply {
                 if (!isSurveyPassed && remainingDemoTime <= 0) {

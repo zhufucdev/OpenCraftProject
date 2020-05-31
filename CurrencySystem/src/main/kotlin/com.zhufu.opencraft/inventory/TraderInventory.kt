@@ -12,6 +12,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 class TraderInventory(val player: Player) {
     private val getter = player.getter()
@@ -128,7 +129,7 @@ class TraderInventory(val player: Player) {
                 val price = FlyWand.MAX_TIME_REMAINING * FlyWand.PRICE_PER_MIN / 60
                 PaymentDialog(
                     player,
-                    SellingItemInfo(FlyWand(getter), price, 1),
+                    SellingItemInfo(FlyWand(getter), price.roundToLong(), 1),
                     TradeManager.getNewID(),
                     CurrencySystem.instance
                 ).setOnPayListener { success ->

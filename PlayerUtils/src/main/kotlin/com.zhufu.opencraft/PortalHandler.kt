@@ -93,7 +93,7 @@ object PortalHandler : Listener {
                         }, 10 * 20)
                     }
                 }
-                if (cube.from.near(event.to!!.clone().add(Vector(0, -1, 0)))) {
+                if (cube.from.near(event.to.clone().add(Vector(0, -1, 0)))) {
                     doTeleport(cube.to.clone().setDirection(event.player.location.direction))
                     break
                 } else if (cube.to.near(event.to!!.clone().add(Vector(0, -1, 0)))) {

@@ -542,7 +542,7 @@ insurance:
   content:
     1: 'Insurer: %s'
     2: 'Guarantor: OpenCraft Team'
-    3: 'This insurance guarantees that 80% of your inventory will be kept after yur death.'
+    3: 'This insurance guarantees that 80% of your inventory will be kept after your death.'
 
 msg:
   read: 'Read'

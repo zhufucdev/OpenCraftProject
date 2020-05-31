@@ -23,6 +23,7 @@ import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.reflect.full.isSuperclassOf
 
 fun getLang(lang: String, value: String, vararg replaceWith: Any?): String = Language.got(lang, value, replaceWith)
 fun getLang(player: ServerPlayer, value: String, vararg replaceWith: Any?): String =
@@ -119,8 +120,9 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
         var aAmount = 0
         fun isSimilar(a: ItemStack): Boolean {
             return a.type == type.type
-                    && if (type is SpecialItem) SpecialItem.getByItem(a, type.getter)?.type == type.type
-            else !SpecialItem.isSpecial(a)
+                    && (type is SpecialItem && SpecialItem.getByItem(a, type.getter)
+                ?.let { it::class.isSuperclassOf(a::class) } == true)
+                    || type !is SpecialItem
         }
         this.inventory.forEach {
             if (it != null && isSimilar(it))

@@ -8,7 +8,6 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
@@ -156,7 +155,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
                 config.set(
                     path,
                     if (SpecialItem.isSpecial(itemStack)) {
-                        SpecialItem.getSerialize(itemStack, player.getter())
+                        SpecialItem.getSerialized(itemStack, player.getter())
                     } else {
                         itemStack
                     }
@@ -315,7 +314,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
         fun set(path: String, value: Any) = config.set(path, value)
         fun addItem(item: ItemStack): Boolean {
             val inventory = config.getConfigurationSection("inventory") ?: YamlConfiguration()
-            val itemStack: Any = if (item is SpecialItem) item.getSerialize() else item
+            val itemStack: Any = if (item is SpecialItem) item.getSerialized() else item
             val max = inventory.getKeys(false).maxBy { key -> key.toInt() }?.toIntOrNull()
             fun msg(i: Int) {
                 config.set("inventory", inventory)

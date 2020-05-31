@@ -14,8 +14,6 @@
       <module name="OpenCraft.base.test" target="1.8" />
       <module name="OpenCraft.item1.main" target="1.8" />
       <module name="OpenCraft.item1.test" target="1.8" />
-      <module name="OpenCraft.languages.main" target="1.8" />
-      <module name="OpenCraft.languages.test" target="1.8" />
       <module name="OpenCraft.LICENSE.main" target="1.8" />
       <module name="OpenCraft.LICENSE.test" target="1.8" />
       <module name="OpenCraft.PlayerManager.main" target="1.8" />

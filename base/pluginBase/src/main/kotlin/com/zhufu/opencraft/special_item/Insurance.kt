@@ -12,8 +12,6 @@ import org.bukkit.inventory.meta.BookMeta
 
 class Insurance(getter: Language.LangGetter, val player: String, val number: Long = System.currentTimeMillis()) :
     SpecialItem(Material.WRITTEN_BOOK, getter) {
-    override val type: Type
-        get() = Type.Insurance
 
     init {
         updateItemMeta<BookMeta> {
@@ -59,13 +57,13 @@ class Insurance(getter: Language.LangGetter, val player: String, val number: Lon
                     }
 
         override fun isThis(config: ConfigurationSection): Boolean =
-            config.getString("type") == Type.Insurance.name
+            config.getString("type") == Insurance::class.simpleName
 
         const val PRICE = 100
     }
 
-    override fun getSerialize(): ConfigurationSection {
-        val r = super.getSerialize()
+    override fun getSerialized(): ConfigurationSection {
+        val r = super.getSerialized()
         r["player"] = player
         r["number"] = number
         return r

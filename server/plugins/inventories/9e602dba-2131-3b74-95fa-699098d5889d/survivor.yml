@@ -1,15 +1,19 @@
-gameMode: SURVIVAL
-health: 20.0
-foodLevel: 20
+gameMode: CREATIVE
+health: 4.5
+foodLevel: 16
 walkSpeed: 0.2
 flySpeed: 0.1
-exp: 0
+exp: 5
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: -115.93847679805192
-  y: 66.0
-  z: 2860.4683354921654
-  pitch: 6.0000563
-  yaw: 156.15007
+  x: -641.2465825439668
+  y: 70.0
+  z: 4171.257122563653
+  pitch: 11.021831
+  yaw: 254.94336
 potion: {}
+inventory:
+  '0':
+    isSpecialItem: true
+    type: RealClock

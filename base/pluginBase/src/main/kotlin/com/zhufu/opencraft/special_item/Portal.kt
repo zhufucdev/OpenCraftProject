@@ -10,14 +10,12 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 class Portal : SpecialItem {
-    override val type: Type
-        get() = Type.Portal
 
     fun setCount(amount: Int) {
         this.amount = amount
     }
 
-    constructor(getter: Language.LangGetter, secondary: Boolean = false) : super(Material.OBSIDIAN, getter) {
+    constructor(getter: Language.LangGetter, secondary: Boolean) : super(Material.OBSIDIAN, getter) {
         itemMeta = itemMeta!!.apply {
             setDisplayName(
                 TextUtil.getColoredText(
@@ -45,8 +43,10 @@ class Portal : SpecialItem {
         amount = itemStack.amount
     }
 
-    override fun getSerialize(): ConfigurationSection {
-        return super.getSerialize().apply { if (amount > 1) set("amount", amount) }
+    constructor(getter: Language.LangGetter): this(getter, false)
+
+    override fun getSerialized(): ConfigurationSection {
+        return super.getSerialized().apply { if (amount > 1) set("amount", amount) }
     }
 
     companion object : SISerializable {

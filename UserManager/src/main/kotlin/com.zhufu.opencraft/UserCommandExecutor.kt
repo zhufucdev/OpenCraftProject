@@ -280,7 +280,11 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                 else -> {
                     info.login(args[1])
                     if (info.isLogin) {
-                        Bukkit.getPluginManager().callEvent(PlayerLoginEvent(sender))
+                        Bukkit.getPluginManager().callEvent(
+                            UserLoginEvent(
+                                sender
+                            )
+                        )
                     }
                 }
             }

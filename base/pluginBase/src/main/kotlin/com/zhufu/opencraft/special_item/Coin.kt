@@ -8,11 +8,8 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 
-class Coin(amount: Int, getter: Language.LangGetter) : SpecialItem(Material.GOLD_INGOT, getter) {
-    override val type: Type
-        get() = Type.Coin
-
-    init {
+class Coin : SpecialItem {
+    constructor(amount: Int, getter: Language.LangGetter): super(Material.GOLD_INGOT, getter) {
         updateItemMeta<ItemMeta> {
             setDisplayName(getter["coin.name"].toInfoMessage())
             lore = listOf(getter["coin.title"].toTipMessage())
@@ -23,8 +20,10 @@ class Coin(amount: Int, getter: Language.LangGetter) : SpecialItem(Material.GOLD
         setAmount(amount)
     }
 
-    override fun getSerialize(): ConfigurationSection {
-        val r = super.getSerialize()
+    constructor(getter: Language.LangGetter): this(1, getter)
+
+    override fun getSerialized(): ConfigurationSection {
+        val r = super.getSerialized()
         if (amount > 1)
             r["amount"] = amount
         return r
@@ -47,6 +46,6 @@ class Coin(amount: Int, getter: Language.LangGetter) : SpecialItem(Material.GOLD
             }
 
         override fun isThis(config: ConfigurationSection): Boolean =
-            config.getString("type") == Type.Coin.name
+            config.getString("type") == Coin::class.simpleName
     }
 }

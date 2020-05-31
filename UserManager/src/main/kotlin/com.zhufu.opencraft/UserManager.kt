@@ -1,7 +1,7 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.Base.spawnWorld
-import com.zhufu.opencraft.events.PlayerLoginEvent
+import com.zhufu.opencraft.events.UserLoginEvent
 import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
@@ -87,7 +87,7 @@ class UserManager : JavaPlugin(), Listener {
             Bukkit.getScheduler().runTask(this) { _ ->
                 info.login(info.password!!)
                 server.pluginManager.apply {
-                    callEvent(PlayerLoginEvent(player))
+                    callEvent(UserLoginEvent(player))
                 }
             }
             player.resetTitle()
@@ -185,7 +185,7 @@ class UserManager : JavaPlugin(), Listener {
     }
 
     @EventHandler
-    fun onPlayerLogin(event: PlayerLoginEvent) {
+    fun onPlayerLogin(event: UserLoginEvent) {
         broadcast("player.join", TextUtil.TextColor.AQUA, event.player.displayName)
     }
 

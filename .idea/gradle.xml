@@ -43,6 +43,7 @@
             <option value="$PROJECT_DIR$/base/utils" />
             <option value="$PROJECT_DIR$/base/webBase" />
             <option value="$PROJECT_DIR$/base/worldBase" />
+            <option value="$PROJECT_DIR$/languages" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

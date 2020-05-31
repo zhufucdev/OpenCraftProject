@@ -156,7 +156,7 @@ class PlayerUtil : JavaPlugin() {
                 }
                 "si" -> {
                     if (args.size < 4) {
-                        sender.error(getter["command.error.toFewArgs", 3])
+                        sender.error(getter["command.error.tooFewArgs", 3])
                         return true
                     } else if (args[1] != "give") {
                         sender.error(getter["command.error.usage"])
@@ -176,31 +176,15 @@ class PlayerUtil : JavaPlugin() {
                         }
                         i
                     }
-                    val itemName = when {
-                        args[3].equals(SpecialItem.Type.FlyingWand.name, true) -> {
-                            player.inventory.addItem(FlyWand(getter).apply { this.amount = amount })
-                            getter["wand.name"]
-                        }
-                        args[3].equals(SpecialItem.Type.Portal.name, true) -> {
-                            player.inventory.addItem(Portal(getter).apply { this.amount = amount })
-                            getter["portal.name"]
-                        }
-                        args[3].equals(SpecialItem.Type.Coin.name, true) -> {
-                            player.inventory.addItem(Coin(amount, getter))
-                            getter["coin.name"]
-                        }
-                        args[3].equals(SpecialItem.Type.Insurance.name, true) -> {
-                            player.inventory.addItem(Insurance(getter, player.name).apply { this.amount = amount })
-                            getter["coin.name"]
-                        }
-                        else -> {
-                            sender.error(getter["command.error.noSuchItem", args[3]])
-                            return true
-                        }
+                    val item = SpecialItem.make(args[3], amount, player)
+                    if (item == null) {
+                        sender.error(getter["command.error.noSuchItem", args[3]])
+                        return true
                     }
+                    player.inventory.addItem(item)
                     sender.success(getter["command.done"])
                     if (player != sender) {
-                        player.info(getter["si.given", itemName, amount])
+                        player.info(getter["si.given", args[3], amount])
                     }
                 }
             }
@@ -394,11 +378,11 @@ class PlayerUtil : JavaPlugin() {
                 4 -> {
                     val r = mutableListOf<String>()
                     if (args[3].isEmpty()) {
-                        SpecialItem.Type.values().forEach { r.add(it.name) }
+                        SpecialItem.types.forEach { r.add(it) }
                     } else {
-                        SpecialItem.Type.values().forEach {
-                            if (it.name.startsWith(args[3], true))
-                                r.add(it.name)
+                        SpecialItem.types.forEach {
+                            if (it.startsWith(args[3], true))
+                                r.add(it)
                         }
                     }
                     return r

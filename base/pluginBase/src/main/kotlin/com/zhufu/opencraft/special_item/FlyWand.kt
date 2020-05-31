@@ -11,9 +11,10 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scoreboard.Objective
+import kotlin.math.round
 
 class FlyWand : SpecialItem {
-    constructor(getter: Language.LangGetter, initializeTime: Boolean = true) : super(Material.STICK, getter) {
+    constructor(getter: Language.LangGetter, initializeTime: Boolean) : super(Material.STICK, getter) {
         itemMeta = itemMeta!!.apply {
             setDisplayName(TextUtil.getColoredText(getter["wand.name"], TextUtil.TextColor.RED))
             isUnbreakable = true
@@ -29,25 +30,27 @@ class FlyWand : SpecialItem {
         val first = lore.indexOfFirst { it.isDigit() || it == '-' }
         val last = lore.indexOfLast { it.isDigit() }
         if (first == -1 || last == -1) {
-            this.timeRemaining = 0
+            this.timeRemaining = 0.0
         } else {
             val num = lore.substring(first, last + 1)
-            this.timeRemaining = num.toLongOrNull() ?: 0L
+            this.timeRemaining = num.toDoubleOrNull() ?: 0.0
         }
     }
 
-    constructor(timeRemaining: Long, getter: Language.LangGetter) : this(getter, false) {
+    constructor(timeRemaining: Double, getter: Language.LangGetter) : this(getter, false) {
         updateTime(timeRemaining)
     }
 
-    override fun doPerTwoSeconds(mod: PlayerModifier, data: YamlConfiguration, score: Objective, scoreboardSorter: Int) {
+    constructor(getter: Language.LangGetter) : this(getter, true)
+
+    override fun doPerTick(mod: PlayerModifier, data: YamlConfiguration, score: Objective, scoreboardSorter: Int) {
         if (!data.isSet("hasFlyWand")) {
             var allowFlight =
                 mod.player.gameMode == GameMode.CREATIVE || mod.player.gameMode == GameMode.SPECTATOR
             data.set("hasFlyWand", true)
             if (!allowFlight) {
                 if (mod.player.isFlying) {
-                    updateTime(timeRemaining - 2)
+                    updateTime(timeRemaining - 0.05)
                     if (inventoryPosition != -1)
                         mod.player.inventory.setItem(inventoryPosition, this)
                 }
@@ -56,7 +59,7 @@ class FlyWand : SpecialItem {
                 }
                 score.getScore(
                     TextUtil.getColoredText(
-                        getter["server.statics.flyRemaining", timeRemaining],
+                        getter["server.statics.flyRemaining", round(timeRemaining)],
                         TextUtil.TextColor.RED
                     )
                 ).score = scoreboardSorter
@@ -66,7 +69,7 @@ class FlyWand : SpecialItem {
     }
 
     companion object : SISerializable {
-        const val MAX_TIME_REMAINING = 30 * 60L
+        const val MAX_TIME_REMAINING = 30 * 60.0
         const val PRICE_PER_MIN = 100
         var displayNames: List<String> private set
 
@@ -86,7 +89,7 @@ class FlyWand : SpecialItem {
         override fun deserialize(config: ConfigurationSection, getter: Language.LangGetter): FlyWand {
             if (config.isSet("timeRemaining")) {
                 return FlyWand(
-                    config.getLong(
+                    config.getDouble(
                         "timeRemaining"
                     ),
                     getter
@@ -106,14 +109,14 @@ class FlyWand : SpecialItem {
         }
 
         override fun isThis(config: ConfigurationSection): Boolean {
-            return config["type"] == Type.FlyingWand.name
+            return config["type"] == FlyWand::class.simpleName
         }
     }
 
     var timeRemaining = MAX_TIME_REMAINING
         private set
 
-    fun updateTime(timeRemaining: Long) {
+    fun updateTime(timeRemaining: Double) {
         this.timeRemaining = timeRemaining
         itemMeta = itemMeta!!.apply {
             lore = listOf(
@@ -125,11 +128,9 @@ class FlyWand : SpecialItem {
 
     val isUpToTime: Boolean
         get() = timeRemaining <= 0
-    override val type: Type
-        get() = Type.FlyingWand
 
-    override fun getSerialize(): ConfigurationSection {
-        val config = super.getSerialize()
+    override fun getSerialized(): ConfigurationSection {
+        val config = super.getSerialized()
         if (timeRemaining != MAX_TIME_REMAINING)
             config["timeRemaining"] = timeRemaining
         return config

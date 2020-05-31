@@ -218,58 +218,60 @@ class Core : JavaPlugin(), Listener {
             Bukkit.getPluginManager().callEvent(ServerReloadEvent())
         }, 0, env.getLong("reloadDelay"))
 
+        var count = 1
         scoreBoardTask = Bukkit.getScheduler().runTaskTimer(this, Runnable {
+            count ++
+            val url = env.getString("url")
             PlayerManager.forEachPlayer { info ->
                 val getter = getLangGetter(info)
-
-                info.statics!!.timeToday += 2
+                val isRound = count % 40 == 0
+                if (isRound) {
+                    info.statics!!.timeToday += 2
+                    count = 1
+                }
 
                 if (info.status != Info.GameStatus.MiniGaming) {
-                    var sub = 0
+                    var sort = 0
 
                     val newBoard = Bukkit.getScoreboardManager().newScoreboard
                     val obj = newBoard.registerNewObjective("serverStatics", "dummy", getter["server.statics.title"])
                     obj.displaySlot = DisplaySlot.SIDEBAR
-                    obj.getScore(TextUtil.info(getter["server.statics.coinCount", info.currency])).score = --sub
-                    if (!info.isSurveyPassed) {
-                        obj.getScore(TextUtil.info(getter["server.statics.demoTime", info.remainingDemoTime / 1000L / 60]))
-                            .score = --sub
-                        if (info.remainingDemoTime <= 0 && info.status != Info.GameStatus.InLobby) {
-                            PlayerManager.onPlayerOutOfDemo(info)
+                    obj.getScore(TextUtil.info(getter["server.statics.coinCount", info.currency])).score = --sort
+                    if (isRound) {
+                        if (!info.isSurveyPassed) {
+                            obj.getScore(TextUtil.info(getter["server.statics.demoTime", info.remainingDemoTime / 1000L / 60]))
+                                .score = --sort
+                            if (info.remainingDemoTime <= 0 && info.status != Info.GameStatus.InLobby) {
+                                PlayerManager.onPlayerOutOfDemo(info)
+                            }
+                        }
+                        if (info.status != Info.GameStatus.InLobby && info.status != Info.GameStatus.InTutorial) {
+                            info.gameTime += 2 * 1000L
+                            ServerStatics.onlineTime += 2
+                        }
+
+                        if (info.isInBuilderMode) {
+                            obj.getScore(
+                                TextUtil.getColoredText(
+                                    getter["server.statics.builderLevel", info.builderLevel],
+                                    TextUtil.TextColor.BLUE,
+                                    false,
+                                    underlined = false
+                                )
+                            ).score = --sort
                         }
                     }
-                    if (info.status != Info.GameStatus.InLobby && info.status != Info.GameStatus.InTutorial) {
-                        info.gameTime += 2 * 1000L
-                        ServerStatics.onlineTime += 2
-                    }
-
-                    if (info.isInBuilderMode) {
-                        obj.getScore(
-                            TextUtil.getColoredText(
-                                getter["server.statics.builderLevel", info.builderLevel],
-                                TextUtil.TextColor.BLUE,
-                                false,
-                                underlined = false
-                            )
-                        ).score = --sub
-                    }
-                    /*
-                    if (info.status == Info.GameStatus.Surviving && !info.isOp && info.player.gameMode != GameMode.SURVIVAL) {
-                        info.player.gameMode = GameMode.SURVIVAL
-                    }
-                     */
 
 
                     val modifier = PlayerModifier(info)
                     if (info.player.inventory.containsSpecialItem) {
                         val data = YamlConfiguration()
                         info.player.inventory.specialItems.forEach { item ->
-                            item.doPerTwoSeconds(modifier, data, obj, sub--)
+                            item.doPerTick(modifier, data, obj, --sort)
                         }
                     }
                     modifier.apply()
 
-                    val url = env.getString("url")
                     obj.getScore(
                         buildString {
                             val all = TextUtil.TextColor.AQUA.code
@@ -279,15 +281,17 @@ class Core : JavaPlugin(), Listener {
                             insert(urlLooper + 3, all)
                             insert(0, all)
                         }
-                    ).score = --sub
-                    if (urlLooper >= url!!.lastIndex || (urlLooper <= 0 && !looperDirection)) {
-                        looperDirection = !looperDirection
+                    ).score = --sort
+                    if (isRound) {
+                        if (urlLooper >= url!!.lastIndex || (urlLooper <= 0 && !looperDirection)) {
+                            looperDirection = !looperDirection
+                        }
+                        urlLooper += if (looperDirection) 1 else -1
                     }
-                    urlLooper += if (looperDirection) 1 else -1
                     info.player.scoreboard = newBoard
                 }
             }
-        }, 0L, 2 * 20)
+        }, 0L, 1)
     }
 
     private fun spawnNPC() {
