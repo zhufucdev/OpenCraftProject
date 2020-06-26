@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/CraftWeb" />
             <option value="$PROJECT_DIR$/CurrencySystem" />
             <option value="$PROJECT_DIR$/CustomTutorial" />
+            <option value="$PROJECT_DIR$/ItemManager" />
             <option value="$PROJECT_DIR$/OpenTranslator" />
             <option value="$PROJECT_DIR$/OperationFinder" />
             <option value="$PROJECT_DIR$/PlayerUtils" />
@@ -31,7 +32,6 @@
             <option value="$PROJECT_DIR$/UserManager" />
             <option value="$PROJECT_DIR$/WorldGenerator" />
             <option value="$PROJECT_DIR$/WorldTeleporter" />
-            <option value="$PROJECT_DIR$/base/ItemManager" />
             <option value="$PROJECT_DIR$/base/blockManagment" />
             <option value="$PROJECT_DIR$/base/inventoryBase" />
             <option value="$PROJECT_DIR$/base/listeners" />

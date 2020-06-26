@@ -8,15 +8,14 @@ import java.util.*
 
 class VoidGenerator(val spawnHeight: Int) : ChunkGenerator() {
     override fun getFixedSpawnLocation(world: World, random: Random): Location {
-        return Location(world,0.toDouble(),spawnHeight.toDouble(),0.toDouble())
+        return Location(world, 0.toDouble(), spawnHeight.toDouble(), 0.toDouble())
     }
 
     override fun generateChunkData(world: World, random: Random, x: Int, z: Int, biome: BiomeGrid): ChunkData {
-        if (biome != null) {
-            for (X in 0..15)
+        for (X in 0..15)
+            for (Y in 0..255)
                 for (Z in 0..15)
-                    biome.setBiome(X,Z, Biome.THE_VOID)
-        }
+                    biome.setBiome(X, Y, Z, Biome.THE_VOID)
         return createChunkData(world)
     }
 }

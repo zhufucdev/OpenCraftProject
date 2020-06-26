@@ -61,6 +61,7 @@ advancements:
   - minecraft:story/disabled
 world-settings:
   default:
+    end-portal-sound-radius: 0
     seed-endcity: 10387313
     view-distance: default
     trident-despawn-rate: 1200

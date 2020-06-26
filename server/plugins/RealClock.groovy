@@ -6,9 +6,11 @@ import com.zhufu.opencraft.PlayerModifier
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scoreboard.Objective
+import ss.Logger
 
 import java.text.SimpleDateFormat
 
@@ -23,7 +25,7 @@ Content.defineItem {
             displayName = ChatColor.BLUE.toString() + "Real Clock"
         }
     }
-    isItem { ItemStack item ->
+    isItem { item ->
         item.itemMeta.displayName == ChatColor.BLUE.toString() + "Real Clock"
     }
     type Material.CLOCK
@@ -31,7 +33,7 @@ Content.defineItem {
         if (item.itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE))
             updateDate(item)
     }
-    onLeftClicked { ItemStack item ->
+    onLeftClicked { ItemStack item, Player player ->
         if (item.itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)) {
             item.removeItemFlags(ItemFlag.HIDE_UNBREAKABLE)
             item.setLore null

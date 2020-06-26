@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class PlayerTeleportedEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-    private Location from,to;
+    private final Location from, to;
     private Boolean isCancelled = false;
 
     public Location getFrom() {

@@ -62,19 +62,19 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
         }
     }
 
-    var present = InventoryInfo(player, RESET, File(""), this)
-    var last = InventoryInfo(player, RESET, File(""), this)
+    var present = InventoryInfo(player, NOTHING, File(""), this)
+    var last = InventoryInfo(player, NOTHING, File(""), this)
     fun load(name: String = "default") {
         present.save()
 
         val index = mList.indexOfFirst { it.name == name }
-        if (index == -1) throw InventoryNotFoundException(name, "Did you create it?")
+        if (index == -1) throw InventoryNotFoundException(name, "Have you created it?")
         mList[index].load()
     }
 
     fun save(name: String = "default") {
         val index = mList.indexOfFirst { it.name == name }
-        if (index == -1) throw InventoryNotFoundException(name, "Did you create it?")
+        if (index == -1) throw InventoryNotFoundException(name, "Have you created it?")
         mList[index].save()
     }
 
@@ -106,7 +106,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
     }
 
     fun forEach(l: (InventoryInfo) -> Unit) = mList.forEach(l)
-    class InventoryNotFoundException(which: String, msg: String) : Exception(msg)
+    class InventoryNotFoundException(which: String, msg: String) : Exception("No such inventory: $which. $msg")
 
     class InventoryInfo(val player: Player?, val name: String, val file: File, val parent: DualInventory) {
         var inventoryOnly: Boolean = false
@@ -119,7 +119,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             validateFile()
             config = when {
                 file.exists() -> YamlConfiguration.loadConfiguration(file)
-                name != RESET -> {
+                name != NOTHING -> {
                     file.createNewFile()
                     YamlConfiguration()
                 }
@@ -138,11 +138,11 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
 
         fun save() {
             if (isDestroyed)
-                throw IllegalAccessException("This object must not be destroyed!")
+                throw IllegalAccessException("This object must not have been destroyed!")
             if (player == null)
                 throw IllegalStateException("Can't read player's info when it doesn't exists!")
 
-            if (name == RESET || name == NOTHING) return
+            if (name == NOTHING) return
 
             Bukkit.getLogger()
                 .info("Saving inventory named $name for player ${player.name}${if (inventoryOnly) "[InventoryOnly]" else ""}")
@@ -197,24 +197,23 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
 
             parent.last = parent.present
             parent.present = this
-            println("Present inventory of ${player.name} is ${this.name}")
+            Bukkit.getLogger().info("Present inventory of ${player.name} is ${this.name}")
 
             if (name == NOTHING)
                 return
             else if (name == RESET) {
                 if (!inventoryOnly) {
-                    ServerCaller["SolvePlayerLobby"]!!(
+                    ServerCaller["SolvePlayerLobby"]?.invoke(
                         listOf(
                             player.info()
                                 ?: throw IllegalStateException("Could not found ${player.name}'s info to rest.")
                         )
-                    )
-                    resetPlayer(player)
+                    ) ?: Bukkit.getLogger().warning("SolvePlayerLobby of ServerCaller is missing out.")
                     player.gameMode = GameMode.CREATIVE
                 } else {
                     player.inventory.clear()
+                    return
                 }
-                return
             }
             if (!validateFile()) {
                 resetPlayer(player)
@@ -238,7 +237,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             }
 
             if (!inventoryOnly) {
-                Bukkit.getScheduler().runTask(plugin) { it ->
+                Bukkit.getScheduler().runTask(plugin) { _ ->
                     player.fallDistance = 0f
                     val location = config.getSerializable("location", Location::class.java, null)
                     if (location != null)

@@ -7,11 +7,11 @@ exp: 5
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: -641.2465825439668
-  y: 70.0
-  z: 4171.257122563653
-  pitch: 11.021831
-  yaw: 254.94336
+  x: -640.860189472152
+  y: 71.0
+  z: 4175.065827589479
+  pitch: 8.152568
+  yaw: 44.862
 potion: {}
 inventory:
   '0':

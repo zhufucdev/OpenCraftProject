@@ -4,11 +4,11 @@ import com.zhufu.opencraft.DualInventory.InventoryInfo;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerLoadInventoryEvent extends PlayerEvent {
-    private static HandlerList handlerList = new HandlerList();
-    private InventoryInfo oldOne;
-    private InventoryInfo newOne;
+    private static final HandlerList handlerList = new HandlerList();
+    private final InventoryInfo oldOne, newOne;
     public PlayerLoadInventoryEvent(Player who, InventoryInfo oldOne, InventoryInfo newOne) {
         super(who);
         this.oldOne = oldOne;
@@ -23,6 +23,7 @@ public class PlayerLoadInventoryEvent extends PlayerEvent {
         return newOne;
     }
 
+    @NotNull
     @Override
     public HandlerList getHandlers() {
         return handlerList;

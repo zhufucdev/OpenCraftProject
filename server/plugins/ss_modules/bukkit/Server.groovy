@@ -13,16 +13,41 @@ import org.bukkit.plugin.EventExecutor
 class Server {
     private static Listener mListener = new Listener() {}
 
-    static <T extends Event> Listener listenEvent(Class<T> clazz, Closure executor) {
+    /**
+     * Start a listening action via the public event listener.
+     * @param clazz Type of bukkit event to listen.
+     * @param executor Called when the event is triggered.
+     * @return The public listener.
+     */
+    static <T extends Event> Listener listenEvent(
+            @DelegatesTo.Target Class<T> clazz,
+            @DelegatesTo Closure executor) {
         return listenEvent(clazz, EventPriority.NORMAL, executor)
     }
 
+    /**
+     * Start a listening action via the public event listener.
+     * @param priority Determines the order where is executor is called.
+     * @param clazz Type of bukkit event to listen.
+     * @param executor Called when the event is triggered.
+     * @return The public listener.
+     */
     static <T extends Event> Listener listenEvent(Class<T> clazz, EventPriority priority, Closure executor) {
         listenEvent(clazz, mListener, priority, executor)
         return mListener
     };
 
-    static <T extends Event> Listener listenEvent(Class<T> clazz, Listener listener, EventPriority priority, Closure executor) {
+    /**
+     * Start a listening action via a given event listener in order for which can be unregistered separately.
+     * @param listener Listener to listen the event.
+     * @param priority Determines the order where is executor is called.
+     * @param clazz Type of bukkit event to listen.
+     * @param executor Called when the event is triggered.
+     * @return The given listener.
+     */
+    static <T extends Event> Listener listenEvent(
+            @DelegatesTo.Target Class<T> clazz, Listener listener, EventPriority priority,
+            @DelegatesTo Closure executor) {
         Bukkit.getPluginManager().registerEvent(clazz, listener, priority,
                 new EventExecutor() {
                     @Override

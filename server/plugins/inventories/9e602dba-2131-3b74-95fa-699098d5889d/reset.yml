@@ -1,0 +1,70 @@
+inventory:
+  '0':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
+    type: WRITTEN_BOOK
+    meta:
+      ==: ItemMeta
+      meta-type: BOOK_SIGNED
+      title: OpenCraft Daily
+      author: OpenCraft Team
+      pages:
+      - §6You are catch-up.
+  '1':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
+    type: GRANITE
+    amount: 64
+  '2':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
+    type: POLISHED_GRANITE
+    amount: 64
+  '3':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
+    type: DIORITE
+    amount: 64
+  '4':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
+    type: POLISHED_DIORITE
+    amount: 64
+  '5':
+    isSpecialItem: true
+    type: RealClock
+  '6':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
+    type: POLISHED_ANDESITE
+    amount: 64
+  '7':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
+    type: GRASS_BLOCK
+    amount: 64
+  '8':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
+    type: DIRT
+    amount: 64
+  '9':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
+    type: ANDESITE
+    amount: 64
+gameMode: CREATIVE
+health: 20.0
+foodLevel: 20
+walkSpeed: 0.2
+flySpeed: 0.1
+exp: 5
+location:
+  ==: org.bukkit.Location
+  world: world
+  x: -22.994275271544172
+  y: 124.0
+  z: -20.939238384394432
+  pitch: -19.845705
+  yaw: 66.23208
+potion: {}
