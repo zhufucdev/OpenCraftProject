@@ -33,6 +33,6 @@ class GroovySpecialItemAdapter(
         .takeIf { judgeFromItem != null },
     judgeFromConfig = { c: ConfigurationSection -> judgeFromConfig!!.call(c) }
         .takeIf { judgeFromConfig != null },
-    tick = { i: ItemStack, m: PlayerModifier, d: YamlConfiguration, s: Objective, o: Int -> tick!!.call(i, m, d, s, o); Unit }
+    tick = { i: AdapterItem, m: PlayerModifier, d: YamlConfiguration, s: Objective, o: Int -> tick!!.call(i, m, d, s, o); Unit }
         .takeIf { tick != null }
 )

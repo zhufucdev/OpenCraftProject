@@ -236,7 +236,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
                 }
             }
 
-            if (!inventoryOnly) {
+            if (!inventoryOnly && name != RESET) {
                 Bukkit.getScheduler().runTask(plugin) { _ ->
                     player.fallDistance = 0f
                     val location = config.getSerializable("location", Location::class.java, null)

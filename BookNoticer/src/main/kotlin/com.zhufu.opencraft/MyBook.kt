@@ -5,6 +5,7 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import io.netty.buffer.Unpooled
 import net.minecraft.server.v1_15_R1.*
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer
 import org.bukkit.entity.Player
@@ -55,12 +56,13 @@ class MyBook : ItemStack {
         var lines = 0
         val charPerLine = 24
         content.forEach {
-            if (it == '\n'){
-                i = charPerLine +1
+            when {
+                it == '\n' -> {
+                    i = charPerLine +1
+                }
+                it <= 'Z' -> i++
+                else -> i+=2
             }
-            else if (it <= 'Z')
-                i++
-            else i+=2
             sb.append(it)
             if (i >= charPerLine){
                 i=0
@@ -84,6 +86,7 @@ class MyBook : ItemStack {
         val writer = JsonWriter(sw)
         this.toJson(writer).flush()
 
+        val itemHeld = player.inventory.itemInMainHand.clone()
         player.inventory.setItem(0,this)
         if (!open) return
 
@@ -91,6 +94,8 @@ class MyBook : ItemStack {
 
         val payload = PacketPlayOutOpenBook(EnumHand.MAIN_HAND)
         (player as CraftPlayer).handle.playerConnection.sendPacket(payload)
+
+        player.inventory.setItemInMainHand(itemHeld)
     }
 
     fun toJson(writer: JsonWriter): JsonWriter{

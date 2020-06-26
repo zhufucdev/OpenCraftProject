@@ -15,7 +15,6 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
-import ss.Logger
 
 class ExtendedItemConstructor {
     private String name, langName
@@ -134,6 +133,7 @@ class ExtendedItemConstructor {
         // Hand click
         def onHandClick = { List<Action> actions, Closure e ->
             return {
+                if (item == null) return
                 if (getAdapter().isThis(item)
                         && actions.contains(action)) {
                     final adapted = getAdapter().getAdaptItem(item, player)

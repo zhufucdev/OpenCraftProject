@@ -152,9 +152,8 @@ class PlayerStatics private constructor(val parent: ServerPlayer, private var da
             }
         }
 
-        fun cleanUp() {
+        fun saveAll() {
             forEach { it.save() }
-            map.clear()
         }
 
         fun remove(uuid: UUID) = map.remove(uuid)

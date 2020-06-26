@@ -1,4 +1,10 @@
 {
+  "minecraft:recipes/decorations/smoker": {
+    "criteria": {
+      "has_furnace": "2020-06-26 18:44:18 +0800"
+    },
+    "done": true
+  },
   "minecraft:recipes/building_blocks/polished_andesite_slab": {
     "criteria": {
       "has_polished_andesite": "2020-06-26 16:02:06 +0800"
@@ -110,6 +116,12 @@
   "minecraft:recipes/decorations/ladder": {
     "criteria": {
       "has_stick": "2020-05-24 23:35:11 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/misc/map": {
+    "criteria": {
+      "has_compass": "2020-06-26 18:51:22 +0800"
     },
     "done": true
   },
@@ -397,7 +409,13 @@
   },
   "minecraft:adventure/adventuring_time": {
     "criteria": {
+      "minecraft:forest": "2020-06-26 18:57:41 +0800",
+      "minecraft:taiga": "2020-06-26 18:50:58 +0800",
+      "minecraft:taiga_hills": "2020-06-26 18:50:46 +0800",
+      "minecraft:birch_forest": "2020-06-26 18:57:55 +0800",
       "minecraft:dark_forest": "2020-05-29 22:42:23 +0800",
+      "minecraft:river": "2020-06-26 18:58:08 +0800",
+      "minecraft:birch_forest_hills": "2020-06-26 18:57:43 +0800",
       "minecraft:wooded_hills": "2020-02-16 21:40:28 +0800",
       "minecraft:plains": "2020-02-16 21:40:32 +0800"
     },

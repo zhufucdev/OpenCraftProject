@@ -96,6 +96,7 @@ class Core : JavaPlugin(), Listener {
         if (!dataFolder.exists()) dataFolder.mkdirs()
         try {
             ServerStatics.init()
+            PlayerStatics.Companion
             SurveyManager.init(File(dataFolder, "survey.json"), this)
             GameManager.init(this)
             PlayerManager.init(this)
@@ -170,13 +171,18 @@ class Core : JavaPlugin(), Listener {
             it.despawn()
             it.destroy()
         }
-        env.save(File(dataFolder, "env"))
         PlayerObserverListener.onServerStop()
+        saveAll()
+    }
+
+    private fun saveAll() {
+        Bukkit.getLogger().info("Saving everything...")
+        env.save(File(dataFolder, "env"))
         PlayerManager.forEachPlayer { it.saveServerID() }
         BuilderListener.saveConfig()
-        PlayerStatics.cleanUp()
-        Base.publicMsgPool.serialize().save(Base.msgPoolFile)
-        PlayerLobbyManager.onServerClose()
+        PlayerStatics.saveAll()
+        publicMsgPool.serialize().save(Base.msgPoolFile)
+        PlayerLobbyManager.saveAll()
         ServerStatics.save()
     }
 
@@ -497,12 +503,8 @@ class Core : JavaPlugin(), Listener {
                         return true
                     }
                     if (args.size < 2) {
-                        sender.sendMessage(
-                            arrayOf(
-                                TextUtil.error("用法错误"),
-                                server.getPluginCommand("server reload")!!.usage
-                            )
-                        )
+                        Bukkit.getPluginManager().callEvent(ServerReloadEvent())
+                        sender.info("正在重载服务器")
                         return true
                     }
 
@@ -1025,5 +1027,10 @@ class Core : JavaPlugin(), Listener {
             return
         }
         info.tag.set("gamePlayer", gamePlay + 1)
+    }
+
+    @EventHandler
+    fun onServeReload(event: ServerReloadEvent) {
+        saveAll()
     }
 }

@@ -165,10 +165,8 @@ object EveryThing : Listener {
             val itemInHand = event.player.inventory.itemInMainHand
             if (event.player.world == tradeWorld && itemInHand.type == Material.COMPASS)
                 VisitorInventory(CurrencySystem.instance, event.player)
-            else if (SpecialItem.isSpecial(itemInHand)) {
-                if (FlyWand.isThis(itemInHand)) {
-                    FlyWandInventory(event.player, CurrencySystem.instance)
-                }
+            else if (FlyWand.isThis(itemInHand)) {
+                FlyWandInventory(event.player, CurrencySystem.instance)
             }
         }
     }

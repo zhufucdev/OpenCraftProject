@@ -1,6 +1,6 @@
 name: ItemManager
 author: zhufucomcom
-main: ItemManager
+main: com.zhufu.opencraft.ItemManager
 version: '1.0'
 softdepend: [ServerCore]
 api-version: '1.15'

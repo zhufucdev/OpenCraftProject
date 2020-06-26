@@ -3,6 +3,7 @@
 import bukkit.Content
 import com.zhufu.opencraft.Language.LangGetter
 import com.zhufu.opencraft.PlayerModifier
+import com.zhufu.opencraft.special_item.SpecialItemAdapter
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -15,7 +16,9 @@ import ss.Logger
 import java.text.SimpleDateFormat
 
 def updateDate = { ItemStack item ->
-    item.setLore([new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date())])
+    def time = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date())
+    item.setLore([time])
+    return time
 }
 
 Content.defineItem {
@@ -26,12 +29,15 @@ Content.defineItem {
         }
     }
     isItem { item ->
-        item.itemMeta.displayName == ChatColor.BLUE.toString() + "Real Clock"
+        item.hasItemMeta() && item.itemMeta.displayName == ChatColor.BLUE.toString() + "Real Clock"
     }
     type Material.CLOCK
-    tick { ItemStack item, PlayerModifier m, ConfigurationSection d, Objective s, int sort ->
-        if (item.itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE))
-            updateDate(item)
+    tick { SpecialItemAdapter.AdapterItem item, PlayerModifier m, ConfigurationSection d, Objective s, int sort ->
+        if (item.itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)) {
+            def time = updateDate(item)
+            if (item.inventoryPosition >= 9)
+                s.getScore(time).score = sort
+        }
     }
     onLeftClicked { ItemStack item, Player player ->
         if (item.itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)) {

@@ -173,7 +173,7 @@ val Inventory.specialItems: List<SpecialItem>
         val r = ArrayList<SpecialItem>()
         for (i in 0 until this.size) {
             val it = this.getItem(i) ?: continue
-            val getter = viewers.firstOrNull()?.getter() ?: return emptyList()
+            val getter = (if (holder is HumanEntity) holder as HumanEntity else viewers.firstOrNull() ?: return emptyList()).getter()
             SpecialItem.getByItem(it, getter)?.apply {
                 inventoryPosition = i
                 r.add(this)

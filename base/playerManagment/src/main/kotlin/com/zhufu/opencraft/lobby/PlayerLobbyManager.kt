@@ -11,7 +11,7 @@ object PlayerLobbyManager {
             mList.add(PlayerLobby(it))
         }
     }
-    fun onServerClose(){
+    fun saveAll(){
         mList.forEach {
             it.save()
         }

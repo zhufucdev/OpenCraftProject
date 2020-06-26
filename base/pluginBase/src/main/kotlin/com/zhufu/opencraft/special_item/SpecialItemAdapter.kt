@@ -48,7 +48,7 @@ open class SpecialItemAdapter(
             scoreboardSorter: Int
         ) {
             val old = itemMeta.clone()
-            adapter.tick?.invoke(this, mod, data, score, scoreboardSorter)
+            adapter.tick?.invoke(this, mod, data, score, scoreboardSorter) ?: Bukkit.getLogger().info("Not ticked for ${itemMeta.displayName}")
             if (itemMeta != old) {
                 mod.player.inventory.setItem(inventoryPosition, this)
             }
