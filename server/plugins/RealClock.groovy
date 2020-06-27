@@ -37,8 +37,8 @@ Content.defineItem {
             firstLine 'A'
             secondLine 'B'
         }
-        where 'A', { return type == Material.OBSERVER }
-        where 'B', { return type == Material.CLOCK }
+        where 'A', { type == Material.OBSERVER }
+        where 'B', { type == Material.CLOCK }
     }
     tick { SpecialItemAdapter.AdapterItem item, PlayerModifier m, ConfigurationSection d, Objective s, int sort ->
         if (item.itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)) {

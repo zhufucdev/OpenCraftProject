@@ -7,12 +7,14 @@ import groovy.transform.stc.FromString
 import groovyjarjarantlr4.v4.runtime.misc.NotNull
 import opencraft.Lang
 import org.bukkit.Material
+import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -349,14 +351,14 @@ class ExtendedItemConstructor {
 
                 // Compare with recipe
                 boolean satisfies = true
-                def getY = { int index -> Math.floor(index / 3).toInteger() },
-                    getX = { int index -> index - getY(index) * 3 }
+                final tableSize = inventory.type == InventoryType.WORKBENCH ? 3 : 2
+                def getY = { int index -> Math.floor(index / tableSize).toInteger() },
+                    getX = { int index -> index - getY(index) * tableSize }
                 Vector delta
                 for (int y = 0; y < expect.size(); y++) {
                     def e = expect[y]
                     for (int x = 0; x < e.size(); x++) {
                         if (conditions.containsKey(e.charAt(x))) {
-                            Logger.info("Found first pattern item at ($x, $y)")
                             delta = new Vector(getX(firstItem) - x, getY(firstItem) - y, 0)
                             break
                         }
@@ -370,7 +372,6 @@ class ExtendedItemConstructor {
                     int x = getX(i) - delta.blockX, y = getY(i) - delta.blockY
                     def l = (y < 0 || y >= expect.size()) ? null
                             : ((x < 0 || x >= expect[y].size()) ? null : expect[y].charAt(x))
-                    Logger.info("l = $l, x = $x, y = $y, i = $i, delta = $delta, firstItem = $firstItem, item = $item")
                     def satisfied =
                             (item == null && (l == null || !conditions.containsKey(l) || new ItemStack(Material.AIR).with(conditions[l])))
                                     || (item != null && l != null && conditions.containsKey(l) && item.with(conditions[l]))

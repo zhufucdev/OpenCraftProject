@@ -281,6 +281,12 @@
     },
     "done": true
   },
+  "minecraft:recipes/redstone/note_block": {
+    "criteria": {
+      "has_redstone": "2020-06-27 23:21:26 +0800"
+    },
+    "done": true
+  },
   "minecraft:story/root": {
     "criteria": {
       "crafting_table": "2020-06-27 12:33:07 +0800"
@@ -296,6 +302,12 @@
   "minecraft:recipes/combat/crossbow": {
     "criteria": {
       "has_stick": "2020-05-24 23:35:11 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/redstone/dropper": {
+    "criteria": {
+      "has_redstone": "2020-06-27 23:21:26 +0800"
     },
     "done": true
   },
@@ -332,6 +344,12 @@
   "minecraft:recipes/building_blocks/acacia_planks": {
     "criteria": {
       "has_logs": "2020-06-26 16:01:42 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/tools/compass": {
+    "criteria": {
+      "has_redstone": "2020-06-27 23:21:26 +0800"
     },
     "done": true
   },
@@ -451,6 +469,12 @@
     },
     "done": true
   },
+  "minecraft:recipes/redstone/redstone_torch": {
+    "criteria": {
+      "has_redstone": "2020-06-27 23:21:26 +0800"
+    },
+    "done": true
+  },
   "minecraft:recipes/transportation/birch_boat": {
     "criteria": {
       "in_water": "2020-05-30 14:05:22 +0800"
@@ -559,6 +583,12 @@
     },
     "done": true
   },
+  "minecraft:recipes/tools/clock": {
+    "criteria": {
+      "has_redstone": "2020-06-27 23:21:26 +0800"
+    },
+    "done": true
+  },
   "minecraft:recipes/transportation/dark_oak_boat": {
     "criteria": {
       "in_water": "2020-05-30 14:05:22 +0800"
@@ -589,6 +619,12 @@
     },
     "done": true
   },
+  "minecraft:recipes/redstone/redstone_block": {
+    "criteria": {
+      "has_redstone": "2020-06-27 23:21:26 +0800"
+    },
+    "done": true
+  },
   "minecraft:recipes/building_blocks/granite_slab": {
     "criteria": {
       "has_granite": "2020-06-26 16:02:04 +0800"
@@ -598,6 +634,12 @@
   "minecraft:recipes/combat/golden_leggings": {
     "criteria": {
       "has_gold_ingot": "2020-05-24 23:30:35 +0800"
+    },
+    "done": true
+  },
+  "minecraft:recipes/redstone/piston": {
+    "criteria": {
+      "has_redstone": "2020-06-27 23:21:26 +0800"
     },
     "done": true
   },
