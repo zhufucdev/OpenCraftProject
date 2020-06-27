@@ -48,7 +48,7 @@ open class SpecialItemAdapter(
             scoreboardSorter: Int
         ) {
             val old = itemMeta.clone()
-            adapter.tick?.invoke(this, mod, data, score, scoreboardSorter) ?: Bukkit.getLogger().info("Not ticked for ${itemMeta.displayName}")
+            adapter.tick?.invoke(this, mod, data, score, scoreboardSorter) ?: return
             if (itemMeta != old) {
                 mod.player.inventory.setItem(inventoryPosition, this)
             }
@@ -74,5 +74,7 @@ open class SpecialItemAdapter(
     fun isThis(config: ConfigurationSection) = judgeFromConfig?.invoke(config)
             ?: config.getString("type") == name
 
-    fun getAdaptItem(from: ItemStack, holder: Player) = AdapterItem(this, from, holder.getter())
+    fun getAdaptItem(from: ItemStack, holder: Player) =
+        if (isThis(from)) AdapterItem(this, from, holder.getter())
+        else throw IllegalArgumentException("[from] must be a $name")
 }

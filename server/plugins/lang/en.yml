@@ -272,7 +272,7 @@ ui:
       title: "Welcome, %s"
       tip: "Click to check player charts."
       chart: "You are top %s in daily charts."
-      noChar: "You doesn't join the charts."
+      noChart: "You doesn't join the charts."
     clock: "You have played in server for %s."
     gold: "You own %s coin(s), which equals %s diamonds."
   miniGame:

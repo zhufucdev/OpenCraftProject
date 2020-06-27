@@ -1,16 +1,23 @@
-inventory: {}
-gameMode: SURVIVAL
+inventory:
+  '2':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
+    type: CRAFTING_TABLE
+  '35':
+    isSpecialItem: true
+    type: RealClock
+gameMode: CREATIVE
 health: 20.0
 foodLevel: 20
 walkSpeed: 0.2
 flySpeed: 0.1
-exp: 5
+exp: 0
 location:
   ==: org.bukkit.Location
-  world: world_spawn
-  x: 8.0
-  y: 3.0
-  z: 8.0
-  pitch: 0.0
-  yaw: -348.58685
+  world: world
+  x: -16.788388491754745
+  y: 115.5625
+  z: -14.939720070062556
+  pitch: 33.594215
+  yaw: -325.8435
 potion: {}

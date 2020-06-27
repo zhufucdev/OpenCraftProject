@@ -5,6 +5,7 @@ import com.zhufu.opencraft.special_item.SpecialItemAdapter
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.FromString
 import groovyjarjarantlr4.v4.runtime.misc.NotNull
+import opencraft.Lang
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
@@ -12,15 +13,30 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.util.Vector
+import ss.Logger
 
+/**
+ * <p>Defines an extended item.</p>
+ * <p>To achieve this, you need to declare some parameters and methods, which have relationships, or conflicts, with
+ * each other. The mark before each annotation speaks.</p>
+ * <p><strong>(*)</strong> means necessity. This parameter or method must be declared.</p>
+ * <p><strong>[ ]</strong> means non-necessity. This parameter can be specified or simply ignored.</p>
+ * <p><strong>[<span style="color: blue">X</span>]</strong> means selection. This parameter or any other one marked with
+ * <span style="color: blue">X</span> is supposed to be taken.</p>
+ * <p><strong>(<span style="color: blue">X</span>)</strong> means conflict. Only one of the
+ * <span style="color: blue">X</span>-marked parameter should be taken.<p>
+ */
 class ExtendedItemConstructor {
     private String name, langName
     private Material material
     private Closure make, deserialize, serialize, tick, isItem, isConfig,
                     onRightClicked, onLeftClicked, onInventoryTouch
+    private ArrayList<PatternedCondition> recipes = new ArrayList<>()
 
     /**
      * (*)Computer readable name of the item.
@@ -31,8 +47,9 @@ class ExtendedItemConstructor {
     }
 
     /**
-     * [A]Human readable name of the item.
+     * (A)[B]Human readable name of the item.
      * @param langName The language code name.
+     * @see ExtendedItemConstructor
      */
     void langName(@NotNull String langName) {
         this.langName = langName
@@ -41,14 +58,16 @@ class ExtendedItemConstructor {
     /**
      * (*)Minecraft type of the item.
      * @param material The type.
+     * @see ExtendedItemConstructor
      */
     void type(@NotNull Material material) {
         this.material = material
     }
 
     /**
-     * [A]Initialize the item. Called at the first time the item is shown to player.
+     * (A)Initialize the item. Called at the first time the item is shown to player.
      * @param closure Actions to initialize the item.
+     * @see ExtendedItemConstructor
      */
     void make(@NotNull
               @ClosureParams(value = FromString.class, options = [
@@ -59,13 +78,20 @@ class ExtendedItemConstructor {
         this.make = closure
     }
     /**
-     *
+     * [ ]Load data stored as YAML. Called each time its inventory is applied to a player.
      * @param closure
+     *
+     * @see ExtendedItemConstructor
      */
     void deserialize(@NotNull Closure closure) {
         this.deserialize = closure
     }
 
+    /**
+     * [ ]Store data as YAML. Called each time its inventory is saved.
+     * @param closure
+     * @see ExtendedItemConstructor
+     */
     void serialize(@NotNull Closure closure) {
         this.serialize = closure
     }
@@ -73,6 +99,7 @@ class ExtendedItemConstructor {
     /**
      * Called every game tick (0.05s) only when the item is taken by a player inventory.
      * @param closure Action to do in main thread. DON'T run heavy tasks, or game will be laggy.
+     * @see ExtendedItemConstructor
      */
     void tick(@NotNull
               @ClosureParams(value = FromString.class, options = [
@@ -86,16 +113,41 @@ class ExtendedItemConstructor {
         this.tick = closure
     }
 
+    /**
+     * [B]Determines whether an ItemStack is of this type of adapter.
+     * @param closure Return true if the item satisfies all the conditions.
+     * @see ExtendedItemConstructor
+     */
     void isItem(@NotNull
                 @ClosureParams(value = FromString.class, options = "org.bukkit.inventory.ItemStack")
                         Closure<Boolean> closure) {
         this.isItem = closure
     }
 
+    /**
+     * [ ]Determines whether an YAML configuration is of this type of adapter.
+     * @see ExtendedItemConstructor* @param closure Return true if the configuration satisfies all the conditions.
+     */
     void isConfig(@NotNull
                   @ClosureParams(value = FromString.class, options = "org.bukkit.configuration.ConfigurationSection")
                           Closure<Boolean> closure) {
         this.isConfig = closure
+    }
+
+    void recipe(@NotNull
+                @DelegatesTo(value = RecipeConstructor.class)
+                        Closure closure) {
+        def r = new RecipeConstructor(this)
+        r.with(closure)
+        recipes.add(r)
+    }
+
+    void disorderedRecipe(@NotNull
+                          @DelegatesTo(value = DisorderedRecipeConstructor.class)
+                                  Closure closure) {
+        def r = new DisorderedRecipeConstructor(this)
+        r.with(closure)
+        recipes.add(r)
     }
 
     void onRightClicked(
@@ -130,6 +182,8 @@ class ExtendedItemConstructor {
      */
     void startListening() {
         stopListening()
+        // Recipe
+        recipes.forEach { it.apply() }
         // Hand click
         def onHandClick = { List<Action> actions, Closure e ->
             return {
@@ -163,6 +217,7 @@ class ExtendedItemConstructor {
 
     void stopListening() {
         HandlerList.unregisterAll(mListener)
+        recipes.forEach { it.unapply() }
     }
 
     private SpecialItemAdapter mAdapter
@@ -205,5 +260,170 @@ class ExtendedItemConstructor {
         def meta = itemStack.itemMeta
         meta.with(closure)
         itemStack.itemMeta = meta
+    }
+
+    trait PatternedCondition {
+        Map<Character, Closure<Boolean>> conditions = new HashMap<>()
+
+        void where(String letter,
+                   @DelegatesTo(value = ItemStack.class)
+                           Closure<Boolean> satisfies) {
+            conditions[letter.charAt(0)] = satisfies
+        }
+
+        abstract void pattern(@NotNull Closure closure)
+
+        abstract void apply()
+
+        abstract void unapply()
+    }
+
+    class RecipeConstructor implements PatternedCondition {
+        private class Pattern {
+            private String first, second, third
+
+            private void checkPattern(String s) {
+                if (s.size() >= 4) throw new IllegalArgumentException("A pattern must't contain more than 3 chars.")
+            }
+
+            void firstLine(String pattern) {
+                checkPattern(pattern)
+                first = pattern
+            }
+
+            void secondLine(String pattern) {
+                checkPattern(pattern)
+                second = pattern
+            }
+
+            void thirdLine(String pattern) {
+                checkPattern(pattern)
+                third = pattern
+            }
+        }
+        private ExtendedItemConstructor item
+
+        RecipeConstructor(ExtendedItemConstructor item) {
+            this.item = item
+        }
+
+        private Pattern pattern
+
+        @Override
+        void pattern(@NotNull
+                     @DelegatesTo(value = Pattern.class) Closure closure) {
+            def p = new Pattern()
+            p.with(closure)
+            this.pattern = p
+        }
+
+        private Listener mListener = new Listener() {}
+
+        @Override
+        void apply() {
+            if (pattern == null) throw new IllegalArgumentException("Pattern mustn't be null.")
+            Server.listenEvent(PrepareItemCraftEvent.class, mListener, EventPriority.NORMAL) {
+                if (isRepair() || pattern == null) return
+
+                def expect = new ArrayList<String>()
+                if (pattern.first != null) {
+                    expect.add(pattern.first)
+                }
+                if (pattern.second != null) {
+                    expect.add(pattern.second)
+                }
+                if (pattern.third != null) {
+                    expect.add(pattern.third)
+                }
+                if (expect.isEmpty()) throw new IllegalArgumentException("Pattern is empty.")
+
+                // Inventory validation
+                int firstItem = -1
+                for (int i = 0; i < inventory.size; i++) {
+                    if (inventory.getItem(i) != null) {
+                        firstItem = i - 1
+                        break
+                    }
+                }
+                if (firstItem == -1) return
+
+                // Compare with recipe
+                boolean satisfies = true
+                def getY = { int index -> Math.floor(index / 3).toInteger() },
+                    getX = { int index -> index - getY(index) * 3 }
+                Vector delta
+                for (int y = 0; y < expect.size(); y++) {
+                    def e = expect[y]
+                    for (int x = 0; x < e.size(); x++) {
+                        if (conditions.containsKey(e.charAt(x))) {
+                            Logger.info("Found first pattern item at ($x, $y)")
+                            delta = new Vector(getX(firstItem) - x, getY(firstItem) - y, 0)
+                            break
+                        }
+                    }
+                    if (delta != null) break
+                }
+                if (delta == null) throw new IllegalArgumentException("Couldn't map $expect with any condition.")
+
+                for (int i = 0; i < inventory.size; i++) {
+                    def item = inventory.getItem(i + 1)
+                    int x = getX(i) - delta.blockX, y = getY(i) - delta.blockY
+                    def l = (y < 0 || y >= expect.size()) ? null
+                            : ((x < 0 || x >= expect[y].size()) ? null : expect[y].charAt(x))
+                    Logger.info("l = $l, x = $x, y = $y, i = $i, delta = $delta, firstItem = $firstItem, item = $item")
+                    def satisfied =
+                            (item == null && (l == null || !conditions.containsKey(l) || new ItemStack(Material.AIR).with(conditions[l])))
+                                    || (item != null && l != null && conditions.containsKey(l) && item.with(conditions[l]))
+                    if (!satisfied) {
+                        satisfies = false
+                        break
+                    }
+                }
+
+                if (satisfies) {
+                    inventory.result = new SpecialItemAdapter.AdapterItem(item.adapter, Lang.getter(view.player))
+                }
+            }
+        }
+
+        @Override
+        void unapply() {
+            HandlerList.unregisterAll(mListener)
+        }
+    }
+
+    class DisorderedRecipeConstructor implements PatternedCondition {
+        private class Pattern {
+            private ArrayList<Character> considerations = new ArrayList<>()
+
+            void consider(char letter) {
+                considerations.add(letter)
+            }
+        }
+        private ExtendedItemConstructor item
+
+        DisorderedRecipeConstructor(ExtendedItemConstructor item) {
+            this.item = item
+        }
+
+        private Pattern pattern
+
+        @Override
+        void pattern(@NotNull
+                     @DelegatesTo(value = Pattern.class) Closure closure) {
+            def p = new Pattern()
+            p.with(closure)
+            pattern = p
+        }
+
+        @Override
+        void apply() {
+
+        }
+
+        @Override
+        void unapply() {
+
+        }
     }
 }

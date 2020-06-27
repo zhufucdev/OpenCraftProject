@@ -6,8 +6,9 @@ import com.zhufu.opencraft.special_item.SpecialItem
 class Content {
     private static ArrayList<ExtendedItemConstructor> definedItems = new ArrayList()
     /**
-     * Define an ExtendedItem
+     * Define an ExtendedItem.
      * @param closure Configuration with {ExtendedItemConstructor}
+     * @see ExtendedItemConstructor
      */
     static void defineItem(@DelegatesTo(value = ExtendedItemConstructor.class) Closure closure) {
         def c = new ExtendedItemConstructor()

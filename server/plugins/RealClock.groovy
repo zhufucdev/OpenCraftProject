@@ -32,6 +32,14 @@ Content.defineItem {
         item.hasItemMeta() && item.itemMeta.displayName == ChatColor.BLUE.toString() + "Real Clock"
     }
     type Material.CLOCK
+    recipe {
+        pattern {
+            firstLine 'A'
+            secondLine 'B'
+        }
+        where 'A', { return type == Material.OBSERVER }
+        where 'B', { return type == Material.CLOCK }
+    }
     tick { SpecialItemAdapter.AdapterItem item, PlayerModifier m, ConfigurationSection d, Objective s, int sort ->
         if (item.itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)) {
             def time = updateDate(item)
