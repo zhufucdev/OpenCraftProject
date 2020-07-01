@@ -6,13 +6,17 @@ inventory:
   '1':
     ==: org.bukkit.inventory.ItemStack
     v: 2230
+    type: REDSTONE
+  '12':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2230
     type: CLOCK
-  '21':
+  '13':
     ==: org.bukkit.inventory.ItemStack
     v: 2230
     type: GOLD_INGOT
-    amount: 60
-gameMode: SURVIVAL
+    amount: 53
+gameMode: CREATIVE
 health: 20.0
 foodLevel: 20
 walkSpeed: 0.2
@@ -21,9 +25,9 @@ exp: 0
 location:
   ==: org.bukkit.Location
   world: world
-  x: -16.404054945923896
+  x: -16.357046872173186
   y: 116.0
-  z: -13.566051607033575
-  pitch: 49.255615
-  yaw: -130.55127
+  z: -14.024625058388402
+  pitch: 52.84221
+  yaw: -189.8493
 potion: {}

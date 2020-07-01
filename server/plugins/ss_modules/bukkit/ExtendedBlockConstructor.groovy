@@ -1,0 +1,5 @@
+package bukkit
+
+class ExtendedBlockConstructor {
+
+}

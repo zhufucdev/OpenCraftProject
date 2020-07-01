@@ -4,7 +4,8 @@ import com.zhufu.opencraft.events.SSReloadEvent
 import com.zhufu.opencraft.special_item.SpecialItem
 
 class Content {
-    private static ArrayList<ExtendedItemConstructor> definedItems = new ArrayList()
+    private static ArrayList<ExtendedItemConstructor> definedItems = new ArrayList<>()
+    private static ArrayList<ExtendedBlockConstructor> definedBlocks = new ArrayList<>()
     /**
      * Define an ExtendedItem.
      * @param closure Configuration with {ExtendedItemConstructor}

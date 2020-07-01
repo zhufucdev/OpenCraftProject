@@ -34,8 +34,18 @@ Content.defineItem {
     type Material.CLOCK
     recipe {
         pattern {
-            firstLine 'A'
-            secondLine 'B'
+            firstLine 'XAX'
+            secondLine 'XBX'
+            thirdLine 'XXX'
+        }
+        where 'A', { type == Material.OBSERVER }
+        where 'B', { type == Material.REDSTONE }
+        where 'X', { type == Material.GOLD_INGOT }
+    }
+    disorderedRecipe {
+        pattern {
+            involve 'A', 1
+            involve 'B', 1
         }
         where 'A', { type == Material.OBSERVER }
         where 'B', { type == Material.CLOCK }

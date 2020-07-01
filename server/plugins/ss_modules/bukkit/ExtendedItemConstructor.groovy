@@ -357,32 +357,37 @@ class ExtendedItemConstructor {
                 Vector delta
                 for (int y = 0; y < expect.size(); y++) {
                     def e = expect[y]
-                    for (int x = 0; x < e.size(); x++) {
-                        if (conditions.containsKey(e.charAt(x))) {
-                            delta = new Vector(getX(firstItem) - x, getY(firstItem) - y, 0)
+                    if (e.length() > tableSize) {
+                        satisfies = false // If the table is smaller than expected
+                        break
+                    }
+                    if (delta == null)
+                        for (int x = 0; x < e.size(); x++) {
+                            if (conditions.containsKey(e.charAt(x))) {
+                                delta = new Vector(getX(firstItem) - x, getY(firstItem) - y, 0)
+                                break
+                            }
+                        }
+                }
+                if (delta == null) satisfies = false
+                if (satisfies) {
+                    for (int i = 0; i < tableSize * tableSize; i++) {
+                        def item = inventory.getItem(i + 1)
+                        int x = getX(i) - delta.blockX, y = getY(i) - delta.blockY
+                        def l = (y < 0 || y >= expect.size()) ? null
+                                : ((x < 0 || x >= expect[y].size()) ? null : expect[y].charAt(x))
+                        def satisfied =
+                                (item == null && (l == null || !conditions.containsKey(l) || new ItemStack(Material.AIR).with(conditions[l])))
+                                        || (item != null && l != null && conditions.containsKey(l) && item.with(conditions[l]))
+                        if (!satisfied) {
+                            satisfies = false
                             break
                         }
                     }
-                    if (delta != null) break
-                }
-                if (delta == null) throw new IllegalArgumentException("Couldn't map $expect with any condition.")
 
-                for (int i = 0; i < inventory.size; i++) {
-                    def item = inventory.getItem(i + 1)
-                    int x = getX(i) - delta.blockX, y = getY(i) - delta.blockY
-                    def l = (y < 0 || y >= expect.size()) ? null
-                            : ((x < 0 || x >= expect[y].size()) ? null : expect[y].charAt(x))
-                    def satisfied =
-                            (item == null && (l == null || !conditions.containsKey(l) || new ItemStack(Material.AIR).with(conditions[l])))
-                                    || (item != null && l != null && conditions.containsKey(l) && item.with(conditions[l]))
-                    if (!satisfied) {
-                        satisfies = false
-                        break
+                    if (satisfies) {
+                        inventory.result = new SpecialItemAdapter.AdapterItem(item.adapter, Lang.getter(view.player))
                     }
-                }
-
-                if (satisfies) {
-                    inventory.result = new SpecialItemAdapter.AdapterItem(item.adapter, Lang.getter(view.player))
                 }
             }
         }
@@ -395,10 +400,10 @@ class ExtendedItemConstructor {
 
     class DisorderedRecipeConstructor implements PatternedCondition {
         private class Pattern {
-            private ArrayList<Character> considerations = new ArrayList<>()
+            private Map<Character, Integer> considerations = new HashMap<>()
 
-            void consider(char letter) {
-                considerations.add(letter)
+            void involve(String letter, int counting = 1) {
+                considerations[letter.charAt(0)] = counting
             }
         }
         private ExtendedItemConstructor item
@@ -417,14 +422,39 @@ class ExtendedItemConstructor {
             pattern = p
         }
 
+        private Listener mListener = new Listener() {}
+
         @Override
         void apply() {
-
+            pattern.considerations.keySet().forEach {
+                if (!conditions.containsKey(it)) throw new IllegalArgumentException("Pattern $it doesn't have any condition " +
+                        "declared.")
+            }
+            Server.listenEvent(PrepareItemCraftEvent.class, mListener, EventPriority.NORMAL) {
+                final tableSize = inventory.type == InventoryType.WORKBENCH ? 3 : 2
+                final counted = new HashMap<Character, Integer>()
+                for (int i = 0; i < tableSize * tableSize; i++) {
+                    def item = inventory.getItem(i + 1)
+                    if (item == null) item = new ItemStack(Material.AIR)
+                    for (char l : conditions.keySet()) {
+                        if (item.with(conditions[l])) {
+                            if (!counted.containsKey(l)) {
+                                counted[l] = 0
+                            }
+                            counted[l] = counted[l] + 1
+                            break
+                        }
+                    }
+                }
+                if (counted == pattern.considerations) {
+                    inventory.result = new SpecialItemAdapter.AdapterItem(adapter, Lang.getter(view.player))
+                }
+            }
         }
 
         @Override
         void unapply() {
-
+            HandlerList.unregisterAll(mListener)
         }
     }
 }
