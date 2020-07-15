@@ -1,0 +1,16 @@
+boundary:
+  first:
+    ==: Vector
+    x: 74.0
+    y: 133.0
+    z: 56.0
+  last:
+    ==: Vector
+    x: 15.0
+    y: 188.0
+    z: 0.0
+bed:
+  ==: Vector
+  x: 62.0
+  y: 173.0
+  z: 26.0

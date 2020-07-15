@@ -45,7 +45,10 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
 import kotlin.math.roundToLong
+import kotlin.reflect.KFunction
 import kotlin.reflect.full.functions
+import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.jvm.reflect
 
 class Core : JavaPlugin(), Listener {
     companion object {
@@ -60,7 +63,7 @@ class Core : JavaPlugin(), Listener {
         //World initializations
         spawnWorld = server.createWorld(
             WorldCreator.name("world_spawn")
-                .type(WorldType.CUSTOMIZED)
+                .type(WorldType.FLAT)
                 .generator(VoidGenerator(2))
         )!!
         spawnWorld.peace()
@@ -89,24 +92,25 @@ class Core : JavaPlugin(), Listener {
         with(Bukkit.getPluginManager()) {
             val self = this@Core
             registerEvents(self, self)
-            registerEvents(NPCListener, self)
-            registerEvents(NPCSelectListener(npc.toTypedArray()), self)
+            if (server.pluginManager.isPluginEnabled("Citizens")) {
+                registerEvents(NPCListener, self)
+                registerEvents(NPCSelectListener(npc.toTypedArray()), self)
+            }
             registerEvents(SurviveListener(self), self)
         }
         if (!dataFolder.exists()) dataFolder.mkdirs()
-        try {
-            ServerStatics.init()
-            PlayerStatics.Companion
-            SurveyManager.init(File(dataFolder, "survey.json"), this)
-            GameManager.init(this)
-            PlayerManager.init(this)
-            TradeManager.init(this)
-            PlayerObserverListener.init(this)
-            PlayerLobbyManager.init()
-            BuilderListener.init(this)
-        } catch (e: Throwable) {
-            logger.warning("Error while initializing Server Core.")
-            e.printStackTrace()
+        runInit(ServerStatics::init)
+        PlayerStatics.Companion
+        runInit(SurveyManager::init, File(dataFolder, "survey.json"), this)
+        listOf(
+            GameManager::init,
+            PlayerManager::init,
+            TradeManager::init,
+            PlayerObserverListener::init,
+            PlayerLobbyManager::init,
+            BuilderListener::init
+        ).forEach {
+            runInit(it, this)
         }
 
         ServerCaller["SolvePlayerLobby"] = {
@@ -166,6 +170,14 @@ class Core : JavaPlugin(), Listener {
         startAward()
     }
 
+    fun runInit(f: KFunction<*>, vararg args: Any?) {
+        try {
+            f.call(*args)
+        } catch (e: Exception) {
+            logger.throwing("ServerCore", f.name, e)
+        }
+    }
+
     override fun onDisable() {
         npc.forEach {
             it.despawn()
@@ -189,17 +201,19 @@ class Core : JavaPlugin(), Listener {
     private var urlLooper = 0
     private var looperDirection = true
     private fun handleTasks() {
-        env.addDefaults(mapOf(
-            "reloadDelay" to 2 * 60 * 20,
-            "inventorySaveDelay" to 4 * 60 * 20,
-            "prisePerBlock" to 10,
-            "backToDeathPrise" to 3,
-            "countOfSurveyQuestion" to 6,
-            "secondsPerQuestion" to 30,
-            "url" to "https://www.open-craft.cn",
-            "debug" to false,
-            "ssHotReload" to false
-        ))
+        env.addDefaults(
+            mapOf(
+                "reloadDelay" to 2 * 60 * 20,
+                "inventorySaveDelay" to 4 * 60 * 20,
+                "prisePerBlock" to 10,
+                "backToDeathPrise" to 3,
+                "countOfSurveyQuestion" to 6,
+                "secondsPerQuestion" to 30,
+                "url" to "https://www.open-craft.cn",
+                "debug" to false,
+                "ssHotReload" to false
+            )
+        )
         env.save(File(dataFolder, "env"))
         saveTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, Runnable {
             Bukkit.getPluginManager().callEvent(PlayerInventorySaveEvent())
@@ -226,7 +240,7 @@ class Core : JavaPlugin(), Listener {
 
         var count = 1
         scoreBoardTask = Bukkit.getScheduler().runTaskTimer(this, Runnable {
-            count ++
+            count++
             val url = env.getString("url")
             PlayerManager.forEachPlayer { info ->
                 val getter = getLangGetter(info)
@@ -243,29 +257,27 @@ class Core : JavaPlugin(), Listener {
                     val obj = newBoard.registerNewObjective("serverStatics", "dummy", getter["server.statics.title"])
                     obj.displaySlot = DisplaySlot.SIDEBAR
                     obj.getScore(TextUtil.info(getter["server.statics.coinCount", info.currency])).score = --sort
-                    if (isRound) {
-                        if (!info.isSurveyPassed) {
-                            obj.getScore(TextUtil.info(getter["server.statics.demoTime", info.remainingDemoTime / 1000L / 60]))
-                                .score = --sort
-                            if (info.remainingDemoTime <= 0 && info.status != Info.GameStatus.InLobby) {
-                                PlayerManager.onPlayerOutOfDemo(info)
-                            }
+                    if (!info.isSurveyPassed) {
+                        obj.getScore(TextUtil.info(getter["server.statics.demoTime", info.remainingDemoTime / 1000L / 60]))
+                            .score = --sort
+                        if (info.remainingDemoTime <= 0 && info.status != Info.GameStatus.InLobby) {
+                            PlayerManager.onPlayerOutOfDemo(info)
                         }
-                        if (info.status != Info.GameStatus.InLobby && info.status != Info.GameStatus.InTutorial) {
-                            info.gameTime += 2 * 1000L
-                            ServerStatics.onlineTime += 2
-                        }
+                    }
+                    if (info.isInBuilderMode) {
+                        obj.getScore(
+                            TextUtil.getColoredText(
+                                getter["server.statics.builderLevel", info.builderLevel],
+                                TextUtil.TextColor.BLUE,
+                                false,
+                                underlined = false
+                            )
+                        ).score = --sort
+                    }
 
-                        if (info.isInBuilderMode) {
-                            obj.getScore(
-                                TextUtil.getColoredText(
-                                    getter["server.statics.builderLevel", info.builderLevel],
-                                    TextUtil.TextColor.BLUE,
-                                    false,
-                                    underlined = false
-                                )
-                            ).score = --sort
-                        }
+                    if (isRound && info.status != Info.GameStatus.InLobby && info.status != Info.GameStatus.InTutorial) {
+                        info.gameTime += 2 * 1000L
+                        ServerStatics.onlineTime += 2
                     }
 
 

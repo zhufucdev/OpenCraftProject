@@ -12,9 +12,12 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
+import org.bukkit.util.Vector
 import java.io.File
 import java.nio.file.Paths
 import java.util.concurrent.Executors
+import java.util.concurrent.FutureTask
+import kotlin.math.abs
 
 class PlayerLobby(val owner: OfflineInfo) {
     val id = owner.territoryID
@@ -29,13 +32,13 @@ class PlayerLobby(val owner: OfflineInfo) {
     }
 
     /**
-     * [fromX] is always less than [toX]
+     * [fromX] is always smaller than [toX]
      * One's lobby is where he or she can build freely.
      */
-    val fromX = 64 * x - 32
-    val toX = fromX + 31
-    val fromZ = 64 * z - 32
-    val toZ = fromZ + 31
+    val fromX = width * (x - 1)
+    val toX = fromX + width - 1
+    val fromZ = length * (z - 1)
+    val toZ = fromZ + length - 1
     val tagFile: File
         get() = Paths.get("plugins", "lobbies", "$id.yml").toFile().also {
             if (!it.parentFile.exists())
@@ -46,7 +49,7 @@ class PlayerLobby(val owner: OfflineInfo) {
     val tag = YamlConfiguration.loadConfiguration(tagFile)
     val isInitialized get() = tag.getBoolean("initialized", false)
     var spawnPoint
-        get() = tag.getObject("spawnpoint", Location::class.java, null)
+        get() = tag.getLocation("spawnpoint", null)
         set(value) {
             tag.set("spawnpoint", value)
         }
@@ -114,6 +117,7 @@ class PlayerLobby(val owner: OfflineInfo) {
     }
 
     fun cancelReviewFor(who: ServerPlayer) = tag.set("review.${who.name}", null)
+
     /**
      * @return true when getting a like, false when getting a dislike, or null when getting nothing
      */
@@ -139,70 +143,31 @@ class PlayerLobby(val owner: OfflineInfo) {
     private var isInitializing = false
     fun initialize() {
         isInitializing = true
-        var doneA = false
-        var doneB = false
 
-        var lowY = 2
-        var highY = 256
+        val first = PlayerLobbyManager.boundary.first
+        val last = PlayerLobbyManager.boundary.second
 
-        val barriers = arrayListOf<Int>()
-        Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore) { _ ->
-            val pool = Executors.newCachedThreadPool()
-            run {
-                fun newLocation(x: Int, y: Int, z: Int) =
-                    Location(Base.lobby, x.toDouble() + fromX, y.toDouble(), z.toDouble() + fromZ)
+        val lowY = first.blockY smaller last.blockY
+        val highY = first.blockY bigger last.blockY
 
-                fun once(a: Int, b: Int) {
-                    for (x in 0 until 32)
-                        for (y in a until b)
-                            for (z in 0 until 32) {
-                                val copy = Base.spawnWorld.getBlockAt(x, y, z)
-                                if (copy.type.name.contains("_BED")) {
-                                    spawnPoint = newLocation(x, y, z)
-                                } else if (copy.type == Material.BARRIER) {
-                                    barriers.add(copy.location.blockY)
-                                }
-                            }
+        Bukkit.getScheduler().runTask(Base.pluginCore) { _ ->
+            val from = CuboidRegion(
+                BukkitWorld(Base.spawnWorld),
+                BlockVector3.at(first.blockX, lowY, first.blockZ),
+                BlockVector3.at(last.blockX, highY, last.blockZ)
+            )
+            val to = BlockVector3.at(fromX, lowY, fromZ)
+            val session = WorldEdit.getInstance().editSessionFactory.getEditSession(from.world, -1)
+            Operations.complete(
+                ForwardExtentCopy(session, from, BukkitWorld(Base.lobby), to).apply {
+                    isCopyingBiomes = true
+                    isCopyingEntities = true
                 }
-                pool.execute {
-                    once(10, 127)
-                    doneA = true
-                }
-                pool.execute {
-                    once(128, 256)
-                    doneB = true
-                }
-            }
-            while (!doneA || !doneB) {
-                Thread.sleep(20)
-            }
-            pool.shutdown()
-
-            barriers.min()?.let { lowY = it + 1 }
-            barriers.max()?.let { highY = it - 1 }
-
-            Bukkit.getScheduler().runTask(Base.pluginCore) { _ ->
-                val from = CuboidRegion(
-                    BukkitWorld(Base.spawnWorld),
-                    BlockVector3.at(0, lowY, 0),
-                    BlockVector3.at(32, highY, 32)
-                )
-                val to = CuboidRegion(
-                    BukkitWorld(Base.lobby),
-                    BlockVector3.at(this.fromX, lowY, this.fromZ),
-                    BlockVector3.at(this.toX, highY, this.toZ)
-                )
-                val session = WorldEdit.getInstance().editSessionFactory.getEditSession(from.world, -1)
-                Operations.complete(
-                    ForwardExtentCopy(session, from, BukkitWorld(Base.lobby), to.minimumPoint).apply {
-                        isCopyingBiomes = true
-                        isCopyingEntities = true
-                    }
-                )
-                tag.set("initialized", true)
-                save()
-                isInitializing = false
-            }
+            )
+            spawnPoint = PlayerLobbyManager.bedLocation.clone().subtract(last).add(Vector(fromX, last.blockY, fromZ)).toLocation(Base.lobby)
+            tag.set("initialized", true)
+            save()
+            isInitializing = false
         }
     }
 
@@ -247,12 +212,27 @@ class PlayerLobby(val owner: OfflineInfo) {
                 }
 
                 if (player.uniqueId != owner.uuid)
-                    views ++
+                    views++
             }
         }
     }
 
     fun save() {
         tag.save(tagFile)
+    }
+
+    companion object {
+        val length: Int
+            get() {
+                val first = PlayerLobbyManager.boundary.first.blockZ
+                val last = PlayerLobbyManager.boundary.second.blockZ
+                return (Math.floorDiv(abs(first - last) + 1, 16) + 1) * 16
+            }
+        val width: Int
+            get() {
+                val first = PlayerLobbyManager.boundary.first.blockX
+                val last = PlayerLobbyManager.boundary.second.blockX
+                return (Math.floorDiv(abs(first - last), 16) + 1) * 16
+            }
     }
 }

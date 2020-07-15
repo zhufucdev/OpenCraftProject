@@ -74,7 +74,7 @@ object NPCController : Listener {
         currentType = when (random.nextInt(7)) {
             0 -> EntityType.ZOMBIE
             1 -> EntityType.SKELETON
-            2 -> EntityType.PIG_ZOMBIE
+            2 -> EntityType.PIGLIN
             3 -> {
                 withOutEqu = true
                 EntityType.SPIDER

@@ -58,6 +58,14 @@ class Server {
         return listener
     };
 
+    /**
+     * Call the ticker every game tick(0.05s)
+     * @param ticker The ticker.
+     */
+    static void eachTick(Closure ticker) {
+        Bukkit.getScheduler().runTaskTimer(Scripting.plugin, ticker, 0, 1)
+    }
+
     static {
         listenEvent(SSReloadEvent.class) {
             HandlerList.unregisterAll(mListener)

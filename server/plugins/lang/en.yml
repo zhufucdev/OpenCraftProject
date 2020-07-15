@@ -620,6 +620,10 @@ lobby:
     1: "You have woken up."
     2: "<%s> Oh, my lovely home!"
     3: "Tip: Go downstairs to look for a computer. Then click on the button nearby to play multiplayer mode."
+  op:
+    firstSet: 'First boundary has been set.'
+    lastSet: 'Boundary (from %s to %s) has been set.'
+
 wiki:
   thanks: 'Thanks to %s for updating the article %s of Wiki!'
 

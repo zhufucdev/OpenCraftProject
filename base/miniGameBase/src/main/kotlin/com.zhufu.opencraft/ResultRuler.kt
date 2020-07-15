@@ -1,7 +1,7 @@
 package com.zhufu.opencraft
 
 import org.bukkit.*
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftFirework
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftFirework
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
@@ -13,15 +13,15 @@ abstract class ResultRuler : GameRuler() {
 
     override fun getAllowPVP(): Boolean = false
 
-    var task1: BukkitTask? = null
-    var task2: BukkitTask? = null
+    private var task1: BukkitTask? = null
+    private var task2: BukkitTask? = null
     abstract val plugin: JavaPlugin
     abstract val isGameStarted: Boolean
     val winners = ArrayList<Player>()
     override fun onEnable() {
         if (winner != GameBase.Team.NONE){
             players!!.forEach {
-                it.player.scoreboard = Bukkit.getScoreboardManager()!!.newScoreboard
+                it.player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
                 it.player.sendTitle(TextUtil.getColoredText("${winner.name}获得了胜利",winner.getTextColor(),true,false),"",7,80,7)
                 if (it.team == winner){
                     winners.add(it.player)
@@ -70,7 +70,7 @@ abstract class ResultRuler : GameRuler() {
 
     override fun onDisable() {
         players!!.forEach {
-            it.player.scoreboard = Bukkit.getScoreboardManager()!!.newScoreboard
+            it.player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
         }
 
         if (task1 != null)

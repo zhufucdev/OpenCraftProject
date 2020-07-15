@@ -65,23 +65,23 @@ object TextUtil {
     fun getCustomizedText(t: String, showTo: ChatInfo? = null): String = getCustomizedText(t, showTo.getter())
 
     fun error(t: String): String {
-        return getColoredText(t, TextUtil.TextColor.ERROR)
+        return getColoredText(t, TextColor.ERROR)
     }
 
     fun info(t: String): String {
-        return getColoredText(t, TextUtil.TextColor.INFO)
+        return getColoredText(t, TextColor.INFO)
     }
 
     fun tip(t: String): String {
-        return getColoredText(t, TextUtil.TextColor.TIP)
+        return getColoredText(t, TextColor.TIP)
     }
 
     fun success(t: String): String {
-        return getColoredText(t, TextUtil.TextColor.SUCCESS)
+        return getColoredText(t, TextColor.SUCCESS)
     }
 
     fun warn(t: String): String {
-        return getColoredText(t, TextUtil.TextColor.WARN)
+        return getColoredText(t, TextColor.WARN)
     }
 
     fun printException(e: Exception): Array<String> {

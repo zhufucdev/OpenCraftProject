@@ -1,16 +1,14 @@
 // Real Clock is a Demo Item which is not part of the server.
 
 import bukkit.Content
-import com.zhufu.opencraft.Language.LangGetter
-import com.zhufu.opencraft.PlayerModifier
-import com.zhufu.opencraft.special_item.SpecialItemAdapter
+import bukkit.ExtendedBlock
+import groovyjarjarantlr4.v4.runtime.misc.Nullable
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scoreboard.Objective
 import ss.Logger
 
 import java.text.SimpleDateFormat
@@ -23,7 +21,7 @@ def updateDate = { ItemStack item ->
 
 Content.defineItem {
     name 'RealClock'
-    make { ItemStack item, LangGetter getter ->
+    make { item, getter ->
         updateMeta(item) {
             displayName = ChatColor.BLUE.toString() + "Real Clock"
         }
@@ -31,7 +29,7 @@ Content.defineItem {
     isItem { item ->
         item.hasItemMeta() && item.itemMeta.displayName == ChatColor.BLUE.toString() + "Real Clock"
     }
-    type Material.CLOCK
+    material Material.CLOCK
     recipe {
         pattern {
             firstLine 'XAX'
@@ -50,7 +48,7 @@ Content.defineItem {
         where 'A', { type == Material.OBSERVER }
         where 'B', { type == Material.CLOCK }
     }
-    tick { SpecialItemAdapter.AdapterItem item, PlayerModifier m, ConfigurationSection d, Objective s, int sort ->
+    tick { item, m, d, s, sort ->
         if (item.itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)) {
             def time = updateDate(item)
             if (item.inventoryPosition >= 9)
@@ -64,4 +62,32 @@ Content.defineItem {
         } else
             item.addItemFlags(ItemFlag.HIDE_UNBREAKABLE)
     }
+}
+
+class RealBlockClock extends ExtendedBlock {
+    @Override
+    void onCreate(@Nullable ConfigurationSection savedData, Player creator) {
+        super.onCreate(savedData, creator)
+        type = Material.GOLD_BLOCK
+    }
+
+    @Override
+    void onBroken(Player player) {
+        super.onBroken(player)
+        Logger.info("[$location] onBroken")
+        dropItem(Content.getDefinedItem("RealClock").newItemStack())
+    }
+
+    @Override
+    void tick() {
+        def time = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date())
+        location.getNearbyPlayers(3D).each {
+            it.sendActionBar(ChatColor.DARK_PURPLE.toString() + time)
+        }
+    }
+}
+
+Content.defineBlock {
+    name 'RealClock'
+    existsAs RealBlockClock.class
 }

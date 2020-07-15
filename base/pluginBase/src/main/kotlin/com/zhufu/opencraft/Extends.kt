@@ -200,3 +200,8 @@ fun List<Any>.toString(split: String) = buildString {
         append(it.toString() + split)
     }
 }.removeSuffix(split)
+
+@Suppress("UNCHECKED_CAST")
+infix fun <T> Comparable<T>.smaller(second: T): T = if (this <= second) this as T else second
+@Suppress("UNCHECKED_CAST")
+infix fun <T> Comparable<T>.bigger(second: T): T = if (this <= second) second else this as T

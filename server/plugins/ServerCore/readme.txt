@@ -1,1 +1,1 @@
-Hello World!
+Powered by OpenCraft Test Server

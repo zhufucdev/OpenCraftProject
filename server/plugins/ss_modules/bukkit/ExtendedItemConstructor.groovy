@@ -1,13 +1,16 @@
 package bukkit
 
 import com.zhufu.opencraft.GroovySpecialItemAdapter
+import com.zhufu.opencraft.Language
+import com.zhufu.opencraft.Language.LangGetter
+import com.zhufu.opencraft.PlayerModifier
 import com.zhufu.opencraft.special_item.SpecialItemAdapter
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.FromString
 import groovyjarjarantlr4.v4.runtime.misc.NotNull
 import opencraft.Lang
 import org.bukkit.Material
-import org.bukkit.entity.HumanEntity
+import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
@@ -19,8 +22,11 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.scoreboard.Objective
 import org.bukkit.util.Vector
-import ss.Logger
+
+import java.lang.reflect.Method
+import java.util.function.BiConsumer
 
 /**
  * <p>Defines an extended item.</p>
@@ -33,8 +39,8 @@ import ss.Logger
  * <p><strong>(<span style="color: blue">X</span>)</strong> means conflict. Only one of the
  * <span style="color: blue">X</span>-marked parameter should be taken.<p>
  */
-class ExtendedItemConstructor {
-    private String name, langName
+class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
+    private String name, langName, blockName
     private Material material
     private Closure make, deserialize, serialize, tick, isItem, isConfig,
                     onRightClicked, onLeftClicked, onInventoryTouch
@@ -48,6 +54,10 @@ class ExtendedItemConstructor {
         this.name = name
     }
 
+    String getName() {
+        return name
+    }
+
     /**
      * (A)[B]Human readable name of the item.
      * @param langName The language code name.
@@ -59,11 +69,15 @@ class ExtendedItemConstructor {
 
     /**
      * (*)Minecraft type of the item.
-     * @param material The type.
+     * @param material The material.
      * @see ExtendedItemConstructor
      */
-    void type(@NotNull Material material) {
+    void material(@NotNull Material material) {
         this.material = material
+    }
+
+    Material getMaterial() {
+        return material
     }
 
     /**
@@ -71,14 +85,10 @@ class ExtendedItemConstructor {
      * @param closure Actions to initialize the item.
      * @see ExtendedItemConstructor
      */
-    void make(@NotNull
-              @ClosureParams(value = FromString.class, options = [
-                      "org.bukkit.inventory.ItemStack",
-                      "com.zhufu.opencraft.Language.LangGetter"
-              ])
-                      Closure closure) {
-        this.make = closure
+    void make(@NotNull BiConsumer<ItemStack, LangGetter> closure) {
+        this.make = { ItemStack i, LangGetter g -> closure.accept(i, g) }
     }
+
     /**
      * [ ]Load data stored as YAML. Called each time its inventory is applied to a player.
      * @param closure
@@ -103,16 +113,10 @@ class ExtendedItemConstructor {
      * @param closure Action to do in main thread. DON'T run heavy tasks, or game will be laggy.
      * @see ExtendedItemConstructor
      */
-    void tick(@NotNull
-              @ClosureParams(value = FromString.class, options = [
-                      "org.bukkit.inventory.ItemStack",
-                      "com.zhufu.opencraft.PlayerModifier",
-                      "org.bukkit.configuration.ConfigurationSection",
-                      "org.bukkit.scoreboard.Objective",
-                      "int"
-              ])
-                      Closure closure) {
-        this.tick = closure
+    void tick(@NotNull TickConsumer closure) {
+        this.tick = { SpecialItemAdapter.AdapterItem i, PlayerModifier m, ConfigurationSection s, Objective o, int sort ->
+            closure.tick(i, m, s, o, sort)
+        }
     }
 
     /**
@@ -152,6 +156,10 @@ class ExtendedItemConstructor {
         recipes.add(r)
     }
 
+    void block(@NotNull String name) {
+        blockName = name
+    }
+
     void onRightClicked(
             @ClosureParams(value = FromString.class, options = [
                     "org.bukkit.inventory.ItemStack",
@@ -182,8 +190,14 @@ class ExtendedItemConstructor {
     /**
      * Start external listeners in order for the settings to be applied.
      */
-    void startListening() {
-        stopListening()
+    @Override
+    void apply() {
+        unapply()
+        // Extended Block
+        Content.defineBlock {
+            delegate.name(blockName)
+            item(name)
+        }
         // Recipe
         recipes.forEach { it.apply() }
         // Hand click
@@ -217,7 +231,8 @@ class ExtendedItemConstructor {
         }
     }
 
-    void stopListening() {
+    @Override
+    void unapply() {
         HandlerList.unregisterAll(mListener)
         recipes.forEach { it.unapply() }
     }
@@ -233,6 +248,23 @@ class ExtendedItemConstructor {
         assert langName != null || isItem != null
         mAdapter = new GroovySpecialItemAdapter(name, langName, material, make, deserialize, serialize, isItem, isConfig, tick)
         return mAdapter
+    }
+
+    /**
+     * Gets an {@link ItemStack} of the item.
+     * @param amount How many items are there in the stack.
+     */
+    SpecialItemAdapter.AdapterItem newItemStack(int amount = 1) {
+        return new SpecialItemAdapter.AdapterItem(adapter, new LangGetter(Lang.defaultLangCode))
+    }
+
+    @Override
+    void merge(ExtendedItemConstructor other) {
+        unapply()
+        properties.each { String n, v ->
+            if (v != null && v !instanceof Method)
+                this[n] = v
+        }
     }
 
     /**
@@ -456,5 +488,10 @@ class ExtendedItemConstructor {
         void unapply() {
             HandlerList.unregisterAll(mListener)
         }
+    }
+
+    @FunctionalInterface
+    interface TickConsumer {
+        void tick(SpecialItemAdapter.AdapterItem item, PlayerModifier modifier, ConfigurationSection shared, Objective objective, int sort)
     }
 }

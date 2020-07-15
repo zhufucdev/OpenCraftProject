@@ -53,7 +53,7 @@ class CW : GameBase() {
         private fun createNewGameWorld(id: Int, plugin: JavaPlugin): World {
             val w = Bukkit.createWorld(
                 WorldCreator("game_cw_$id")
-                    .type(WorldType.CUSTOMIZED)
+                    .type(WorldType.FLAT)
                     .generator(VoidGenerator(128))
             )
             val wb = w!!.worldBorder

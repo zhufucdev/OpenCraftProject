@@ -71,12 +71,11 @@ object SurveyManager : Listener {
                     split.forEach { playerAnswerer.add(it.toUpperCase()) }
 
                     var r = true
-                    selections.forEach {
+                    for (it in selections)
                         if (!playerAnswer.contains(it.toUpperCase())) {
                             r = false
-                            return@forEach
+                            break
                         }
-                    }
                     r
                 } else playerAnswer.toUpperCase() == answer.toUpperCase()
 
@@ -224,11 +223,12 @@ object SurveyManager : Listener {
             while (reader.hasNext()) {
                 val obj = parser.parse(reader).asJsonObject
 
-                if (!obj.has("Content") || !obj.has("Type") || !obj.has("Answer") || (obj["Type"].asString.contains("Choice") && !obj.has(
-                        "Selections"
-                    ))
+                if (!obj.has("Content")
+                    || !obj.has("Type")
+                    || !obj.has("Answer")
+                    || (obj["Type"].asString.contains("Choice") && !obj.has("Selections"))
                 ) {
-                    println("[SurveyManager] No enough args for object ${reader.path}")
+                    Bukkit.getLogger().warning("[SurveyManager] No enough args for object ${reader.path}")
                     continue
                 }
                 val content = obj["Content"].asString
