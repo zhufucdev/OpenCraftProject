@@ -1,7 +1,7 @@
 package bukkit
 
 import com.zhufu.opencraft.events.SSReloadEvent
-import com.zhufu.opencraft.special_item.SpecialItem
+import com.zhufu.opencraft.special_item.base.SpecialItem
 import groovyjarjarantlr4.v4.runtime.misc.Nullable
 
 class Content {
@@ -37,7 +37,7 @@ class Content {
             existing.merge(c)
             existing.apply()
         } else {
-            SpecialItem.registerAdapter(c.getAdapter())
+            SpecialItem.register(c.itemType)
             definedItems.add(c)
             c.apply()
         }

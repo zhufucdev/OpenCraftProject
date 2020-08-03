@@ -10,8 +10,6 @@
       <module name="com.zhufu.opencraft.OpenCraftGradle.test" target="1.8" />
       <module name="com.zhufu.opencraft.webBase.main" target="1.8" />
       <module name="com.zhufu.opencraft.webBase.test" target="1.8" />
-      <module name="OpenCraft.base.main" target="1.8" />
-      <module name="OpenCraft.base.test" target="1.8" />
       <module name="OpenCraft.item1.main" target="1.8" />
       <module name="OpenCraft.item1.test" target="1.8" />
       <module name="OpenCraft.LICENSE.main" target="1.8" />

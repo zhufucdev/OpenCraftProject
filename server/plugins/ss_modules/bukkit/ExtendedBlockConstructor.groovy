@@ -7,6 +7,8 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 
+import java.lang.reflect.Method
+
 class ExtendedBlockConstructor implements Constructor<ExtendedBlockConstructor> {
     private String name, itemName
 
@@ -38,6 +40,7 @@ class ExtendedBlockConstructor implements Constructor<ExtendedBlockConstructor> 
         ExtendedBlock.init()
 
         def itemConstructor = Content.definedItems.find { it.name == name }
+        if (itemConstructor == null) return
         if (itemConstructor.material.isBlock()) {
             Server.listenEvent(BlockPlaceEvent.class, mListener, EventPriority.NORMAL) {
                 if (itemConstructor.adapter.isThis(itemInHand))
@@ -47,7 +50,7 @@ class ExtendedBlockConstructor implements Constructor<ExtendedBlockConstructor> 
             Server.listenEvent(PlayerInteractEvent.class, mListener, EventPriority.NORMAL) {
                 if (action == Action.RIGHT_CLICK_BLOCK && item != null && itemConstructor.adapter.isThis(item)) {
                     ExtendedBlock.place(clickedBlock.getRelative(blockFace).location, clazz.getConstructor().newInstance(), player)
-                    item.amount --
+                    item.amount--
                 }
             }
         }
@@ -61,7 +64,7 @@ class ExtendedBlockConstructor implements Constructor<ExtendedBlockConstructor> 
     @Override
     void merge(ExtendedBlockConstructor other) {
         other.properties.forEach { String n, v ->
-            if (v != null)
+            if (v != null && v !instanceof Method && n != 'class')
                 this[n] = v
         }
     }

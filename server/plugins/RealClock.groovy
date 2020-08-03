@@ -3,9 +3,11 @@
 import bukkit.Content
 import bukkit.ExtendedBlock
 import groovyjarjarantlr4.v4.runtime.misc.Nullable
+import net.minecraft.server.v1_16_R1.NBTTagCompound
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
@@ -21,15 +23,6 @@ def updateDate = { ItemStack item ->
 
 Content.defineItem {
     name 'RealClock'
-    make { item, getter ->
-        updateMeta(item) {
-            displayName = ChatColor.BLUE.toString() + "Real Clock"
-        }
-    }
-    isItem { item ->
-        item.hasItemMeta() && item.itemMeta.displayName == ChatColor.BLUE.toString() + "Real Clock"
-    }
-    material Material.CLOCK
     recipe {
         pattern {
             firstLine 'XAX'
@@ -48,20 +41,6 @@ Content.defineItem {
         where 'A', { type == Material.OBSERVER }
         where 'B', { type == Material.CLOCK }
     }
-    tick { item, m, d, s, sort ->
-        if (item.itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)) {
-            def time = updateDate(item)
-            if (item.inventoryPosition >= 9)
-                s.getScore(time).score = sort
-        }
-    }
-    onLeftClicked { ItemStack item, Player player ->
-        if (item.itemMeta.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)) {
-            item.removeItemFlags(ItemFlag.HIDE_UNBREAKABLE)
-            item.setLore null
-        } else
-            item.addItemFlags(ItemFlag.HIDE_UNBREAKABLE)
-    }
 }
 
 class RealBlockClock extends ExtendedBlock {
@@ -74,8 +53,6 @@ class RealBlockClock extends ExtendedBlock {
     @Override
     void onBroken(Player player) {
         super.onBroken(player)
-        Logger.info("[$location] onBroken")
-        dropItem(Content.getDefinedItem("RealClock").newItemStack())
     }
 
     @Override

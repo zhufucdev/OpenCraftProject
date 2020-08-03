@@ -1,17 +1,21 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.Info.Companion.plugin
-import com.zhufu.opencraft.special_item.SpecialItem
+import com.zhufu.opencraft.special_item.base.SpecialItem
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.potion.PotionEffect
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 
 class DualInventory(val player: Player? = null, private val parent: ServerPlayer) {
     private val files: List<File>
@@ -119,7 +123,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             validateFile()
             config = when {
                 file.exists() -> YamlConfiguration.loadConfiguration(file)
-                name != NOTHING -> {
+                name != NOTHING && name != RESET -> {
                     file.createNewFile()
                     YamlConfiguration()
                 }
@@ -154,11 +158,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
 
                 config.set(
                     path,
-                    if (SpecialItem.isSpecial(itemStack)) {
-                        SpecialItem.getSerialized(itemStack, player.getter())
-                    } else {
-                        itemStack
-                    }
+                    SpecialItem.getSIID(itemStack)?.toString() ?: itemStack
                 )
             }
 
@@ -225,11 +225,23 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             if (config.isSet("inventory")) {
                 for (i in 0 until player.inventory.size) {
                     val path = "inventory.$i"
-                    val getter = player.getter()
                     val item =
-                        if (config.isConfigurationSection(path)) {
-                            if (config.isSet("item")) config.getItemStack("item")
-                            else SpecialItem.getByConfig(config.getConfigurationSection(path)!!, getter)
+                        if (config.isString(path)) {
+                            fun spawnUnknownItem() = ItemStack(Material.BARRIER).updateItemMeta<ItemMeta> {
+                                val getter = player.getter()
+                                setDisplayName(getter["inventory.siNotFound.title"].toErrorMessage())
+                                lore =
+                                    TextUtil.formatLore(getter["inventory.siNotFound.subtitle", config.getString(path)])
+                                        .map { TextUtil.info(it) }
+                            }
+
+                            val id = try {
+                                UUID.fromString(config.getString(path))
+                            } catch (ignored: IllegalArgumentException) {
+                                null
+                            }
+                            if (id == null) spawnUnknownItem()
+                            else try { SpecialItem[id]?.itemStack } catch (e: Exception) { null }?: spawnUnknownItem()
                         } else
                             config.getItemStack(path, ItemStack(Material.AIR))
                     player.inventory.setItem(i, item)
@@ -313,7 +325,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
         fun set(path: String, value: Any) = config.set(path, value)
         fun addItem(item: ItemStack): Boolean {
             val inventory = config.getConfigurationSection("inventory") ?: YamlConfiguration()
-            val itemStack: Any = if (item is SpecialItem) item.getSerialized() else item
+            val itemStack: Any = SpecialItem.getByItem(item, player) ?: item
             val max = inventory.getKeys(false).maxBy { key -> key.toInt() }?.toIntOrNull()
             fun msg(i: Int) {
                 config.set("inventory", inventory)
@@ -335,7 +347,10 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             return false
         }
 
-        fun setItem(index: Int, item: ItemStack?) = config.set("inventory.$index", item)
+        fun setItem(index: Int, item: ItemStack?) = config.set(
+            "inventory.$index",
+            item?.let { SpecialItem.getByItem(item, player)?.itemStack } ?: item
+        )
 
         fun any(l: (ConfigurationSection) -> Boolean): Boolean =
             config.getConfigurationSection("inventory")
@@ -350,8 +365,11 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             val result = arrayListOf<ItemStack?>()
             val config = config.getConfigurationSection("inventory") ?: YamlConfiguration()
             (0..35).forEach {
-                config.getItemStack(it.toString()).apply {
-                    result.add(this?.clone())
+                val item = config.get(it.toString())
+                if (item is ItemStack) {
+                    result.add(item)
+                } else if (item is String) {
+                    result.add(SpecialItem[UUID.fromString(item)]?.itemStack ?: return@forEach)
                 }
             }
             return result

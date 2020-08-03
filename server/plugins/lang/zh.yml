@@ -26,7 +26,6 @@ user:
   pwd.changed: '密码修改成功'
   reg1: '您还没有在服务器注册身份'
   reg2: '使用%s来注册'
-  error.alreadyReg: '您已经注册'
   toRegister: '您还没有在服务器注册'
   invitation.receive: '%s想要传送到您所在的位置'
   invitation.toAccept: '使用/user accept%s来接受'
@@ -108,6 +107,8 @@ user:
     noSoManyCoins: '您的货币数量不足'
     langNotFound: "语言不存在。No such language."
     noSuchPreference: '没有这样的首选项: %s'
+    alreadyReg: '您已经注册'
+
   preferred: '已将首选项 %s 更新为 %s'
   checkpoint:
     saved: '已将%s保存为ID为%s的记录点'
@@ -690,3 +691,74 @@ bank:
 chart:
   award: '恭喜！您在昨天的每日排行中名列前茅，服务器奖励您%s货币'
   showOff: '恭喜 %s 在%s的每日排行中获得第%s名！'
+
+bind: '绑定于%s'
+
+inventory:
+  siNotFound:
+    title: '没有这样的特殊物品'
+    subtitle: '这个ID为%s的特殊物品无法找到，请联系服务器管理员。'
+
+gun:
+  pistol:
+    name: '手枪'
+    subtitle: '远程武器'
+
+rpg:
+  ui:
+    select:
+      title: '选择职业'
+      done: "你选择了%s"
+  role:
+    fighter:
+      name: '战士'
+      subtitle: '近战伤害和防御力较高'
+    magician:
+      name: '法师'
+      subtitle: '能够通过激活魔法书使用魔法'
+    ranger:
+      name: '游侠'
+      subtitle: '擅长使用远程武器，甚至可以使用火器'
+    priest:
+      name: '牧师'
+      subtitle: '向您的队友提供治疗和效果加成'
+    summoner:
+      name: '召唤师'
+      subtitle: '有能力召唤和控制傀儡'
+    no_role:
+      name: '无职业'
+      subtitle: '体验原版MC生存'
+  level: '等级为%s'
+  wand:
+    name: '法杖'
+    subtitle: '允许你使用魔法'
+    click: '手持并左键以使用'
+    mp: '魔法值: %s'
+    error:
+      mp: '没有足够的魔法值'
+  magic_book:
+    name: '魔法书'
+    subtitle: '显示你能使用何种法术'
+    available: '可使用%s'
+    magic:
+      poison:
+        name: '中毒'
+        subtitle: '让目标产生短时间的中毒效果。'
+      fire:
+        name: '燃烧'
+        subtitle: '让目标短时间着火。'
+      slowness:
+        name: '缓慢'
+        subtitle: '让目标行走迟缓。'
+      weakness:
+        name: '虚弱'
+        subtitle: '降低目标的伤害。'
+      instant_damage:
+        name: '瞬间伤害'
+        subtitle: '对目标造成瞬时伤害。'
+      healing:
+        name: '治疗'
+        subtitle: '瞬间治疗对象。'
+      healing_pool:
+        name: '治疗池'
+        subtitle: '持续治疗一定范围内的对象。'

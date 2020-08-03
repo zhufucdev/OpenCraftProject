@@ -142,7 +142,7 @@ object Base {
         }
     }
 
-    val pluginCore: Plugin = Bukkit.getPluginManager().getPlugin("ServerCore")!!
+    val pluginCore: Plugin get() = Bukkit.getPluginManager().getPlugin("ServerCore")!!
 
     object TutorialUtil {
         fun Entity.tplock(location: Location, time: Long) {

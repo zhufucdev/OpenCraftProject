@@ -1,2 +1,10 @@
 diamondExchange: 60
 debug: true
+survivalCenter:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: -70.0
+  y: 79.0
+  z: 115.0
+  pitch: 18.150007
+  yaw: 56.699963

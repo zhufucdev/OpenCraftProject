@@ -1,12 +1,12 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.special_item.Coin
-import com.zhufu.opencraft.special_item.SpecialItem
+import com.zhufu.opencraft.special_item.base.SpecialItem
 import com.zhufu.opencraft.util.ActionBarTextUtil
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -16,13 +16,8 @@ import org.bukkit.util.Vector
 import java.io.File
 import java.math.BigInteger
 import java.nio.channels.FileChannel
-import java.nio.charset.Charset
-import java.security.DigestInputStream
 import java.security.MessageDigest
-import kotlin.math.abs
-import kotlin.math.absoluteValue
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 import kotlin.reflect.full.isSuperclassOf
 
 fun getLang(lang: String, value: String, vararg replaceWith: Any?): String = Language.got(lang, value, replaceWith)
@@ -120,9 +115,8 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
         var aAmount = 0
         fun isSimilar(a: ItemStack): Boolean {
             return a.type == type.type
-                    && (type is SpecialItem && SpecialItem.getByItem(a, type.getter)
-                ?.let { it::class.isSuperclassOf(a::class) } == true)
-                    || type !is SpecialItem
+                    && SpecialItem.getByItem(a, Bukkit.getPlayer(uniqueId))
+                ?.let { it::class.isSuperclassOf(a::class) } != false
         }
         this.inventory.forEach {
             if (it != null && isSimilar(it))
@@ -164,7 +158,9 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
     return true
 }
 
-fun HumanEntity.addCash(amount: Int) = setInventory(Coin(1, getter()), amount)
+fun HumanEntity.addCash(amount: Int): Boolean {
+    TODO()
+}//setInventory(Coin(1, getter()), amount)
 
 val Inventory.containsSpecialItem: Boolean
     get() = this.any { if (it != null) SpecialItem.isSpecial(it) else false }
@@ -173,9 +169,9 @@ val Inventory.specialItems: List<SpecialItem>
         val r = ArrayList<SpecialItem>()
         for (i in 0 until this.size) {
             val it = this.getItem(i) ?: continue
-            val getter = (if (holder is HumanEntity) holder as HumanEntity else viewers.firstOrNull() ?: return emptyList()).getter()
-            SpecialItem.getByItem(it, getter)?.apply {
-                inventoryPosition = i
+            val showing =
+                if (holder is Player) holder as Player else viewers.firstOrNull()?.let { Bukkit.getPlayer(it.uniqueId) }
+            SpecialItem.getByItem(it, showing)?.apply {
                 r.add(this)
             }
         }
@@ -203,5 +199,19 @@ fun List<Any>.toString(split: String) = buildString {
 
 @Suppress("UNCHECKED_CAST")
 infix fun <T> Comparable<T>.smaller(second: T): T = if (this <= second) this as T else second
+
 @Suppress("UNCHECKED_CAST")
 infix fun <T> Comparable<T>.bigger(second: T): T = if (this <= second) second else this as T
+
+fun Vector.unitVector(): Vector {
+    val k = sqrt(x.pow(2) + y.pow(2) + z.pow(2))
+    return Vector(x / k, y / k, z / k)
+}
+
+val EntityType.isUndead
+    get() = when (this) {
+        EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON, EntityType.ZOMBIE,
+        EntityType.HUSK, EntityType.PIGLIN, EntityType.ZOMBIE_VILLAGER, EntityType.DROWNED,
+        EntityType.ZOGLIN, EntityType.ZOMBIE_HORSE, EntityType.SKELETON_HORSE, EntityType.PHANTOM -> true
+        else -> false
+    }

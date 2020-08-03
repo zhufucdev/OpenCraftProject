@@ -8,7 +8,6 @@
         <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="/usr/local/Cellar/gradle/6.1/libexec" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -33,8 +32,8 @@
             <option value="$PROJECT_DIR$/WorldGenerator" />
             <option value="$PROJECT_DIR$/WorldTeleporter" />
             <option value="$PROJECT_DIR$/base/blockManagment" />
+            <option value="$PROJECT_DIR$/base/gameplay" />
             <option value="$PROJECT_DIR$/base/inventoryBase" />
-            <option value="$PROJECT_DIR$/base/listeners" />
             <option value="$PROJECT_DIR$/base/miniGameBase" />
             <option value="$PROJECT_DIR$/base/playerManagment" />
             <option value="$PROJECT_DIR$/base/pluginBase" />

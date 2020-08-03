@@ -2,7 +2,7 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.lobby.PlayerLobby
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
-import com.zhufu.opencraft.special_item.*
+import com.zhufu.opencraft.special_item.base.SpecialItem
 import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
 import org.bukkit.Bukkit
@@ -19,7 +19,6 @@ class PlayerUtil : JavaPlugin() {
 
     override fun onEnable() {
         Everything.init(this)
-        PortalHandler.init(this)
         ChartHandler.init(this)
 
         ServerCaller["SolveLobbyVisitor"] = {
@@ -37,7 +36,6 @@ class PlayerUtil : JavaPlugin() {
 
     override fun onDisable() {
         Everything.onServerClose()
-        PortalHandler.onServerClose()
         ChartHandler.cleanUp()
     }
 
@@ -176,12 +174,30 @@ class PlayerUtil : JavaPlugin() {
                         }
                         i
                     }
-                    val item = SpecialItem.make(args[3], amount, player)
+                    val arguments = arrayListOf<Any?>()
+                    if (args.size > 5) {
+                        val script = buildString {
+                            for (i in 5 until args.size) {
+                                append(args[i])
+                                append(' ')
+                            }
+                            deleteCharAt(lastIndex)
+                        }
+                        script.split(';').forEach {
+                            try {
+                                arguments.add(Scripting.execute(it))
+                            } catch (e: Exception) {
+                                sender.error("${e::class.qualifiedName}: ${e.message} at argument $it.")
+                                return true
+                            }
+                        }
+                    }
+                    val item = SpecialItem.make(args[3], amount, player, arguments.toArray())
                     if (item == null) {
                         sender.error(getter["command.error.noSuchItem", args[3]])
                         return true
                     }
-                    player.inventory.addItem(item)
+                    player.inventory.addItem(item.itemLocation.itemStack)
                     sender.success(getter["command.done"])
                     if (player != sender) {
                         player.info(getter["si.given", args[3], amount])

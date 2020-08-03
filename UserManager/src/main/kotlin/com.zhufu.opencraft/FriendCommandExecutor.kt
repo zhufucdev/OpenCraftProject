@@ -3,7 +3,6 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.inventory.PaymentDialog
 import com.zhufu.opencraft.player_community.FriendWrap
 import com.zhufu.opencraft.player_community.MessagePool
-import com.zhufu.opencraft.special_item.Coin
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -228,7 +227,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                 PaymentDialog(
                                                     player = sender,
                                                     sellingItems = SellingItemInfo(
-                                                        item = Coin(1, getter),
+                                                        item = ItemStack(Material.GOLD_INGOT),
                                                         amount = 1,
                                                         unitPrise = amount
                                                     ),

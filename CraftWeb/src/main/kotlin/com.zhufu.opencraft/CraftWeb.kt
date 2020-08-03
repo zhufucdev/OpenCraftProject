@@ -8,6 +8,9 @@ import org.bukkit.configuration.ConfigurationSection
 import java.io.File
 import java.util.logging.Logger
 
+/*
+CraftWeb is removed currently, but will be enabled in the future.
+ */
 class CraftWeb : JavaPlugin() {
     private val instance = HttpsServer()
     private val http = HttpServer()
@@ -23,34 +26,16 @@ class CraftWeb : JavaPlugin() {
         Companion.logger = logger
         plugin = this
         config.apply {
-            if (!isSet("root")) {
-                val default = File(dataFolder, "web")
-                if (!default.exists()) default.mkdirs()
-                set("root", default.path)
-            }
-            if (!isSet("wikiRoot")){
-                val default = File(dataFolder, "wiki")
-                if (!default.exists()) default.mkdirs()
-                set("wikiRoot", default.path)
-            }
             if (!isSet("keyPath"))
                 set("keyPath", File(dataFolder, "key.jks").path)
             if (!isSet("httpPort"))
                 set("httpPort", 80)
             if (!isSet("httpsPort"))
-                set("httpsPort", 443)
+                set("httpsPort", 1000)
             if (!isSet("key"))
                 set("key", "")
-            if (!isSet("uiWhiteList"))
-                set("uiWhiteList", listOf(""))
             if (!isSet("hostName"))
                 set("hostName", "open-craft.cn")
-            if (!isSet("chatPackLossThreshold"))
-                set("chatPackLossThreshold", 10)
-            if (!isSet("playerDirMaxSize"))
-                set("playerDirMaxSize", 50 * 1024 * 1024)
-            if (!isSet("remotePort"))
-                set("remotePort", 2003)
             saveConfig()
         }
         ServerCaller.set<ConfigurationSection>("GetWebConfig") {
@@ -79,7 +64,7 @@ class CraftWeb : JavaPlugin() {
     }
 
     private fun init() {
-        handler = MajorHandler(File(config.getString("root")!!), File(config.getString("wikiRoot")!!), config)
+        handler = MajorHandler(config)
         instance.init(
             key = File(config.getString("keyPath")!!),
             password = config.getString("key")!!,

@@ -10,6 +10,7 @@ import groovyjarjarantlr4.v4.runtime.misc.Nullable
 import opencraft.Global
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
@@ -79,15 +80,33 @@ abstract class ExtendedBlock {
     private static File root = Paths.get("plugins", "extendedBlocks").toFile()
     private static Listener mListener = new Listener() {}
 
+    /**
+     * Places an extended block in a specific location.
+     * @param where The location.
+     * @param block The extended block to place.
+     * @param player The player who places this block.
+     */
     static void place(Location where, ExtendedBlock block, Player player) {
         def existing = existingBlocks[where]
         if (existing != null) {
             existing.onDestroy()
         }
-        blocksCreating[block] = where
+        blocksCreating[block] = where.toBlockLocation()
         block.onCreate(null, player)
-        existingBlocks[where] = block
+        existingBlocks[where.toBlockLocation()] = block
         blocksCreating.remove(block)
+    }
+
+    /**
+     * Removes an extended block from registration.
+     * @param block
+     */
+    static void destroy(ExtendedBlock block) {
+        existingBlocks.removeAll {
+            def r = it.value == block
+            if (r) block.onDestroy()
+            r
+        }
     }
 
     private static boolean initialized = false
@@ -111,7 +130,7 @@ abstract class ExtendedBlock {
                         throw new IllegalStateException("Extended block $name is registered but it's type doesn't have " +
                                 "at least one constructor to create its instance.")
                     }
-                    def instance = c.newInstance(yaml.getConfigurationSection("data"))
+                    def instance = c.newInstance()
                     def location = yaml.getLocation("location")
                     blocksCreating[instance] = location
                     instance.onCreate(yaml.getConfigurationSection("data"), null)
@@ -151,7 +170,7 @@ abstract class ExtendedBlock {
             def index = 0
             existingBlocks.forEach { l, b ->
                 def yaml = new YamlConfiguration()
-                yaml.set("location", l)
+                yaml.set("location", l.toBlockLocation())
                 def data = new YamlConfiguration()
                 b.saveStatus(data)
                 if (data.getKeys(false).size() > 0)
@@ -176,7 +195,7 @@ abstract class ExtendedBlock {
                 }
             })
             // Remove old files
-            if (list.size() > index) {
+            if (list != null && list.size() > index) {
                 list.each {
                     def dot = it.name.lastIndexOf('.')
                     if (dot == -1) return
@@ -194,5 +213,13 @@ abstract class ExtendedBlock {
         Server.listenEvent(ServerReloadEvent.class, save)
 
         initialized = true
+    }
+
+    static ExtendedBlock getAt(Location where) {
+        return existingBlocks[where.toBlockLocation()]
+    }
+
+    static ExtendedBlock get(Block block) {
+        return getAt(block.location)
     }
 }

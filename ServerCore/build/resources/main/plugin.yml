@@ -29,15 +29,19 @@ commands:
   survey pass:
     usage: /usrvey pass <玩家>
     description: 管理员操作，使一名玩家通过服务器调查
+    permission: op
   survey rollback:
     usage: /usrvey rollback <玩家>
     description: 管理员操作，使一名通过服务器调查的玩家回到解放前
+    permission: op
   builder:
     usage: /builder
     description: 切换游戏模式，用于建筑者
   builder pass:
     usage: /builder pass <玩家>
     description: 给予玩家建筑者身份，用于管理员
+    permission: op
   builder rollback:
     usage: /builder rollback <玩家>
     description: 夺取玩家建筑者身份，用于管理员
+    permission: op

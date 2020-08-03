@@ -321,67 +321,6 @@ class CurrencySystem : JavaPlugin() {
                 }
                 else -> sender.error(getter["command.error.usage"])
             }
-        } else if (command.name == "bank") {
-            val getter = sender.getter()
-            if (args.isEmpty()) {
-                sender.info(getter["bank.found.1"])
-                if (!BankManager.isEmpty()) {
-                    BankManager.forEach {
-                        sender.sendMessage("${it.first} @ ${it.second.toPrettyString()}")
-                    }
-                    if (sender is Player) {
-                        val nearest = BankManager.bankNearest(sender.location)
-                        if (nearest != null) sender.info(getter["bank.found.2", nearest.toPrettyString()])
-                        else sender.error(getter["bank.found.none"])
-                    } else {
-                        sender.error(getter["command.error.playerOnly"])
-                    }
-                } else {
-                    sender.error(getter["bank.found.none"])
-                }
-            } else if (sender is Player) {
-                if (sender.isOp) {
-                    when (args.first()) {
-                        "add" -> {
-                            if (args.size < 2) {
-                                BankManager.createBanker(sender.location)
-                                sender.success(getter["bank.createdBanker"])
-                            } else {
-                                val name = args[1]
-                                if (!name.contains(':')) {
-                                    val l = sender.location.toBlockLocation()
-                                    BankManager.createBank(l, name)
-                                    sender.success(getter["bank.created", name, l.toPrettyString()])
-                                } else {
-                                    sender.error(getter["bank.error.illegalName", name])
-                                }
-                            }
-                        }
-                        "remove" -> {
-                            if (args.size < 2) {
-                                val success = BankManager.removeBanker(near = sender.location)
-                                if (success) {
-                                    sender.success(getter["bank.removedBanker"])
-                                } else {
-                                    sender.error(getter["bank.error.noBankersNearby"])
-                                }
-                            } else {
-                                val success = BankManager.removeBank(args[1])
-                                if (success) {
-                                    sender.success(getter["bank.removed", args[1]])
-                                } else {
-                                    sender.error(getter["bank.found.none"])
-                                }
-                            }
-                        }
-
-                    }
-                } else {
-                    sender.error(getter["command.error.permission"])
-                }
-            } else {
-                sender.error(getter["command.error.playerOnly"])
-            }
         }
         return true
     }
@@ -505,7 +444,6 @@ class CurrencySystem : JavaPlugin() {
         tradeWorld.peace()
 
         QRUtil.init(this)
-        BankManager.init(this)
         password = config.getString("serverPwd", "")!!
 
         if (!donation.exists()) {
@@ -570,7 +508,6 @@ class CurrencySystem : JavaPlugin() {
 
     override fun onDisable() {
         TradeManager.saveToFile(File(tradeRoot, "tradeInfos.json"))
-        BankManager.onClose()
         NPCItemInventory.npcList.forEach { it.destroy() }
         CitizensAPI.getNPCRegistry().toList().forEach {
             if (it.data().get<Boolean?>("trade") == true)

@@ -3,6 +3,7 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.player_community.Friendship
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
+import com.zhufu.opencraft.rpg.Role
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -263,6 +264,11 @@ abstract class ServerPlayer(
     }
     val skullItem
         get() = skull.clone()
+    var role
+        get() = Role.valueOf(tag.getString("role", "null")!!.toUpperCase())
+        set(value) {
+            tag.set("role", value.name.toLowerCase())
+        }
 
     override fun isOp(): Boolean = try {
         offlinePlayer.isOp

@@ -7,6 +7,6 @@ dependencies {
     compile project(':inventoryBase')
     compile project(':utils')
     compile project(':blockManagment')
-    compile project(':listeners')
+    compile project(':gameplay')
     implementation 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
 }

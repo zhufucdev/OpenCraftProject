@@ -15,7 +15,6 @@ user:
   pwd.changed: "Password changed successfully."
   reg1: "You are new here!"
   reg2: "Register using %s"
-  error.alreadyReg: "You've already registered."
   toRegister: "Hey are you new here? "
   invitation:
     receive: "%s wants to go to your position."
@@ -99,6 +98,8 @@ user:
     noSuchInvitation: "Invitation doesn't exist."
     noSoManyCoins: "You do not have enough coins!"
     noSuchPreference: "No such preference: %s"
+    alreadyReg: "You've already registered."
+
   preferred: "Successfully updated preference %s to %s."
   checkpoint:
     saved: "Saved %s as checkpoint IDed %s"
@@ -185,7 +186,7 @@ command:
     unknown: "unknown"
     failed: "failed"
     tooFewArgs: "Too few arguments(%s needed)."
-    noSucnItem: 'No such item: %s.'
+    noSuchItem: 'No such item: %s.'
     typeError: 'Type error, expecting %s.'
   done: "Done."
   unnamed: "Unnamed"
@@ -671,3 +672,74 @@ bank:
 chart:
   award: "Congratulations! You've done a top job in yesterday's Daily Charts. You'll receive %s as a award."
   showOff: "Congratulations to %s1 on getting top %s3 in charts of %s2!"
+
+gun:
+  pistol:
+    name: 'Pistol'
+    subtitle: 'Long-range Weapon'
+
+bind: 'Binding to %s.'
+
+inventory:
+  siNotFound:
+    title: 'No Such Special Item'
+    subtitle: 'This item is marked special whose id is %s was not found. Please contact with server operators.'
+
+rpg:
+  ui:
+    select:
+      title: 'Choose Role'
+      done: "You've chosen %s."
+  role:
+    fighter:
+      name: 'Fighter'
+      subtitle: 'Strong in basis damage and defense.'
+    magician:
+      name: 'Magician'
+      subtitle: 'Able to use magic motivated by magic books.'
+    ranger:
+      name: 'Ranger'
+      subtitle: 'Good at using long-range weapons, even including some firearm.'
+    priest:
+      name: 'Priest'
+      subtitle: 'Heal or bring buff to your mate.'
+    summoner:
+      name: 'Summoner'
+      subtitle: 'Able to summon and control puppets.'
+    no_role:
+      name: 'No role'
+      subtitle: 'Experience the original Minecraft gameplay.'
+  level: 'Level %s'
+  wand:
+    name: 'Wand'
+    subtitle: 'Enable you to use magic.'
+    click: 'Left click in hand to use.'
+    mp: 'Magic Point: %s'
+    error:
+      mp: 'No enough magic point.'
+  magic_book:
+    name: 'Magic Book'
+    subtitle: 'Indicate what magic you can use.'
+    available: '%s available.'
+    magic:
+      poison:
+        name: 'Poison'
+        subtitle: 'Give targets a short time of poison effect.'
+      fire:
+        name: 'Fire'
+        subtitle: 'Make targets in fire for a short time.'
+      slowness:
+        name: 'Slowness'
+        subtitle: 'Make targets walk slower.'
+      weakness:
+        name: 'Weakness'
+        subtitle: "Bring down targets' damage."
+      instant_damage:
+        name: 'Instant Damage'
+        subtitle: 'Give some damage to the targets instantly.'
+      healing:
+        name: 'Healing'
+        subtitle: 'Heal targets instantly.'
+      healing_pool:
+        name: 'Healing Pool'
+        subtitle: 'Heal targets in range constantly.'

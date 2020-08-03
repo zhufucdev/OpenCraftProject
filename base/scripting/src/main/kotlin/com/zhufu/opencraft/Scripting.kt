@@ -3,10 +3,12 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.events.SSLoadCompleteEvent
 import com.zhufu.opencraft.events.SSReloadEvent
 import groovy.lang.Binding
+import groovy.lang.GroovyShell
 import groovy.util.GroovyScriptEngine
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
+import java.io.OutputStream
 import java.nio.file.Paths
 
 object Scripting {
@@ -52,5 +54,20 @@ object Scripting {
     fun cleanUp() {
         if (!::engine.isInitialized) return
         Bukkit.getPluginManager().callEvent(SSReloadEvent())
+    }
+
+    @Synchronized
+    fun execute(script: String, output: OutputStream? = null): Any? {
+        if (status != Status.LOADED) error("Script Engine not ready.")
+        Bukkit.getLogger().info("Anonymous script execution: $script")
+        val defaultOutput = System.out
+        if (output != null) {
+            binding.invokeMethod("System.setOut", output)
+        }
+        val result = GroovyShell(engine.groovyClassLoader, binding).evaluate(script, "console")
+        if (output != null) {
+            binding.invokeMethod("System.setOut", defaultOutput)
+        }
+        return result
     }
 }

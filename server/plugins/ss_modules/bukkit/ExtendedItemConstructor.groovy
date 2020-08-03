@@ -1,49 +1,24 @@
 package bukkit
 
-import com.zhufu.opencraft.GroovySpecialItemAdapter
-import com.zhufu.opencraft.Language
-import com.zhufu.opencraft.Language.LangGetter
-import com.zhufu.opencraft.PlayerModifier
-import com.zhufu.opencraft.special_item.SpecialItemAdapter
-import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.FromString
+import com.zhufu.opencraft.special_item.base.SpecialItem
 import groovyjarjarantlr4.v4.runtime.misc.NotNull
-import opencraft.Lang
 import org.bukkit.Material
-import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.entity.Player
 import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.bukkit.event.block.Action
-import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.inventory.PrepareItemCraftEvent
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
-import org.bukkit.scoreboard.Objective
 import org.bukkit.util.Vector
 
 import java.lang.reflect.Method
-import java.util.function.BiConsumer
-
 /**
- * <p>Defines an extended item.</p>
- * <p>To achieve this, you need to declare some parameters and methods, which have relationships, or conflicts, with
- * each other. The mark before each annotation speaks.</p>
- * <p><strong>(*)</strong> means necessity. This parameter or method must be declared.</p>
- * <p><strong>[ ]</strong> means non-necessity. This parameter can be specified or simply ignored.</p>
- * <p><strong>[<span style="color: blue">X</span>]</strong> means selection. This parameter or any other one marked with
- * <span style="color: blue">X</span> is supposed to be taken.</p>
- * <p><strong>(<span style="color: blue">X</span>)</strong> means conflict. Only one of the
- * <span style="color: blue">X</span>-marked parameter should be taken.<p>
+ * Defines an extended item.
  */
 class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
-    private String name, langName, blockName
-    private Material material
-    private Closure make, deserialize, serialize, tick, isItem, isConfig,
-                    onRightClicked, onLeftClicked, onInventoryTouch
+    private String name, blockName
+    private Class<SpecialItem> type
     private ArrayList<PatternedCondition> recipes = new ArrayList<>()
 
     /**
@@ -58,86 +33,12 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
         return name
     }
 
-    /**
-     * (A)[B]Human readable name of the item.
-     * @param langName The language code name.
-     * @see ExtendedItemConstructor
-     */
-    void langName(@NotNull String langName) {
-        this.langName = langName
+    void existsAs(Class<SpecialItem> clazz) {
+        this.type = clazz
     }
 
-    /**
-     * (*)Minecraft type of the item.
-     * @param material The material.
-     * @see ExtendedItemConstructor
-     */
-    void material(@NotNull Material material) {
-        this.material = material
-    }
-
-    Material getMaterial() {
-        return material
-    }
-
-    /**
-     * (A)Initialize the item. Called at the first time the item is shown to player.
-     * @param closure Actions to initialize the item.
-     * @see ExtendedItemConstructor
-     */
-    void make(@NotNull BiConsumer<ItemStack, LangGetter> closure) {
-        this.make = { ItemStack i, LangGetter g -> closure.accept(i, g) }
-    }
-
-    /**
-     * [ ]Load data stored as YAML. Called each time its inventory is applied to a player.
-     * @param closure
-     *
-     * @see ExtendedItemConstructor
-     */
-    void deserialize(@NotNull Closure closure) {
-        this.deserialize = closure
-    }
-
-    /**
-     * [ ]Store data as YAML. Called each time its inventory is saved.
-     * @param closure
-     * @see ExtendedItemConstructor
-     */
-    void serialize(@NotNull Closure closure) {
-        this.serialize = closure
-    }
-
-    /**
-     * Called every game tick (0.05s) only when the item is taken by a player inventory.
-     * @param closure Action to do in main thread. DON'T run heavy tasks, or game will be laggy.
-     * @see ExtendedItemConstructor
-     */
-    void tick(@NotNull TickConsumer closure) {
-        this.tick = { SpecialItemAdapter.AdapterItem i, PlayerModifier m, ConfigurationSection s, Objective o, int sort ->
-            closure.tick(i, m, s, o, sort)
-        }
-    }
-
-    /**
-     * [B]Determines whether an ItemStack is of this type of adapter.
-     * @param closure Return true if the item satisfies all the conditions.
-     * @see ExtendedItemConstructor
-     */
-    void isItem(@NotNull
-                @ClosureParams(value = FromString.class, options = "org.bukkit.inventory.ItemStack")
-                        Closure<Boolean> closure) {
-        this.isItem = closure
-    }
-
-    /**
-     * [ ]Determines whether an YAML configuration is of this type of adapter.
-     * @see ExtendedItemConstructor* @param closure Return true if the configuration satisfies all the conditions.
-     */
-    void isConfig(@NotNull
-                  @ClosureParams(value = FromString.class, options = "org.bukkit.configuration.ConfigurationSection")
-                          Closure<Boolean> closure) {
-        this.isConfig = closure
+    Class<SpecialItem> getItemType() {
+        return type
     }
 
     void recipe(@NotNull
@@ -160,33 +61,6 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
         blockName = name
     }
 
-    void onRightClicked(
-            @ClosureParams(value = FromString.class, options = [
-                    "org.bukkit.inventory.ItemStack",
-                    "org.bukkit.entity.Player"
-            ])
-                    Closure closure) {
-        this.onRightClicked = closure
-    }
-
-    void onLeftClicked(@NotNull
-                       @ClosureParams(value = FromString.class, options = [
-                               "org.bukkit.inventory.ItemStack",
-                               "org.bukkit.entity.Player"
-                       ])
-                               Closure closure) {
-        this.onLeftClicked = closure
-    }
-
-    void onInventoryTouch(
-            @NotNull
-            @ClosureParams(value = FromString.class, options = "org.bukkit.event.inventory.InventoryClickEvent")
-                    Closure closure
-    ) {
-        this.onInventoryTouch = closure
-    }
-
-    private mListener = new Listener() {}
     /**
      * Start external listeners in order for the settings to be applied.
      */
@@ -200,69 +74,18 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
         }
         // Recipe
         recipes.forEach { it.apply() }
-        // Hand click
-        def onHandClick = { List<Action> actions, Closure e ->
-            return {
-                if (item == null) return
-                if (getAdapter().isThis(item)
-                        && actions.contains(action)) {
-                    final adapted = getAdapter().getAdaptItem(item, player)
-                    adapted.inventoryPosition = player.inventory.getHeldItemSlot()
-                    final old = adapted.itemMeta.clone()
-                    e.call(adapted, player)
-                    updateForPlayer(adapted, old, player)
-                }
-            }
-        }
-
-        if (onLeftClicked != null) {
-            Server.listenEvent(PlayerInteractEvent.class, mListener, EventPriority.NORMAL,
-                    onHandClick([Action.LEFT_CLICK_BLOCK, Action.LEFT_CLICK_AIR], onLeftClicked))
-        }
-        if (onRightClicked != null) {
-            Server.listenEvent(PlayerInteractEvent.class, mListener, EventPriority.NORMAL,
-                    onHandClick([Action.RIGHT_CLICK_BLOCK, Action.RIGHT_CLICK_AIR], onRightClicked))
-        }
-        // Inventory Click
-        if (onInventoryTouch != null) {
-            Server.listenEvent(InventoryClickEvent.class, mListener, EventPriority.NORMAL) {
-                if (adapter.isThis(getCurrentItem())) this.with(onInventoryTouch)
-            }
-        }
     }
 
     @Override
     void unapply() {
-        HandlerList.unregisterAll(mListener)
         recipes.forEach { it.unapply() }
-    }
-
-    private SpecialItemAdapter mAdapter
-    /**
-     * @return An proxy adapter for Kotlin use.
-     */
-    synchronized SpecialItemAdapter getAdapter() {
-        if (mAdapter != null)
-            return mAdapter
-        assert name != null
-        assert langName != null || isItem != null
-        mAdapter = new GroovySpecialItemAdapter(name, langName, material, make, deserialize, serialize, isItem, isConfig, tick)
-        return mAdapter
-    }
-
-    /**
-     * Gets an {@link ItemStack} of the item.
-     * @param amount How many items are there in the stack.
-     */
-    SpecialItemAdapter.AdapterItem newItemStack(int amount = 1) {
-        return new SpecialItemAdapter.AdapterItem(adapter, new LangGetter(Lang.defaultLangCode))
     }
 
     @Override
     void merge(ExtendedItemConstructor other) {
         unapply()
         properties.each { String n, v ->
-            if (v != null && v !instanceof Method)
+            if (v != null && v !instanceof Method && n != 'class')
                 this[n] = v
         }
     }
@@ -270,16 +93,6 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
     /**
      * Utilities
      */
-    /**
-     * Upload the AdapterItem to its owner player if the itemMeta has changed.
-     * @param item
-     * @param oldMeta
-     * @param player
-     */
-    private static void updateForPlayer(SpecialItemAdapter.AdapterItem item, ItemMeta oldMeta, Player player) {
-        if (!item.hasItemMeta() || item.itemMeta != oldMeta)
-            player.inventory.setItem(item.inventoryPosition, item)
-    }
 
     /**
      * Apply changes of itemMeta to the given ItemStack.
@@ -287,10 +100,9 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
      * @param closure
      */
     static void updateMeta(
+            @NotNull ItemStack itemStack,
             @NotNull
-            @DelegatesTo.Target("self") ItemStack itemStack,
-            @NotNull
-            @DelegatesTo(value = ItemStack.class, target = "self") Closure closure) {
+            @DelegatesTo(value = ItemMeta.class) Closure closure) {
         def meta = itemStack.itemMeta
         meta.with(closure)
         itemStack.itemMeta = meta
@@ -418,7 +230,7 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
                     }
 
                     if (satisfies) {
-                        inventory.result = new SpecialItemAdapter.AdapterItem(item.adapter, Lang.getter(view.player))
+                        inventory.result = item.itemType.getConstructor().newInstance().itemStack
                     }
                 }
             }
@@ -479,7 +291,7 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
                     }
                 }
                 if (counted == pattern.considerations) {
-                    inventory.result = new SpecialItemAdapter.AdapterItem(adapter, Lang.getter(view.player))
+                    inventory.result = item.itemType.getConstructor().newInstance().itemStack
                 }
             }
         }
@@ -488,10 +300,5 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
         void unapply() {
             HandlerList.unregisterAll(mListener)
         }
-    }
-
-    @FunctionalInterface
-    interface TickConsumer {
-        void tick(SpecialItemAdapter.AdapterItem item, PlayerModifier modifier, ConfigurationSection shared, Objective objective, int sort)
     }
 }

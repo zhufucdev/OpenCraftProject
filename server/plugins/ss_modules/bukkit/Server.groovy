@@ -1,6 +1,7 @@
 package bukkit
 
 import com.zhufu.opencraft.Scripting
+import com.zhufu.opencraft.ServerReloadEvent
 import com.zhufu.opencraft.events.SSReloadEvent
 import org.bukkit.Bukkit
 import org.bukkit.event.Event
@@ -9,6 +10,8 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.EventExecutor
+import org.bukkit.scheduler.BukkitScheduler
+import org.bukkit.scheduler.BukkitTask
 
 class Server {
     private static Listener mListener = new Listener() {}
@@ -58,17 +61,33 @@ class Server {
         return listener
     };
 
+    private static ArrayList<BukkitTask> tasks = new ArrayList<>()
     /**
      * Call the ticker every game tick(0.05s)
      * @param ticker The ticker.
      */
-    static void eachTick(Closure ticker) {
-        Bukkit.getScheduler().runTaskTimer(Scripting.plugin, ticker, 0, 1)
+    static BukkitTask eachTick(Closure ticker) {
+        return schedule.runTaskTimer(Scripting.plugin, ticker, 0, 1).tap { tasks.add(it) }
+    }
+
+    static BukkitTask delay(long ticks, Closure action) {
+        return schedule.runTaskLater(Scripting.plugin, action, ticks).tap { tasks.add(it) }
+    }
+
+    static BukkitScheduler getSchedule() {
+        return Bukkit.getScheduler()
     }
 
     static {
         listenEvent(SSReloadEvent.class) {
             HandlerList.unregisterAll(mListener)
+            tasks.forEach {
+                if (!it.cancelled)
+                    it.cancel()
+            }
+        }
+        listenEvent(ServerReloadEvent.class) {
+            tasks.removeAll { it.cancelled }
         }
     }
 }

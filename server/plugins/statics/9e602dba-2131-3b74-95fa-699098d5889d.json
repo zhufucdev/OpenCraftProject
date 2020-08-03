@@ -1,6 +1,6 @@
 {
   "0": {
-    "currency": 216
+    "currency": 0
   },
   "1579363200000": {
     "time": 26
@@ -228,13 +228,13 @@
     "currency": 0
   },
   "184": {
-    "currency": 0
+    "currency": 216
   },
   "1590681600000": {
     "time": 4680
   },
   "176": {
-    "currency": 0
+    "currency": 216
   },
   "296": {
     "currency": 0
@@ -267,7 +267,7 @@
     "currency": 0
   },
   "2140": {
-    "currency": 0
+    "currency": 216
   },
   "2432": {
     "currency": 0
@@ -312,7 +312,7 @@
     "currency": 256
   },
   "1850": {
-    "currency": 256
+    "currency": 97
   },
   "1978": {
     "currency": 256
@@ -327,7 +327,7 @@
     "currency": 256
   },
   "12": {
-    "currency": 256
+    "currency": 216
   },
   "16": {
     "currency": 256
@@ -336,7 +336,7 @@
     "currency": 256
   },
   "98": {
-    "currency": 256
+    "currency": 216
   },
   "136": {
     "currency": 256
@@ -405,13 +405,13 @@
     "currency": 216
   },
   "884": {
-    "currency": 216
+    "currency": 0
   },
   "956": {
-    "currency": 216
+    "currency": 0
   },
   "1594742400000": {
-    "time": 6734
+    "time": 10794
   },
   "116": {
     "currency": 216
@@ -432,7 +432,7 @@
     "currency": 216
   },
   "1646": {
-    "currency": 216
+    "currency": 0
   },
   "1688": {
     "currency": 216
@@ -508,5 +508,398 @@
   },
   "6246": {
     "currency": 216
+  },
+  "1594828800000": {
+    "time": 86
+  },
+  "1595260800000": {
+    "time": 8996
+  },
+  "444": {
+    "currency": 216
+  },
+  "532": {
+    "currency": 216
+  },
+  "602": {
+    "currency": 216
+  },
+  "626": {
+    "currency": 216
+  },
+  "1754": {
+    "currency": 216
+  },
+  "1872": {
+    "currency": 216
+  },
+  "2114": {
+    "currency": 216
+  },
+  "2148": {
+    "currency": 216
+  },
+  "2410": {
+    "currency": 216
+  },
+  "2848": {
+    "currency": 216
+  },
+  "3820": {
+    "currency": 216
+  },
+  "3824": {
+    "currency": 216
+  },
+  "5032": {
+    "currency": 216
+  },
+  "5192": {
+    "currency": 216
+  },
+  "5232": {
+    "currency": 216
+  },
+  "5294": {
+    "currency": 216
+  },
+  "5322": {
+    "currency": 216
+  },
+  "5504": {
+    "currency": 216
+  },
+  "5630": {
+    "currency": 216
+  },
+  "6306": {
+    "currency": 216
+  },
+  "6418": {
+    "currency": 216
+  },
+  "6616": {
+    "currency": 216
+  },
+  "7380": {
+    "currency": 216
+  },
+  "7792": {
+    "currency": 216
+  },
+  "8050": {
+    "currency": 216
+  },
+  "1595520000000": {
+    "time": 1128
+  },
+  "438": {
+    "currency": 216
+  },
+  "684": {
+    "currency": 216
+  },
+  "796": {
+    "currency": 216
+  },
+  "844": {
+    "currency": 0
+  },
+  "854": {
+    "currency": 216
+  },
+  "868": {
+    "currency": 216
+  },
+  "1060": {
+    "currency": 216
+  },
+  "1116": {
+    "currency": 216
+  },
+  "1122": {
+    "currency": 216
+  },
+  "1595779200000": {
+    "time": 1806
+  },
+  "630": {
+    "currency": 216
+  },
+  "972": {
+    "currency": 0
+  },
+  "1148": {
+    "currency": 216
+  },
+  "1364": {
+    "currency": 216
+  },
+  "1600": {
+    "currency": 216
+  },
+  "1624": {
+    "currency": 216
+  },
+  "1642": {
+    "currency": 216
+  },
+  "1652": {
+    "currency": 216
+  },
+  "1788": {
+    "currency": 216
+  },
+  "1796": {
+    "currency": 216
+  },
+  "1595865600000": {
+    "time": 2802
+  },
+  "152": {
+    "currency": 216
+  },
+  "484": {
+    "currency": 216
+  },
+  "572": {
+    "currency": 216
+  },
+  "632": {
+    "currency": 216
+  },
+  "782": {
+    "currency": 216
+  },
+  "862": {
+    "currency": 216
+  },
+  "1414": {
+    "currency": 216
+  },
+  "1418": {
+    "currency": 216
+  },
+  "1532": {
+    "currency": 216
+  },
+  "1544": {
+    "currency": 216
+  },
+  "1842": {
+    "currency": 216
+  },
+  "1888": {
+    "currency": 216
+  },
+  "1906": {
+    "currency": 216
+  },
+  "1596038400000": {
+    "time": 3314
+  },
+  "46": {
+    "currency": 216
+  },
+  "52": {
+    "currency": 0
+  },
+  "76": {
+    "currency": 0
+  },
+  "100": {
+    "currency": 0
+  },
+  "260": {
+    "currency": 0
+  },
+  "688": {
+    "currency": 0
+  },
+  "706": {
+    "currency": 0
+  },
+  "850": {
+    "currency": 0
+  },
+  "908": {
+    "currency": 0
+  },
+  "1112": {
+    "currency": 0
+  },
+  "1152": {
+    "currency": 0
+  },
+  "1172": {
+    "currency": 0
+  },
+  "1194": {
+    "currency": 0
+  },
+  "1230": {
+    "currency": 0
+  },
+  "1254": {
+    "currency": 0
+  },
+  "1304": {
+    "currency": 0
+  },
+  "1548": {
+    "currency": 0
+  },
+  "1692": {
+    "currency": 0
+  },
+  "1804": {
+    "currency": 0
+  },
+  "2020": {
+    "currency": 0
+  },
+  "2618": {
+    "currency": 0
+  },
+  "2632": {
+    "currency": 0
+  },
+  "2672": {
+    "currency": 0
+  },
+  "2888": {
+    "currency": 0
+  },
+  "2968": {
+    "currency": 0
+  },
+  "3238": {
+    "currency": 0
+  },
+  "3258": {
+    "currency": 0
+  },
+  "1596211200000": {
+    "time": 2444
+  },
+  "44": {
+    "currency": 0
+  },
+  "876": {
+    "currency": 0
+  },
+  "2064": {
+    "currency": 0
+  },
+  "2296": {
+    "currency": 0
+  },
+  "1596384000000": {
+    "time": 3542
+  },
+  "178": {
+    "currency": 0
+  },
+  "186": {
+    "currency": 0
+  },
+  "196": {
+    "currency": 0
+  },
+  "300": {
+    "currency": 0
+  },
+  "384": {
+    "currency": 0
+  },
+  "432": {
+    "currency": 0
+  },
+  "526": {
+    "currency": 0
+  },
+  "654": {
+    "currency": 0
+  },
+  "758": {
+    "currency": 0
+  },
+  "1330": {
+    "currency": 0
+  },
+  "1410": {
+    "currency": 0
+  },
+  "1470": {
+    "currency": 0
+  },
+  "1564": {
+    "currency": 0
+  },
+  "1620": {
+    "currency": 0
+  },
+  "1674": {
+    "currency": 0
+  },
+  "1718": {
+    "currency": 0
+  },
+  "1726": {
+    "currency": 0
+  },
+  "1738": {
+    "currency": 0
+  },
+  "1846": {
+    "currency": 100
+  },
+  "1952": {
+    "currency": 97
+  },
+  "1994": {
+    "currency": 97
+  },
+  "2094": {
+    "currency": 97
+  },
+  "2166": {
+    "currency": 97
+  },
+  "2214": {
+    "currency": 97
+  },
+  "2250": {
+    "currency": 97
+  },
+  "2364": {
+    "currency": 97
+  },
+  "2414": {
+    "currency": 97
+  },
+  "2734": {
+    "currency": 97
+  },
+  "2986": {
+    "currency": 97
+  },
+  "3076": {
+    "currency": 97
+  },
+  "3166": {
+    "currency": 97
+  },
+  "3178": {
+    "currency": 97
+  },
+  "3188": {
+    "currency": 97
+  },
+  "3250": {
+    "currency": 97
+  },
+  "3450": {
+    "currency": 97
   }
 }

@@ -17,7 +17,9 @@ object Game {
         "url",
         "diamondExchange",
         "debug",
-        "ssHotReload"
+        "ssHotReload",
+        "survivalCenter",
+        "lobbyRadius"
     )
 
     val chart: List<ServerPlayer>

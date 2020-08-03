@@ -1,1 +1,1 @@
-/Users/fuzhu/IdeaProjects/OpenCraftProject/WorldGenerator/build/classes/kotlin/main/com/zhufu/opencraft/GeneratorPlugin.class
+D:\IdeaProjects\OpenCraftProject\WorldGenerator\build\classes\kotlin\main\com\zhufu\opencraft\GeneratorPlugin.class

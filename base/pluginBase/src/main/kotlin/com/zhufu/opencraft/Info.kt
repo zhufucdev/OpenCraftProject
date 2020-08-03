@@ -4,6 +4,7 @@ import com.zhufu.opencraft.player_community.PlayerOutputStream
 import com.zhufu.opencraft.util.CommonPlayerOutputStream
 import org.bukkit.GameMode
 import org.bukkit.Location
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
@@ -50,7 +51,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
     }
 
     enum class GameStatus {
-        MiniGaming, InLobby, Surviving, Observing, InTutorial, Building, Offline
+        MiniGaming, InLobby, Surviving, InTask, Observing, InTutorial, Building, Offline
     }
 
     var status: GameStatus = GameStatus.InLobby
@@ -126,9 +127,10 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
                 login()
             } catch (e: Exception) {
                 player.sendMessage(TextUtil.printException(e))
+                e.printStackTrace()
 
-                isLogin = false
                 isRegistered = false
+                isLogin = false
                 player.tip(getter["user.error.toRegister", plugin.server.getPluginCommand("user reg")?.usage]);
             }
             password == null -> {
@@ -147,7 +149,6 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
         player.walkSpeed = 0.2f
         player.flySpeed = 0.1f
         player.gameMode = GameMode.SURVIVAL
-        player.teleport(Base.spawnWorld.spawnLocation)
         player.isInvulnerable = false
 
         plugin.server.onlinePlayers.forEach { it.showPlayer(plugin, player) }

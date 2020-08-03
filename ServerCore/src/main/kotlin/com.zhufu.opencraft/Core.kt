@@ -1,6 +1,5 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.Base.Extend.isDigit
 import com.zhufu.opencraft.Base.endWorld
 import com.zhufu.opencraft.Base.lobby
 import com.zhufu.opencraft.Base.netherWorld
@@ -18,6 +17,7 @@ import com.zhufu.opencraft.listener.NPCSelectListener
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
+import com.zhufu.opencraft.special_item.base.SpecialItem
 import com.zhufu.opencraft.survey.SurveyManager
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.SpawnReason
@@ -26,7 +26,6 @@ import net.citizensnpcs.api.trait.trait.Equipment
 import org.bukkit.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
-import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -38,28 +37,38 @@ import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.util.Vector
 import java.io.File
-import java.nio.charset.Charset
-import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
-import kotlin.math.roundToLong
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.functions
-import kotlin.reflect.jvm.javaMethod
-import kotlin.reflect.jvm.reflect
 
 class Core : JavaPlugin(), Listener {
     companion object {
         var npc = ArrayList<NPC>()
     }
 
-    private var reloadTask: BukkitTask? = null
-    private var saveTask: BukkitTask? = null
+    internal var reloadTask: BukkitTask? = null
+    internal var saveTask: BukkitTask? = null
     private var awardTask: Timer? = null
     private lateinit var scoreBoardTask: BukkitTask
     override fun onEnable() {
+        // Command
+        getCommand("server")!!.apply {
+            val e = ServerCommandExecutor(this@Core)
+            setExecutor(e)
+            tabCompleter = e
+        }
+        getCommand("survey")!!.apply {
+            val e = SurveyCommandExecutor()
+            setExecutor(e)
+            tabCompleter = e
+        }
+        getCommand("builder")!!.apply {
+            val e = ServerCommandExecutor(this@Core)
+            setExecutor(e)
+            tabCompleter = e
+        }
         //World initializations
         spawnWorld = server.createWorld(
             WorldCreator.name("world_spawn")
@@ -87,6 +96,21 @@ class Core : JavaPlugin(), Listener {
             } catch (e: Exception) {
                 YamlConfiguration()
             }
+        env.addDefaults(
+            mapOf(
+                "reloadDelay" to 2 * 60 * 20,
+                "inventorySaveDelay" to 4 * 60 * 20,
+                "prisePerBlock" to 10,
+                "backToDeathPrise" to 3,
+                "countOfSurveyQuestion" to 6,
+                "secondsPerQuestion" to 30,
+                "url" to "https://www.open-craft.cn",
+                "debug" to false,
+                "ssHotReload" to false,
+                "survivalCenter" to surviveWorld.getHighestBlockAt(0, 0).location,
+                "lobbyRadius" to 100
+            )
+        )
         handleTasks()
 
         with(Bukkit.getPluginManager()) {
@@ -99,10 +123,11 @@ class Core : JavaPlugin(), Listener {
             registerEvents(SurviveListener(self), self)
         }
         if (!dataFolder.exists()) dataFolder.mkdirs()
-        runInit(ServerStatics::init)
+        runReport(ServerStatics::init)
         PlayerStatics.Companion
-        runInit(SurveyManager::init, File(dataFolder, "survey.json"), this)
+        runReport(SurveyManager::init, File(dataFolder, "survey.json"), this)
         listOf(
+            SpecialItem.Companion::init,
             GameManager::init,
             PlayerManager::init,
             TradeManager::init,
@@ -110,7 +135,7 @@ class Core : JavaPlugin(), Listener {
             PlayerLobbyManager::init,
             BuilderListener::init
         ).forEach {
-            runInit(it, this)
+            runReport(it, this)
         }
 
         ServerCaller["SolvePlayerLobby"] = {
@@ -170,7 +195,7 @@ class Core : JavaPlugin(), Listener {
         startAward()
     }
 
-    fun runInit(f: KFunction<*>, vararg args: Any?) {
+    private fun runReport(f: KFunction<*>, vararg args: Any?) {
         try {
             f.call(*args)
         } catch (e: Exception) {
@@ -184,36 +209,29 @@ class Core : JavaPlugin(), Listener {
             it.destroy()
         }
         PlayerObserverListener.onServerStop()
+        PlayerManager.forEachPlayer { it.saveServerID() }
         saveAll()
+        SpecialItem.cleanUp()
     }
 
     private fun saveAll() {
-        Bukkit.getLogger().info("Saving everything...")
+        logger.info("Saving everything...")
         env.save(File(dataFolder, "env"))
-        PlayerManager.forEachPlayer { it.saveServerID() }
-        BuilderListener.saveConfig()
-        PlayerStatics.saveAll()
+        listOf(
+            SpecialItem.Companion::save,
+            BuilderListener::saveConfig,
+            PlayerStatics.Companion::saveAll,
+            PlayerLobbyManager::saveAll,
+            ServerStatics::save
+        ).forEach {
+            runReport(it)
+        }
         publicMsgPool.serialize().save(Base.msgPoolFile)
-        PlayerLobbyManager.saveAll()
-        ServerStatics.save()
     }
 
-    private var urlLooper = 0
-    private var looperDirection = true
-    private fun handleTasks() {
-        env.addDefaults(
-            mapOf(
-                "reloadDelay" to 2 * 60 * 20,
-                "inventorySaveDelay" to 4 * 60 * 20,
-                "prisePerBlock" to 10,
-                "backToDeathPrise" to 3,
-                "countOfSurveyQuestion" to 6,
-                "secondsPerQuestion" to 30,
-                "url" to "https://www.open-craft.cn",
-                "debug" to false,
-                "ssHotReload" to false
-            )
-        )
+    internal var urlLooper = 0
+    internal var looperDirection = true
+    internal fun handleTasks() {
         env.save(File(dataFolder, "env"))
         saveTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, Runnable {
             Bukkit.getPluginManager().callEvent(PlayerInventorySaveEvent())
@@ -312,7 +330,7 @@ class Core : JavaPlugin(), Listener {
         }, 0L, 1)
     }
 
-    private fun spawnNPC() {
+    internal fun spawnNPC() {
         val data = File(dataFolder, "npc")
         if (!data.exists()) data.mkdirs()
         npc.forEach {
@@ -396,625 +414,6 @@ class Core : JavaPlugin(), Listener {
         } catch (e: Exception) {
             throw IllegalStateException("Unable to load ${file.nameWithoutExtension}: ${e.message}", e.cause)
         }
-    }
-
-    override fun onCommand(
-        sender: CommandSender,
-        command: Command,
-        label: String,
-        args: Array<out String>
-    ): Boolean {
-        if (command.name == "server") {
-            when {
-                args.isEmpty() -> {
-                    sender.sendMessage("用法错误")
-                    return false
-                }
-                args.first() == "feedback" -> {
-                    if (args.size < 2) {
-                        sender.sendMessage(TextUtil.error("您没有输入文本"))
-                        return false
-                    }
-                    val sb = StringBuilder()
-                    for (i in 1 until args.size)
-                        sb.append("${args[i]} ")
-                    sb.deleteCharAt(sb.length - 1)
-
-                    if (sb.length > 300) {
-                        sender.sendMessage(TextUtil.error("字数超过上限(300字)"))
-                        return true
-                    }
-
-                    val file = File(
-                        "$dataFolder${File.separatorChar}feedback${File.separatorChar}${SimpleDateFormat("yyyy${File.separatorChar}MM${File.separatorChar}dd${File.separatorChar}HH:mm").format(
-                            Date()
-                        )}-${sender.name}.txt"
-                    )
-                    file.parentFile.mkdirs()
-                    file.createNewFile()
-                    file.writeText(sb.toString())
-
-                    PlayerManager.forEachOffline {
-                        if (it.offlinePlayer.isOp) {
-                            it.messagePool.add(
-                                TextUtil.info("收到来自${sender.name} 的反馈:") + sb.toString(),
-                                MessagePool.Type.Friend
-                            )
-                        }
-                    }
-
-                    sender.sendMessage(TextUtil.info("您的反馈已提交，${TextUtil.error("感谢支持")}"))
-                }
-                args.first() == "about" -> {
-                    val readme = File(dataFolder, "readme.txt")
-                    if (!readme.exists()) {
-                        sender.sendMessage(TextUtil.info("未找到自述文件"))
-                        return true
-                    }
-                    val charset = if (args.size >= 2) try {
-                        Charset.forName(args[1])
-                    } catch (e: Exception) {
-                        sender.sendMessage(TextUtil.error("未找到编码格式: ${args[1]}"))
-                        return false
-                    } else Charsets.UTF_8
-                    Bukkit.getScheduler().runTaskAsynchronously(this, Runnable {
-                        val path = Paths.get(
-                            System.getenv("PATH").split(':').firstOrNull {
-                                Paths.get(it, "screenfetch").toFile().exists()
-                            } ?: "null",
-                            "screenfetch"
-                        ).toFile()
-                        val screenfetch = if (path.exists()) {
-                            Runtime.getRuntime().exec(path.absolutePath)
-                                .inputStream.bufferedReader()
-                                .readText().filter { !it.isISOControl() || it == '\n' }
-                                .replace(Regex("\\[[0-9]*;"), "[")
-                                .replace("[0m", "")
-                                .replace("[1m", ChatColor.RESET.toString())
-                                .replace("[30m", "${ChatColor.COLOR_CHAR}${ChatColor.BLACK.char}")
-                                .replace("[31m", "${ChatColor.COLOR_CHAR}${ChatColor.RED.char}")
-                                .replace("[32m", "${ChatColor.COLOR_CHAR}${ChatColor.GREEN.char}")
-                                .replace("[33m", "${ChatColor.COLOR_CHAR}${ChatColor.YELLOW.char}")
-                                .replace("[34m", "${ChatColor.COLOR_CHAR}${ChatColor.BLUE.char}")
-                                .replace("[35m", "${ChatColor.COLOR_CHAR}${ChatColor.LIGHT_PURPLE.char}")
-                                .replace("[36m", "${ChatColor.COLOR_CHAR}${ChatColor.DARK_AQUA.char}")
-                                .replace("[37m", "${ChatColor.COLOR_CHAR}${ChatColor.WHITE}")
-                                .plus(ChatColor.RESET.char)
-                        } else "ERROR: no shell command screenfetch."
-                        sender.sendMessage(
-                            TextUtil.format(
-                                title = "自述文件",
-                                content = screenfetch + readme.readText(charset)
-                            )
-                        )
-                    })
-                }
-                args.first() == "stop" -> {
-                    if (sender !is ConsoleCommandSender && !sender.isOp) {
-                        sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
-                        return true
-                    }
-                    if (args.size < 2) {
-                        sender.sendMessage(TextUtil.error("请给出原因"))
-                        return false
-                    }
-                    val message = TextUtil.info(args[1])
-                    server.onlinePlayers.forEach {
-                        it.sendTitle(TextUtil.error("服务器即将关闭"), message, 7, 1000, 7)
-                    }
-                    Bukkit.getScheduler().runTaskLater(this, Runnable {
-                        Bukkit.getOnlinePlayers().forEach {
-                            it.kickPlayer(message)
-                        }
-                        server.shutdown()
-                    }, (args[1].length * 0.2 * 20).roundToLong())
-                }
-                args.first() == "reload" -> {
-                    if (sender !is ConsoleCommandSender && !sender.isOp) {
-                        sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
-                        return true
-                    }
-                    if (args.size < 2) {
-                        Bukkit.getPluginManager().callEvent(ServerReloadEvent())
-                        sender.info("正在重载服务器")
-                        return true
-                    }
-
-                    val failure = ArrayList<String>()
-                    (1 until args.size).forEach {
-                        var result = false
-                        when (args[it]) {
-                            "game" -> {
-                                sender.sendMessage(TextUtil.info("正在重载游戏"))
-                                result = true
-                                GameManager.forEach { game ->
-                                    val id = game.gameID
-                                    try {
-                                        game.initGameEnder()
-                                    } catch (e: Exception) {
-                                        result = false
-                                        sender.sendMessage(TextUtil.error("gameID: $id ${e.javaClass.simpleName}: ${e.message}"))
-                                        e.printStackTrace()
-                                    }
-                                }
-                            }
-                            "npc" -> {
-                                sender.sendMessage(TextUtil.info("正在重载NPC"))
-                                result = try {
-                                    spawnNPC()
-                                    true
-                                } catch (e: Exception) {
-                                    sender.sendMessage(TextUtil.error("${e.javaClass.simpleName}: ${e.message}"))
-                                    e.printStackTrace()
-                                    false
-                                }
-                            }
-                            "survey" -> {
-                                sender.sendMessage(TextUtil.info("正在重载服务器调查"))
-                                SurveyManager.init(File(dataFolder, "survey.json"), null)
-                                result = true
-                            }
-                            "lang" -> {
-                                sender.info("正在重载语言文件")
-                                result = try {
-                                    Language.init()
-                                    true
-                                } catch (e: Exception) {
-                                    sender.sendMessage(TextUtil.error("${e.javaClass.simpleName}: ${e.message}"))
-                                    e.printStackTrace()
-                                    false
-                                }
-                            }
-                            "ss" -> {
-                                sender.info("正在重载脚本")
-                                try {
-                                    val plugin = Bukkit.getPluginManager().getPlugin("ServerScript")
-                                    if (plugin != null) {
-                                        plugin::class.functions.first { kFunction -> kFunction.name == "initScripting" }
-                                            .call(plugin)
-                                        result = true
-                                    } else {
-                                        Bukkit.getLogger().warning("ServerScript plugin isn't loaded")
-                                    }
-                                } catch (e: Exception) {
-                                    sender.error("${e.javaClass.simpleName}: ${e.message}")
-                                    e.printStackTrace()
-                                }
-                            }
-                            "builder" -> {
-                                sender.info("正在重载建筑者配置")
-                                result = try {
-                                    reloadConfig()
-                                    true
-                                } catch (e: Exception) {
-                                    sender.error("${e.javaClass.simpleName}: ${e.message}")
-                                    e.printStackTrace()
-                                    false
-                                }
-                            }
-                            else -> {
-                                sender.sendMessage(TextUtil.error("无效模块: ${args[1]}"))
-                            }
-                        }
-                        if (!result)
-                            failure.add(args[it])
-                    }
-                    sender.sendMessage(
-                        if (failure.isEmpty())
-                            TextUtil.info("成功重载指定模块")
-                        else {
-                            buildString {
-                                append("${ChatColor.RED}无法重载")
-                                failure.forEach { append("$it,") }
-                                deleteCharAt(lastIndex)
-                            }
-                        }
-                    )
-                }
-                args.first() == "set" -> {
-                    if (!sender.isOp) {
-                        sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
-                        return true
-                    }
-                    if (args.size < 3) {
-                        sender.sendMessage(TextUtil.error("用法错误"))
-                        return true
-                    }
-                    if (args[1] == "url") {
-                        env.set("url", args[2])
-                        env.save(File(dataFolder, "env"))
-                        sender.success("已将服务器网站地址标记为${args[2]}")
-                        urlLooper = 0
-                        looperDirection = true
-                    } else if (args[1] == "debug") {
-                        if (args[2] == "true") {
-                            env.set("debug", true)
-                            sender.success("已启动调试模式")
-                        } else {
-                            env.set("debug", false)
-                            sender.success("已关闭调试模式")
-                        }
-                    } else if (args[1] == "ssHotReload") {
-                        val content = "服务器脚本动态刷新，重载服务器脚本以生效"
-                        if (args[2] == "true") {
-                            env.set("ssHotReload", true)
-                            sender.success("已启用$content")
-                        } else {
-                            env.set("ssHotReload", false)
-                            sender.success("已关闭$content")
-                        }
-                    } else {
-                        fun checkIntOverZero(): Boolean {
-                            if (!args[2].isDigit()) {
-                                sender.sendMessage(TextUtil.error("此变量只允许数字"))
-                                return false
-                            }
-                            if (args[2].contains('.') || args[2].contains('-')) {
-                                sender.sendMessage(TextUtil.error("此变量只允许正整数"))
-                                return false
-                            }
-                            return true
-                        }
-                        if (!varNames.contains(args[1])) {
-                            sender.sendMessage(TextUtil.error("变量不存在"))
-                            return true
-                        }
-                        if (checkIntOverZero()) {
-                            env.set(args[1], args[2].toIntOrNull())
-                            sender.sendMessage(TextUtil.success("已将服务器环境变量${args[1]}设置为${args[2]}"))
-
-                            reloadTask?.cancel()
-                            saveTask?.cancel()
-                            handleTasks()
-                        }
-                    }
-                    env.save(File(dataFolder, "env"))
-                }
-                args.first() == "notice" -> {
-                    if (args.size <= 1 && sender is Player && sender.isOp) {
-                        Base.publicMsgPool.sendAllTo(sender.info() ?: return true)
-                        return true
-                    }
-                    if (args.size < 3) {
-                        sender.error("用法错误")
-                        return true
-                    }
-                    when (args[1]) {
-                        "append" -> {
-                            val text = buildString {
-                                for (i in 2 until args.size)
-                                    append(args[i] + ' ')
-                                deleteCharAt(lastIndex)
-                            }
-                            Base.publicMsgPool.add(
-                                text = text,
-                                type = MessagePool.Type.Public,
-                                extra = YamlConfiguration()
-                            )
-                            sender.success("已在公共消息池中追加该内容")
-                            PlayerManager.forEachChatter { Base.publicMsgPool.sendUnreadTo(it) }
-                        }
-                        "remove" -> {
-                            val id = args[2].toIntOrNull()
-                            if (id == null || id < 0) {
-                                sender.error("参数必须是自然数")
-                                return true
-                            }
-                            Base.publicMsgPool.remove(id)
-                            sender.success("已移除索引为${id}的消息")
-                        }
-                        "broadcast" -> PlayerManager.forEachChatter { Base.publicMsgPool.sendUnreadTo(it) }
-                    }
-                }
-                args.first() == "script" -> {
-                    val getter = sender.getter()
-                    if (!sender.isOp) {
-                        sender.error(getter["command.error.permission"])
-                        return true
-                    }
-                    if (args.size < 2 || args[1].isEmpty()) {
-                        sender.error(getter["command.error.usage"])
-                        return true
-                    }
-                    val src = buildString {
-                        for (i in 1 until args.size) {
-                            append(args[i] + ' ')
-                        }
-                        if (isNotEmpty()) {
-                            deleteCharAt(lastIndex)
-                        }
-                    }
-                    TODO()
-                    /*
-                    Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
-                        val timeBegin = System.currentTimeMillis()
-                        val result = ServerScript.INSTANCE.runLine(
-                            src,
-                            if (sender is Player) sender.info()?.playerOutputStream else null
-                        )
-                        val timeEnd = System.currentTimeMillis()
-                        if (result == null) {
-                            sender.error(getter["scripting.returnNull", (timeEnd - timeBegin) / 1000.0])
-                        } else {
-                            sender.success(getter["scripting.returnSomething", (timeEnd - timeBegin) / 1000.0, result.toString()])
-                        }
-                    }
-                     */
-                }
-            }
-        } else if (command.name == "survey") {
-            if (args.isNotEmpty()) {
-                if (!sender.isOp) {
-                    sender.sendMessage(TextUtil.error("您没有权限使用该命令"))
-                    return true
-                }
-                if (args.size < 2) {
-                    sender.sendMessage(TextUtil.error("用法错误"))
-                    return true
-                }
-                when (args.first()) {
-                    "pass" -> {
-                        val it = PlayerManager.findOfflineInfoByPlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
-                        if (it == null) {
-                            sender.sendMessage(TextUtil.error("找不到玩家"))
-                            return true
-                        }
-                        if (it.isOnline) {
-                            it.onlinePlayerInfo!!.player.sendTitle("", TextUtil.info("您已被管理员给予正式会员的身份"), 7, 60, 7)
-                        }
-                        it.isSurveyPassed = true
-                    }
-                    "rollback" -> {
-                        val it = PlayerManager.findOfflineInfoByPlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
-                        if (it == null) {
-                            sender.sendMessage(TextUtil.error("找不到玩家"))
-                            return true
-                        }
-                        if (it.isOnline) {
-                            it.onlinePlayerInfo!!.player.sendTitle("", TextUtil.info("您已被管理员剥夺正式会员的身份"), 7, 60, 7)
-                        }
-                        it.isSurveyPassed = false
-                    }
-                    "giveChance" -> {
-                        val it = PlayerManager.findOfflineInfoByPlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
-                        if (it == null) {
-                            sender.sendMessage(TextUtil.error("找不到玩家"))
-                            return true
-                        }
-                        val num = args[2].toIntOrNull()
-                        if (num == null) {
-                            sender.sendMessage(TextUtil.error("非法参数 ${args[2]}: 参数不是整数"))
-                            return true
-                        }
-                        it.remainingSurveyChance += num
-                        if (it.isOnline) {
-                            it.onlinePlayerInfo!!.player.sendMessage(TextUtil.info("您被给予${num}次参与服务器调查的机会，您现在有${it.remainingSurveyChance}次机会"))
-                        }
-                    }
-                }
-            } else {
-                if (sender !is Player) {
-                    sender.sendMessage(TextUtil.error("只有玩家才能使用此命令"))
-                    return true
-                }
-                SurveyManager.startSurvey(sender)
-            }
-        } else if (command.name == "builder") {
-            if (args.isEmpty()) {
-                if (sender !is Player) {
-                    sender.sendMessage(TextUtil.error("只有玩家才能使用此命令"))
-                    return true
-                }
-                val info = PlayerManager.findInfoByPlayer(sender)
-                if (info == null) {
-                    sender.error(Language.getDefault("player.error.unknown"))
-                    return true
-                }
-                if (sender.info()?.isBuilder != true) {
-                    sender.sendMessage(TextUtil.error("只有建筑者才能使用此命令"))
-                    return true
-                }
-
-                if (info.status != Info.GameStatus.MiniGaming && info.status != Info.GameStatus.InTutorial && info.status != Info.GameStatus.Observing) {
-                    BuilderListener.switch(sender)
-                } else {
-                    sender.sendMessage(TextUtil.error("抱歉，但您不能在此时使用此命令"))
-                    return true
-                }
-            } else if (args.size >= 2) {
-                if (!sender.isOp) {
-                    sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
-                    return true
-                }
-                val player = Bukkit.getOfflinePlayer(args[1])
-                when (args.first()) {
-                    "pass" -> {
-                        if (player.offlineInfo()?.isBuilder != true) {
-                            BuilderListener.updatePlayerLevel(player, 3)
-                            sender.sendMessage(TextUtil.success("以给予${args.last()}建筑者的身份"))
-                            player.player?.sendTitle("", TextUtil.info("您已被管理员给予建筑者的身份"), 7, 60, 7)
-                        }
-                    }
-                    "rollback" -> {
-                        if (player.offlineInfo()?.isBuilder == true) {
-                            BuilderListener.updatePlayerLevel(player, 0)
-                            sender.sendMessage(TextUtil.success("以夺去${args.last()}建筑者的身份"))
-                            player.player?.sendTitle("", TextUtil.info("您已被管理员夺去建筑者的身份"), 7, 60, 7)
-                        }
-                    }
-                    "set" -> {
-                        val num = args[2].toIntOrNull()
-                        if (num == null || num < 1) {
-                            sender.sendMessage(TextUtil.error("无效参数: ${args[2]}: 参数不是自然数"))
-                            return true
-                        }
-                        BuilderListener.updatePlayerLevel(player, num)
-                        sender.sendMessage(TextUtil.success("已将${player.name}的建筑者等级设置为$num"))
-                        player.player?.sendMessage(TextUtil.info("您的建筑者等级已更新为$num"))
-                    }
-                    else -> {
-                        sender.sendMessage(TextUtil.error("用法错误"))
-                    }
-                }
-            } else {
-                sender.sendMessage(TextUtil.error("用法错误"))
-            }
-        }
-        return true
-    }
-
-    override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        alias: String,
-        args: Array<out String>
-    ): MutableList<String> {
-        if (command.name == "server") {
-            val first = args.first()
-
-            if (args.size == 1) {
-                val commands = mutableListOf("feedback", "about")
-                if (sender.isOp) commands.addAll(listOf("stop", "reload", "set", "notice", "script"))
-                return if (first.isEmpty()) {
-                    commands
-                } else {
-                    commands.filter { it.startsWith(first) }.toMutableList()
-                }
-            } else {
-                when (first) {
-                    "about" -> {
-                        val sets = listOf(
-                            Charsets.UTF_8.name(),
-                            Charsets.UTF_16.name(),
-                            Charsets.US_ASCII.name(),
-                            Charsets.ISO_8859_1.name()
-                        )
-                        if (args.size == 1)
-                            return sets.toMutableList()
-                        else if (args.size == 2) {
-                            val result = ArrayList<String>()
-                            sets.forEach {
-                                if (it.startsWith(args[1])) result.add(it)
-                            }
-                            return result.toMutableList()
-                        }
-                    }
-                    "reload" -> {
-                        if (!sender.isOp) {
-                            return mutableListOf()
-                        }
-                        val models = listOf("game", "notice", "npc", "survey", "lang", "ss", "builder")
-                        if (args.size == 1)
-                            return models.toMutableList()
-                        else if (args.size >= 2) {
-                            val result = ArrayList<String>()
-                            models.forEach { if (it.startsWith(args.last())) result.add(it) }
-                            return result.toMutableList()
-                        }
-                    }
-                    "set" -> {
-                        if (!sender.isOp) {
-                            return mutableListOf()
-                        }
-
-                        when (args.size) {
-                            1 -> return varNames.toMutableList()
-                            2 -> {
-                                val result = ArrayList<String>()
-                                varNames.forEach { if (it.startsWith(args[1])) result.add(it) }
-                                return result.toMutableList()
-                            }
-                            3 -> {
-                                if (args.last() == "debug")
-                                    return mutableListOf("true", "false")
-                            }
-                        }
-                    }
-                    "notice" -> {
-                        if (!sender.isOp)
-                            return mutableListOf()
-                        val commands = mutableListOf("append", "remove", "broadcast")
-                        if (args.size == 1) {
-                            return if (args.first().isEmpty())
-                                commands
-                            else
-                                commands.filter { it.startsWith(args.first()) }.toMutableList()
-                        }
-                    }
-                }
-            }
-        } else if (command.name == "survey") {
-            if (sender.isOp) {
-                if (args.size == 1) {
-                    val commands = mutableListOf("pass", "rollback", "giveChance")
-                    return if (args.first().isEmpty()) {
-                        commands
-                    } else {
-                        val r = ArrayList<String>()
-                        commands.forEach { if (it.startsWith(args.first())) r.add(it) }
-                        r
-                    }
-                } else if (args.size == 2) {
-                    val p = ArrayList<String?>()
-                    OfflineInfo.forEach {
-                        if (args.first() == "pass" && !it.isSurveyPassed)
-                            p.add(Bukkit.getOfflinePlayer(it.uuid!!).name)
-                        else if (args.first() == "rollback" && it.isSurveyPassed)
-                            p.add(Bukkit.getOfflinePlayer(it.uuid!!).name)
-                        else if (args.first() == "giveChance")
-                            p.add(Bukkit.getOfflinePlayer(it.uuid!!).name)
-                    }
-                    return if (args[1].isEmpty()) {
-                        p.filterNotNull().toMutableList()
-                    } else {
-                        val r = ArrayList<String>()
-                        p.forEach { if (it != null && it.startsWith(args[1])) r.add(it) }
-                        r
-                    }
-                }
-            }
-        } else if (command.name == "builder") {
-            if (sender.isOp) {
-                if (args.size == 1) {
-                    val commands = mutableListOf("pass", "rollback", "set")
-                    return if (args.first().isEmpty()) {
-                        commands
-                    } else {
-                        val r = ArrayList<String>()
-                        commands.forEach {
-                            if (it.startsWith(args.first()))
-                                r.add(it)
-                        }
-                        r
-                    }
-                } else if (args.size == 2) {
-                    val p = ArrayList<String>()
-                    fun addAllOffline() {
-                        OfflineInfo.forEach {
-                            p.add(it.name ?: return@forEach)
-                        }
-                    }
-                    when {
-                        args.first() == "pass" -> addAllOffline()
-                        args.first() == "rollback" ->
-                            OfflineInfo.forEach { if (it.isBuilder) p.add(it.name ?: return@forEach) }
-                        args.first() == "set" -> addAllOffline()
-                    }
-
-                    return if (args[1].isEmpty()) {
-                        p
-                    } else {
-                        val r = ArrayList<String>()
-                        p.forEach {
-                            if (it.startsWith(args[1]))
-                                r.add(it)
-                        }
-                        r
-                    }
-                }
-            }
-        }
-        return mutableListOf()
     }
 
     @EventHandler

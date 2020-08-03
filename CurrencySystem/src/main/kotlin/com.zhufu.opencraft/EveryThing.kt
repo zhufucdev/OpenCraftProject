@@ -7,14 +7,11 @@ import com.zhufu.opencraft.CurrencySystem.Companion.territoryMap
 import com.zhufu.opencraft.CurrencySystem.Companion.transMap
 import com.zhufu.opencraft.DualInventory.Companion.RESET
 import com.zhufu.opencraft.inventory.TraderInventory.Companion.getPositionForLine
-import com.zhufu.opencraft.inventory.FlyWandInventory
 import com.zhufu.opencraft.inventory.TraderInventory
 import com.zhufu.opencraft.inventory.SetUpValidateInventory
 import com.zhufu.opencraft.inventory.VisitorInventory
 import com.zhufu.opencraft.TradeManager.printTradeError
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
-import com.zhufu.opencraft.special_item.FlyWand
-import com.zhufu.opencraft.special_item.SpecialItem
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -165,9 +162,6 @@ object EveryThing : Listener {
             val itemInHand = event.player.inventory.itemInMainHand
             if (event.player.world == tradeWorld && itemInHand.type == Material.COMPASS)
                 VisitorInventory(CurrencySystem.instance, event.player)
-            else if (FlyWand.isThis(itemInHand)) {
-                FlyWandInventory(event.player, CurrencySystem.instance)
-            }
         }
     }
 
@@ -293,7 +287,6 @@ object EveryThing : Listener {
                     }
                     inventory.confirm()
                 }
-                else -> inventory.selectSpecialItem(event.currentItem!!)
             }
         }
     }

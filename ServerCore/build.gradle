@@ -7,7 +7,7 @@ dependencies {
     implementation project(':tradeBase')
     implementation project(':utils')
     implementation project(':miniGameBase')
-    implementation project(':listeners')
+    implementation project(':gameplay')
     implementation project(':scripting')
     compile 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
 }
