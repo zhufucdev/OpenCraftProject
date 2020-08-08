@@ -7,42 +7,36 @@ import com.zhufu.opencraft.Base.publicMsgPool
 import com.zhufu.opencraft.Base.spawnWorld
 import com.zhufu.opencraft.Base.surviveWorld
 import com.zhufu.opencraft.Game.env
-import com.zhufu.opencraft.Game.varNames
 import com.zhufu.opencraft.PlayerManager.showPlayerOutOfDemoTitle
 import com.zhufu.opencraft.chunkgenerator.VoidGenerator
 import com.zhufu.opencraft.events.PlayerInventorySaveEvent
 import com.zhufu.opencraft.events.PlayerJoinGameEvent
-import com.zhufu.opencraft.listener.NPCListener
-import com.zhufu.opencraft.listener.NPCSelectListener
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
 import com.zhufu.opencraft.special_item.base.SpecialItem
 import com.zhufu.opencraft.survey.SurveyManager
 import net.citizensnpcs.api.CitizensAPI
-import net.citizensnpcs.api.event.SpawnReason
+import net.citizensnpcs.api.npc.MemoryNPCDataStore
 import net.citizensnpcs.api.npc.NPC
-import net.citizensnpcs.api.trait.trait.Equipment
-import org.bukkit.*
-import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
+import org.bukkit.Bukkit
+import org.bukkit.WorldCreator
+import org.bukkit.WorldType
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.DisplaySlot
-import org.bukkit.util.Vector
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
 import kotlin.reflect.KFunction
+import kotlin.system.measureTimeMillis
 
+@Suppress("MemberVisibilityCanBePrivate")
 class Core : JavaPlugin(), Listener {
     companion object {
         var npc = ArrayList<NPC>()
@@ -82,10 +76,6 @@ class Core : JavaPlugin(), Listener {
         lobby = server.getWorld("world")!!
         lobby.peace()
 
-        surviveWorld.apply {
-            setGameRule(GameRule.KEEP_INVENTORY, false)
-            difficulty = Difficulty.HARD
-        }
         env =
             try {
                 YamlConfiguration.loadConfiguration(File(dataFolder, "env").also {
@@ -116,16 +106,21 @@ class Core : JavaPlugin(), Listener {
         with(Bukkit.getPluginManager()) {
             val self = this@Core
             registerEvents(self, self)
-            if (server.pluginManager.isPluginEnabled("Citizens")) {
-                registerEvents(NPCListener, self)
-                registerEvents(NPCSelectListener(npc.toTypedArray()), self)
-            }
             registerEvents(SurviveListener(self), self)
         }
+
+        if (!server.pluginManager.isPluginEnabled("Citizens")) {
+            logger.warning("Citizens is not enabled.")
+            logger.warning("Disabling NPC functionality.")
+        } else {
+            CitizensAPI.createNamedNPCRegistry("temp", MemoryNPCDataStore())
+        }
+
         if (!dataFolder.exists()) dataFolder.mkdirs()
         runReport(ServerStatics::init)
         PlayerStatics.Companion
         runReport(SurveyManager::init, File(dataFolder, "survey.json"), this)
+        runReport(this::ssInit)
         listOf(
             SpecialItem.Companion::init,
             GameManager::init,
@@ -142,14 +137,6 @@ class Core : JavaPlugin(), Listener {
             val info = (it.firstOrNull()
                 ?: throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
             PlayerLobbyManager[info].also { lobby -> if (!lobby.isInitialized) lobby.initialize() }.tpHere(info.player)
-        }
-        if (!server.pluginManager.isPluginEnabled("Citizens")) {
-            logger.warning("Citizens is not enabled.")
-            logger.warning("Disabling NPC functionality.")
-        } else {
-            Bukkit.getScheduler().runTaskLater(this, { _ ->
-                spawnNPC()
-            }, 40)
         }
 
         fun startAward() {
@@ -199,7 +186,7 @@ class Core : JavaPlugin(), Listener {
         try {
             f.call(*args)
         } catch (e: Exception) {
-            logger.throwing("ServerCore", f.name, e)
+            e.printStackTrace()
         }
     }
 
@@ -212,6 +199,7 @@ class Core : JavaPlugin(), Listener {
         PlayerManager.forEachPlayer { it.saveServerID() }
         saveAll()
         SpecialItem.cleanUp()
+        Scripting.cleanUp()
     }
 
     private fun saveAll() {
@@ -252,7 +240,7 @@ class Core : JavaPlugin(), Listener {
             }
         }, 0, env.getLong("inventorySaveDelay"))
 
-        reloadTask = Bukkit.getScheduler().runTaskTimer(this, Runnable {
+        reloadTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, Runnable {
             Bukkit.getPluginManager().callEvent(ServerReloadEvent())
         }, 0, env.getLong("reloadDelay"))
 
@@ -275,6 +263,7 @@ class Core : JavaPlugin(), Listener {
                     val obj = newBoard.registerNewObjective("serverStatics", "dummy", getter["server.statics.title"])
                     obj.displaySlot = DisplaySlot.SIDEBAR
                     obj.getScore(TextUtil.info(getter["server.statics.coinCount", info.currency])).score = --sort
+                    obj.getScore(TextUtil.info(getter["server.statics.exp", info.exp])).score = --sort
                     if (!info.isSurveyPassed) {
                         obj.getScore(TextUtil.info(getter["server.statics.demoTime", info.remainingDemoTime / 1000L / 60]))
                             .score = --sort
@@ -298,7 +287,7 @@ class Core : JavaPlugin(), Listener {
                         ServerStatics.onlineTime += 2
                     }
 
-
+                    // Tick SpecialItem
                     val modifier = PlayerModifier(info)
                     if (info.player.inventory.containsSpecialItem) {
                         val data = YamlConfiguration()
@@ -307,7 +296,7 @@ class Core : JavaPlugin(), Listener {
                         }
                     }
                     modifier.apply()
-
+                    // URL Loop
                     obj.getScore(
                         buildString {
                             val all = TextUtil.TextColor.AQUA.code
@@ -330,89 +319,25 @@ class Core : JavaPlugin(), Listener {
         }, 0L, 1)
     }
 
-    internal fun spawnNPC() {
-        val data = File(dataFolder, "npc")
-        if (!data.exists()) data.mkdirs()
-        npc.forEach {
-            it.despawn()
-            it.destroy()
-        }
-        npc.clear()
-        data.listFiles()?.forEach {
-            if (!it.isHidden) {
-                try {
-                    npc.add(readNPCProfile(it))
-                } catch (e: Exception) {
-                    throw IllegalStateException("Error while loading ${it.name}", e.cause)
+    fun ssInit() {
+        Scripting
+        val ssLoadTime = measureTimeMillis {
+            Scripting.cleanUp()
+            Scripting.init(this).let { failures ->
+                if (failures.isEmpty()) return@let
+                logger.warning {
+                    buildString {
+                        append("Failed to load following server scripts: ")
+                        failures.forEach {
+                            append(it.nameWithoutExtension)
+                            append(", ")
+                        }
+                    }.removeSuffix(", ")
                 }
             }
         }
-    }
-
-    private fun readNPCProfile(file: File): NPC {
-        logger.info("Loading NPC file ${file.name}")
-
-        try {
-            val conf = YamlConfiguration.loadConfiguration(file)
-            val registry = CitizensAPI.getNPCRegistry()
-
-            val name = TextUtil.getCustomizedText(conf.getString("name", "Unknown")!!)
-            val type = EntityType.valueOf(conf.getString("type", "PLAYER")!!.toUpperCase())
-            val world = Bukkit.getWorld(conf.getString("world", "world")!!)
-            val x = conf.getString("location.x")!!.toDouble()
-            val y = conf.getString("location.y")!!.toDouble()
-            val z = conf.getString("location.z")!!.toDouble()
-            val faceX = conf.getString("face.x")!!.toDouble()
-            val faceY = conf.getString("face.y")!!.toDouble()
-            val faceZ = conf.getString("face.z")!!.toDouble()
-            val rightHand =
-                if (conf.getString("items.rightHand") != null) Material.valueOf(conf.getString("items.rightHand")!!) else null
-            val leftHand =
-                if (conf.getString("items.leftHand") != null) Material.valueOf(conf.getString("items.leftHand")!!) else null
-            val chest =
-                if (conf.getString("items.chest") != null) Material.valueOf(conf.getString("items.chest")!!) else null
-            val leggings =
-                if (conf.getString("items.leggings") != null) Material.valueOf(conf.getString("items.leggings")!!) else null
-            val boots =
-                if (conf.getString("items.boots") != null) Material.valueOf(conf.getString("items.boots")!!) else null
-            val helmet =
-                if (conf.getString("items.helmet") != null) Material.valueOf(conf.getString("items.helmet")!!) else null
-            val click = conf.getString("click", "none")
-            val near = conf.getString("near", "none")
-
-            val npc = registry.createNPC(type, name)
-            npc.data().set("click", click)
-            npc.data().set("near", near)
-            npc.spawn(
-                Location(world, x, y, z)
-                    .setDirection(Vector(faceX, faceY, faceZ)),
-                SpawnReason.PLUGIN
-            )
-            val trait = npc.getTrait(Equipment::class.java)
-
-            Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
-                try {
-                    if (type == EntityType.PLAYER) {
-                        val player = npc.entity as Player
-                        with(trait) {
-                            if (helmet != null) set(Equipment.EquipmentSlot.HELMET, ItemStack(helmet))
-                            if (chest != null) set(Equipment.EquipmentSlot.CHESTPLATE, ItemStack(chest))
-                            if (leggings != null) set(Equipment.EquipmentSlot.LEGGINGS, ItemStack(leggings))
-                            if (boots != null) set(Equipment.EquipmentSlot.BOOTS, ItemStack(boots))
-                        }
-                        with(player.inventory) {
-                            if (leftHand != null) setItemInMainHand(ItemStack(leftHand))
-                            if (rightHand != null) setItemInOffHand(ItemStack(rightHand))
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-
-            return npc
-        } catch (e: Exception) {
-            throw IllegalStateException("Unable to load ${file.nameWithoutExtension}: ${e.message}", e.cause)
+        if (env.getBoolean("debug")) {
+            logger.info("ServerScript initialization finished in ${ssLoadTime}ms.")
         }
     }
 

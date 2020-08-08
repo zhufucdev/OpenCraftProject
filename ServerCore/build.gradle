@@ -2,12 +2,7 @@ group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    implementation project(':playerManagment')
-    implementation project(':blockManagment')
-    implementation project(':tradeBase')
-    implementation project(':utils')
-    implementation project(':miniGameBase')
-    implementation project(':gameplay')
-    implementation project(':scripting')
-    compile 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
+    implementation project(':playerManagment'), project(':blockManagment'), project(':tradeBase'), project(':utils')
+    implementation project(':miniGameBase'), project(':gameplay'), project(':scripting')
+    implementation 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
 }

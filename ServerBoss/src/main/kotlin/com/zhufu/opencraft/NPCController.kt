@@ -41,7 +41,7 @@ object NPCController : Listener {
     var difficulty: Long = 0
     var isCurrentBossAlive: Boolean = false
         private set
-    var withOutEqu = false
+    var withoutEqu = false
         private set
     lateinit var mPlugin: Plugin
 
@@ -54,11 +54,6 @@ object NPCController : Listener {
         if (isCurrentBossAlive) {
             currentNPC.destroy()
             Bukkit.removeBossBar(BOSS_BAR_NAMESPACE)
-        }
-        CitizensAPI.getNPCRegistry().forEach {
-            if (it.data().get<Boolean?>("little") == true) {
-                it.destroy()
-            }
         }
     }
 
@@ -74,19 +69,19 @@ object NPCController : Listener {
         currentType = when (random.nextInt(7)) {
             0 -> EntityType.ZOMBIE
             1 -> EntityType.SKELETON
-            2 -> EntityType.PIGLIN
+            2 -> EntityType.ZOMBIFIED_PIGLIN
             3 -> {
-                withOutEqu = true
+                withoutEqu = true
                 EntityType.SPIDER
             }
             4 -> EntityType.DROWNED
             5 -> {
-                withOutEqu = true
+                withoutEqu = true
                 EntityType.BLAZE
             }
             else -> EntityType.WITHER_SKELETON
         }
-        currentNPC = CitizensAPI.getNPCRegistry().createNPC(currentType, "Server Boss # $difficulty".toErrorMessage())
+        currentNPC = CitizensAPI.getNamedNPCRegistry("temp").createNPC(currentType, "Server Boss # $difficulty".toErrorMessage())
         var spawnLocation =
             Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
 
@@ -107,11 +102,11 @@ object NPCController : Listener {
         }
 
         currentNPC.apply {
-            if (!withOutEqu) {
+            if (!withoutEqu) {
                 addTrait(equipmentForCurrent())
             }
             onSpawn {
-                if (withOutEqu) {
+                if (withoutEqu) {
                     (entity as LivingEntity).apply {
                         val maxHealth = healthForSpecial()
                         getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue = maxHealth
@@ -306,7 +301,7 @@ object NPCController : Listener {
         } else if (::currentNPC.isInitialized && event.npc == currentNPC) {
             if (Base.trueByPercentages(percentageToDropWeapon()))
                 event.drops.add(getWeaponForCurrent(0.5))
-            if (!withOutEqu)
+            if (!withoutEqu)
                 Equipments.values().forEach { equipment ->
                     if (Base.trueByPercentages(percentageToDropEqui()))
                         event.drops.add(

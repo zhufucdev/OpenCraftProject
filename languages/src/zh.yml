@@ -178,6 +178,7 @@ server:
   statics:
     title: 'OpenCraft统计'
     coinCount: '货币数量: %s'
+    exp: '经验值: %s'
     demoTime: '试玩时间: %s分钟'
     builderLevel: '建筑者等级: %s'
     flyRemaining: '飞行时间剩余: %s秒'
@@ -709,6 +710,30 @@ rpg:
     select:
       title: '选择职业'
       done: "你选择了%s"
+    upgrade:
+      title: '装备升级'
+      tip:
+        cost: '这将消耗你%s点经验'
+        pick: '拾取该升级物即表明你同意进行升级'
+      place:
+        content: '放置你要升级的物品'
+        down: '↓↓↓'
+        left: '←←←'
+        right: '→→→'
+        up: '↑↑↑'
+        left_up: '◤◤◤'
+        right_up: '◥◥◥'
+        left_down: '◣◣◣'
+        right_down: '◢◢◢'
+  error:
+    maxLevel:
+      title: '无法升级%s'
+      subtitle: '该物品已达到等级上限'
+    lackOfExp: '你没有足够的经验（需要%s， 但你只有%s)'
+  command:
+    info: '%s有%s点经验'
+    give: '给予%s %s点经验'
+    set: '将%s的经验设置为%s点'
   role:
     fighter:
       name: '战士'
@@ -762,3 +787,24 @@ rpg:
       healing_pool:
         name: '治疗池'
         subtitle: '持续治疗一定范围内的对象。'
+  sword:
+    name: '战士之剑'
+    subtitle: '追求高伤害的近程武器'
+  egg:
+    name: '生成器'
+    subtitle: '丢出以使用 左键以修改生成物'
+    content: '将生成%s'
+    spawn: '生成%s'
+    zombie: '僵尸'
+    creeper: '爬行者'
+    spider: '蜘蛛'
+    blaze: '烈焰人'
+    enderman: '末影人'
+    iron_golem: '铁傀儡'
+    puppet: '傀儡'
+    cooldown: '冷却时间%ss'
+  void: '占位符'
+  control:
+    name: '控制器'
+    subtitle: '左键召唤物以控制'
+    exit: '对方块右键以退出'

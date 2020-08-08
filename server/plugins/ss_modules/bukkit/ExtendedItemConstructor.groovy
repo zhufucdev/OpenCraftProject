@@ -2,6 +2,7 @@ package bukkit
 
 import com.zhufu.opencraft.special_item.base.SpecialItem
 import groovyjarjarantlr4.v4.runtime.misc.NotNull
+import ss.Constructor
 import org.bukkit.Material
 import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
@@ -12,7 +13,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.util.Vector
 
-import java.lang.reflect.Method
 /**
  * Defines an extended item.
  */
@@ -79,15 +79,6 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
     @Override
     void unapply() {
         recipes.forEach { it.unapply() }
-    }
-
-    @Override
-    void merge(ExtendedItemConstructor other) {
-        unapply()
-        properties.each { String n, v ->
-            if (v != null && v !instanceof Method && n != 'class')
-                this[n] = v
-        }
     }
 
     /**

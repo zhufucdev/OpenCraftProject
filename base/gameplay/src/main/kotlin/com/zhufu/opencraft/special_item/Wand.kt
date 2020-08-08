@@ -3,6 +3,7 @@ package com.zhufu.opencraft.special_item
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.special_item.MagicBook.Magic.*
 import com.zhufu.opencraft.special_item.base.BindItem
+import com.zhufu.opencraft.special_item.base.locate.MemoryLocation
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -10,6 +11,7 @@ import org.bukkit.Particle
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Mob
 import org.bukkit.entity.Player
 import org.bukkit.entity.memory.MemoryKey
 import org.bukkit.event.EventHandler
@@ -32,14 +34,36 @@ import org.bukkit.util.Vector
 import java.util.*
 import kotlin.math.cos
 
-class Wand : BindItem() {
-    var level: Int = 1
+class Wand : BindItem(), Upgradable {
+    override val maxLevel: Int
+        get() = 4
+    private var mLevel = 1
+    override var level: Int
+        get() = mLevel
+        set(value) {
+            mLevel = value
+            updateDisplay()
+        }
+
+    override fun exp(level: Int): Int {
+        return when (level) {
+            2 -> 800
+            3 -> 1200
+            4 -> 2200
+            else -> throw IllegalArgumentException("level must be between 2 and 4.")
+        }
+    }
 
     override val material: Material
         get() = Material.STICK
 
     override fun onCreate(owner: Player, vararg args: Any) {
         super.onCreate(owner, *args)
+        val lvlArg = args.firstOrNull()
+        if (lvlArg is Int) {
+            level = lvlArg
+        }
+
         val getter = owner.getter()
         itemLocation.itemStack.updateItemMeta<ItemMeta> {
             setDisplayName(getter["rpg.wand.name"].toInfoMessage())
@@ -51,7 +75,7 @@ class Wand : BindItem() {
         }
     }
 
-    fun updateDisplay() {
+    override fun updateDisplay() {
         val getter = Language.LangGetter(owner)
         itemStack.updateItemMeta<ItemMeta> {
             lore = TextUtil.formatLore(getter["rpg.wand.subtitle"]).map { it.toInfoMessage() }
@@ -82,7 +106,7 @@ class Wand : BindItem() {
             }
 
             activated = false
-            owner.onlinePlayerInfo?.player?.exp = 0F
+            owner.onlinePlayerInfo?.player?.giveExp(0)
         }
 
         @EventHandler
@@ -135,6 +159,9 @@ class Wand : BindItem() {
         if (!activated) {
             owner.onlinePlayerInfo?.showMP(false)
             Bukkit.getScheduler().runTask(Base.pluginCore) { _ ->
+                val getter = event.player.getter()
+                fun void(): ItemStack =
+                    ItemStack(Material.STRUCTURE_VOID).updateItemMeta<ItemMeta> { setDisplayName(getter["rpg.void"]) }
                 event.player.inventory.apply {
                     for (i in 0 until 9) {
                         // Copy the items
@@ -145,7 +172,7 @@ class Wand : BindItem() {
                             values().let { magics ->
                                 if (magics.size > i)
                                     magics[i].indicator(event.player.getter())
-                                else null
+                                else void()
                             }
                         )
                     }
@@ -249,34 +276,49 @@ class Wand : BindItem() {
                 .forEach {
                     if (it == who || affected.contains(it.uniqueId) ||
                         !orbit(it.location.x, t).toVector().let { o ->
-                            it.boundingBox.overlaps(BoundingBox.of(
-                                o,
-                                it.location.toVector().subtract(o).unitVector().multiply(radius).add(o)
-                            ))
+                            it.boundingBox.overlaps(
+                                BoundingBox.of(
+                                    o,
+                                    it.location.toVector().subtract(o).unitVector().multiply(radius).add(o)
+                                )
+                            )
                         }
                     )
                         return@forEach
 
                     if (what == FIRE) {
                         it.fireTicks = effectDuration
+                        if (it is Mob)
+                            it.target = who
                     } else {
+                        val realType = what.let { t ->
+                            if (it.type.isUndead) {
+                                when (t) {
+                                    INSTANT_DAMAGE -> HEALING
+                                    POISON -> HEALING_POOL
+                                    HEALING -> INSTANT_DAMAGE
+                                    HEALING_POOL -> POISON
+                                    else -> t
+                                }
+                            } else t
+                        }
                         it.addPotionEffect(
                             PotionEffect(
-                                what.potionType.let { t ->
-                                    if (it.type.isUndead) {
-                                        when (t) {
-                                            HARM -> HEAL
-                                            HEAL -> HARM
-                                            else -> t
-                                        }
-                                    } else t
-                                },
-                                effectDuration.takeIf { what.potionType != HARM && what.potionType != HEAL }
-                                    ?: 1,
-                                effectLevel(what)
+                                realType.potionType,
+                                effectDuration.takeIf { what.potionType != HARM && what.potionType != HEAL } ?: 1,
+                                effectLevel(what),
+                                true
                             )
                         )
-                        it.setMemory(MemoryKey.ANGRY_AT, who.uniqueId)
+                        if (realType.isHealing) {
+                            it.world.spawnParticle(
+                                Particle.HEART,
+                                it.location.add(0.0, 1.2, 0.0),
+                                effectLevel(what) * 2
+                            )
+                        } else if (it is Mob) {
+                            it.target = who
+                        }
                     }
                     affected.add(it.uniqueId)
                     power -= 0.1
@@ -296,9 +338,16 @@ class Wand : BindItem() {
     }
 
     override fun onSaveStatus(config: ConfigurationSection) {
-        super.onSaveStatus(config)
+        if (!activated)
+            super.onSaveStatus(config)
+        else {
+            config.set("owner", owner.uuid.toString())
+            config.set("location", MemoryLocation(itemLocation.itemStack))
+        }
         config.set("lvl", level)
     }
+
+    override fun toString(): String = "Wand{ owner = ${owner.name}, activated = $activated, lvl = $level }"
 
     companion object {
         fun cost(kind: MagicBook.Magic) = when (kind) {

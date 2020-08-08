@@ -451,11 +451,6 @@ class CurrencySystem : JavaPlugin() {
         }
 
         if (server.pluginManager.isPluginEnabled("Citizens")) {
-            CitizensAPI.getNPCRegistry().toList().forEach {
-                if (it.data().get<Boolean?>("trade") == true)
-                    it.destroy()
-            }
-
             fun uuidFor(npc: String) = config.getString(npc, null).let {
                 if (it != null) UUID.fromString(it)!!
                 else {
@@ -468,7 +463,7 @@ class CurrencySystem : JavaPlugin() {
             val traderUUID = uuidFor("trader")
             val backUUID = uuidFor("back")
 
-            npc = CitizensAPI.getNPCRegistry()
+            npc = CitizensAPI.getNamedNPCRegistry("temp")
                 .createNPC(EntityType.PLAYER, traderUUID, 0, EveryThing.traderInventoryName).apply {
                     spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
                     addTrait(Equipment().apply {
@@ -478,7 +473,7 @@ class CurrencySystem : JavaPlugin() {
                     data().saveTo(MemoryDataKey())
                 }
             npcBack =
-                CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, backUUID, 1, EveryThing.backNPCName).apply {
+                CitizensAPI.getNamedNPCRegistry("temp").createNPC(EntityType.PLAYER, backUUID, 1, EveryThing.backNPCName).apply {
                     spawn(Location(tradeWorld, 8.5, TradeWorldGenerator.base + 2.0, 4.0))
                     data()["trade"] = true
                     data().saveTo(MemoryDataKey())
@@ -508,11 +503,5 @@ class CurrencySystem : JavaPlugin() {
 
     override fun onDisable() {
         TradeManager.saveToFile(File(tradeRoot, "tradeInfos.json"))
-        NPCItemInventory.npcList.forEach { it.destroy() }
-        CitizensAPI.getNPCRegistry().toList().forEach {
-            if (it.data().get<Boolean?>("trade") == true)
-                it.destroy()
-            it.data()
-        }
     }
 }

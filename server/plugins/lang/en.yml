@@ -139,6 +139,7 @@ server:
   statics:
     title: "OpenCraftStatics"
     coinCount: "Coins: %s"
+    exp: "Exp: %s"
     demoTime: "DemoTime: %sMin"
     builderLevel: "BuilderLevel: %s"
     flyRemaining: "FlyingTimeLeft: %s s"
@@ -690,6 +691,22 @@ rpg:
     select:
       title: 'Choose Role'
       done: "You've chosen %s."
+    upgrade:
+      title: 'Equipment Upgrade'
+      tip:
+        cost: 'This will cost you %s exp.'
+        pick: 'Pick this item to take this upgrade.'
+      place:
+        content: 'Place Your Item'
+  error:
+    maxLevel:
+      title: 'Unable to upgrade %s'
+      subtitle: 'This item has reached this max level.'
+    lackOfExp: "You didn't have enough exp(%s needed, while you have %s)."
+  command:
+    info: '%s has %s exp.'
+    give: 'Give %s %s exp.'
+    set: "Set %s's exp to %s."
   role:
     fighter:
       name: 'Fighter'
@@ -743,3 +760,20 @@ rpg:
       healing_pool:
         name: 'Healing Pool'
         subtitle: 'Heal targets in range constantly.'
+  sword:
+    name: "Fighter's Sword"
+    subtitle: 'Short-range weapon focused on high damage.'
+  egg:
+    name: 'Spawner'
+    subtitle: 'Throw to use. Left click to change mob to spawn.'
+    content: 'Spawning %s.'
+    spawn: 'Spawn %s.'
+    zombie: 'Zombie'
+    creeper: 'Creeper'
+    spider: 'Spider'
+    blaze: 'Blaze'
+    enderman: 'Enderman'
+    iron_golem: 'Iron Golem'
+    puppet: 'Puppet'
+    cooldown: 'Cool down time of %s remaining.'
+  void: 'Placeholder'

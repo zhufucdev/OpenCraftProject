@@ -174,14 +174,14 @@ class UserManager : JavaPlugin(), Listener {
         event.quitMessage = ""
         val info = PlayerManager.findInfoByPlayer(event.player) ?: return
         if (info.isLogin) {
-            broadcast("player.left", TextUtil.TextColor.YELLOW, info.player.name)
+            Bukkit.getPluginManager().callEvent(PlayerLogoutEvent(info, true))
         }
         info.destroy()
     }
 
     @EventHandler
     fun onPlayerLogout(event: PlayerLogoutEvent) {
-        if (event.showMesage()) broadcast("player.left", TextUtil.TextColor.YELLOW, event.info.player.name)
+        if (event.showMessage()) broadcast("player.left", TextUtil.TextColor.YELLOW, event.info.player.name)
     }
 
     @EventHandler

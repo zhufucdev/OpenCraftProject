@@ -53,14 +53,12 @@ object ChartHandler : Listener {
     }
 
     fun spawnNPC(it: Everything.Cube, chart: List<ServerPlayer>) {
-        CitizensAPI.getNPCRegistry().apply {
-            if (chart.isNotEmpty()) {
-                updateFor(it, 0, chart)
-                if (chart.size >= 2) {
-                    updateFor(it, 1, chart)
-                    if (chart.size >= 3) {
-                        updateFor(it, 2, chart)
-                    }
+        if (chart.isNotEmpty()) {
+            updateFor(it, 0, chart)
+            if (chart.size >= 2) {
+                updateFor(it, 1, chart)
+                if (chart.size >= 3) {
+                    updateFor(it, 2, chart)
                 }
             }
         }
@@ -74,7 +72,7 @@ object ChartHandler : Listener {
                 pitch = 0F
             }
 
-        val reg = CitizensAPI.getNPCRegistry()
+        val reg = CitizensAPI.getNamedNPCRegistry("temp")
         when (index) {
             0 -> {
                 reg.createNPC(
@@ -128,11 +126,6 @@ object ChartHandler : Listener {
 
     fun cleanUp() {
         if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) {
-            CitizensAPI.getNPCRegistry().toList().forEach {
-                if (it.data().has("temp")) {
-                    it.destroy()
-                }
-            }
             timer.cancel()
         }
     }

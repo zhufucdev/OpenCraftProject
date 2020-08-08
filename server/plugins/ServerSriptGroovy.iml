@@ -30,5 +30,8 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="Gradle: com.destroystokyo.paper:paper-api:1.16.1-R0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Gradle: net.citizensnpcs:citizensapi:2.0.27-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="OpenCraft.gameplay.main" />
+    <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy:3.0.4" level="project" />
   </component>
 </module>

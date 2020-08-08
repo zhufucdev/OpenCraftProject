@@ -195,115 +195,124 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
 
             Bukkit.getPluginManager().callEvent(PlayerLoadInventoryEvent(player, parent.present, this))
 
+            if (name != NOTHING) {
+                if (name == RESET) {
+                    if (!inventoryOnly) {
+                        ServerCaller["SolvePlayerLobby"]?.invoke(
+                            listOf(
+                                player.info()
+                                    ?: throw IllegalStateException("Could not found ${player.name}'s info to rest.")
+                            )
+                        ) ?: Bukkit.getLogger().warning("SolvePlayerLobby of ServerCaller is missing out.")
+                        player.gameMode = GameMode.CREATIVE
+                    } else {
+                        player.inventory.clear()
+                        return
+                    }
+                }
+                if (!validateFile()) {
+                    resetPlayer(player)
+                    return
+                }
+
+                val failureList = ArrayList<String>()
+                player.inventory.clear()
+                if (config.isSet("inventory")) {
+                    for (i in 0 until player.inventory.size) {
+                        val path = "inventory.$i"
+                        val item =
+                            if (config.isString(path)) {
+                                fun spawnUnknownItem() = ItemStack(Material.BARRIER).updateItemMeta<ItemMeta> {
+                                    val getter = player.getter()
+                                    setDisplayName(getter["inventory.siNotFound.title"].toErrorMessage())
+                                    lore =
+                                        TextUtil.formatLore(
+                                            getter["inventory.siNotFound.subtitle", config.getString(
+                                                path
+                                            )]
+                                        )
+                                            .map { TextUtil.info(it) }
+                                }
+
+                                val id = try {
+                                    UUID.fromString(config.getString(path))
+                                } catch (ignored: IllegalArgumentException) {
+                                    null
+                                }
+                                if (id == null) spawnUnknownItem()
+                                else try {
+                                    SpecialItem[id]?.itemLocation?.itemStack
+                                } catch (e: Exception) {
+                                    null
+                                }
+                                    ?: spawnUnknownItem()
+                            } else
+                                config.getItemStack(path, ItemStack(Material.AIR))
+                        player.inventory.setItem(i, item)
+                    }
+                }
+
+                if (!inventoryOnly && name != RESET) {
+                    Bukkit.getScheduler().runTask(plugin) { _ ->
+                        player.fallDistance = 0f
+                        val location = config.getSerializable("location", Location::class.java, null)
+                        if (location != null)
+                            player.teleport(location)
+                        else {
+                            failureList.add("player/location: invalid argument")
+                        }
+
+                        if (config.isSet("gameMode"))
+                            player.gameMode = GameMode.valueOf(config["gameMode"] as String)
+
+                        if (config.isSet("health")) {
+                            val health = config.getDouble("health")
+                            if (health <= 20)
+                                player.health = health
+                            else {
+                                failureList.add("player/health: health value reaches the top limit")
+                            }
+                        }
+                        if (config.isSet("foodLevel"))
+                            player.foodLevel = config.getInt("foodLevel")
+                        if (config.isSet("exp"))
+                            player.totalExperience = config.getInt("exp")
+                        if (config.isSet("walkSpeed"))
+                            player.walkSpeed = config.getDouble("walkSpeed").toFloat()
+                        if (config.isSet("flySpeed"))
+                            player.flySpeed = config.getDouble("flySpeed").toFloat()
+                        //For Potion Effects
+                        player.activePotionEffects.forEach {
+                            player.removePotionEffect(it.type)
+                        }
+                        config.getConfigurationSection("potion")?.getKeys(false)?.forEach {
+                            try {
+                                player.addPotionEffect(config.getSerializable("potion.$it", PotionEffect::class.java)!!)
+                            } catch (e: Exception) {
+                                failureList.add("player/potion/$it: ${e::class.simpleName}: ${e.message}")
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                }
+
+                if (failureList.isNotEmpty()) {
+                    player.error(getLang(player, "user.error.whileLoading"))
+                    player.warn(
+                        buildString {
+                            failureList.forEach {
+                                append(it)
+                                append(',')
+                            }
+                            deleteCharAt(lastIndex)
+                        }
+                    )
+                }
+
+            }
             parent.last = parent.present
             parent.present = this
             Bukkit.getLogger().info("Present inventory of ${player.name} is ${this.name}")
-
-            if (name == NOTHING)
-                return
-            else if (name == RESET) {
-                if (!inventoryOnly) {
-                    ServerCaller["SolvePlayerLobby"]?.invoke(
-                        listOf(
-                            player.info()
-                                ?: throw IllegalStateException("Could not found ${player.name}'s info to rest.")
-                        )
-                    ) ?: Bukkit.getLogger().warning("SolvePlayerLobby of ServerCaller is missing out.")
-                    player.gameMode = GameMode.CREATIVE
-                } else {
-                    player.inventory.clear()
-                    return
-                }
-            }
-            if (!validateFile()) {
-                resetPlayer(player)
-                return
-            }
-
-            val failureList = ArrayList<String>()
-            player.inventory.clear()
-            if (config.isSet("inventory")) {
-                for (i in 0 until player.inventory.size) {
-                    val path = "inventory.$i"
-                    val item =
-                        if (config.isString(path)) {
-                            fun spawnUnknownItem() = ItemStack(Material.BARRIER).updateItemMeta<ItemMeta> {
-                                val getter = player.getter()
-                                setDisplayName(getter["inventory.siNotFound.title"].toErrorMessage())
-                                lore =
-                                    TextUtil.formatLore(getter["inventory.siNotFound.subtitle", config.getString(path)])
-                                        .map { TextUtil.info(it) }
-                            }
-
-                            val id = try {
-                                UUID.fromString(config.getString(path))
-                            } catch (ignored: IllegalArgumentException) {
-                                null
-                            }
-                            if (id == null) spawnUnknownItem()
-                            else try { SpecialItem[id]?.itemStack } catch (e: Exception) { null }?: spawnUnknownItem()
-                        } else
-                            config.getItemStack(path, ItemStack(Material.AIR))
-                    player.inventory.setItem(i, item)
-                }
-            }
-
-            if (!inventoryOnly && name != RESET) {
-                Bukkit.getScheduler().runTask(plugin) { _ ->
-                    player.fallDistance = 0f
-                    val location = config.getSerializable("location", Location::class.java, null)
-                    if (location != null)
-                        player.teleport(location)
-                    else {
-                        failureList.add("player/location: invalid argument")
-                    }
-
-                    if (config.isSet("gameMode"))
-                        player.gameMode = GameMode.valueOf(config["gameMode"] as String)
-
-                    if (config.isSet("health")) {
-                        val health = config.getDouble("health")
-                        if (health <= 20)
-                            player.health = health
-                        else {
-                            failureList.add("player/health: health value reaches the top limit")
-                        }
-                    }
-                    if (config.isSet("foodLevel"))
-                        player.foodLevel = config.getInt("foodLevel")
-                    if (config.isSet("exp"))
-                        player.totalExperience = config.getInt("exp")
-                    if (config.isSet("walkSpeed"))
-                        player.walkSpeed = config.getDouble("walkSpeed").toFloat()
-                    if (config.isSet("flySpeed"))
-                        player.flySpeed = config.getDouble("flySpeed").toFloat()
-                    //For Potion Effects
-                    player.activePotionEffects.forEach {
-                        player.removePotionEffect(it.type)
-                    }
-                    config.getConfigurationSection("potion")?.getKeys(false)?.forEach {
-                        try {
-                            player.addPotionEffect(config.getSerializable("potion.$it", PotionEffect::class.java)!!)
-                        } catch (e: Exception) {
-                            failureList.add("player/potion/$it: ${e::class.simpleName}: ${e.message}")
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            }
-
-            if (failureList.isNotEmpty()) {
-                player.error(getLang(player, "user.error.whileLoading"))
-                player.warn(
-                    buildString {
-                        failureList.forEach {
-                            append(it)
-                            append(',')
-                        }
-                        deleteCharAt(lastIndex)
-                    }
-                )
-            }
         }
 
         fun destroy() {

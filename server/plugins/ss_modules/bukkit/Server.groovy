@@ -4,6 +4,7 @@ import com.zhufu.opencraft.Scripting
 import com.zhufu.opencraft.ServerReloadEvent
 import com.zhufu.opencraft.events.SSReloadEvent
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventException
 import org.bukkit.event.EventPriority
@@ -76,6 +77,14 @@ class Server {
 
     static BukkitScheduler getSchedule() {
         return Bukkit.getScheduler()
+    }
+
+    static Player getPlayer(UUID id) {
+        return Bukkit.getPlayer(id)
+    }
+
+    static Player getPlayer(String name) {
+        return Bukkit.getPlayer(name)
     }
 
     static {

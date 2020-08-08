@@ -1,6 +1,6 @@
 {
   "0": {
-    "currency": 0
+    "currency": 88
   },
   "1579363200000": {
     "time": 26
@@ -27,7 +27,7 @@
     "currency": 0
   },
   "622": {
-    "currency": 0
+    "currency": 97
   },
   "670": {
     "currency": 0
@@ -36,13 +36,13 @@
     "currency": 0
   },
   "1000": {
-    "currency": 256
+    "currency": 94
   },
   "1438": {
     "currency": 0
   },
   "1510": {
-    "currency": 0
+    "currency": 88
   },
   "1570": {
     "currency": 0
@@ -111,7 +111,7 @@
     "currency": 0
   },
   "4636": {
-    "currency": 0
+    "currency": 88
   },
   "4642": {
     "currency": 0
@@ -225,7 +225,7 @@
     "currency": 0
   },
   "132": {
-    "currency": 0
+    "currency": 88
   },
   "184": {
     "currency": 216
@@ -501,13 +501,13 @@
     "currency": 216
   },
   "5558": {
-    "currency": 216
+    "currency": 88
   },
   "5938": {
     "currency": 216
   },
   "6246": {
-    "currency": 216
+    "currency": 88
   },
   "1594828800000": {
     "time": 86
@@ -603,7 +603,7 @@
     "currency": 216
   },
   "844": {
-    "currency": 0
+    "currency": 88
   },
   "854": {
     "currency": 216
@@ -807,7 +807,7 @@
     "currency": 0
   },
   "300": {
-    "currency": 0
+    "currency": 88
   },
   "384": {
     "currency": 0
@@ -840,7 +840,7 @@
     "currency": 0
   },
   "1674": {
-    "currency": 0
+    "currency": 88
   },
   "1718": {
     "currency": 0
@@ -879,7 +879,7 @@
     "currency": 97
   },
   "2734": {
-    "currency": 97
+    "currency": 88
   },
   "2986": {
     "currency": 97
@@ -901,5 +901,428 @@
   },
   "3450": {
     "currency": 97
+  },
+  "1596470400000": {
+    "time": 268
+  },
+  "24": {
+    "currency": 97
+  },
+  "70": {
+    "currency": 97
+  },
+  "208": {
+    "currency": 97
+  },
+  "1596556800000": {
+    "time": 8080
+  },
+  "166": {
+    "currency": 97
+  },
+  "366": {
+    "currency": 97
+  },
+  "1008": {
+    "currency": 91
+  },
+  "1030": {
+    "currency": 88
+  },
+  "1666": {
+    "currency": 88
+  },
+  "5246": {
+    "currency": 88
+  },
+  "5432": {
+    "currency": 88
+  },
+  "5536": {
+    "currency": 88
+  },
+  "5694": {
+    "currency": 88
+  },
+  "5720": {
+    "currency": 88
+  },
+  "5752": {
+    "currency": 88
+  },
+  "5882": {
+    "currency": 88
+  },
+  "6022": {
+    "currency": 88
+  },
+  "6092": {
+    "currency": 88
+  },
+  "6182": {
+    "currency": 88
+  },
+  "6222": {
+    "currency": 88
+  },
+  "6270": {
+    "currency": 88
+  },
+  "6358": {
+    "currency": 88
+  },
+  "6500": {
+    "currency": 88
+  },
+  "6572": {
+    "currency": 88
+  },
+  "6696": {
+    "currency": 88
+  },
+  "6730": {
+    "currency": 88
+  },
+  "6788": {
+    "currency": 88
+  },
+  "6942": {
+    "currency": 88
+  },
+  "7038": {
+    "currency": 88
+  },
+  "7166": {
+    "currency": 88
+  },
+  "7194": {
+    "currency": 88
+  },
+  "7256": {
+    "currency": 88
+  },
+  "7420": {
+    "currency": 88
+  },
+  "7458": {
+    "currency": 88
+  },
+  "7488": {
+    "currency": 88
+  },
+  "7844": {
+    "currency": 88
+  },
+  "1596643200000": {
+    "time": 8554
+  },
+  "274": {
+    "currency": 88
+  },
+  "278": {
+    "currency": 88
+  },
+  "458": {
+    "currency": 88
+  },
+  "562": {
+    "currency": 88
+  },
+  "780": {
+    "currency": 88
+  },
+  "1262": {
+    "currency": 88
+  },
+  "1528": {
+    "currency": 88
+  },
+  "1568": {
+    "currency": 88
+  },
+  "1760": {
+    "currency": 88
+  },
+  "1942": {
+    "currency": 88
+  },
+  "2012": {
+    "currency": 88
+  },
+  "2068": {
+    "currency": 88
+  },
+  "2210": {
+    "currency": 88
+  },
+  "2392": {
+    "currency": 88
+  },
+  "2658": {
+    "currency": 88
+  },
+  "2738": {
+    "currency": 88
+  },
+  "3110": {
+    "currency": 88
+  },
+  "3176": {
+    "currency": 88
+  },
+  "3574": {
+    "currency": 88
+  },
+  "3978": {
+    "currency": 88
+  },
+  "4308": {
+    "currency": 88
+  },
+  "4434": {
+    "currency": 88
+  },
+  "4610": {
+    "currency": 88
+  },
+  "4758": {
+    "currency": 88
+  },
+  "4848": {
+    "currency": 88
+  },
+  "5060": {
+    "currency": 88
+  },
+  "5290": {
+    "currency": 88
+  },
+  "6074": {
+    "currency": 88
+  },
+  "6158": {
+    "currency": 88
+  },
+  "6206": {
+    "currency": 88
+  },
+  "6272": {
+    "currency": 88
+  },
+  "6294": {
+    "currency": 88
+  },
+  "6480": {
+    "currency": 88
+  },
+  "6610": {
+    "currency": 88
+  },
+  "6954": {
+    "currency": 88
+  },
+  "7046": {
+    "currency": 88
+  },
+  "7096": {
+    "currency": 88
+  },
+  "7150": {
+    "currency": 88
+  },
+  "7172": {
+    "currency": 88
+  },
+  "7292": {
+    "currency": 88
+  },
+  "7582": {
+    "currency": 88
+  },
+  "8102": {
+    "currency": 88
+  },
+  "8264": {
+    "currency": 88
+  },
+  "8406": {
+    "currency": 88
+  },
+  "1596729600000": {
+    "time": 8382
+  },
+  "420": {
+    "currency": 88
+  },
+  "436": {
+    "currency": 88
+  },
+  "604": {
+    "currency": 88
+  },
+  "1150": {
+    "currency": 88
+  },
+  "2126": {
+    "currency": 88
+  },
+  "2374": {
+    "currency": 88
+  },
+  "2602": {
+    "currency": 88
+  },
+  "2652": {
+    "currency": 88
+  },
+  "2792": {
+    "currency": 88
+  },
+  "2880": {
+    "currency": 88
+  },
+  "3018": {
+    "currency": 88
+  },
+  "3070": {
+    "currency": 88
+  },
+  "3186": {
+    "currency": 88
+  },
+  "3208": {
+    "currency": 88
+  },
+  "3236": {
+    "currency": 88
+  },
+  "3268": {
+    "currency": 88
+  },
+  "3318": {
+    "currency": 88
+  },
+  "3440": {
+    "currency": 88
+  },
+  "3480": {
+    "currency": 88
+  },
+  "3504": {
+    "currency": 88
+  },
+  "3542": {
+    "currency": 88
+  },
+  "3652": {
+    "currency": 88
+  },
+  "3700": {
+    "currency": 88
+  },
+  "3762": {
+    "currency": 88
+  },
+  "3822": {
+    "currency": 88
+  },
+  "3938": {
+    "currency": 88
+  },
+  "3986": {
+    "currency": 88
+  },
+  "4256": {
+    "currency": 88
+  },
+  "4380": {
+    "currency": 88
+  },
+  "4410": {
+    "currency": 88
+  },
+  "4436": {
+    "currency": 88
+  },
+  "4442": {
+    "currency": 88
+  },
+  "4674": {
+    "currency": 88
+  },
+  "4790": {
+    "currency": 88
+  },
+  "4864": {
+    "currency": 88
+  },
+  "4930": {
+    "currency": 88
+  },
+  "4956": {
+    "currency": 88
+  },
+  "5104": {
+    "currency": 88
+  },
+  "5184": {
+    "currency": 88
+  },
+  "5348": {
+    "currency": 88
+  },
+  "5566": {
+    "currency": 88
+  },
+  "5614": {
+    "currency": 88
+  },
+  "5634": {
+    "currency": 88
+  },
+  "5818": {
+    "currency": 88
+  },
+  "5886": {
+    "currency": 88
+  },
+  "6050": {
+    "currency": 88
+  },
+  "6234": {
+    "currency": 88
+  },
+  "6512": {
+    "currency": 88
+  },
+  "6534": {
+    "currency": 88
+  },
+  "6944": {
+    "currency": 88
+  },
+  "7220": {
+    "currency": 88
+  },
+  "7414": {
+    "currency": 88
+  },
+  "7548": {
+    "currency": 88
+  },
+  "7604": {
+    "currency": 88
+  },
+  "7682": {
+    "currency": 88
+  },
+  "7710": {
+    "currency": 88
+  },
+  "8034": {
+    "currency": 88
+  },
+  "8100": {
+    "currency": 88
   }
 }

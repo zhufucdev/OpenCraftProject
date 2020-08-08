@@ -55,7 +55,8 @@ abstract class NPCItemInventory(
         npcList.firstOrNull { it.id == id }?.destroy()
 
         clickableNPC =
-            CitizensAPI.getNPCRegistry().createNPC(EntityType.ARMOR_STAND, UUID.randomUUID(), id, id.toString())
+            CitizensAPI.getNamedNPCRegistry("temp")
+                .createNPC(EntityType.ARMOR_STAND, UUID.randomUUID(), id, id.toString())
         clickableNPC.spawn(baseLocation.clone().add(Vector(0.5, 0.0, 0.5)).apply {
             if (faceLocation != null) yaw = faceLocation.yaw - 180
         })

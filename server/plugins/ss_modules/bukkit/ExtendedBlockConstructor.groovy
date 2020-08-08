@@ -1,13 +1,12 @@
 package bukkit
 
+import ss.Constructor
 import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
-
-import java.lang.reflect.Method
 
 class ExtendedBlockConstructor implements Constructor<ExtendedBlockConstructor> {
     private String name, itemName
@@ -59,13 +58,5 @@ class ExtendedBlockConstructor implements Constructor<ExtendedBlockConstructor> 
     @Override
     void unapply() {
         HandlerList.unregisterAll(mListener)
-    }
-
-    @Override
-    void merge(ExtendedBlockConstructor other) {
-        other.properties.forEach { String n, v ->
-            if (v != null && v !instanceof Method && n != 'class')
-                this[n] = v
-        }
     }
 }

@@ -119,7 +119,7 @@ object Language {
         constructor(info: ServerPlayer) : this(info.userLanguage)
 
         operator fun get(value: String, vararg replaceWith: Any?): String {
-            val found = conf.isSet(value)
+            val found = conf.contains(value)
             var raw: String
             if (found) {
                 raw = conf.getString(value)!!

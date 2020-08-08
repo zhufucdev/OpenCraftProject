@@ -2,7 +2,11 @@ package com.zhufu.opencraft.special_item
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.rpg.Role
+import org.bukkit.Bukkit
 import org.bukkit.Sound
+import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitTask
+import kotlin.math.abs
 
 class MagicList private constructor(private val owner: ServerPlayer) : MutableCollection<MagicBook.Magic> {
     private val mList = arrayListOf<MagicBook.Magic>()
@@ -92,31 +96,58 @@ val ServerPlayer.magic: MagicList
     get() = MagicList.of(this)
 
 val ServerPlayer.maxMP: Int
-    get() = when (level) {
-        1 -> 40
-        2 -> 100
-        3 -> 150
-        else -> 180
-    }
+    get() =
+        if (role == Role.MAGICIAN || role == Role.PRIEST)
+            when (level) {
+                1 -> 40
+                2 -> 100
+                3 -> 150
+                else -> 180
+            }
+        else -1
 
 val ServerPlayer.mpRecoverRate: Short
-    get() = when (level) {
-        1 -> 2
-        2 -> 6
-        3 -> 8
-        else -> 8
-    }
+    get() = if (role == Role.MAGICIAN || role == Role.PRIEST)
+        when (level) {
+            1 -> 2
+            2 -> 6
+            3 -> 8
+            else -> 8
+        }
+    else 0
 
 var ServerPlayer.mp: Int
     get() = tag.getInt("mp")
     set(value) = tag.set("mp", value)
 
+private val lastExp = hashMapOf<Player, Float>()
 fun Info.showMP(playSound: Boolean = true) {
     val mp = this.mp
     val getter = Language.LangGetter(this)
     player.apply {
+        val exp = mp / maxMP.toFloat()
+        if (exp > 1) throw IllegalArgumentException("${name}'s MP is $mp, bigger than maximum $maxMP.")
+        fun setExp() {
+            sendExperienceChange(exp, mp)
+            lastExp[this] = exp
+        }
+
         sendActionBar(getter["rpg.wand.mp", mp].toInfoMessage())
-        sendExperienceChange(mp / maxMP.toFloat(), mp)
+        if (lastExp.containsKey(this)) {
+            var x = lastExp[this]!!
+            val delta = exp - x
+            Bukkit.getScheduler().runTaskTimer(Base.pluginCore, { t: BukkitTask ->
+                if (abs(x - exp) < 0.001) {
+                    t.cancel()
+                    setExp()
+                    return@runTaskTimer
+                }
+                x += delta / 5
+                sendExperienceChange(x, mp)
+            }, 0, 1)
+        } else {
+            setExp()
+        }
 
         if (playSound)
             playSound(eyeLocation, Sound.BLOCK_NOTE_BLOCK_CHIME, 1F, 0.6F)

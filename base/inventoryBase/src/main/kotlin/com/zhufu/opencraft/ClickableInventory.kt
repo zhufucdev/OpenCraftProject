@@ -51,5 +51,4 @@ abstract class ClickableInventory(val plugin: Plugin) : Listener {
     }
 
     open fun onClose(player: HumanEntity) {}
-    open fun onMoveItem(event: InventoryDragEvent) {}
 }

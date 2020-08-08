@@ -427,7 +427,7 @@ abstract class GameBase : Listener {
     fun resetPlayer(player: Player) {
         player.health = 20.toDouble()
         player.foodLevel = 25
-        player.exp = 0f
+        player.giveExp(0)
         PlayerManager.findInfoByPlayer(player)?.inventory?.create(RESET)?.load()
     }
 

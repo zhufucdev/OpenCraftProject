@@ -7,6 +7,7 @@ import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -153,10 +154,16 @@ class PlayerUtil : JavaPlugin() {
                     }
                 }
                 "si" -> {
+                    if (!sender.isOp) {
+                        sender.error(getter["command.error.permission"])
+                        return true
+                    }
+
                     if (args.size < 4) {
                         sender.error(getter["command.error.tooFewArgs", 3])
                         return true
-                    } else if (args[1] != "give") {
+                    }
+                    if (args[1] != "give") {
                         sender.error(getter["command.error.usage"])
                         return true
                     }
@@ -192,7 +199,7 @@ class PlayerUtil : JavaPlugin() {
                             }
                         }
                     }
-                    val item = SpecialItem.make(args[3], amount, player, arguments.toArray())
+                    val item = SpecialItem.make(args[3], amount, player, *arguments.toArray())
                     if (item == null) {
                         sender.error(getter["command.error.noSuchItem", args[3]])
                         return true
@@ -201,6 +208,47 @@ class PlayerUtil : JavaPlugin() {
                     sender.success(getter["command.done"])
                     if (player != sender) {
                         player.info(getter["si.given", args[3], amount])
+                    }
+                }
+                "exp" -> {
+                    if (!sender.isOp) {
+                        sender.error(getter["command.error.permission"])
+                        return true
+                    }
+
+                    if (args.size < 3) {
+                        sender.error(getter["command.error.tooFewArgs", 3])
+                        return true
+                    }
+                    val player = PlayerManager.findOfflineInfoByName(args[1])
+                    if (player == null) {
+                        sender.error(getter["player.error.notFound", args[1]])
+                        return true
+                    }
+                    if (args.size == 2) {
+                        sender.info(getter["rpg.command.info", player.name, player.exp])
+                    } else if (args.size >= 4) {
+                        when (args[2]) {
+                            "add" -> {
+                                val amount = args[3].toIntOrNull()
+                                if (amount == null) {
+                                    sender.error(getter["command.error.argNotDigit"])
+                                    return true
+                                }
+                                player.exp += amount
+                                sender.success(getter["rpg.command.give", player.name, amount])
+                            }
+                            "set" -> {
+                                val amount = args[3].toIntOrNull()
+                                if (amount == null) {
+                                    sender.error(getter["command.error.argNotDigit"])
+                                    return true
+                                }
+                                player.exp = amount
+                                sender.success(getter["rpg.command.set", player.name, amount])
+                            }
+                            else -> sender.error(getter["command.error.usage"])
+                        }
                     }
                 }
             }
@@ -368,40 +416,64 @@ class PlayerUtil : JavaPlugin() {
                 }
             }
         } else if (command.name == "pu") {
-            if (args.size == 1) {
-                val all = mutableListOf("rename", "menu", "script", "message").apply { if (sender.isOp) add("si") }
-                return if (args.first().isEmpty())
-                    all
-                else {
-                    all.filter { it.startsWith(args.first()) }.toMutableList()
-                }
-            } else if (args.first() == "si") when (args.size) {
-                2 -> {
-                    return mutableListOf("give")
-                }
-                3 -> {
-                    val r = mutableListOf<String>()
-                    if (args[2].isEmpty()) {
+            fun getPlayerList(input: String, onlineOnly: Boolean = true): MutableList<String> {
+                val r = mutableListOf<String>()
+                if (input.isEmpty()) {
+                    if (onlineOnly)
                         Bukkit.getOnlinePlayers().forEach { r.add(it.name) }
-                    } else {
-                        Bukkit.getOnlinePlayers().forEach {
-                            if (it.name.startsWith(args[2]))
-                                r.add(it.name)
-                        }
+                    else
+                        Bukkit.getOfflinePlayers().forEach { r.add(it.name ?: return@forEach) }
+                } else {
+                    val selector = { it: OfflinePlayer ->
+                        if (it.name?.startsWith(args[2]) == true)
+                            r.add(it.name!!)
                     }
-                    return r
+                    if (onlineOnly) Bukkit.getOnlinePlayers().forEach(selector)
+                    else Bukkit.getOfflinePlayers().forEach(selector)
                 }
-                4 -> {
-                    val r = mutableListOf<String>()
-                    if (args[3].isEmpty()) {
-                        SpecialItem.types.forEach { r.add(it) }
-                    } else {
-                        SpecialItem.types.forEach {
-                            if (it.startsWith(args[3], true))
-                                r.add(it)
+                return r
+            }
+            when {
+                args.size == 1 -> {
+                    val all = mutableListOf("rename", "menu", "message", "exp").apply { if (sender.isOp) add("si") }
+                    return if (args.first().isEmpty())
+                        all
+                    else {
+                        all.filter { it.startsWith(args.first()) }.toMutableList()
+                    }
+                }
+                args.first() == "si" -> when (args.size) {
+                    2 -> {
+                        return mutableListOf("give")
+                    }
+                    3 -> {
+                        return getPlayerList(args[2])
+                    }
+                    4 -> {
+                        val r = mutableListOf<String>()
+                        if (args[3].isEmpty()) {
+                            SpecialItem.types.forEach { r.add(it) }
+                        } else {
+                            SpecialItem.types.forEach {
+                                if (it.startsWith(args[3], true))
+                                    r.add(it)
+                            }
+                        }
+                        return r
+                    }
+                }
+                args.first() == "exp" -> when (args.size) {
+                    2 -> {
+                        return getPlayerList(args[1], false)
+                    }
+                    3 -> {
+                        val c = mutableListOf("add", "set")
+                        return if (args[2].isEmpty()) {
+                            c
+                        } else {
+                            c.filter { it.startsWith(args[2], true) }.toMutableList()
                         }
                     }
-                    return r
                 }
             }
         } else if (command.name == "lobby") {

@@ -165,17 +165,6 @@ class ServerCommandExecutor(private val plugin: Core) : TabExecutor {
                                 }
                             }
                         }
-                        "npc" -> {
-                            sender.sendMessage(TextUtil.info("正在重载NPC"))
-                            result = try {
-                                plugin.spawnNPC()
-                                true
-                            } catch (e: Exception) {
-                                sender.sendMessage(TextUtil.error("${e.javaClass.simpleName}: ${e.message}"))
-                                e.printStackTrace()
-                                false
-                            }
-                        }
                         "survey" -> {
                             sender.sendMessage(TextUtil.info("正在重载服务器调查"))
                             SurveyManager.init(File(dataFolder, "survey.json"), null)
@@ -195,14 +184,8 @@ class ServerCommandExecutor(private val plugin: Core) : TabExecutor {
                         "ss" -> {
                             sender.info("正在重载脚本")
                             try {
-                                val plugin = Bukkit.getPluginManager().getPlugin("ServerScript")
-                                if (plugin != null) {
-                                    plugin::class.functions.first { kFunction -> kFunction.name == "initScripting" }
-                                        .call(plugin)
-                                    result = true
-                                } else {
-                                    Bukkit.getLogger().warning("ServerScript plugin isn't loaded")
-                                }
+                                plugin.ssInit()
+                                result = true
                             } catch (e: Exception) {
                                 sender.error("${e.javaClass.simpleName}: ${e.message}")
                                 e.printStackTrace()
@@ -446,7 +429,7 @@ class ServerCommandExecutor(private val plugin: Core) : TabExecutor {
                     if (!sender.isOp) {
                         return mutableListOf()
                     }
-                    val models = listOf("game", "notice", "npc", "survey", "lang", "ss", "builder")
+                    val models = listOf("game", "notice", "survey", "lang", "ss", "builder")
                     if (args.size == 1)
                         return models.toMutableList()
                     else if (args.size >= 2) {

@@ -7,7 +7,7 @@ class Global {
         return Game.env.getBoolean("debug", false)
     }
 
-    static <T> T arg(String name) {
+    static <T> T arg(String name, Class<T> tClass) {
         return Game.env.get(name) as T
     }
 }

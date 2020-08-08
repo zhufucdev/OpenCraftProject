@@ -78,7 +78,7 @@ fun runSync(l: () -> Unit) {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <T : ItemMeta> ItemStack.updateItemMeta(block: T.() -> Unit): ItemStack {
+inline fun <T : ItemMeta> ItemStack.updateItemMeta(block: T.() -> Unit): ItemStack {
     itemMeta = (itemMeta as T).apply(block)
     return this
 }
@@ -212,6 +212,17 @@ val EntityType.isUndead
     get() = when (this) {
         EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON, EntityType.ZOMBIE,
         EntityType.HUSK, EntityType.PIGLIN, EntityType.ZOMBIE_VILLAGER, EntityType.DROWNED,
-        EntityType.ZOGLIN, EntityType.ZOMBIE_HORSE, EntityType.SKELETON_HORSE, EntityType.PHANTOM -> true
+        EntityType.ZOMBIE_HORSE, EntityType.ZOMBIFIED_PIGLIN, EntityType.SKELETON_HORSE, EntityType.PHANTOM -> true
+        else -> false
+    }
+val EntityType.isMonster
+    get() = when (this) {
+        EntityType.ENDERMAN, EntityType.SKELETON, EntityType.CREEPER, EntityType.ZOMBIE,
+            EntityType.ZOMBIFIED_PIGLIN, EntityType.ZOGLIN, EntityType.DROWNED, EntityType.ZOMBIE_VILLAGER,
+            EntityType.HUSK, EntityType.WITHER_SKELETON, EntityType.STRAY, EntityType.BLAZE,
+            EntityType.SPIDER, EntityType.CAVE_SPIDER, EntityType.ELDER_GUARDIAN, EntityType.PHANTOM,
+            EntityType.ENDERMITE, EntityType.EVOKER, EntityType.EVOKER_FANGS, EntityType.GHAST,
+            EntityType.GIANT, EntityType.GUARDIAN, EntityType.MAGMA_CUBE, EntityType.PILLAGER,
+            EntityType.VEX, EntityType.VINDICATOR -> true
         else -> false
     }

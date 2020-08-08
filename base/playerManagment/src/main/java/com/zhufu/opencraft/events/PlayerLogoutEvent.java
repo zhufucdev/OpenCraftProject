@@ -6,10 +6,10 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerLogoutEvent extends Event {
-    private Info info;
-    private boolean showMessage;
-    private HandlerList handlerList = new HandlerList();
-    private static HandlerList handlers = new HandlerList();
+    private final Info info;
+    private final boolean showMessage;
+    private final HandlerList handlerList = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
 
     public static HandlerList getHandlerList() {
         return handlers;
@@ -26,7 +26,7 @@ public class PlayerLogoutEvent extends Event {
     }
 
     @NotNull
-    public boolean showMesage() {
+    public boolean showMessage() {
         return showMessage;
     }
 

@@ -1,6 +1,7 @@
 package com.zhufu.opencraft.special_item.base
 
 import com.zhufu.opencraft.Base
+import com.zhufu.opencraft.Game
 import com.zhufu.opencraft.PlayerModifier
 import com.zhufu.opencraft.special_item.base.locate.*
 import net.minecraft.server.v1_16_R1.NBTTagCompound
@@ -12,14 +13,14 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.HandlerList
-import org.bukkit.event.Listener
+import org.bukkit.event.*
 import org.bukkit.event.entity.ItemDespawnEvent
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.Objective
@@ -28,12 +29,17 @@ import java.io.File
 import java.lang.reflect.Modifier
 import java.nio.file.Paths
 import java.util.*
-import java.util.concurrent.Callable
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
+import java.util.function.Consumer
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.reflect.KProperty1
+import kotlin.reflect.KVisibility
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.reflect
 
-abstract class SpecialItem() {
+abstract class SpecialItem {
     companion object {
         // Utility
         // Prebuilt special item by reflection
@@ -42,7 +48,13 @@ abstract class SpecialItem() {
             .filter { it.packageName.endsWith("special_item") && !Modifier.isAbstract(it.modifiers) }
         private val registered = arrayListOf<Class<out SpecialItem>>()
 
-        private val mList = hashMapOf<UUID, SpecialItem>()
+        // Existing special item for index
+        private val mList = HashMap<UUID, SpecialItem>()
+
+        // Existing inventory for item search
+        private val inventories = arrayListOf<Inventory>()
+
+        // Unloaded files for reloading
         private val unloaded = arrayListOf<File>()
         val root = Paths.get("plugins", "specialItems").toFile()
 
@@ -50,33 +62,47 @@ abstract class SpecialItem() {
             if (!root.exists()) root.mkdirs()
 
             var index = 0
-            mList.forEach { (id, item) ->
+            val iterator = mList.iterator()
+            while (iterator.hasNext()) {
+                val next = iterator.next()
+                val id = next.key
+                val item = next.value
+
                 val file = File(root, "$index.yml")
                 val config = YamlConfiguration()
-                item.onSaveStatus(config)
+                try {
+                    item.onSaveStatus(config)
 
-                val store = YamlConfiguration()
-                store.apply {
-                    set(
-                        "type",
-                        item::class.let { it.qualifiedName ?: it.simpleName }.also {
-                            if (it == null) {
-                                Bukkit.getLogger().warning(
-                                    "[SpecialItem] Item at ${item.itemLocation} is anonymous which" +
-                                            "can't be serialized. Ignoring."
-                                )
-                                return@forEach
-                            }
-                        }
+                    val store = YamlConfiguration()
+                    val type = item::class.let { it.qualifiedName ?: it.simpleName }
+                    if (type == null) {
+                        Bukkit.getLogger().warning(
+                            "[SpecialItem] Item at ${item.itemLocation} is anonymous which" +
+                                    "can't be serialized. Ignoring."
+                        )
+                        continue
+                    }
+                    store.apply {
+                        set("type", type)
+                        set("SIID", id.toString())
+                    }
+                    if (config.getKeys(false).size > 0) {
+                        store.set("data", config)
+                    }
+
+                    store.save(file)
+                    index++
+                } catch (e: RemoveRequest) {
+                    Bukkit.getLogger().info("[SpecialItem] $item[$id] is being removed.")
+                    item.onDestroy()
+                    iterator.remove()
+                } catch (e: Exception) {
+                    Bukkit.getLogger().warning(
+                        "[SpecialItem] Failed to save ${index}: ${e::class.qualifiedName}: " +
+                                "${e.message}"
                     )
-                    set("SIID", id.toString())
+                    if (Game.env.getBoolean("debug", false)) e.printStackTrace()
                 }
-                if (config.getKeys(false).size > 0) {
-                    store.set("data", config)
-                }
-
-                store.save(file)
-                index++
             }
             // Remove old files
             val old =
@@ -102,6 +128,7 @@ abstract class SpecialItem() {
                 Bukkit.getLogger().throwing("SpecialItem", "init@$file", e)
                 r = false
             }
+            instance.onPostInit()
             return r
         }
 
@@ -135,6 +162,21 @@ abstract class SpecialItem() {
             fun onDropItem(event: PlayerDropItemEvent) {
                 val siid = getSIID(event.itemDrop.itemStack)
                 mList[siid]?.onDrop(event)
+            }
+
+            @EventHandler
+            fun onInventoryOpen(event: InventoryOpenEvent) {
+                if (!inventories.contains(event.inventory))
+                    inventories.add(event.inventory)
+            }
+
+            @EventHandler(priority = EventPriority.HIGHEST)
+            fun onInventoryClose(event: InventoryCloseEvent) {
+                if (event.inventory.holder == null) {
+                    mList.filterValues { s -> event.inventory.any { it != null && getSIID(it) == s.SIID } }
+                        .keys.forEach { destroy(it) }
+                    inventories.remove(event.inventory)
+                }
             }
         }
 
@@ -175,6 +217,7 @@ abstract class SpecialItem() {
 
         fun cleanUp() {
             HandlerList.unregisterAll(mListener)
+            mList.values.forEach { it.onShutdown() }
         }
 
         @JvmStatic
@@ -234,18 +277,20 @@ abstract class SpecialItem() {
             mList[UUID.randomUUID()] = instance
             instance.itemLocation.itemStack.amount = amount
             instance.onCreate(owner, *arguments)
+            instance.onPostInit()
             return instance
         }
 
         @JvmStatic
-        fun getSIID(item: ItemStack): UUID? =
-            CraftItemStack.asNMSCopy(item).tag?.getString("siid")?.let {
+        fun getSIID(item: ItemStack?): UUID? {
+            return CraftItemStack.asNMSCopy(item ?: return null).tag?.getString("siid")?.let {
                 try {
                     UUID.fromString(it)
                 } catch (ignored: Exception) {
                     null
                 }
             }
+        }
 
         val types: List<String>
             get() = arrayListOf<String>().apply {
@@ -254,20 +299,29 @@ abstract class SpecialItem() {
     }
 
     var itemLocation: ItemLocation = MemoryLocation(ItemStack(material))
-    open fun findItem() {
+    open fun findItem(): Boolean {
         // WARN: This method can be very slow, so it should be called only when the existing location is unusable.
+        val id = SIID
         val pool = Executors.newCachedThreadPool()
-        val tasks = mutableSetOf<Callable<Boolean>>()
+        val tasks = mutableSetOf<Callable<Unit>>()
         val found = arrayListOf<ItemLocation>()
         // Look for players
         Bukkit.getOnlinePlayers().forEach { p ->
             tasks.add(
                 Callable {
-                    if (p.inventory.any { getSIID(it) == SIID }) {
-                        found.add(PlayerLocation(p, SIID))
-                        return@Callable true
+                    if (p.inventory.any { getSIID(it) == id }) {
+                        found.add(PlayerLocation(p, id))
                     }
-                    false
+                }
+            )
+        }
+        // Look for inventories
+        inventories.forEach { i ->
+            tasks.add(
+                Callable {
+                    if (i.any { getSIID(it) == id }) {
+                        found.add(InventoryLocation(i, id))
+                    }
                 }
             )
         }
@@ -277,30 +331,36 @@ abstract class SpecialItem() {
             tasks.add(
                 Callable {
                     w.entities.forEach {
-                        if (it is Item && getSIID(it.itemStack) == SIID) {
+                        if (it is Item && getSIID(it.itemStack) == id) {
                             found.add(DroppedItemLocation(it))
-                            return@Callable true
                         }
                     }
-                    false
                 }
             )
             Unit
         }
         // Start searching
-        val workers = pool.invokeAll(tasks, 2, TimeUnit.SECONDS)
-        // => Wait from results
-        while (!workers.all { it.isDone }) {
-            Thread.sleep(200)
+        try {
+            val workers = pool.invokeAll(tasks, 2, TimeUnit.SECONDS)
+            // => Wait from results
+            while (!workers.all { it.isDone }) {
+                Thread.sleep(200)
+            }
+        } catch (e: Exception) {
+            return false
+        } finally {
+            pool.shutdownNow()
         }
-        pool.shutdownNow()
         // Process
         if (found.size == 1) {
             itemLocation = found.first()
+            return true
         } else if (found.size > 1) {
             itemLocation = MultiLocation(found)
+            return true
         }
         // Still can't find. Use reserved.
+        return false
     }
 
     val itemStack: ItemStack
@@ -339,10 +399,19 @@ abstract class SpecialItem() {
             })
     }
 
+    /**
+     * Called at the first appearance of the item.
+     * @param owner The supposed owner of this item. Specified in [SpecialItem.make].
+     * @param args Extra arguments for this construction. Specified in [SpecialItem.make].
+     */
     open fun onCreate(owner: Player, vararg args: Any) {
         labelItem()
     }
 
+    /**
+     * Called at the deserialization of the item.
+     * @param savedStatus Data to deserialize.
+     */
     open fun onRestore(savedStatus: ConfigurationSection) {
         if (savedStatus.contains("location"))
             savedStatus.getSerializable("location", ItemLocation::class.java)?.let { itemLocation = it }
@@ -351,13 +420,27 @@ abstract class SpecialItem() {
         }
     }
 
+    /**
+     * Called after either [onRestore] or [onCreate].
+     */
+    open fun onPostInit() {}
+
+    /**
+     * Called if [SpecialItem.getByItem] is handed in the second parameter.
+     */
     open fun onDisplay(showing: Player) {}
 
+    /**
+     * Called at the serialization of this item.
+     * @param config A yaml configuration where data is stored.
+     */
     open fun onSaveStatus(config: ConfigurationSection) {
-        findItem()
+        val found = findItem()
         fun getSuitableLocation(from: ItemLocation): ItemLocation =
             when (from) {
-                is PlayerLocation -> MemoryLocation(from.itemStack)
+                is PlayerLocation ->
+                    if (found || !from.player.isOnline) MemoryLocation(from.itemStack)
+                    else throw RemoveRequest()
                 is MultiLocation -> {
                     val l = from.locations.map { getSuitableLocation(it) }
                     MultiLocation(l)
@@ -371,13 +454,36 @@ abstract class SpecialItem() {
         )
     }
 
+    /**
+     * Called when this item is not supposed to exist any longer.
+     */
     open fun onDestroy() {}
 
+    /**
+     * Called each tick if the item is in a player's inventory.
+     */
     open fun doPerTick(mod: PlayerModifier, contract: YamlConfiguration, score: Objective, scoreboardSorter: Int) {}
+
+    /**
+     * Called when server is about to close.
+     */
+    open fun onShutdown() {}
 
     open fun onClick(event: InventoryClickEvent) {}
 
     open fun onInteractWith(event: PlayerInteractEvent) {}
 
     open fun onDrop(event: PlayerDropItemEvent) {}
+
+    protected fun <T : Event> listenOther(clazz: Class<T>, listener: Consumer<T>) {
+        Bukkit.getPluginManager()
+            .registerEvent(clazz, mListener, EventPriority.NORMAL, { _, e ->
+                try {
+                    listener.accept(e as T)
+                } catch (ignore: ClassCastException) {
+                }
+            }, Base.pluginCore)
+    }
+
+    class RemoveRequest : Exception()
 }
