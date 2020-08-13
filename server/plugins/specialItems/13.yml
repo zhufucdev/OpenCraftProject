@@ -1,0 +1,15 @@
+type: com.zhufu.opencraft.special_item.StoneSword
+SIID: 29148e73-ed23-4d2d-bb4a-498722737326
+data:
+  location:
+    ==: com.zhufu.opencraft.special_item.base.locate.MemoryLocation
+    v: 2567
+    type: STONE_SWORD
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      enchants:
+        KNOCKBACK: 1
+        DAMAGE_ALL: 1
+      internal: H4sIAAAAAAAAAONiYOBgYCnOzExhUDGyNDSxSDU31k1NMTLWNUkxStFNSjJJ1DWxtDA3MjI3Njc2MmMAAN5Gl8YxAAAA
+  owner: 8fee2408-5108-341b-9787-35fcf5b191f9

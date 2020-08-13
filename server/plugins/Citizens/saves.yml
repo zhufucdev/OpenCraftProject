@@ -1,0 +1,90 @@
+# Citizens NPC Storage
+
+last-created-npc-id: 41
+npc:
+  '6':
+    metadata:
+      protected: true
+      minecraft-ai: false
+    name: 装备
+    uuid: 8459af54-0126-4d8c-8820-e93c6c028da4
+    traits:
+      type: PLAYER
+      location:
+        bodyYaw: -46.27739
+        world: world_survive
+        x: '-70.0'
+        y: '79.0'
+        z: '115.0'
+        yaw: '-46.2774'
+        pitch: '-44.7063'
+      skintrait:
+        fetchDefaultSkin: true
+        updateSkins: false
+      speech: chat
+      spawned: true
+      owner:
+        owner: server
+        uuid: ''
+    traitnames: location,mounttrait,equipment,skintrait,scoreboardtrait,type,spawned,owner,speech,inventory
+    navigator:
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '7':
+    metadata:
+      protected: true
+      minecraft-ai: false
+    name: 装备
+    uuid: 063dcc68-a54a-4e15-9e69-918012322dc5
+    traits:
+      skintrait:
+        fetchDefaultSkin: true
+        updateSkins: false
+      type: PLAYER
+      location:
+        bodyYaw: 56.7
+        world: world_survive
+        x: '-70.0'
+        y: '79.0'
+        z: '115.0'
+        yaw: '56.7'
+        pitch: '18.15'
+      spawned: true
+      owner:
+        owner: server
+        uuid: ''
+    traitnames: location,mounttrait,skintrait,equipment,scoreboardtrait,type,spawned,owner,inventory
+    navigator:
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '25':
+    metadata:
+      protected: true
+      minecraft-ai: false
+    name: 装备
+    uuid: 295e39b5-9747-450c-aa13-8f1d180405b6
+    traits:
+      skintrait:
+        fetchDefaultSkin: true
+        updateSkins: false
+      spawned: true
+      type: PLAYER
+      location:
+        bodyYaw: 0.0
+        world: world_survive
+        x: '-175.5'
+        y: '65.0'
+        z: '240.5'
+        yaw: '2.4013'
+        pitch: '0.0'
+      speech: chat
+      owner:
+        owner: server
+        uuid: ''
+    traitnames: location,mounttrait,skintrait,equipment,scoreboardtrait,type,spawned,owner,speech,inventory
+    navigator:
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true

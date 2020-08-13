@@ -3,8 +3,8 @@ debug: true
 survivalCenter:
   ==: org.bukkit.Location
   world: world_survive
-  x: 307.0
+  x: 320.0
   y: 71.0
-  z: -362.0
-  pitch: 2.0999157
-  yaw: 94.649605
+  z: -363.0
+  pitch: 2.0999289
+  yaw: 2.2496645

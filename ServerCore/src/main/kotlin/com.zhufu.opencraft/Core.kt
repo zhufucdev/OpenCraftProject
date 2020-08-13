@@ -122,6 +122,7 @@ class Core : JavaPlugin(), Listener {
         runReport(SurveyManager::init, File(dataFolder, "survey.json"), this)
         runReport(this::ssInit)
         listOf(
+            TaskManager::init,
             SpecialItem.Companion::init,
             GameManager::init,
             PlayerManager::init,
@@ -206,6 +207,7 @@ class Core : JavaPlugin(), Listener {
         logger.info("Saving everything...")
         env.save(File(dataFolder, "env"))
         listOf(
+            TaskManager::save,
             SpecialItem.Companion::save,
             BuilderListener::saveConfig,
             PlayerStatics.Companion::saveAll,

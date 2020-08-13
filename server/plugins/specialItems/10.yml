@@ -1,0 +1,16 @@
+type: com.zhufu.opencraft.special_item.Control
+SIID: cb1dffcf-17ef-4517-8a90-6dba60361c5a
+data:
+  location:
+    ==: com.zhufu.opencraft.special_item.base.locate.MemoryLocation
+    v: 2567
+    type: COMPASS
+    meta:
+      ==: ItemMeta
+      meta-type: COMPASS
+      display-name: §e控制器
+      lore:
+      - §6左键召唤物以控制
+      internal: H4sIAAAAAAAAAONiYOBgYCnOzExhUElOMkxJS0tO0zU0T03TNTE1NNe1SLQ00DVLSUo0MzA2M0w2TWQAAM5DZi8xAAAA
+      LodestoneTracked: false
+  owner: 9e602dba-2131-3b74-95fa-699098d5889d

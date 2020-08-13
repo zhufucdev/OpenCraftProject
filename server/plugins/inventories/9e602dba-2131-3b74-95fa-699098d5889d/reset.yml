@@ -1,0 +1,16 @@
+gameMode: SURVIVAL
+health: 20.0
+foodLevel: 20
+walkSpeed: 0.2
+flySpeed: 0.1
+exp: 0
+location:
+  ==: org.bukkit.Location
+  world: world
+  x: 47.168334359986346
+  y: 169.0
+  z: 90.30000001192093
+  pitch: 22.200066
+  yaw: 28.500011
+potion: {}
+inventory: {}

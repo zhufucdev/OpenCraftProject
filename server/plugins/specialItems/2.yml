@@ -1,0 +1,20 @@
+type: com.zhufu.opencraft.special_item.EggSpawner
+SIID: 188f7652-bc00-4ce3-adf5-5a23efce01e5
+data:
+  location:
+    ==: com.zhufu.opencraft.special_item.base.locate.MemoryLocation
+    v: 2567
+    type: EGG
+    amount: 16
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      display-name: §e生成器
+      lore:
+      - §6丢出以使用 左键以修改生成物
+      - §e等级为2
+      - §e将生成僵尸
+      internal: H4sIAAAAAAAAAONiYOBgYCnOzExhUDG0sEgzNzM10k1KNjDQNUlONdZNTEkz1TVNNDJOTUtONTBMNWUAAKTbV3ExAAAA
+  owner: 9e602dba-2131-3b74-95fa-699098d5889d
+  lvl: 2
+  selection: zombie

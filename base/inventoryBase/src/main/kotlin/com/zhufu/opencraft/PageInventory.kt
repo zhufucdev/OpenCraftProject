@@ -46,7 +46,7 @@ open class PageInventory<T : PageInventory.Adapter> : ClickableInventory {
         open fun onRefresh(){}
     }
 
-    open val id = Companion.id++
+    val id = Companion.id++
     var currentPage: Int = 0
         private set
     lateinit var itemNextPage: ItemStack

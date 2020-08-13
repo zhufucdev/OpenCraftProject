@@ -1,0 +1,211 @@
+spawnpoint:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: 323.0
+  y: 71.0
+  z: -362.0
+  pitch: 2.0999157
+  yaw: 94.649605
+gameMode: SURVIVAL
+health: 20.0
+foodLevel: 11
+walkSpeed: 0.2
+flySpeed: 0.1
+exp: 16
+location:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: 309.47876652465186
+  y: 69.0
+  z: -350.2420255045455
+  pitch: 44.249786
+  yaw: 358.80768
+potion: {}
+inventory:
+  '0': e2a66f1e-08f4-41b4-b787-998eb10e037d
+  '1':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: SADDLE
+  '2':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: OAK_BOAT
+  '3':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: FILLED_MAP
+    meta:
+      ==: ItemMeta
+      meta-type: MAP
+      display-name: Buried Treasure Map
+      internal: H4sIAAAAAAAAAONiYOBk4HZJTc4vSizJzM8r5mJgYGBkZGApqSxIlWJjYKw4EHuAAQQ4GJgyUxgYtYFiVQcaLMBibAzMRfklDmkNDBAAAOcxDAJOAAAA
+      map-id: 0
+  '4':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: STONE_AXE
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      Damage: 4
+  '5':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: STONE_PICKAXE
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      Damage: 17
+  '6':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: WHEAT
+    amount: 6
+  '7':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: WHEAT
+    amount: 64
+  '8':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: WHEAT
+    amount: 64
+  '9':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: INK_SAC
+    amount: 6
+  '10':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: FLINT
+    amount: 4
+  '11':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: STICK
+    amount: 2
+  '12':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: COBBLESTONE
+  '13':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: IRON_NUGGET
+    amount: 28
+  '14':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: FIRE_CHARGE
+  '15':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: SPIDER_EYE
+    amount: 4
+  '16': 8ed65610-5fc3-4521-a66f-8404c534c6f5
+  '17':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: IRON_HORSE_ARMOR
+  '18':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: STRING
+    amount: 25
+  '19':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: CRAFTING_TABLE
+  '20':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: IRON_INGOT
+    amount: 6
+  '21':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: BONE
+    amount: 28
+  '22':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: OAK_PLANKS
+    amount: 16
+  '23':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: DIAMOND_HORSE_ARMOR
+  '24':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: WHEAT
+    amount: 64
+  '25':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: OAK_SAPLING
+    amount: 4
+  '26':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: GOLDEN_HORSE_ARMOR
+  '27':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: WHEAT
+    amount: 64
+  '28':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: GUNPOWDER
+    amount: 18
+  '29':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: ROTTEN_FLESH
+    amount: 9
+  '30':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: WOODEN_PICKAXE
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      Damage: 6
+  '31':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: PAPER
+    amount: 15
+  '32':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: GOLD_INGOT
+    amount: 2
+  '33':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: LAPIS_LAZULI
+    amount: 10
+  '34':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: DIAMOND
+  '35':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: EMERALD
+    amount: 15
+  '38':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: GOLDEN_CHESTPLATE
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      enchants:
+        THORNS: 2
+      Damage: 1

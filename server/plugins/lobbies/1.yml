@@ -1,0 +1,10 @@
+spawnpoint:
+  ==: org.bukkit.Location
+  world: world
+  x: -17.0
+  y: 173.0
+  z: 26.0
+  pitch: 0.0
+  yaw: 0.0
+initialized: true
+views: 1

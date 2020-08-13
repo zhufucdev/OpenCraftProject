@@ -1,0 +1,88 @@
+spawnpoint:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: 323.0
+  y: 71.0
+  z: -362.0
+  pitch: 2.0999157
+  yaw: 94.649605
+gameMode: SURVIVAL
+health: 20.0
+foodLevel: 43
+walkSpeed: 0.2
+flySpeed: 0.1
+exp: 9
+location:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: 324.69999998807907
+  y: 45.0
+  z: -315.40375056425063
+  pitch: 2.1001337
+  yaw: 348.8989
+potion:
+  DAMAGE_RESISTANCE:
+    ==: PotionEffect
+    effect: 11
+    duration: 29
+    amplifier: 1
+    ambient: true
+    has-particles: false
+    has-icon: false
+inventory:
+  '0': 29148e73-ed23-4d2d-bb4a-498722737326
+  '1': 5618c588-b02a-468f-ad70-d50e3eda15e5
+  '2':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: OAK_PLANKS
+    amount: 15
+  '3':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: OAK_LOG
+  '4':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: COBBLESTONE
+    amount: 64
+  '5':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: WOODEN_PICKAXE
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      Damage: 13
+  '6':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: DIRT
+    amount: 7
+  '7':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: STONE_PICKAXE
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      Damage: 91
+  '8':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: DIORITE
+    amount: 6
+  '9':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: COBBLESTONE
+    amount: 14
+  '10':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: COAL
+    amount: 9
+  '40':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: SHIELD

@@ -1,0 +1,23 @@
+gameMode: CREATIVE
+health: 20.0
+foodLevel: 43
+walkSpeed: 0.2
+flySpeed: 0.1
+exp: 9
+location:
+  ==: org.bukkit.Location
+  world: world
+  x: -81.0
+  y: 182.0
+  z: -38.0
+  pitch: 0.0
+  yaw: 0.0
+potion:
+  DAMAGE_RESISTANCE:
+    ==: PotionEffect
+    effect: 11
+    duration: 32
+    amplifier: 1
+    ambient: true
+    has-particles: false
+    has-icon: false

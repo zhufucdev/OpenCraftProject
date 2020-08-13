@@ -1,0 +1,6 @@
+com/baidu/translate/TransApi.java
+ com.baidu.translate.TransApi
+com/baidu/translate/LangDetect.java
+ com.baidu.translate.LangDetect
+com/baidu/translate/MD5.java
+ com.baidu.translate.MD5

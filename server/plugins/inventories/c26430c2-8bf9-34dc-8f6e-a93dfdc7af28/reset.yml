@@ -1,0 +1,15 @@
+gameMode: CREATIVE
+health: 20.0
+foodLevel: 20
+walkSpeed: 0.2
+flySpeed: 0.1
+exp: 16
+location:
+  ==: org.bukkit.Location
+  world: world
+  x: -81.0
+  y: 182.0
+  z: 26.0
+  pitch: 0.0
+  yaw: 0.0
+potion: {}

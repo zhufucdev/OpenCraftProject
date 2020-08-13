@@ -1,6 +1,5 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.rpg.Role
 import com.zhufu.opencraft.rpg.Role.*
 import com.zhufu.opencraft.special_item.base.SpecialItem
 import org.bukkit.Material
@@ -35,7 +34,11 @@ object RPGUtil {
             }
             RANGER -> TODO()
             PRIEST -> TODO()
-            SUMMONER -> TODO()
+            SUMMONER -> {
+                val spawner = SpecialItem.make("EggSpawner", 1, player)!!
+                val control = SpecialItem.make("Control", 1, player)!!
+                player.inventory.addItem(spawner.itemLocation.itemStack, control.itemLocation.itemStack)
+            }
             else -> {}
         }
     }

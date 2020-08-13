@@ -51,6 +51,10 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
         const val RESET = "reset"
         const val NOTHING = "none"
 
+        /**
+         * Make the player inventory empty, health and food level full, walk and fly speed normal, zero exp, no
+         * potion effects and ability of flight matching his game mode.
+         */
         fun resetPlayer(player: Player) {
             player.inventory.clear()
             player.healthScale = 20.toDouble()
@@ -205,6 +209,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
                             )
                         ) ?: Bukkit.getLogger().warning("SolvePlayerLobby of ServerCaller is missing out.")
                         player.gameMode = GameMode.CREATIVE
+                        resetPlayer(player)
                     } else {
                         player.inventory.clear()
                         return

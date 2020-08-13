@@ -1,0 +1,53 @@
+gameMode: CREATIVE
+health: 20.0
+foodLevel: 20
+walkSpeed: 0.0
+flySpeed: 0.1
+exp: 0
+location:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: 322.05922499088797
+  y: 71.0
+  z: -362.2344599788205
+  pitch: 53.549923
+  yaw: 21.598816
+potion: {}
+inventory:
+  '0':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: NAME_TAG
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      display-name: yahhh
+  '1':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: GRASS_BLOCK
+  '2':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: COBBLESTONE_STAIRS
+  '3':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: NAME_TAG
+  '4':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: STONE_BRICKS
+  '5':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: ANVIL
+  '29':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: ENCHANTED_BOOK
+    meta:
+      ==: ItemMeta
+      meta-type: ENCHANTED
+      stored-enchants:
+        DIG_SPEED: 5

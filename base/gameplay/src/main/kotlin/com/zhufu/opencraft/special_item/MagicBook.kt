@@ -12,7 +12,7 @@ import org.bukkit.potion.PotionType
 
 class MagicBook : BindItem() {
     override val material: Material
-        get() = Material.WRITTEN_BOOK
+        get() = Material.ENCHANTED_BOOK
 
     override fun onCreate(owner: Player, vararg args: Any) {
         super.onCreate(owner, *args)

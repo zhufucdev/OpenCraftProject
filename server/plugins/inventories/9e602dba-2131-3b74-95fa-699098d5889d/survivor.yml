@@ -1,0 +1,41 @@
+spawnpoint:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: 320.0
+  y: 71.0
+  z: -363.0
+  pitch: 2.0999289
+  yaw: 2.2496645
+gameMode: SURVIVAL
+health: 20.0
+foodLevel: 20
+walkSpeed: 0.2
+flySpeed: 0.1
+exp: 0
+potion: {}
+inventory:
+  '0': 271575e7-f114-45da-b546-f8846f60c2fd
+  '1': c5347aa9-1bc4-48e2-9a44-c0025b9d18be
+  '2':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: ROTTEN_FLESH
+    amount: 7
+  '9':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: ARROW
+    amount: 2
+  '10':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: BONE
+    amount: 2
+location:
+  ==: org.bukkit.Location
+  world: world_survive
+  x: 321.6466144034641
+  y: 70.0
+  z: -357.756189936464
+  pitch: 11.999834
+  yaw: -105.3001

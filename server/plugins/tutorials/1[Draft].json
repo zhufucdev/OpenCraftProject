@@ -1,0 +1,27 @@
+{
+  "creator": "9e602dba-2131-3b74-95fa-699098d5889d",
+  "name": "未命名",
+  "id": 1,
+  "triggerMethod": "NONE",
+  "triggerArgs": {},
+  "isDraft": true,
+  "steps": [
+    {
+      "location": {
+        "world": "54c71d1a-9190-470f-b3e5-363f38ab25f0",
+        "x": -649.2226378354451,
+        "y": 74.02425146767769,
+        "z": 4176.002632837719,
+        "pitch": 19.988205,
+        "yaw": -106.0669
+      },
+      "type": "Teleport",
+      "time": 2000,
+      "title": "$greenHello World",
+      "subtitle": ""
+    }
+  ],
+  "played": [
+    "zhufucdev"
+  ]
+}

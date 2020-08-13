@@ -1,8 +1,8 @@
 import bukkit.Server
 import citizens.NPC
-import com.zhufu.opencraft.Base
 import com.zhufu.opencraft.Scripting
 import com.zhufu.opencraft.ui.EquipUpgradeUI
+import com.zhufu.opencraft.ui.TaskSelectUI
 import net.citizensnpcs.api.ai.tree.BehaviorStatus
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import opencraft.Global
@@ -11,50 +11,63 @@ import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.HumanEntity
-import org.bukkit.entity.Item
-def npc = NPC.define {
+import org.bukkit.util.Vector
+
+def equip = NPC.define {
     name '装备'
     type EntityType.PLAYER
     spawnAt Global.arg("survivalCenter", Location.class)
-    behaveAll {
-        or({
-            livingNPC().location.getNearbyEntitiesByType(Item.class, 5).size() == 0
-        }, behave {
-            Entity lastSpoken
-            run {
-                def nearbyPlayer = livingNPC().location.getNearbyEntitiesByType(HumanEntity.class, 4).find { it != livingNPC() }
-                if (nearbyPlayer == null) return BehaviorStatus.FAILURE
+    behave {
+        Entity lastSpoken
+        priority 1
+        run {
+            def nearbyPlayer = livingNPC().location.getNearbyEntitiesByType(HumanEntity.class, 4).find { it != livingNPC() && !it.hasMetadata("NPC") }
+            if (nearbyPlayer == null) return BehaviorStatus.FAILURE
 
-                getNPC().faceLocation(nearbyPlayer.location)
-                if (lastSpoken != nearbyPlayer) {
-                    speak {
-                        message 'LOL'
-                        to nearbyPlayer
-                    }
-                    lastSpoken = nearbyPlayer
+            getNPC().faceLocation(nearbyPlayer.location)
+            if (lastSpoken != nearbyPlayer) {
+                speak {
+                    message 'LOL'
+                    to nearbyPlayer
                 }
-                return BehaviorStatus.SUCCESS
+                lastSpoken = nearbyPlayer
             }
+            return BehaviorStatus.SUCCESS
+        }
 
-            shouldRun { true }
-        }, behave {
-            run {
-                def item = livingNPC().location.getNearbyEntitiesByType(Item.class, 5)
-                if (item.size() <= 0) return BehaviorStatus.FAILURE
-                item = item.first()
-                def thrower = PlayerManager.getInfo(item.thrower)
-                def stack = item.itemStack
-                item.remove()
+        shouldRun { true }
+    }
+}
 
-                def ui = new EquipUpgradeUI(Base.INSTANCE.pluginCore, thrower)
+def task = NPC.define {
+    name '任务'
+    type EntityType.PLAYER
+    spawnAt Global.arg("survivalCenter", Location.class).clone().add(new Vector(2, 0, 0))
+    behave {
+        Entity lastSpoken
+        priority 1
+        run {
+            def nearbyPlayer = livingNPC().location.getNearbyEntitiesByType(HumanEntity.class, 4).find { it != livingNPC() && !it.hasMetadata("NPC") }
+            if (nearbyPlayer == null) return BehaviorStatus.FAILURE
 
-                BehaviorStatus.SUCCESS
+            getNPC().faceLocation(nearbyPlayer.location)
+            if (lastSpoken != nearbyPlayer) {
+                speak {
+                    message '欢迎回来，我的朋友'
+                    to nearbyPlayer
+                }
+                lastSpoken = nearbyPlayer
             }
-        })
+            return BehaviorStatus.SUCCESS
+        }
+
+        shouldRun { true }
     }
 }
 
 Server.listenEvent(NPCRightClickEvent.class) {
-    if (getNPC() != npc.getNPC()) return
-    (new EquipUpgradeUI(Scripting.plugin, PlayerManager.getInfo(clicker))).show(clicker)
+    if (getNPC() == equip.getNPC())
+        (new EquipUpgradeUI(Scripting.plugin, PlayerManager.getInfo(clicker))).show(clicker)
+    else if (getNPC() == task.getNPC())
+        (new TaskSelectUI(PlayerManager.getInfo(clicker), Scripting.plugin).show(clicker))
 }

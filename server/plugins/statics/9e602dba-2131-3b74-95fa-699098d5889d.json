@@ -150,7 +150,7 @@
     "currency": 216
   },
   "376": {
-    "currency": 0
+    "currency": 88
   },
   "450": {
     "currency": 0
@@ -333,7 +333,7 @@
     "currency": 256
   },
   "32": {
-    "currency": 256
+    "currency": 88
   },
   "98": {
     "currency": 216
@@ -708,7 +708,7 @@
     "currency": 0
   },
   "100": {
-    "currency": 0
+    "currency": 88
   },
   "260": {
     "currency": 0
@@ -723,7 +723,7 @@
     "currency": 0
   },
   "908": {
-    "currency": 0
+    "currency": 88
   },
   "1112": {
     "currency": 0
@@ -783,7 +783,7 @@
     "time": 2444
   },
   "44": {
-    "currency": 0
+    "currency": 88
   },
   "876": {
     "currency": 0
@@ -801,7 +801,7 @@
     "currency": 0
   },
   "186": {
-    "currency": 0
+    "currency": 88
   },
   "196": {
     "currency": 0
@@ -1324,5 +1324,89 @@
   },
   "8100": {
     "currency": 88
+  },
+  "1596902400000": {
+    "time": 2418
+  },
+  "250": {
+    "currency": 88
+  },
+  "282": {
+    "currency": 88
+  },
+  "312": {
+    "currency": 88
+  },
+  "938": {
+    "currency": 88
+  },
+  "1996": {
+    "currency": 0
+  },
+  "1596988800000": {
+    "time": 726
+  },
+  "62": {
+    "currency": 88
+  },
+  "144": {
+    "currency": 88
+  },
+  "238": {
+    "currency": 88
+  },
+  "506": {
+    "currency": 88
+  },
+  "548": {
+    "currency": 88
+  },
+  "1597075200000": {
+    "time": 2840
+  },
+  "22": {
+    "currency": 88
+  },
+  "320": {
+    "currency": 88
+  },
+  "392": {
+    "currency": 88
+  },
+  "440": {
+    "currency": 88
+  },
+  "454": {
+    "currency": 88
+  },
+  "546": {
+    "currency": 88
+  },
+  "692": {
+    "currency": 88
+  },
+  "746": {
+    "currency": 88
+  },
+  "792": {
+    "currency": 88
+  },
+  "1072": {
+    "currency": 88
+  },
+  "1078": {
+    "currency": 88
+  },
+  "1376": {
+    "currency": 88
+  },
+  "1678": {
+    "currency": 0
+  },
+  "2226": {
+    "currency": 0
+  },
+  "2714": {
+    "currency": 0
   }
 }

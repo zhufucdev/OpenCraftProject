@@ -725,6 +725,18 @@ rpg:
         right_up: '◥◥◥'
         left_down: '◣◣◣'
         right_down: '◢◢◢'
+    task:
+      title: '任务选择'
+      name: '主线任务#%s'
+      creation: '创建于%s年%s月%s日%s:%s'
+      completion: '完成于%s年%s月%s日%s:%s'
+      degree: '完成度为%s'
+      imcompletion: '未完成'
+      init:
+        wait: '正在初始化任务，请稍候'
+      error:
+        start: '无法启动任务%s: %s: %s。请联系服务器管理员'
+
   error:
     maxLevel:
       title: '无法升级%s'

@@ -1,0 +1,13 @@
+type: com.zhufu.opencraft.special_item.MagicBook
+SIID: 8ed65610-5fc3-4521-a66f-8404c534c6f5
+data:
+  location:
+    ==: com.zhufu.opencraft.special_item.base.locate.MemoryLocation
+    v: 2567
+    type: WRITTEN_BOOK
+    meta:
+      ==: ItemMeta
+      meta-type: BOOK_SIGNED
+      display-name: §eMagic Book
+      internal: H4sIAAAAAAAAAONiYOBgYCnOzExhULFITTEzNTM00DVNSzbWNTE1MtRNNDNL07UwMTBJNjU2STZLM2UAAKmGubMxAAAA
+  owner: c26430c2-8bf9-34dc-8f6e-a93dfdc7af28

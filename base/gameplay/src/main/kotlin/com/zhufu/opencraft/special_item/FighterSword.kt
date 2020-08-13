@@ -4,6 +4,7 @@ import com.zhufu.opencraft.*
 import com.zhufu.opencraft.special_item.base.BindItem
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.ItemMeta
 
 abstract class FighterSword: BindItem(), Upgradable {
@@ -29,6 +30,7 @@ abstract class FighterSword: BindItem(), Upgradable {
         } else {
             updateEnchantment()
         }
+        itemLocation.itemStack.addItemFlags(ItemFlag.HIDE_UNBREAKABLE)
     }
 
     private var mLevel = 1

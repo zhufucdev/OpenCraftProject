@@ -218,7 +218,7 @@ class UserManager : JavaPlugin(), Listener {
                         .callEvent(
                             PlayerTeleportedEvent(
                                 event.player,
-                                spawnWorld.spawnLocation,
+                                null,
                                 PlayerLobbyManager[info].spawnPoint
                             )
                         )

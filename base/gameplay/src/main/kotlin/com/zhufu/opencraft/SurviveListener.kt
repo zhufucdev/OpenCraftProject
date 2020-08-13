@@ -16,6 +16,7 @@ import com.zhufu.opencraft.special_item.maxMP
 import com.zhufu.opencraft.special_item.mp
 import com.zhufu.opencraft.special_item.mpRecoverRate
 import com.zhufu.opencraft.special_item.showMP
+import com.zhufu.opencraft.task.Task
 import com.zhufu.opencraft.ui.RoleSelectUI
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -105,6 +106,10 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         Reflections("com.zhufu.opencraft.special_item")
             .getSubTypesOf(SpecialItem::class.java)
             .forEach { if (!Modifier.isAbstract(it.modifiers)) SpecialItem.register(it) }
+        // Register Tasks
+        Reflections("com.zhufu.opencraft.task")
+            .getSubTypesOf(Task::class.java)
+            .forEach { if (!Modifier.isAbstract(it.modifiers)) Task.register(it) }
 
         Bukkit.getScheduler().runTaskTimer(plugin, Runnable {
             PlayerManager.forEachPlayer {
