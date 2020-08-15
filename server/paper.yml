@@ -13,6 +13,8 @@
 verbose: false
 config-version: 20
 settings:
+  player-auto-save-rate: -1
+  max-player-auto-save-per-tick: -1
   console-has-all-permissions: false
   chunk-tasks-per-tick: 1000
   load-permissions-yml-before-plugins: true

@@ -120,9 +120,9 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
         var aAmount = 0
         fun isSimilar(a: ItemStack): Boolean {
             return a.type == type.type
-                    && (type is SpecialItem && SpecialItem.getByItem(a, type.getter)
+                    && ((type is SpecialItem && SpecialItem.getByItem(a, type.getter)
                 ?.let { it::class.isSuperclassOf(a::class) } == true)
-                    || type !is SpecialItem
+                    || type !is SpecialItem)
         }
         this.inventory.forEach {
             if (it != null && isSimilar(it))

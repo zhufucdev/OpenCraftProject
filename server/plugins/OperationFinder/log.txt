@@ -14644,3 +14644,10 @@
 {"time":1594793559708,"player":"zhufucdev","type":"MOVE","data":{"x":-663.5650405508665,"y":88.0,"z":4142.877898662853,"world":"world_survive"}}
 {"time":1594793619709,"player":"zhufucdev","type":"MOVE","data":{"x":-663.5650405508665,"y":88.0,"z":4142.877898662853,"world":"world_survive"}}
 {"time":1594793679709,"player":"zhufucdev","type":"MOVE","data":{"x":-663.4387124189759,"y":88.0,"z":4143.44040660999,"world":"world_survive"}}
+{"time":1597481152567,"player":"zhufucdev","type":"MOVE","data":{"x":-641.0618157580461,"y":68.53260614832628,"z":4138.450545894177,"world":"world_survive"}}
+{"time":1597481159093,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
+{"time":1597481163281,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
+{"time":1597481212563,"player":"zhufucdev","type":"MOVE","data":{"x":7.52220310489406,"y":62.0,"z":5.759596061439104,"world":"world_trade"}}
+{"time":1597481272564,"player":"zhufucdev","type":"MOVE","data":{"x":7.52220310489406,"y":62.0,"z":5.759596061439104,"world":"world_trade"}}
+{"time":1597481371805,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
+{"time":1597481374491,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}

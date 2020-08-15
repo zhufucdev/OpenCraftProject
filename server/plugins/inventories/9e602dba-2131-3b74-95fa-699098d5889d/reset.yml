@@ -1,24 +1,12 @@
 inventory:
-  '1':
+  '0':
     ==: org.bukkit.inventory.ItemStack
     v: 2567
-    type: OAK_SLAB
-  '2':
-    ==: org.bukkit.inventory.ItemStack
-    v: 2567
-    type: ITEM_FRAME
-  '3':
-    ==: org.bukkit.inventory.ItemStack
-    v: 2567
-    type: OAK_PLANKS
-  '4':
-    ==: org.bukkit.inventory.ItemStack
-    v: 2567
-    type: STONE_BUTTON
-  '5':
-    ==: org.bukkit.inventory.ItemStack
-    v: 2567
-    type: GRASS_BLOCK
+    type: COMPASS
+    meta:
+      ==: ItemMeta
+      meta-type: COMPASS
+      display-name: §cTrade Explorer
 gameMode: SURVIVAL
 health: 20.0
 foodLevel: 20
@@ -32,5 +20,5 @@ location:
   y: 3.0
   z: 8.0
   pitch: 0.0
-  yaw: 44.83218
+  yaw: -339.30005
 potion: {}

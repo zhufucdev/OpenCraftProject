@@ -33,6 +33,7 @@
             <option value="$PROJECT_DIR$/WorldGenerator" />
             <option value="$PROJECT_DIR$/WorldTeleporter" />
             <option value="$PROJECT_DIR$/base/blockManagment" />
+            <option value="$PROJECT_DIR$/base/gameplay" />
             <option value="$PROJECT_DIR$/base/inventoryBase" />
             <option value="$PROJECT_DIR$/base/listeners" />
             <option value="$PROJECT_DIR$/base/miniGameBase" />
@@ -46,7 +47,6 @@
             <option value="$PROJECT_DIR$/languages" />
           </set>
         </option>
-        <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>
     </option>
   </component>

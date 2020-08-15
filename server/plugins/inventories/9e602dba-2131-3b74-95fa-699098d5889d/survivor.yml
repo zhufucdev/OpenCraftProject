@@ -8,16 +8,12 @@ location:
   ==: org.bukkit.Location
   world: world_survive
   x: -641.0618157580461
-  y: 90.0
+  y: 63.0
   z: 4138.450545894177
-  pitch: 28.550058
-  yaw: -255.72278
+  pitch: 34.100033
+  yaw: -336.7226
 potion: {}
 inventory:
-  '0':
-    ==: org.bukkit.inventory.ItemStack
-    v: 2567
-    type: OAK_LEAVES
   '1':
     ==: org.bukkit.inventory.ItemStack
     v: 2567
