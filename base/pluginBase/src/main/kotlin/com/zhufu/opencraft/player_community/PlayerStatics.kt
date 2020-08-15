@@ -70,7 +70,7 @@ class PlayerStatics private constructor(val parent: ServerPlayer, private var da
 
     operator fun get(time: Long) = data[time.toString()]?.let {
         if (it.isJsonObject) {
-            it.asJsonObject["time"].asLong
+            it.asJsonObject["time"]?.asLong
         } else {
             it.asLong
         }
