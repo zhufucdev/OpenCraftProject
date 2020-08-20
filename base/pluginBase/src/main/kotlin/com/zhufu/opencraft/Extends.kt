@@ -155,10 +155,8 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
             type.clone()
                 .also { it.amount = amount }
         )
-        if (notStored.isNotEmpty()) {
-            notStored.forEach { (_, u) ->
-                world.dropItemNaturally(eyeLocation, u)
-            }
+        notStored.forEach { (_, u) ->
+            world.dropItemNaturally(eyeLocation, u)
         }
     }
     return true

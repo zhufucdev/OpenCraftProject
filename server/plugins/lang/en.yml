@@ -41,6 +41,7 @@ user:
       out: 'You transferred %s to your friend %s.'
       in: 'Your friend %s transferred %s to you.'
       cancelled: 'Transfer is cancelled.'
+      outOfBound: 'Amount out of bound: %s.'
     request:
       title: '%s wants to make friend with you.'
       tip: 'Accept using /friend %s add, or deny using /friend %s del.'

@@ -205,7 +205,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
 
     override fun destroy() {
         inventory.present.save()
-        cache.remove(this)
+        cache.removeAll { it.uuid == uuid }
         super.destroy()
     }
 }

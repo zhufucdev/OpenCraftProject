@@ -76,7 +76,7 @@ class LittleOneAI(private val parent: TargetAI, private val npc: NPC, plugin: Pl
                     if (target?.isDead == true)
                         return BehaviorStatus.SUCCESS
                     npc.entity.apply {
-                        if (target!!.isFlying) {
+                        if (target?.isFlying == true) {
                             NavigateUtility.targetFlyable(this, target!!)
                         } else {
                             setGravity(true)

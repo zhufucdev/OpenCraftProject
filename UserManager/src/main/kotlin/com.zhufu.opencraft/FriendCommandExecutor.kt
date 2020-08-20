@@ -221,10 +221,16 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                         if (args.size < 3) {
                                             sender.error(getter["command.error.usage"])
                                         } else {
-                                            val amount = args[2].toLongOrNull()
-                                            if (amount == null) {
+                                            val t = args[2].toBigIntegerOrNull()
+                                            if (t == null) {
                                                 sender.error(getter["command.error.argNonDigit"])
                                             } else {
+                                                if (t + target.currency.toBigInteger() > Long.MAX_VALUE.toBigInteger()) {
+                                                    sender.error(getter["user.friend.transfer.error.outOfBound", args[2]])
+                                                    return true
+                                                }
+                                                val amount = t.toLong()
+
                                                 PaymentDialog(
                                                     player = sender,
                                                     sellingItems = SellingItemInfo(
