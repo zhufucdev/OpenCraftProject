@@ -404,6 +404,14 @@ trade:
     title: 'Selectable Pay'
     error:
       outOfBound: 'You can once pay at most %s.'
+  cc:
+    name: 'Copper Coin'
+  coin:
+    name: 'Coin'
+  silver:
+    name: 'Silver'
+  gold:
+    name: 'Gold'
 
 translator:
   usingLang: "%s is your language."
@@ -561,20 +569,7 @@ scripting:
     3: '== Output Stream:'
   returnNull: 'Finished in %s second(s) with nothing returned.'
   returnSomething: 'Finished in %s second(s) with %s returned.'
-  error:
-    offline: 'Target player must be online!'
-    nullValue: '%s must not be null!'
-    log: 'Failed to save log file.'
-    executionOutOfBound: 'You can only execute loops for %s times.'
-    parWhenOffline: "Parameter [%s] must be given when you're not in server."
-    scriptNotFound: "No script named %s was found."
-  unnamed: 'Unnamed'
-  ui:
-    title: 'ServerScripts'
-    new: 'Create script'
-    clickToExec: 'Click to execute'
-    tip:
-      editBook: 'Please edit the book in hand to tell what is the script. To cancel, drop the item.'
+
 npc:
   error:
     parNotFound: "Parameters must contain %s."

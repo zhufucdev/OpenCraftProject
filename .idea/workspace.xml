@@ -4,29 +4,188 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="BranchesTreeState">
-    <expand>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-    </expand>
+    <expand />
     <select />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e25b5eb-585d-48af-aa94-1a0ceef8f169" name="Default Changelist" comment="RPG: Added *Sword, Control and EggSpawner">
+      <change afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/ui/GoodSelectionUI.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/Tickable.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/static/WrappedItem.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/GeneralPrise.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/Prise.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/UndefinedPrise.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/special_item/Coin.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/special_item/CopperCoin.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/special_item/CurrencyItem.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/special_item/GeneralCurrency.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/special_item/Gold.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/special_item/Silver.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/plugins/Citizens-2.0.27-b2058.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/10952.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/10952.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/CurrencySystem/OpenCraft.CurrencySystem.main.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/CurrencySystem/OpenCraft.CurrencySystem.test.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/Info.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/Info.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlockLocker/src/main/kotlin/com.zhufu.opencraft/BlockLocker.kt" beforeDir="false" afterPath="$PROJECT_DIR$/BlockLocker/src/main/kotlin/com.zhufu.opencraft/BlockLocker.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/META-INF/CurrencySystem.kotlin_module" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/CurrencySystem$Companion$isServerReady$connection$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/CurrencySystem$Companion$showTutorial$1$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/CurrencySystem$Companion$showTutorial$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/CurrencySystem$Companion.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/CurrencySystem$TradeTerritoryInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/CurrencySystem$onCommand$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/CurrencySystem$onEnable$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/CurrencySystem$onEnable$4.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/CurrencySystem.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/EveryThing$onInventoryClose$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/EveryThing.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/ImageRender.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/QRUtil$PlayerDonationInfo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/QRUtil$sendToPlayer$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/QRUtil.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/TradeWorldGenerator$Companion.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/TradeWorldGenerator.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/SetUpValidateInventory$Companion.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/SetUpValidateInventory$cancel$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/SetUpValidateInventory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/TraderInventory$Companion.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/TraderInventory$setMode$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/TraderInventory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/VisitorInventory$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/VisitorInventory$VisitorAdapter$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/VisitorInventory$VisitorAdapter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/classes/kotlin/main/com/zhufu/opencraft/inventory/VisitorInventory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/CurrencySystem10SNAPSHOTjar-classes.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/build-history.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/inputs/source-to-output.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/proto.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/proto.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/proto.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/proto.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/proto.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/subtypes.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/subtypes.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/subtypes.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/supertypes.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/supertypes.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/supertypes.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/counters.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/file-to-id.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/file-to-id.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/file-to-id.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/file-to-id.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/file-to-id.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/file-to-id.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/file-to-id.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/id-to-file.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/id-to-file.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/id-to-file.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/id-to-file.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/id-to-file.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/id-to-file.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/id-to-file.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab.keystream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab.keystream.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab.values.at" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab_i" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/caches-jvm/lookups/lookups.tab_i.len" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/kotlin/compileKotlin/last-build.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/libs/CurrencySystem-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/ServerScript-1.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/resources/main/plugin.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/build/tmp/jar/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/CurrencySystem.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/EveryThing.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/ImageRender.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/QRUtil.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/TradeWorldGenerator.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/SetUpValidateInventory.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/TraderInventory.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/src/main/kotlin/com.zhufu.opencraft/inventory/VisitorInventory.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CurrencySystem/src/main/resources/plugin.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/PlayerUtil.kt" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/PlayerUtil.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/CheckpointUI.kt" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/CheckpointUI.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/FriendInteractUI.kt" beforeDir="false" afterPath="$PROJECT_DIR$/PlayerUtils/src/main/kotlin/com.zhufu.opencraft/ui/FriendInteractUI.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServerBoss/src/main/kotlin/com/zhufu/opencraft/ServerBoss.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerBoss/src/main/kotlin/com/zhufu/opencraft/ServerBoss.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServerCore/src/main/kotlin/com.zhufu.opencraft/Core.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/src/main/kotlin/com.zhufu.opencraft/Core.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServerCore/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/ServerCore/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserManager/src/main/kotlin/com.zhufu.opencraft/FriendCommandExecutor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/UserManager/src/main/kotlin/com.zhufu.opencraft/FriendCommandExecutor.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserManager/src/main/kotlin/com.zhufu.opencraft/UserCommandExecutor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/UserManager/src/main/kotlin/com.zhufu.opencraft/UserCommandExecutor.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/RPGUtil.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/RPGUtil.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/SurviveListener.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/SurviveListener.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/Control.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/Control.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/EggSpawner.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/EggSpawner.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/MagicBook.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/MagicBook.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/MultiDirectionEnchantEquipment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/MultiDirectionEnchantEquipment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/SingleDirectionEnchantEquipment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/SingleDirectionEnchantEquipment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/Wand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/special_item/Wand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/ui/EquipUpgradeUI.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/ui/EquipUpgradeUI.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/ui/ServerTradeUI.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/gameplay/src/main/kotlin/com/zhufu/opencraft/ui/ServerTradeUI.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/DualInventory.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/DualInventory.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/Extends.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/Extends.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/base/BindItem.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/dynamic/BindItem.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/base/SpecialItem.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/dynamic/SpecialItem.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/base/locate/DroppedItemLocation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/dynamic/locate/DroppedItemLocation.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/base/locate/InventoryLocation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/dynamic/locate/InventoryLocation.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/base/locate/ItemLocation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/dynamic/locate/ItemLocation.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/base/locate/MemoryLocation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/dynamic/locate/MemoryLocation.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/base/locate/MultiLocation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/dynamic/locate/MultiLocation.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/base/locate/PlayerLocation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/pluginBase/src/main/kotlin/com/zhufu/opencraft/special_item/dynamic/locate/PlayerLocation.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/NPCItemInventory.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/SellingItemInfo.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/SellingItemInfo.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/TradeInfo.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/TradeManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/TradeValidateInventory.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/inventory/PayInputDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/inventory/PayInputDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/inventory/PaymentDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/base/tradeBase/src/main/kotlin/com/zhufu/opencraft/inventory/PaymentDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/languages/src/en.yml" beforeDir="false" afterPath="$PROJECT_DIR$/languages/src/en.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/languages/src/zh.yml" beforeDir="false" afterPath="$PROJECT_DIR$/languages/src/zh.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/plugins/lang/en.yml" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/lang/en.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/plugins/lang/zh.yml" beforeDir="false" afterPath="$PROJECT_DIR$/server/plugins/lang/zh.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,10 +258,10 @@
         <option value="package.json" />
         <option value="JavaScript File" />
         <option value="Kotlin Enum" />
-        <option value="Kotlin File" />
-        <option value="Kotlin Interface" />
         <option value="Kotlin Object" />
+        <option value="Kotlin File" />
         <option value="Kotlin Class" />
+        <option value="Kotlin Interface" />
       </list>
     </option>
   </component>
@@ -180,19 +339,19 @@
     <option name="AUTOSCROLL_FROM_SOURCE" value="false" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\IdeaProjects\OpenCraftProject\server" />
-      <recent name="D:\IdeaProjects\OpenCraftProject\server\plugins" />
-      <recent name="D:\IdeaProjects\OpenCraftProject\base\gameplay\src\main\kotlin\com\zhufu\opencraft" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/base/scripting/src/ss_modules/bukkit" />
-    </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.zhufu.opencraft" />
       <recent name="com.zhufu.opencraft.special_item" />
       <recent name="com.zhufu.opencraft.special_item.sword" />
-      <recent name="com.zhufu.opencraft" />
       <recent name="com.zhufu.opencraft.ui" />
       <recent name="com.zhufu.opencraft.special_item.base.locate" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/server/plugins/lang" />
+      <recent name="$PROJECT_DIR$/server/plugins/ss_modules" />
+      <recent name="$PROJECT_DIR$/base" />
+      <recent name="$PROJECT_DIR$/server" />
+      <recent name="$PROJECT_DIR$/RemoteRedirector/build/libs" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.zhufu.opencraft.special_item.base" />
@@ -204,12 +363,12 @@
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.zhufu.opencraft.traits" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/server/plugins/lang" />
-      <recent name="$PROJECT_DIR$/server/plugins/ss_modules" />
-      <recent name="$PROJECT_DIR$/base" />
-      <recent name="$PROJECT_DIR$/server" />
-      <recent name="$PROJECT_DIR$/RemoteRedirector/build/libs" />
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\IdeaProjects\OpenCraftProject\server" />
+      <recent name="D:\IdeaProjects\OpenCraftProject\server\plugins" />
+      <recent name="D:\IdeaProjects\OpenCraftProject\base\gameplay\src\main\kotlin\com\zhufu\opencraft" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/base/scripting/src/ss_modules/bukkit" />
     </key>
   </component>
   <component name="RunManager" selected="JAR Application.Server">
@@ -824,7 +983,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596923876815</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="RPG: Add upgradable armors.">
+      <created>1597619171739</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1597619171739</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -858,16 +1024,16 @@
             </State>
           </value>
         </entry>
+        <entry key="2">
+          <value>
+            <State />
+          </value>
+        </entry>
         <entry key="MAIN">
           <value>
             <State />
           </value>
         </entry>
-      </map>
-    </option>
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="1" value="TOOL_WINDOW" />
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
@@ -897,7 +1063,8 @@
     <MESSAGE value="ServerScript Engine: ExtendedBlock support.&#10;Minecraft: Update to 1.16.1&#10;Larger player lobby support." />
     <MESSAGE value="RPG: Added RoleChoice and Wand" />
     <MESSAGE value="RPG: Added *Sword, Control and EggSpawner" />
-    <option name="LAST_COMMIT_MESSAGE" value="RPG: Added *Sword, Control and EggSpawner" />
+    <MESSAGE value="RPG: Add upgradable armors." />
+    <option name="LAST_COMMIT_MESSAGE" value="RPG: Add upgradable armors." />
   </component>
   <component name="WindowStateProjectService">
     <state x="448" y="121" key="#Project_Structure" timestamp="1593149799504">
@@ -927,11 +1094,11 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="382" y="250" key="#com.intellij.ide.scriptingContext.ui.PerFileMappingsDialogWrapper/0.0.1920.1080@0.0.1920.1080" timestamp="1589551187657" />
-    <state x="624" y="195" key="#com.intellij.ide.util.MemberChooser" timestamp="1597567559306">
+    <state x="624" y="195" key="#com.intellij.ide.util.MemberChooser" timestamp="1597884695958">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
-    <state x="624" y="195" key="#com.intellij.ide.util.MemberChooser/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597567559306" />
-    <state x="624" y="195" key="#com.intellij.ide.util.MemberChooser/0.0.1549.831@0.0.1549.831" timestamp="1597101895362" />
+    <state x="624" y="195" key="#com.intellij.ide.util.MemberChooser/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597734459165" />
+    <state x="624" y="195" key="#com.intellij.ide.util.MemberChooser/0.0.1549.831@0.0.1549.831" timestamp="1597884695958" />
     <state x="624" y="204" key="#com.intellij.ide.util.MemberChooser/0.0.1549.871@0.0.1549.871" timestamp="1596150199959" />
     <state x="773" y="253" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1080@0.0.1920.1080" timestamp="1594047390713" />
     <state x="589" y="236" key="#com.intellij.ide.util.frameworkSupport.AddFrameworkSupportDialog" timestamp="1589727551497">
@@ -966,9 +1133,10 @@
     </state>
     <state x="607" y="272" key="#com.intellij.util.ui.classpath.ChooseLibrariesDialog/0.0.1549.831@0.0.1549.831" timestamp="1596608570099" />
     <state x="752" y="353" key="#com.intellij.util.ui.classpath.ChooseLibrariesDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1590332565505" />
-    <state x="523" y="166" width="736" height="449" key="#org.jetbrains.kotlin.idea.refactoring.move.moveDeclarations.ui.MoveKotlinTopLevelDeclarationsDialog" timestamp="1596604594807">
+    <state x="523" y="166" width="736" height="457" key="#org.jetbrains.kotlin.idea.refactoring.move.moveDeclarations.ui.MoveKotlinTopLevelDeclarationsDialog" timestamp="1597656559424">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
+    <state x="523" y="166" width="736" height="457" key="#org.jetbrains.kotlin.idea.refactoring.move.moveDeclarations.ui.MoveKotlinTopLevelDeclarationsDialog/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597656559424" />
     <state x="523" y="166" key="#org.jetbrains.kotlin.idea.refactoring.move.moveDeclarations.ui.MoveKotlinTopLevelDeclarationsDialog/0.0.1549.831@0.0.1549.831" timestamp="1596604594807" />
     <state x="523" y="262" width="736" height="449" key="#org.jetbrains.kotlin.idea.refactoring.move.moveDeclarations.ui.MoveKotlinTopLevelDeclarationsDialog/0.0.1549.871@0.0.1549.871" timestamp="1596068916378" />
     <state x="648" y="325" key="#org.jetbrains.kotlin.idea.refactoring.move.moveDeclarations.ui.MoveKotlinTopLevelDeclarationsDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1590505402442" />
@@ -987,10 +1155,10 @@
     </state>
     <state width="441" height="376" key="DebuggerActiveHint/0.0.1549.871@0.0.1549.871" timestamp="1595831545666" />
     <state width="410" height="466" key="DebuggerActiveHint/0.0.1920.1080@0.0.1920.1080" timestamp="1590753501109" />
-    <state x="81" y="77" width="1388" height="678" key="DiffContextDialog" timestamp="1596697895688">
+    <state x="81" y="77" width="1388" height="678" key="DiffContextDialog" timestamp="1597619174405">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
-    <state x="81" y="77" width="1388" height="678" key="DiffContextDialog/0.0.1549.831@0.0.1549.831" timestamp="1596697895688" />
+    <state x="81" y="77" width="1388" height="678" key="DiffContextDialog/0.0.1549.831@0.0.1549.831" timestamp="1597619174405" />
     <state x="81" y="81" width="1388" height="710" key="DiffContextDialog/0.0.1549.871@0.0.1549.871" timestamp="1595465851753" />
     <state x="100" y="100" width="1720" height="880" key="DiffContextDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1593700974967" />
     <state x="603" y="224" key="FileChooserDialogImpl" timestamp="1597098530477">
@@ -1088,49 +1256,75 @@
     <state x="405" y="0" width="1038" height="837" key="SettingsEditor/0.0.1549.871@0.0.1549.871" timestamp="1596245943209" />
     <state x="502" y="0" key="SettingsEditor/0.0.1920.1044@0.0.1920.1044" timestamp="1596863209591" />
     <state x="502" y="173" key="SettingsEditor/0.0.1920.1080@0.0.1920.1080" timestamp="1593166844306" />
-    <state width="498" height="446" key="SwitcherDM" timestamp="1597566324254">
+    <state width="498" height="446" key="SwitcherDM" timestamp="1597737705447">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
-    <state width="498" height="446" key="SwitcherDM/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597566324254" />
+    <state width="498" height="446" key="SwitcherDM/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597737705447" />
     <state width="498" height="446" key="SwitcherDM/0.0.1549.831@0.0.1549.831" timestamp="1596779937351" />
+    <state x="529" y="119" key="VCS.ChangeListViewerDialog" timestamp="1597618542208">
+      <screen x="0" y="0" width="1549" height="831" />
+    </state>
+    <state x="529" y="119" key="VCS.ChangeListViewerDialog/0.0.1549.831@0.0.1549.831" timestamp="1597618542208" />
     <state x="613" y="328" key="VCS.ChangelistChooser" timestamp="1596697886959">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
     <state x="613" y="328" key="VCS.ChangelistChooser/0.0.1549.831@0.0.1549.831" timestamp="1596697886959" />
-    <state x="452" y="215" key="Vcs.Push.Dialog.v2" timestamp="1596924178198">
+    <state x="452" y="215" key="Vcs.Push.Dialog.v2" timestamp="1597835516882">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
-    <state x="452" y="215" key="Vcs.Push.Dialog.v2/0.0.1549.831@0.0.1549.831" timestamp="1596924178198" />
+    <state x="452" y="215" key="Vcs.Push.Dialog.v2/0.0.1549.831@0.0.1549.831" timestamp="1597835516882" />
     <state x="560" y="280" key="Vcs.Push.Dialog.v2/0.0.1920.1080@0.0.1920.1080" timestamp="1594794281022" />
     <state x="560" y="276" key="Vcs.Push.Dialog.v2/0.23.1920.975@0.23.1920.975" timestamp="1593234131175" />
     <state width="960" height="540" key="XDebugger.FullValuePopup" timestamp="1589697864697">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state width="960" height="540" key="XDebugger.FullValuePopup/0.0.1920.1080@0.0.1920.1080" timestamp="1589697864697" />
+    <state x="93" y="93" width="1363" height="645" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1597619174405">
+      <screen x="0" y="0" width="1549" height="831" />
+    </state>
+    <state x="93" y="93" width="1363" height="645" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/0.0.1549.831@0.0.1549.831" timestamp="1597619174405" />
+    <state x="93" y="93" width="1363" height="645" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1597619174405">
+      <screen x="0" y="0" width="1549" height="831" />
+    </state>
+    <state x="93" y="93" width="1363" height="645" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1549.831@0.0.1549.831" timestamp="1597619174405" />
     <state x="454" y="128" key="git4idea.branch.GitSmartOperationDialog" timestamp="1597616896798">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
     <state x="454" y="128" key="git4idea.branch.GitSmartOperationDialog/0.0.1549.831@0.0.1549.831" timestamp="1597616896798" />
+    <state x="562" y="335" key="git4idea.remote.GitConfigureRemotesDialog" timestamp="1597835992332">
+      <screen x="0" y="0" width="1549" height="831" />
+    </state>
+    <state x="562" y="335" key="git4idea.remote.GitConfigureRemotesDialog/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597712979674" />
+    <state x="562" y="335" key="git4idea.remote.GitConfigureRemotesDialog/0.0.1549.831@0.0.1549.831" timestamp="1597835992332" />
+    <state x="817" y="272" key="git4idea.ui.GitResetDialog" timestamp="1597618549787">
+      <screen x="0" y="0" width="1549" height="831" />
+    </state>
+    <state x="817" y="272" key="git4idea.ui.GitResetDialog/0.0.1549.831@0.0.1549.831" timestamp="1597618549787" />
     <state x="746" y="391" key="git4idea.ui.GitTagDialog" timestamp="1594735928693">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="746" y="391" key="git4idea.ui.GitTagDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1594735928693" />
+    <state x="543" y="261" key="git4idea.ui.GitUnstashDialog" timestamp="1597618368639">
+      <screen x="0" y="0" width="1549" height="831" />
+    </state>
+    <state x="543" y="261" key="git4idea.ui.GitUnstashDialog/0.0.1549.831@0.0.1549.831" timestamp="1597618368639" />
     <state width="600" height="428" key="javadoc.popup" timestamp="1595632155779">
       <screen x="0" y="0" width="1549" height="871" />
     </state>
-    <state width="684" height="335" key="javadoc.popup.new" timestamp="1597551947604">
+    <state width="684" height="335" key="javadoc.popup.new" timestamp="1597888773819">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
-    <state width="684" height="335" key="javadoc.popup.new/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597551947604" />
-    <state width="684" height="335" key="javadoc.popup.new/0.0.1549.831@0.0.1549.831" timestamp="1597038858532" />
+    <state width="684" height="335" key="javadoc.popup.new/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597737146296" />
+    <state width="684" height="335" key="javadoc.popup.new/0.0.1549.831@0.0.1549.831" timestamp="1597888773819" />
     <state width="684" height="351" key="javadoc.popup.new/0.0.1549.871/1920.-163.1549.871@0.0.1549.871" timestamp="1595639525200" />
     <state width="684" height="351" key="javadoc.popup.new/0.0.1549.871@0.0.1549.871" timestamp="1596149437573" />
     <state width="847" height="435" key="javadoc.popup.new/0.0.1920.1080@0.0.1920.1080" timestamp="1594794127439" />
     <state width="847" height="435" key="javadoc.popup.new/0.23.1920.975@0.23.1920.975" timestamp="1593171591445" />
     <state width="600" height="428" key="javadoc.popup/0.0.1549.871@0.0.1549.871" timestamp="1595632155779" />
-    <state x="263" y="0" width="1169" height="871" key="new project wizard" timestamp="1596246010187">
-      <screen x="0" y="0" width="1549" height="871" />
+    <state x="263" y="0" width="1169" height="871" key="new project wizard" timestamp="1597713065394">
+      <screen x="0" y="0" width="1549" height="831" />
     </state>
+    <state x="263" y="0" key="new project wizard/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597713065394" />
     <state x="263" y="31" key="new project wizard/0.0.1549.831@0.0.1549.831" timestamp="1594852583065" />
     <state x="263" y="0" width="1169" height="871" key="new project wizard/0.0.1549.871@0.0.1549.871" timestamp="1596246010186" />
     <state x="326" y="124" width="1169" height="875" key="new project wizard/0.0.1920.1080@0.0.1920.1080" timestamp="1594047322131" />
@@ -1144,15 +1338,18 @@
     <state x="504" y="196" key="run.anything.popup/0.0.1549.831@0.0.1549.831" timestamp="1596610365664" />
     <state x="504" y="205" key="run.anything.popup/0.0.1549.871/1920.-163.1549.871@0.0.1549.871" timestamp="1595636760275" />
     <state x="504" y="205" key="run.anything.popup/0.0.1549.871@0.0.1549.871" timestamp="1595634115432" />
-    <state x="625" y="255" key="run.anything.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1589176689371" />
-    <state x="503" y="180" width="672" height="481" key="search.everywhere.popup" timestamp="1597616595627">
+    <state x="503" y="180" width="672" height="481" key="search.everywhere.popup" timestamp="1597886214924">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
-    <state x="503" y="180" width="672" height="481" key="search.everywhere.popup/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597567057705" />
-    <state x="503" y="180" width="672" height="481" key="search.everywhere.popup/0.0.1549.831@0.0.1549.831" timestamp="1597616595627" />
+    <state x="503" y="180" width="672" height="481" key="search.everywhere.popup/0.0.1549.831/0.-1080.1549.831@0.0.1549.831" timestamp="1597656232019" />
+    <state x="503" y="180" width="672" height="481" key="search.everywhere.popup/0.0.1549.831@0.0.1549.831" timestamp="1597886214924" />
     <state x="503" y="189" width="672" height="505" key="search.everywhere.popup/0.0.1549.871@0.0.1549.871" timestamp="1596246628545" />
     <state x="623" y="234" width="672" height="625" key="search.everywhere.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1594782614550" />
     <state x="623" y="234" width="672" height="625" key="search.everywhere.popup/0.23.1920.975@0.23.1920.975" timestamp="1589585823121" />
+    <state x="497" y="327" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1597891890842">
+      <screen x="0" y="0" width="1549" height="831" />
+    </state>
+    <state x="497" y="327" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/0.0.1549.831@0.0.1549.831" timestamp="1597891890842" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

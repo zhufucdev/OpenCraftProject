@@ -3,15 +3,12 @@ package com.zhufu.opencraft.special_item
 import com.destroystokyo.paper.event.entity.ThrownEggHatchEvent
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.npc.AutoDestroy
-import com.zhufu.opencraft.npc.HelperCreature
 import com.zhufu.opencraft.npc.NPCHelper
-import com.zhufu.opencraft.special_item.base.BindItem
-import com.zhufu.opencraft.special_item.base.SpecialItem
-import com.zhufu.opencraft.special_item.base.locate.MemoryLocation
+import com.zhufu.opencraft.special_item.dynamic.BindItem
+import com.zhufu.opencraft.special_item.dynamic.locate.MemoryLocation
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.trait.trait.Equipment
-import net.citizensnpcs.api.trait.trait.Owner
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material

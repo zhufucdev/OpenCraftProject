@@ -381,7 +381,8 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                     }
                                 },
                             3, 1
-                        ), TradeManager.getNewID(), plugin
+                        ),
+                        plugin
                     )
                         .setOnPayListener { success ->
                             if (success) {
@@ -482,8 +483,8 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                 },
                             3,
                             1
-                        )
-                        , TradeManager.getNewID(), plugin
+                        ),
+                        plugin
                     )
                         .setOnPayListener { success ->
                             if (success) {

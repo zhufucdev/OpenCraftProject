@@ -11,7 +11,7 @@ import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.rpg.Role
-import com.zhufu.opencraft.special_item.base.SpecialItem
+import com.zhufu.opencraft.special_item.dynamic.SpecialItem
 import com.zhufu.opencraft.special_item.maxMP
 import com.zhufu.opencraft.special_item.mp
 import com.zhufu.opencraft.special_item.mpRecoverRate
@@ -36,8 +36,6 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.*
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.Vector
 import org.reflections.Reflections
 import java.lang.reflect.Modifier

@@ -10,11 +10,10 @@ class PayInputDialog(plugin: Plugin, private val info: Info, private val selling
         PaymentDialog(
             sellingItems = SellingItemInfo(
                 item = sellingItem,
-                unitPrise = amount.toLong(),
+                unitPrise = GeneralPrise(amount.toLong()),
                 amount = 1
             ),
             player = info.player,
-            id = TradeManager.getNewID(),
             plugin = plugin
         )
             .setOnPayListener { s ->

@@ -8,6 +8,7 @@
       <w>siid</w>
       <w>spawnable</w>
       <w>spawner</w>
+      <w>tickable</w>
     </words>
   </dictionary>
 </component>

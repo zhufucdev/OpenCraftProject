@@ -2,7 +2,8 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.lobby.PlayerLobby
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
-import com.zhufu.opencraft.special_item.base.SpecialItem
+import com.zhufu.opencraft.special_item.dynamic.SpecialItem
+import com.zhufu.opencraft.special_item.static.WrappedItem
 import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
 import org.bukkit.Bukkit
@@ -199,12 +200,36 @@ class PlayerUtil : JavaPlugin() {
                             }
                         }
                     }
-                    val item = SpecialItem.make(args[3], amount, player, *arguments.toArray())
+                    var t: Any? = null
+                    fun asSI(name: String) {
+                        t = SpecialItem.make(name, amount, player, *arguments.toArray())
+                    }
+                    fun asWrapped(name: String) {
+                        t = WrappedItem.make(name, amount, player, *arguments.toArray())
+                    }
+
+                    when {
+                        args[3].startsWith("static/") -> {
+                            asWrapped(args[3].substring(7))
+                        }
+                        SpecialItem.types.contains(args[3]) -> {
+                            asSI(args[3])
+                        }
+                        else -> {
+                            asWrapped(args[3])
+                        }
+                    }
+
+                    val item = t
                     if (item == null) {
                         sender.error(getter["command.error.noSuchItem", args[3]])
                         return true
                     }
-                    player.inventory.addItem(item.itemLocation.itemStack)
+                    when (item) {
+                        is SpecialItem -> player.inventory.addItem(item.itemLocation.itemStack)
+                        is WrappedItem -> player.inventory.addItem(item)
+                        else -> throw UnsupportedOperationException("Using ${item::class.simpleName} as an item stack.")
+                    }
                     sender.success(getter["command.done"])
                     if (player != sender) {
                         player.info(getter["si.given", args[3], amount])

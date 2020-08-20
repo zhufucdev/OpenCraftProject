@@ -3,20 +3,22 @@ package com.zhufu.opencraft.inventory
 import com.zhufu.opencraft.*
 import org.bukkit.Bukkit
 import org.bukkit.entity.HumanEntity
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
+import kotlin.math.cos
 
-class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingItemInfo, id: Int, plugin: Plugin) :
+class PaymentDialog(val player: Player, private val sellingItems: SellingItemInfo, plugin: Plugin) :
     ClickableInventory(plugin) {
+    private val getter = player.getter()
     override val inventory: Inventory =
-        Bukkit.createInventory(null, InventoryType.CHEST, TextUtil.info("确认支付[uuid:$id]"))
+        Bukkit.createInventory(null, InventoryType.CHEST, TextUtil.info(getter["trade.pay.title"]))
     lateinit var confirmItem: ItemStack
     lateinit var cancelItem: ItemStack
-    private val getter = player.getter()
 
     fun show() {
         inventory.addItem(sellingItems.item.clone()
@@ -27,7 +29,9 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
                 else {
                     itemStack.amount = 3 * 64
                     itemStack.itemMeta =
-                        itemStack.itemMeta.also { it!!.lore = listOf(TextUtil.tip("数量为${targetAmount}个")) }
+                        itemStack.itemMeta.also {
+                            it!!.lore = listOf(TextUtil.tip(getter["trade.pay.amount", targetAmount]))
+                        }
                 }
             })
         inventory.setItem(
@@ -43,7 +47,7 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
                                 false
                             )
                         )
-                        it.lore = listOf(TextUtil.tip(getter["trade.pay.currencyConsume", sellingItems.prise]))
+                        it.lore = listOf(TextUtil.tip(getter["trade.pay.currencyConsume", sellingItems.prise.toString(getter)]))
                     }
                 confirmItem = itemStack
             }
@@ -52,14 +56,23 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
             inventory.size - 2,
             Widgets.confirm.updateItemMeta<ItemMeta> {
                 setDisplayName(TextUtil.getColoredText(getter["trade.pay.cash"], TextUtil.TextColor.GREEN, true, false))
-                lore = listOf(TextUtil.tip(getter["trade.pay.currencyConsume", sellingItems.prise]))
+                lore = listOf(TextUtil.tip(getter["trade.pay.currencyConsume", sellingItems.prise.toString(getter)]))
             }
         )
         inventory.setItem(
             inventory.size - 3,
             Widgets.cancel.also { itemStack ->
                 itemStack.itemMeta = itemStack.itemMeta!!
-                    .also { it.setDisplayName(TextUtil.getColoredText("取消", TextUtil.TextColor.RED, true, false)) }
+                    .also {
+                        it.setDisplayName(
+                            TextUtil.getColoredText(
+                                getter["ui.cancel"],
+                                TextUtil.TextColor.RED,
+                                true,
+                                false
+                            )
+                        )
+                    }
                 cancelItem = itemStack
             }
         )
@@ -80,23 +93,23 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
         onCancelListener?.invoke(this)
     }
 
-    fun confirm(isCash: Boolean = false) {
+    private fun confirm(isCash: Boolean = false) {
         hide()
         onConfirmListener?.invoke(this, isCash)
 
         if (isCash) {
-            if (onPayListener?.invoke(this, player.addCash(-sellingItems.prise.toInt())) == false)
-                player.addCash(sellingItems.prise.toInt())
+            val cost = sellingItems.prise.cost(player)
+            if (onPayListener?.invoke(this, cost.successful) == false && cost.successful) {
+                cost.undo()
+            }
         } else {
             val info = player.info()
             if (info == null) {
                 player.error(Language.getDefault("player.error.unknown"))
             } else {
-                if (info.currency >= sellingItems.prise) {
-                    if (onPayListener?.invoke(this, true) != false)
-                        info.currency -= sellingItems.prise
-                } else {
-                    onPayListener?.invoke(this, false)
+                val cost = sellingItems.prise.cost(info)
+                if (onPayListener?.invoke(this, cost.successful) == false && cost.successful) {
+                    cost.undo()
                 }
             }
         }
@@ -115,6 +128,10 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
         return this
     }
 
+    /**
+     * Set the listener triggered when the payment is about to be done.
+     * @param l return true if the payment should be done, false otherwise.
+     */
     fun setOnPayListener(l: PaymentDialog.(Boolean) -> Boolean): PaymentDialog {
         onPayListener = l
         return this

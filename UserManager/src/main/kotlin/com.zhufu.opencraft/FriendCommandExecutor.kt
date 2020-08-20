@@ -171,9 +171,8 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                         setDisplayName(getter["user.friend.sharingInventory"].toInfoMessage())
                                                     },
                                                     amount = 1,
-                                                    unitPrise = 10
+                                                    unitPrise = GeneralPrise(10)
                                                 ),
-                                                id = TradeManager.getNewID(),
                                                 plugin = plugin
                                             )
                                                 .setOnPayListener { success ->
@@ -186,7 +185,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                     }
                                                     true
                                                 }
-                                                .setOnConfirmListener {
+                                                .setOnCancelListener {
                                                     sender.info(getter["user.friend.inventory.cancelled"])
                                                 }
                                                 .show()
@@ -229,9 +228,8 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                     sellingItems = SellingItemInfo(
                                                         item = ItemStack(Material.GOLD_INGOT),
                                                         amount = 1,
-                                                        unitPrise = amount
+                                                        unitPrise = GeneralPrise(amount)
                                                     ),
-                                                    id = TradeManager.getNewID(),
                                                     plugin = plugin
                                                 )
                                                     .setOnPayListener { success ->

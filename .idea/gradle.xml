@@ -15,7 +15,6 @@
             <option value="$PROJECT_DIR$/BookNoticer" />
             <option value="$PROJECT_DIR$/ChunkWall" />
             <option value="$PROJECT_DIR$/CraftWeb" />
-            <option value="$PROJECT_DIR$/CurrencySystem" />
             <option value="$PROJECT_DIR$/CustomTutorial" />
             <option value="$PROJECT_DIR$/ItemManager" />
             <option value="$PROJECT_DIR$/OpenTranslator" />
@@ -44,7 +43,6 @@
             <option value="$PROJECT_DIR$/languages" />
           </set>
         </option>
-        <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>
     </option>
   </component>

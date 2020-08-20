@@ -1,7 +1,7 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.rpg.Role.*
-import com.zhufu.opencraft.special_item.base.SpecialItem
+import com.zhufu.opencraft.special_item.dynamic.SpecialItem
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot

@@ -89,10 +89,9 @@ class ServerBoss : JavaPlugin() {
                                     item = ItemStack(Material.ENDER_PEARL).updateItemMeta<ItemMeta> {
                                         setDisplayName(getLang(sender, "ui.teleport").toInfoMessage())
                                     },
-                                    unitPrise = 3,
+                                    unitPrise = GeneralPrise(3),
                                     amount = 1
                                 ),
-                                id = TradeManager.getNewID(),
                                 plugin = this
                             )
                                 .setOnPayListener { success ->

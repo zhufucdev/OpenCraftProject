@@ -6,6 +6,7 @@ dependencies {
     implementation project(':playerManagment')
     implementation project(':inventoryBase')
     implementation project(':utils')
+    implementation project(':tradeBase')
     implementation 'org.reflections:reflections:0.9.11'
     implementation 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
 }

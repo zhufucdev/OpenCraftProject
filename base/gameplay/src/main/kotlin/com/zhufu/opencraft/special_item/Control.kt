@@ -2,7 +2,7 @@ package com.zhufu.opencraft.special_item
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.npc.NPCHelper
-import com.zhufu.opencraft.special_item.base.BindItem
+import com.zhufu.opencraft.special_item.dynamic.BindItem
 import net.citizensnpcs.api.CitizensAPI
 import org.bukkit.Bukkit
 import org.bukkit.Material

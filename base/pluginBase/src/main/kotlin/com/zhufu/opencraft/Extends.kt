@@ -1,6 +1,8 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.special_item.base.SpecialItem
+import com.zhufu.opencraft.special_item.Tickable
+import com.zhufu.opencraft.special_item.dynamic.SpecialItem
+import com.zhufu.opencraft.special_item.static.WrappedItem
 import com.zhufu.opencraft.util.ActionBarTextUtil
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -158,20 +160,19 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
     return true
 }
 
-fun HumanEntity.addCash(amount: Int): Boolean {
-    TODO()
-}//setInventory(Coin(1, getter()), amount)
-
-val Inventory.containsSpecialItem: Boolean
-    get() = this.any { if (it != null) SpecialItem.isSpecial(it) else false }
-val Inventory.specialItems: List<SpecialItem>
+val Inventory.containsTickable: Boolean
+    get() = this.any { if (it != null) SpecialItem.isSpecial(it) || WrappedItem.isSpecial(it) else false }
+val Inventory.tickable: List<Tickable>
     get() {
-        val r = ArrayList<SpecialItem>()
+        val r = ArrayList<Tickable>()
         for (i in 0 until this.size) {
             val it = this.getItem(i) ?: continue
             val showing =
                 if (holder is Player) holder as Player else viewers.firstOrNull()?.let { Bukkit.getPlayer(it.uniqueId) }
             SpecialItem.getByItem(it, showing)?.apply {
+                r.add(this)
+            }
+            WrappedItem[it, showing]?.apply {
                 r.add(this)
             }
         }

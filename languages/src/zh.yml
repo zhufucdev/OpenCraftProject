@@ -218,6 +218,15 @@ trade:
     title: '选择支付'
     error:
       outOfBound: '您一次至多能支付%s元'
+  cc:
+    name: '铜钱'
+  coin:
+    name: '铜板'
+    cost: '%s铜板或与其等价的货币'
+  silver:
+    name: '银子'
+  gold:
+    name: '金币'
 
 builder.error:
   block: '抱歉，但您没有权限放置此方块'
@@ -581,26 +590,6 @@ scripting:
   returnNull: '在%s秒内完成。返还空对象。'
   returnSomething: '在%s秒内完成。返还: %s'
   unnamed: '未命名'
-  error:
-    offline: '指定玩家必须在线!'
-    nullValue: '%s 不能为空!'
-    log: '无法保存日志'
-    executionOutOfBound: '您仅有权执行%s次循环。'
-    parWhenOffline: '参数[%s]必须给出，因为您不在服务器。'
-    scriptNotFound: '没有找到名为%s的脚本'
-  ui:
-    title: '服务器脚本'
-    new: '新建脚本'
-    clickToExec: '点击执行'
-    tip:
-      editBook: '编辑手中的书，其内容将被写入脚本。要取消，丢弃该物品。'
-npc:
-  error:
-    parNotFound: '参数必须包含%s'
-    wrongClass: '参数%s 类型错误'
-    spawnTooFar: '出生点距离太远。离玩家不应超过7个方块'
-    parConflit: '参数冲突: %s'
-    returnWrongType: '%s的返回值类型错误'
 lobby:
   like: '喜欢这个主城'
   dislike: '不喜欢这个主城'
@@ -736,6 +725,10 @@ rpg:
         wait: '正在初始化任务，请稍候'
       error:
         start: '无法启动任务%s: %s: %s。请联系服务器管理员'
+    trade:
+      title: '交易'
+    goodSelection:
+      title: '商品选择'
 
   error:
     maxLevel:

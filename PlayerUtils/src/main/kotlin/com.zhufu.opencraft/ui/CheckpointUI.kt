@@ -129,8 +129,8 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                                     ItemStack(Material.ENDER_PEARL)
                                             .also { it.itemMeta = it.itemMeta!!.apply { setDisplayName(TextUtil.info(adapter.getter["ui.teleport"])) } },
                                     3,
-                                    1)
-                            , TradeManager.getNewID(), plugin)
+                                    1),
+                        plugin)
                             .setOnPayListener { success ->
                                 if (success) {
                                     val event = PlayerTeleportedEvent(info.player, info.player.location, point.location)

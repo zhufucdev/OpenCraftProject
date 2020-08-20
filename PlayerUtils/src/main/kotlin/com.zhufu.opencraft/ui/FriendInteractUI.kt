@@ -174,9 +174,8 @@ class FriendInteractUI(
                                         setDisplayName(getter["user.friend.sharingInventory"].toInfoMessage())
                                     },
                                     amount = 1,
-                                    unitPrise = 10
+                                    unitPrise = GeneralPrise(10)
                                 ),
-                                id = TradeManager.getNewID(),
                                 plugin = plugin
                             )
                                 .setOnPayListener { success ->
@@ -191,7 +190,7 @@ class FriendInteractUI(
                                     }
                                     true
                                 }
-                                .setOnConfirmListener {
+                                .setOnCancelListener {
                                     info.player.info(getter["user.friend.inventory.cancelled"])
                                 }
                                 .show()

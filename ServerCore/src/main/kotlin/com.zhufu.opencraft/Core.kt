@@ -14,7 +14,7 @@ import com.zhufu.opencraft.events.PlayerJoinGameEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
-import com.zhufu.opencraft.special_item.base.SpecialItem
+import com.zhufu.opencraft.special_item.dynamic.SpecialItem
 import com.zhufu.opencraft.survey.SurveyManager
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.MemoryNPCDataStore
@@ -94,7 +94,7 @@ class Core : JavaPlugin(), Listener {
                 "backToDeathPrise" to 3,
                 "countOfSurveyQuestion" to 6,
                 "secondsPerQuestion" to 30,
-                "url" to "https://www.open-craft.cn",
+                "url" to "opencraft.zhufuc.dev",
                 "debug" to false,
                 "ssHotReload" to false,
                 "survivalCenter" to surviveWorld.getHighestBlockAt(0, 0).location,
@@ -126,7 +126,6 @@ class Core : JavaPlugin(), Listener {
             SpecialItem.Companion::init,
             GameManager::init,
             PlayerManager::init,
-            TradeManager::init,
             PlayerObserverListener::init,
             PlayerLobbyManager::init,
             BuilderListener::init
@@ -291,9 +290,9 @@ class Core : JavaPlugin(), Listener {
 
                     // Tick SpecialItem
                     val modifier = PlayerModifier(info)
-                    if (info.player.inventory.containsSpecialItem) {
+                    if (info.player.inventory.containsTickable) {
                         val data = YamlConfiguration()
-                        info.player.inventory.specialItems.forEach { item ->
+                        info.player.inventory.tickable.forEach { item ->
                             item.doPerTick(modifier, data, obj, --sort)
                         }
                     }

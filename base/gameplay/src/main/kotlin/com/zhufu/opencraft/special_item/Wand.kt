@@ -2,18 +2,16 @@ package com.zhufu.opencraft.special_item
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.special_item.MagicBook.Magic.*
-import com.zhufu.opencraft.special_item.base.BindItem
-import com.zhufu.opencraft.special_item.base.locate.MemoryLocation
+import com.zhufu.opencraft.special_item.dynamic.BindItem
+import com.zhufu.opencraft.special_item.dynamic.locate.MemoryLocation
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Player
-import org.bukkit.entity.memory.MemoryKey
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
@@ -25,14 +23,12 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 import org.bukkit.potion.PotionEffectType.HARM
 import org.bukkit.potion.PotionEffectType.HEAL
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 import java.util.*
-import kotlin.math.cos
 
 class Wand : BindItem(), Upgradable {
     override val maxLevel: Int

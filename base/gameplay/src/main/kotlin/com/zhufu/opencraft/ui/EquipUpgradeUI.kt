@@ -2,7 +2,7 @@ package com.zhufu.opencraft.ui
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.special_item.Upgradable
-import com.zhufu.opencraft.special_item.base.SpecialItem
+import com.zhufu.opencraft.special_item.dynamic.SpecialItem
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment

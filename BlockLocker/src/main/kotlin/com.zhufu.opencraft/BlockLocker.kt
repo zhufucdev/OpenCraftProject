@@ -69,8 +69,7 @@ class BlockLocker : JavaPlugin(), Listener {
             val unitPrise = Game.env.getLong("prisePerBlock")
             PaymentDialog(
                 sender,
-                SellingItemInfo(ItemStack(Material.CHEST), unitPrise, results.size),
-                TradeManager.getNewID(),
+                SellingItemInfo(ItemStack(Material.CHEST), GeneralPrise(unitPrise), results.size),
                 this
             )
                 .setOnPayListener { success ->

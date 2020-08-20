@@ -1,6 +1,6 @@
 package com.zhufu.opencraft.special_item
 
-import com.zhufu.opencraft.special_item.base.BindItem
+import com.zhufu.opencraft.special_item.dynamic.BindItem
 import com.zhufu.opencraft.updateItemMeta
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.meta.ItemMeta
