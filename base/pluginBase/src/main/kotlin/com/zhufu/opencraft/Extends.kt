@@ -172,7 +172,8 @@ val Inventory.tickable: List<Tickable>
             SpecialItem.getByItem(it, showing)?.apply {
                 r.add(this)
             }
-            WrappedItem[it, showing]?.apply {
+            val slot = if (holder is Player) i else -1
+            WrappedItem[it, showing, slot]?.apply {
                 r.add(this)
             }
         }

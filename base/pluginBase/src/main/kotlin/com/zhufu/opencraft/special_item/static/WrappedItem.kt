@@ -22,23 +22,23 @@ abstract class WrappedItem(material: Material) : ItemStack(material), Tickable {
 
         fun isSpecial(itemStack: ItemStack) = CraftItemStack.asNMSCopy(itemStack).tag?.hasKey("wrapped_type") == true
 
-        operator fun get(itemStack: ItemStack, player: Player? = null): WrappedItem? {
+        operator fun get(itemStack: ItemStack, player: Player? = null, slot: Int = -1): WrappedItem? {
             val type = CraftItemStack.asNMSCopy(itemStack).tag?.getString("wrapped_type") ?: return null
             val clazz = registered.firstOrNull { it.let { c -> c.canonicalName ?: c.simpleName } == type } ?: return null
             val instance = clazz.getConstructor().newInstance()
             instance.apply {
                 amount = itemStack.amount
                 itemMeta = itemStack.itemMeta
-                onDisplay(player ?: return@apply)
+                onDisplay(player ?: return@apply, slot)
             }
             return instance
         }
 
         operator fun get(player: Player): List<WrappedItem> {
             val r = arrayListOf<WrappedItem>()
-            player.inventory.forEach {
-                if (it == null) return@forEach
-                r.add(get(it, player) ?: return@forEach)
+            player.inventory.forEachIndexed { index, it ->
+                if (it == null) return@forEachIndexed
+                r.add((get(it, player) ?: return@forEachIndexed).also { item -> item.onDisplay(player, index) })
             }
             return r
         }
@@ -66,7 +66,14 @@ abstract class WrappedItem(material: Material) : ItemStack(material), Tickable {
     }
 
     fun push() {
-        
+        val holder = holder ?: error("holder must not be null.")
+        val slot = slot
+        val index = holder.inventory.getItem(slot)
+        if (index == null || index.itemMeta != itemMeta) {
+            error("${holder.name}.inventory[$slot] is not a ${this::class.simpleName}.")
+        }
+
+        holder.inventory.setItem(slot, this)
     }
 
     /**
@@ -75,10 +82,12 @@ abstract class WrappedItem(material: Material) : ItemStack(material), Tickable {
     override fun doPerTick(mod: PlayerModifier, contract: YamlConfiguration, score: Objective, scoreboardSorter: Int) {}
 
     private var holder: Player? = null
+    private var slot: Int = -1
     /**
-     * Called if [WrappedItem.get] is handed with the second parameter.
+     * Called whenever [WrappedItem.get] is handed with a [Player] parameter.
      */
-    open fun onDisplay(showing: Player) {
+    open fun onDisplay(showing: Player, slot: Int) {
         holder = showing
+        this.slot = slot
     }
 }

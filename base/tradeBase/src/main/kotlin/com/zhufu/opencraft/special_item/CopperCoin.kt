@@ -4,7 +4,6 @@ import com.zhufu.opencraft.GeneralPrise
 import org.bukkit.Material
 
 class CopperCoin : GeneralCurrency(Material.IRON_NUGGET) {
-
     override val unitValue
         get() = GeneralPrise(1)
 
