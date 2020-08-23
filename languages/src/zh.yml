@@ -227,6 +227,7 @@ trade:
     name: '银子'
   gold:
     name: '金币'
+  undefined.cost: '%s海晶碎片或等价的不可代换货币'
 
 builder.error:
   block: '抱歉，但您没有权限放置此方块'

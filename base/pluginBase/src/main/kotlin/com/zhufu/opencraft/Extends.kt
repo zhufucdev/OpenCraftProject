@@ -117,8 +117,9 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
         var aAmount = 0
         fun isSimilar(a: ItemStack): Boolean {
             return a.type == type.type
-                    && SpecialItem.getByItem(a, Bukkit.getPlayer(uniqueId))
-                ?.let { it::class.isSuperclassOf(a::class) } != false
+                    && (SpecialItem.getByItem(a, Bukkit.getPlayer(uniqueId))
+                ?.let { it::class == (SpecialItem[type] ?: return true)::class } != false)
+                    && (WrappedItem[a, Bukkit.getPlayer(uniqueId)]?.let { it::class == type::class } != false)
         }
         this.inventory.forEach {
             if (it != null && isSimilar(it))
@@ -220,11 +221,11 @@ val EntityType.isUndead
 val EntityType.isMonster
     get() = when (this) {
         EntityType.ENDERMAN, EntityType.SKELETON, EntityType.CREEPER, EntityType.ZOMBIE,
-            EntityType.ZOMBIFIED_PIGLIN, EntityType.ZOGLIN, EntityType.DROWNED, EntityType.ZOMBIE_VILLAGER,
-            EntityType.HUSK, EntityType.WITHER_SKELETON, EntityType.STRAY, EntityType.BLAZE,
-            EntityType.SPIDER, EntityType.CAVE_SPIDER, EntityType.ELDER_GUARDIAN, EntityType.PHANTOM,
-            EntityType.ENDERMITE, EntityType.EVOKER, EntityType.EVOKER_FANGS, EntityType.GHAST,
-            EntityType.GIANT, EntityType.GUARDIAN, EntityType.MAGMA_CUBE, EntityType.PILLAGER,
-            EntityType.VEX, EntityType.VINDICATOR -> true
+        EntityType.ZOMBIFIED_PIGLIN, EntityType.ZOGLIN, EntityType.DROWNED, EntityType.ZOMBIE_VILLAGER,
+        EntityType.HUSK, EntityType.WITHER_SKELETON, EntityType.STRAY, EntityType.BLAZE,
+        EntityType.SPIDER, EntityType.CAVE_SPIDER, EntityType.ELDER_GUARDIAN, EntityType.PHANTOM,
+        EntityType.ENDERMITE, EntityType.EVOKER, EntityType.EVOKER_FANGS, EntityType.GHAST,
+        EntityType.GIANT, EntityType.GUARDIAN, EntityType.MAGMA_CUBE, EntityType.PILLAGER,
+        EntityType.VEX, EntityType.VINDICATOR -> true
         else -> false
     }

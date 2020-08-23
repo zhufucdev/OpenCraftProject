@@ -408,10 +408,12 @@ trade:
     name: 'Copper Coin'
   coin:
     name: 'Coin'
+    cost: '%s coin(s) or currency of equal value'
   silver:
     name: 'Silver'
   gold:
     name: 'Gold'
+  undefined.cost: '%s prismarine shard or unexchangeable currency of the same value'
 
 translator:
   usingLang: "%s is your language."

@@ -44,7 +44,7 @@ abstract class WrappedItem(material: Material) : ItemStack(material), Tickable {
         }
 
         fun make(name: String, amount: Int, owner: Player, vararg args: Any): WrappedItem? {
-            val clazz = registered.firstOrNull { it.simpleName == name }
+            val clazz = registered.firstOrNull { it.simpleName == name || it.canonicalName == name }
                 ?: return null
             val instance = clazz.getConstructor().newInstance()
             instance.amount = amount
