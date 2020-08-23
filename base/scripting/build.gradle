@@ -5,7 +5,7 @@ dependencies {
     implementation project(':pluginBase')
     implementation project(':playerManagment')
     implementation project(':worldBase')
-    implementation 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
+    implementation 'net.citizensnpcs:citizensapi:' + citizens_version
     implementation 'org.codehaus.groovy:groovy:3.0.4'
     implementation 'org.codehaus.groovy:groovy-json:3.0.4'
 }

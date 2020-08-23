@@ -389,8 +389,9 @@ trade:
     inventoryFull: "Trade Failed: Your inventory is full."
     error: "Trade Failed: You don't have enough coins."
     lackOfItem: "Trade Failed: You don't have enough items."
-  giveCurrency.objective: "Given %s coin(s) to %s !"
-  giveCurrency.subjective: "A player gave you %s coin(s)，You've got %s coin(s) now!"
+  giveCurrency:
+    objective: "Given %s coin(s) to %s !"
+    subjective: "A player gave you %s coin(s)，You've got %s coin(s) now!"
   pwd.setTo: "The password of this server has set to %s"
   explorer: "Trade Explorer"
   cancelled: "Trade cancelled."

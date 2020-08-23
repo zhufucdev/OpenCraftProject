@@ -6,6 +6,7 @@ import com.zhufu.opencraft.special_item.static.WrappedItem
 import com.zhufu.opencraft.util.ActionBarTextUtil
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.EntityType
@@ -15,10 +16,13 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.util.Vector
+import org.jetbrains.annotations.Contract
 import java.io.File
 import java.math.BigInteger
 import java.nio.channels.FileChannel
 import java.security.MessageDigest
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.math.*
 import kotlin.reflect.full.isSuperclassOf
 
@@ -229,3 +233,5 @@ val EntityType.isMonster
         EntityType.VEX, EntityType.VINDICATOR -> true
         else -> false
     }
+
+fun ItemStack?.isNullOrEmpty() = this == null || this.type == Material.AIR

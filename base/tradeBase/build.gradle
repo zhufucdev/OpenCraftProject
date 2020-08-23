@@ -6,5 +6,5 @@ dependencies {
     implementation project(':inventoryBase')
     implementation project(':gameplay')
     implementation project(':playerManagment')
-    compile 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
+    compile 'net.citizensnpcs:citizensapi:' + citizens_version
 }

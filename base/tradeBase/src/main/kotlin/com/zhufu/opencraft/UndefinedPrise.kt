@@ -49,6 +49,7 @@ class UndefinedPrise(private val value: Int) : Prise<UndefinedPrise>() {
                 it.amount -= (target / unit + 1).also { a -> lose(it.type, a) }
                 player.inventory.setItem(index, it)
                 player.setInventory(ItemStack(Material.PRISMARINE_SHARD), x)
+                lose(Material.PRISMARINE_SHARD, -x)
                 break
             } else {
                 val amount = (value - cost) / unit

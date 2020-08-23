@@ -1,21 +1,24 @@
+buildscript {
+    ext {
+        mcVersion = '1.16.1'
+        serverPath = project.projectDir.path + '/server'
+        citizens_version = '2.0.27-SNAPSHOT'
+        we_version = '7.2.0-SNAPSHOT'
+    }
+}
+
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.3.72'
     id "de.undercouch.download" version '4.0.2'
 }
+
 File getJar(Project project) {
     return file(project.projectDir.path + '/build/libs/' + project.name + '-' + project.version + '.jar')
 }
 
-project.ext {
-    mcVersion = '1.16.1'
-    serverPath = project.projectDir.path + '/server'
-    citizens_version = '2.0.27-SNAPSHOT'
-    we_version = '7.2.0-SNAPSHOT'
-}
-
 task download(type: Download) {
-    src 'https://papermc.io/api/v1/paper/' + project.ext.mcVersion + '/latest/download'
+    src 'https://papermc.io/api/v1/paper/' + mcVersion + '/latest/download'
     dest project.ext.serverPath + '/paper.jar'
     overwrite true
 }
@@ -28,8 +31,8 @@ allprojects {
     apply plugin: 'kotlin'
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-        implementation "com.destroystokyo.paper:paper-api:" + rootProject.ext.mcVersion + "-R0.1-SNAPSHOT"
-        implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.72"
+        implementation "com.destroystokyo.paper:paper-api:" + mcVersion + "-R0.1-SNAPSHOT"
+        implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.0"
         compileOnly fileTree(dir: 'lib', includes: ['*.jar'])
         testImplementation group: 'junit', name: 'junit', version: '4.12'
     }

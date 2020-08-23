@@ -4,5 +4,5 @@ version '1.0-SNAPSHOT'
 dependencies {
     compile project(':pluginBase')
     compile project(':playerManagment')
-    compile 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
+    compile 'net.citizensnpcs:citizensapi:' + citizens_version
 }

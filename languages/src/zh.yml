@@ -197,8 +197,9 @@ trade:
     6.subtitle: '或是/trade center 回到交易世界枢纽'
     7.subtitle: '要阅读详细信息，例如如何建造商店，使用/trade help'
   help.title: '经济系统 帮助文档'
-  giveCurrency.objective: '已给予%s %s货币'
-  giveCurrency.subjective: '您已被给予%s货币，您现在有%s个货币'
+  giveCurrency:
+    objective: '已给予%s %s货币'
+    subjective: '您已被给予%s货币，您现在有%s个货币'
   error:
     pwdUnset: '密码未设定'
     chunkNotFound: '抱歉，但我们无法找到您的领地'
@@ -218,6 +219,13 @@ trade:
     title: '选择支付'
     error:
       outOfBound: '您一次至多能支付%s元'
+  trader:
+    select:
+      name: '选择交易物品'
+      none: '未选择'
+    put:
+      name: '放置货币'
+    placeholder: '占位符'
   cc:
     name: '铜钱'
   coin:
