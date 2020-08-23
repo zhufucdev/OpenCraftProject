@@ -230,6 +230,10 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                     return true
                                                 }
                                                 val amount = t.toLong()
+                                                if (amount < 0) {
+                                                    sender.error(getter["user.friend.transfer.error.minus"])
+                                                    return true
+                                                }
 
                                                 PaymentDialog(
                                                     player = sender,

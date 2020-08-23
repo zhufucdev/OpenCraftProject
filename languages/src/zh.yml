@@ -60,6 +60,7 @@ user:
       cancel: '转账已取消'
       error:
         outOfBound: '金额超限: %s'
+        minus: '金额必须为正整数'
     point:
       start: '开始与 %s2 分享记录点%s1'
       stop: '停止与 %s2 分享记录点%s1'
