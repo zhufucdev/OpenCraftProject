@@ -1,6 +1,6 @@
 {
   "0": {
-    "currency": 88
+    "currency": 0
   },
   "1579363200000": {
     "time": 26
@@ -312,7 +312,7 @@
     "currency": 256
   },
   "1850": {
-    "currency": 97
+    "currency": 0
   },
   "1978": {
     "currency": 256
@@ -615,7 +615,7 @@
     "currency": 216
   },
   "1116": {
-    "currency": 216
+    "currency": 0
   },
   "1122": {
     "currency": 216
@@ -660,7 +660,7 @@
     "currency": 216
   },
   "484": {
-    "currency": 216
+    "currency": 0
   },
   "572": {
     "currency": 216
@@ -918,7 +918,7 @@
     "time": 8080
   },
   "166": {
-    "currency": 97
+    "currency": 0
   },
   "366": {
     "currency": 97
@@ -1407,6 +1407,51 @@
     "currency": 0
   },
   "2714": {
+    "currency": 0
+  },
+  "1598198400000": {
+    "time": 3364
+  },
+  "10": {
+    "currency": 0
+  },
+  "106": {
+    "currency": 0
+  },
+  "230": {
+    "currency": 0
+  },
+  "434": {
+    "currency": 0
+  },
+  "594": {
+    "currency": 0
+  },
+  "724": {
+    "currency": 0
+  },
+  "762": {
+    "currency": 0
+  },
+  "1086": {
+    "currency": 0
+  },
+  "1132": {
+    "currency": 0
+  },
+  "1226": {
+    "currency": 0
+  },
+  "1812": {
+    "currency": 0
+  },
+  "1950": {
+    "currency": 0
+  },
+  "2740": {
+    "currency": 0
+  },
+  "2970": {
     "currency": 0
   }
 }

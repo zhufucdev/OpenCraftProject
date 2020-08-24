@@ -26,7 +26,7 @@ npc:
       owner:
         owner: server
         uuid: ''
-    traitnames: location,mounttrait,equipment,skintrait,scoreboardtrait,type,spawned,owner,speech,inventory
+    traitnames: inventory,skintrait,spawned,scoreboardtrait,location,type,mounttrait,speech,owner,equipment
     navigator:
       speedmodifier: '1.0'
       avoidwater: false
@@ -54,7 +54,7 @@ npc:
       owner:
         owner: server
         uuid: ''
-    traitnames: location,mounttrait,skintrait,equipment,scoreboardtrait,type,spawned,owner,inventory
+    traitnames: inventory,skintrait,scoreboardtrait,spawned,location,type,mounttrait,owner,equipment
     navigator:
       speedmodifier: '1.0'
       avoidwater: false
@@ -83,7 +83,7 @@ npc:
       owner:
         owner: server
         uuid: ''
-    traitnames: location,mounttrait,skintrait,equipment,scoreboardtrait,type,spawned,owner,speech,inventory
+    traitnames: inventory,skintrait,scoreboardtrait,spawned,location,type,mounttrait,speech,owner,equipment
     navigator:
       speedmodifier: '1.0'
       avoidwater: false

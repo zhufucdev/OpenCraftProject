@@ -128,7 +128,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                             SellingItemInfo(
                                     ItemStack(Material.ENDER_PEARL)
                                             .also { it.itemMeta = it.itemMeta!!.apply { setDisplayName(TextUtil.info(adapter.getter["ui.teleport"])) } },
-                                    3,
+                                    3.toGP(),
                                     1),
                         plugin)
                             .setOnPayListener { success ->

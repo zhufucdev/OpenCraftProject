@@ -12,10 +12,10 @@ import org.bukkit.scoreboard.Objective
 
 abstract class WrappedItem(material: Material) : ItemStack(material), Tickable {
     companion object {
-        private val registered = arrayListOf<Class<WrappedItem>>()
+        private val registered = arrayListOf<Class<out WrappedItem>>()
 
         @JvmStatic
-        fun register(clazz: Class<WrappedItem>) {
+        fun register(clazz: Class<out WrappedItem>) {
             if (registered.contains(clazz)) return
             registered.add(clazz)
         }
@@ -59,9 +59,9 @@ abstract class WrappedItem(material: Material) : ItemStack(material), Tickable {
     open fun onCreate(owner: Player, vararg args: Any) {
         val tag = NBTTagCompound()
         tag.setString("wrapped_type", this::class.let { it.qualifiedName ?: it.simpleName })
-        CraftItemStack.asCraftMirror(CraftItemStack.asNMSCopy(this).apply {
+        itemMeta = CraftItemStack.asCraftMirror(CraftItemStack.asNMSCopy(this).apply {
             setTag(tag)
-        })
+        }).itemMeta
         holder = owner
     }
 

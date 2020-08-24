@@ -75,6 +75,10 @@ class Server {
         return schedule.runTaskLater(Scripting.plugin, action, ticks).tap { tasks.add(it) }
     }
 
+    static BukkitTask nextTick(Closure action) {
+        return schedule.runTask(Scripting.plugin, action)
+    }
+
     static BukkitScheduler getSchedule() {
         return Bukkit.getScheduler()
     }

@@ -1,29 +1,26 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.special_item.*
-import com.zhufu.opencraft.special_item.dynamic.SpecialItem
 import com.zhufu.opencraft.special_item.static.WrappedItem
-import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.entity.SpectralArrow
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.PotionMeta
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 import java.text.DecimalFormat
 import kotlin.reflect.KClass
 
 class GeneralPrise(val value: Long) : Prise<GeneralPrise>() {
-    override fun compareTo(other: Prise<*>): Int = when (other) {
-        is GeneralPrise -> value.compareTo(other.value)
-        else -> compareTo(other.toGeneralPrise())
+    override fun compareTo(other: Prise<*>): Int = if (other is UndefinedPrise) {
+        -1
+    } else {
+        super.compareTo(other)
     }
 
     override fun plus(other: Prise<*>): Prise<GeneralPrise> = GeneralPrise(value + other.toGeneralPrise().value)
 
-    override fun times(x: Int): GeneralPrise {
-        return GeneralPrise(value * x)
-    }
+    override fun times(x: Int): GeneralPrise = GeneralPrise(value * x)
+    override fun div(x: Int): Prise<GeneralPrise> = GeneralPrise(value / x)
+    override fun div(other: Prise<*>): Int = (value / other.toGeneralPrise().value).toInt()
+    override fun rem(other: Prise<*>): Prise<GeneralPrise> = GeneralPrise(value % other.toGeneralPrise().value)
+    override fun isZero(): Boolean = value == 0L
 
     override fun toGeneralPrise(): GeneralPrise = this
 
@@ -100,5 +97,28 @@ class GeneralPrise(val value: Long) : Prise<GeneralPrise>() {
     }
 
     override fun toString(getter: Language.LangGetter): String =
-        getter["trade.coin.cost", DecimalFormat("#.##").format(value / 100.0)]
+        getter["trade.coin.cost", DecimalFormat("#.##").format(value / 10.0)]
+
+    @Suppress("UNCHECKED_CAST")
+    override fun generateItem(owner: Player): List<ItemStack> {
+        var remaining = value
+        val r = arrayListOf<ItemStack>()
+        while (remaining > 0) {
+            listOf(Silver::class.simpleName, Gold::class.simpleName, Coin::class.simpleName, CopperCoin::class.simpleName)
+                .forEach {
+                    val item = WrappedItem.make(it!!, 1, owner) as CurrencyItem<GeneralPrise>
+                    if (remaining >= item.unitValue.value) {
+                        val amount = remaining / item.unitValue.value
+                        remaining -= amount * item.unitValue.value
+                        val stacks = amount / 64
+                        for (i in 0 until stacks) {
+                            r.add(item.apply { this.amount = 64 })
+                        }
+                        r.add(item.apply { this.amount = (amount % 64).toInt() })
+                    }
+                }
+        }
+
+        return r
+    }
 }

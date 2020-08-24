@@ -1,14 +1,14 @@
-com/zhufu/opencraft/events/PlayerRegisterEvent.java
- com.zhufu.opencraft.events.PlayerRegisterEvent
+com/zhufu/opencraft/events/PlayerInventorySaveEvent.java
+ com.zhufu.opencraft.events.PlayerInventorySaveEvent
 com/zhufu/opencraft/events/PlayerObserveEvent.java
  com.zhufu.opencraft.events.PlayerObserveEvent
 com/zhufu/opencraft/events/UserLoginEvent.java
  com.zhufu.opencraft.events.UserLoginEvent
 com/zhufu/opencraft/events/PlayerDeobserveEvent.java
  com.zhufu.opencraft.events.PlayerDeobserveEvent
-com/zhufu/opencraft/events/PlayerLogoutEvent.java
- com.zhufu.opencraft.events.PlayerLogoutEvent
 com/zhufu/opencraft/events/PlayerTeleportedEvent.java
  com.zhufu.opencraft.events.PlayerTeleportedEvent
-com/zhufu/opencraft/events/PlayerInventorySaveEvent.java
- com.zhufu.opencraft.events.PlayerInventorySaveEvent
+com/zhufu/opencraft/events/PlayerRegisterEvent.java
+ com.zhufu.opencraft.events.PlayerRegisterEvent
+com/zhufu/opencraft/events/PlayerLogoutEvent.java
+ com.zhufu.opencraft.events.PlayerLogoutEvent

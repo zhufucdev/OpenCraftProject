@@ -1,20 +1,13 @@
-mp: 30
+mp: 40
 lang: zh
 territoryID: 9
 password: '233'
 address: 127.0.0.1
 isSurvivor: true
-gameTime: 792000
+gameTime: 3998000
 role: magician
 damage: 7.020000100135803
 lastDeath:
-  location:
-    ==: org.bukkit.Location
-    world: task-4
-    x: -13.997094981671205
-    y: 11.0
-    z: 20.29016722773364
-    pitch: -1.799934
-    yaw: 264.74976
   reason: zhufucdev was shot by Skeleton
   time: 1597126744517
+isSurveyPassed: true

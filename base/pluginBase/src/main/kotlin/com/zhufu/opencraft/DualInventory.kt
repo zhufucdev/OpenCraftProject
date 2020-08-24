@@ -339,7 +339,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
         fun addItem(item: ItemStack): Boolean {
             val inventory = config.getConfigurationSection("inventory") ?: YamlConfiguration()
             val itemStack: Any = SpecialItem.getByItem(item, player) ?: item
-            val max = inventory.getKeys(false).maxBy { key -> key.toInt() }?.toIntOrNull()
+            val max = inventory.getKeys(false).maxByOrNull { key -> key.toInt() }?.toIntOrNull()
             fun msg(i: Int) {
                 config.set("inventory", inventory)
                 this.player?.sendMessage(TextUtil.success("物品已添加至您的${name}物品栏第${i + 1}格"))

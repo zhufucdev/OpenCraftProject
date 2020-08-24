@@ -31,6 +31,7 @@ class SpeechConstructor implements ResultConstructor<SpeechConstructor, SpeechCo
         else
             context = new SpeechContext(talker, message)
         recipients.each { context.addRecipient(it) }
+        context
         return context
     }
 }

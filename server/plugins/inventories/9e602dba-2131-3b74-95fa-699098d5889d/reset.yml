@@ -7,10 +7,10 @@ exp: 0
 location:
   ==: org.bukkit.Location
   world: world
-  x: 47.168334359986346
+  x: 46.521359131350295
   y: 169.0
-  z: 90.30000001192093
-  pitch: 22.200066
-  yaw: 28.500011
+  z: 90.69999998807907
+  pitch: 36.59997
+  yaw: -1.2000365
 potion: {}
 inventory: {}

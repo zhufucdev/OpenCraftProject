@@ -8,11 +8,6 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 
 class UndefinedPrise(private val value: Int) : Prise<UndefinedPrise>() {
-    override fun compareTo(other: Prise<*>): Int = when (other) {
-        is UndefinedPrise -> value.compareTo(other.value)
-        else -> toGeneralPrise().compareTo(other.toGeneralPrise())
-    }
-
     override fun plus(other: Prise<*>): Prise<UndefinedPrise> = UndefinedPrise(
         value + when (other) {
             is UndefinedPrise -> other.value
@@ -22,6 +17,13 @@ class UndefinedPrise(private val value: Int) : Prise<UndefinedPrise>() {
     )
 
     override fun times(x: Int): Prise<UndefinedPrise> = UndefinedPrise(value * x)
+
+    override fun div(x: Int): Prise<UndefinedPrise> = UndefinedPrise(value / x)
+
+    private fun cast(other: Prise<*>) = if (other is UndefinedPrise) other.value else throw IllegalArgumentException("other")
+    override fun div(other: Prise<*>): Int = value / cast(other)
+    override fun rem(other: Prise<*>): Prise<UndefinedPrise> = (value % cast(other)).toUP()
+    override fun isZero(): Boolean = value == 0
 
     override fun toGeneralPrise(): GeneralPrise = GeneralPrise(100L * value)
 
@@ -73,6 +75,28 @@ class UndefinedPrise(private val value: Int) : Prise<UndefinedPrise>() {
     override fun cost(info: ServerPlayer): CostResult = costFailure
 
     override fun toString(getter: Language.LangGetter): String = getter["trade.undefined.cost", value]
+
+    override fun generateItem(owner: Player): List<ItemStack> {
+        var remaining = value
+        val r = arrayListOf<ItemStack>()
+        fun minus(material: Material) {
+            val p = of(material).value
+            if (remaining < p) return
+            val amount = remaining / p
+            remaining -= amount * p
+            val stacks = amount / 64
+            for (i in 0 until stacks) {
+                r.add(ItemStack(material, 64))
+            }
+            r.add(ItemStack(material, amount % 64))
+        }
+
+        while (remaining > 0) {
+            listOf(Material.NETHER_STAR, Material.EMERALD, Material.DIAMOND, Material.PRISMARINE_SHARD)
+                .forEach { minus(it) }
+        }
+        return r
+    }
 
     companion object {
         fun of(material: Material) = when (material) {

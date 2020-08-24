@@ -16,6 +16,7 @@ import com.zhufu.opencraft.special_item.maxMP
 import com.zhufu.opencraft.special_item.mp
 import com.zhufu.opencraft.special_item.mpRecoverRate
 import com.zhufu.opencraft.special_item.showMP
+import com.zhufu.opencraft.special_item.static.WrappedItem
 import com.zhufu.opencraft.task.Task
 import com.zhufu.opencraft.ui.RoleSelectUI
 import org.bukkit.Bukkit
@@ -101,9 +102,12 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             }
         }
         // Register special items
-        Reflections("com.zhufu.opencraft.special_item")
-            .getSubTypesOf(SpecialItem::class.java)
-            .forEach { if (!Modifier.isAbstract(it.modifiers)) SpecialItem.register(it) }
+        Reflections("com.zhufu.opencraft.special_item").apply {
+            getSubTypesOf(SpecialItem::class.java)
+                .forEach { if (!Modifier.isAbstract(it.modifiers)) SpecialItem.register(it) }
+            getSubTypesOf(WrappedItem::class.java)
+                .forEach { if (!Modifier.isAbstract(it.modifiers)) WrappedItem.register(it) }
+        }
         // Register Tasks
         Reflections("com.zhufu.opencraft.task")
             .getSubTypesOf(Task::class.java)

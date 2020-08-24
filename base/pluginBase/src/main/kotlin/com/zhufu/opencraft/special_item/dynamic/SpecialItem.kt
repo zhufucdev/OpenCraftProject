@@ -272,7 +272,7 @@ abstract class SpecialItem : Tickable {
         @JvmStatic
         fun make(name: String, amount: Int = 1, owner: Player, vararg arguments: Any): SpecialItem? {
             val clazz = prebuilt.firstOrNull { it.simpleName.equals(name, true) }
-                ?: throw IllegalArgumentException("$name is not a SpecialItem.")
+                ?: return null
             val instance = clazz.getConstructor().newInstance()
             mList[UUID.randomUUID()] = instance
             instance.itemLocation.itemStack.amount = amount

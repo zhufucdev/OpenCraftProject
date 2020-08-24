@@ -1,7 +1,7 @@
 package bukkit
 
 import com.zhufu.opencraft.events.SSReloadEvent
-import com.zhufu.opencraft.special_item.base.SpecialItem
+import com.zhufu.opencraft.special_item.dynamic.SpecialItem
 import groovyjarjarantlr4.v4.runtime.misc.Nullable
 
 class Content {

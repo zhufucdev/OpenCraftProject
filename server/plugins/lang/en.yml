@@ -696,6 +696,19 @@ rpg:
         pick: 'Pick this item to take this upgrade.'
       place:
         content: 'Place Your Item'
+    trade:
+      title: 'Trade'
+      lack: 'Lack of Money'
+      unableToExchange: 'Unable to Exchange'
+      select:
+        name: 'Select Goods'
+        none: 'Not selected'
+      put:
+        name: 'Place currency'
+    goodSelection:
+      title: 'Good Selection'
+      tip: 'PS: Valuing of %s'
+
   error:
     maxLevel:
       title: 'Unable to upgrade %s'

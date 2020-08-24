@@ -212,25 +212,18 @@ trade:
   pay:
     title: '确认支付'
     amount: '数量为%s'
-    currencyConsume: '这将消耗您%s个货币'
+    currencyConsume: '这将消耗您%s'
     saving: '使用存款'
     cash: '使用现款'
   input:
     title: '选择支付'
     error:
       outOfBound: '您一次至多能支付%s元'
-  trader:
-    select:
-      name: '选择交易物品'
-      none: '未选择'
-    put:
-      name: '放置货币'
-    placeholder: '占位符'
   cc:
     name: '铜钱'
   coin:
     name: '铜板'
-    cost: '%s铜板或与其等价的货币'
+    cost: '%s铜板或等价的货币'
   silver:
     name: '银子'
   gold:
@@ -736,8 +729,16 @@ rpg:
         start: '无法启动任务%s: %s: %s。请联系服务器管理员'
     trade:
       title: '交易'
+      lack: '货币不足'
+      unableToExchange: '无法找零'
+      select:
+        name: '选择交易物品'
+        none: '未选择'
+      put:
+        name: '放置货币'
     goodSelection:
       title: '商品选择'
+      tip: '注: 价值%s个货币'
 
   error:
     maxLevel:

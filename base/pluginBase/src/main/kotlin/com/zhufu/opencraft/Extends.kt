@@ -234,4 +234,10 @@ val EntityType.isMonster
         else -> false
     }
 
-fun ItemStack?.isNullOrEmpty() = this == null || this.type == Material.AIR
+@ExperimentalContracts
+fun ItemStack?.isNullOrEmpty(): Boolean {
+    contract {
+        returns(false) implies (this@isNullOrEmpty != null)
+    }
+    return this == null || this.type == Material.AIR
+}

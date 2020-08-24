@@ -20,4 +20,8 @@ class Lang {
     static String getString(String codeName, String path, Object... args) {
         Language.INSTANCE.get(codeName, path, args)
     }
+
+    static String getDefault(String path, Object... args) {
+        Language.INSTANCE.getDefault(path, args)
+    }
 }

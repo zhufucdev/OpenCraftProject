@@ -6,7 +6,7 @@ spawnpoint:
   z: -363.0
   pitch: 2.0999289
   yaw: 2.2496645
-gameMode: SURVIVAL
+gameMode: CREATIVE
 health: 20.0
 foodLevel: 20
 walkSpeed: 0.2
@@ -14,28 +14,59 @@ flySpeed: 0.1
 exp: 0
 potion: {}
 inventory:
-  '0': 271575e7-f114-45da-b546-f8846f60c2fd
-  '1': c5347aa9-1bc4-48e2-9a44-c0025b9d18be
-  '2':
+  '0':
     ==: org.bukkit.inventory.ItemStack
     v: 2567
-    type: ROTTEN_FLESH
-    amount: 7
-  '9':
+    type: BIRCH_PLANKS
+  '4':
     ==: org.bukkit.inventory.ItemStack
     v: 2567
-    type: ARROW
+    type: PRISMARINE_SHARD
     amount: 2
-  '10':
+  '5':
     ==: org.bukkit.inventory.ItemStack
     v: 2567
-    type: BONE
-    amount: 2
+    type: EMERALD
+    amount: 63
+  '6':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: POTION
+    meta:
+      ==: ItemMeta
+      meta-type: POTION
+      custom-effects:
+      - ==: PotionEffect
+        effect: 6
+        duration: 10
+        amplifier: 2
+        ambient: true
+        has-particles: true
+        has-icon: true
+  '7':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: IRON_NUGGET
+    amount: 8
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      display-name: §e铜钱
+      internal: H4sIAAAAAAAAAONiYOBg4CkvSiwoSE2JL6ksSGXQTs7P1avKKE0r1csvSM1LLkpMK9ErLkhNzkzMic8sSc3Vc84Hqi5yzs/MYwAADdGKh0AAAAA=
+  '8':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: GOLD_INGOT
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      display-name: §e金币
+      internal: H4sIAAAAAAAAAONiYOBg4CkvSiwoSE2JL6ksSGVQTc7P1avKKE0r1csvSM1LLkpMK9ErLkhNzkzMic8sSc3Vc8/PSWEAAF8QnaI6AAAA
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: 321.6466144034641
-  y: 70.0
-  z: -357.756189936464
-  pitch: 11.999834
-  yaw: -105.3001
+  x: 323.38840117901276
+  y: 71.0
+  z: -361.1860664556566
+  pitch: 6.299974
+  yaw: -188.54947

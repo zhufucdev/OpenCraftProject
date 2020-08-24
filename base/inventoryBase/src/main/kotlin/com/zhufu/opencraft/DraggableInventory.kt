@@ -53,6 +53,9 @@ abstract class DraggableInventory(val plugin: Plugin, row: Int, title: String) :
         if (event.inventory != inventory) return
         if (event.clickedInventory == inventory) {
             // In this inventory
+            onClick(event)
+            if (event.isCancelled) return
+
             if (protecting[event.rawSlot] == true) {
                 event.isCancelled = true
                 return
@@ -94,6 +97,8 @@ abstract class DraggableInventory(val plugin: Plugin, row: Int, title: String) :
     open fun onPlace(event: InventoryClickEvent) {}
 
     open fun onTake(event: InventoryClickEvent) {}
+
+    open fun onClick(event: InventoryClickEvent) {}
 
     open fun onClose() {}
 }

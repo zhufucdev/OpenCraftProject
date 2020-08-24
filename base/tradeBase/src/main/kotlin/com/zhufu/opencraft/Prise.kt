@@ -2,6 +2,7 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.special_item.CurrencyItem
 import com.zhufu.opencraft.special_item.dynamic.SpecialItem
+import com.zhufu.opencraft.special_item.static.WrappedItem
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -9,6 +10,8 @@ import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionEffectType
 
 abstract class Prise<T> : Comparable<Prise<*>> {
+    override fun compareTo(other: Prise<*>): Int = (toGeneralPrise().value - other.toGeneralPrise().value).toInt()
+
     /**
      * Remove the items of the amount of currency of this object from the given [player]'s inventory.
      * @return true if this removal is successful.
@@ -24,6 +27,12 @@ abstract class Prise<T> : Comparable<Prise<*>> {
      * Return a new [Prise] whose value is [x] times of this.
      */
     abstract operator fun times(x: Int): Prise<T>
+    abstract operator fun div(x: Int): Prise<T>
+    abstract operator fun div(other: Prise<*>): Int
+
+    abstract operator fun rem(other: Prise<*>): Prise<T>
+
+    abstract fun isZero(): Boolean
 
     /**
      * Return a new [Prise] whose value is worth [other] more than this.
@@ -36,7 +45,15 @@ abstract class Prise<T> : Comparable<Prise<*>> {
      */
     abstract fun toGeneralPrise(): GeneralPrise
 
+    /**
+     * Return a human-readable [String] representing this [Prise].
+     */
     abstract fun toString(getter: Language.LangGetter): String
+
+    /**
+     * Generate stacks of items equal to this.
+     */
+    abstract fun generateItem(owner: Player): List<ItemStack>
 
     interface CostResult {
         val successful: Boolean
@@ -53,8 +70,17 @@ abstract class Prise<T> : Comparable<Prise<*>> {
         }
 
         fun of(item: ItemStack, owner: Player? = null): Prise<*> {
-            val si = SpecialItem.getByItem(item, owner)
-            if (si != null && si is CurrencyItem<*>) {
+            val si = WrappedItem[item, owner]
+            return if (si is CurrencyItem<*>) {
+                si.value
+            } else {
+                UndefinedPrise.of(item.type) * item.amount
+            }
+        }
+
+        fun evaluate(item: ItemStack, owner: Player? = null): Prise<*> {
+            val si = WrappedItem[item, owner]
+            if (si is CurrencyItem<*>) {
                 return si.value
             } else {
                 fun l1(effect: PotionEffectType): Long = when (effect) {

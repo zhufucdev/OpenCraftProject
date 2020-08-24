@@ -380,7 +380,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                         it.setDisplayName(TextUtil.info(getter["ui.tpToSpawn"]))
                                     }
                                 },
-                            3, 1
+                            3.toGP(), 1
                         ),
                         plugin
                     )
@@ -481,7 +481,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                         itemMeta.setDisplayName(TextUtil.info(getter["ui.teleport"]))
                                     }
                                 },
-                            3,
+                            3.toGP(),
                             1
                         ),
                         plugin
