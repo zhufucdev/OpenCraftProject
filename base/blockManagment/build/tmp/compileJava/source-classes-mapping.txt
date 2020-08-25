@@ -1,0 +1,2 @@
+com/zhufu/opencraft/PlayerGotoTerritoryEvent.java
+ com.zhufu.opencraft.PlayerGotoTerritoryEvent

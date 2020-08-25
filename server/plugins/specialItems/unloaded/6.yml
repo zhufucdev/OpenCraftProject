@@ -1,0 +1,15 @@
+type: com.zhufu.opencraft.special_item.StoneAxe
+SIID: 5618c588-b02a-468f-ad70-d50e3eda15e5
+data:
+  location:
+    ==: com.zhufu.opencraft.special_item.base.locate.MemoryLocation
+    v: 2567
+    type: STONE_AXE
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      enchants:
+        DAMAGE_ALL: 1
+      Damage: 6
+      internal: H4sIAAAAAAAAAONiYOBgYCnOzExhUDE1M7RINrWw0E0yMErUNTGzSNNNTDE30E0xNUg1Tk1JNDRNNWUAAO/wNcAxAAAA
+  owner: 8fee2408-5108-341b-9787-35fcf5b191f9

@@ -1,0 +1,7 @@
+type: com.zhufu.opencraft.special_item.Control
+SIID: ce4256c3-3be3-4b68-b817-1bb5f03ce912
+data:
+  location:
+    ==: com.zhufu.opencraft.special_item.base.locate.DroppedItemLocation
+    entityID: 76bc1581-f93b-4110-830a-3e5dff3544bd
+  owner: 9e602dba-2131-3b74-95fa-699098d5889d

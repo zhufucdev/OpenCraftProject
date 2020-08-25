@@ -6,7 +6,7 @@ file('base').listFiles().each {
 }
 
 rootDir.listFiles().each {
-    if (it.isDirectory() && it.name.charAt(0).isUpperCase()) {
+    if (it.isDirectory() && !it.isHidden() && it.name.charAt(0).isUpperCase()) {
         include it.name
     }
 }
