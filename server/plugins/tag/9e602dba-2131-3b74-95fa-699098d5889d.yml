@@ -2,7 +2,7 @@ lang: en
 territoryID: 0
 password: '233'
 address: 127.0.0.1
-gameTime: 6554000
+gameTime: 6882000
 isSurvivor: true
 surviveSpawn:
   ==: org.bukkit.Location

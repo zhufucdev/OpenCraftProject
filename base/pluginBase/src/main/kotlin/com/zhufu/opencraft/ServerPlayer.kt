@@ -124,7 +124,16 @@ abstract class ServerPlayer(
         checkpoints.forEach {
             tag.set("checkpoints.${it.name}", it.location)
         }
-        tag.save(tagFile)
+        val backup: ByteArray = tagFile.readBytes()
+        try {
+            tag.save(tagFile)
+        } catch (e: Exception) {
+            Bukkit.getLogger().warning("Failed to save $name's tag file:")
+            e.printStackTrace()
+
+            Bukkit.getLogger().info("Restoring $name's tag.")
+            tagFile.writeBytes(backup)
+        }
         if (PlayerStatics.contains(this))
             statics!!.save()
     }

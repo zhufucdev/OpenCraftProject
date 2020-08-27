@@ -1,17 +1,17 @@
-[16:48:48] [main/INFO]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', name='PROD'
-[16:48:48] [main/INFO]: Reloading ResourceManager: Default, bukkit
-[16:48:50] [Server-Worker-15/INFO]: Loaded 7 recipes
-[16:48:51] [Server thread/INFO]: Starting minecraft server version 1.16.1
-[16:48:51] [Server thread/INFO]: Loading properties
-[16:48:51] [Server thread/INFO]: This server is running Paper version git-Paper-135 (MC: 1.16.1) (Implementing API version 1.16.1-R0.1-SNAPSHOT)
-[16:48:51] [Server thread/INFO]: Debug logging is disabled
-[16:48:51] [Server thread/INFO]: Server Ping Player Sample Count: 12
-[16:48:51] [Server thread/INFO]: Using 4 threads for Netty based IO
-[16:48:51] [Server thread/INFO]: Default game type: SURVIVAL
-[16:48:51] [Server thread/INFO]: Generating keypair
-[16:48:51] [Server thread/INFO]: Starting Minecraft server on *:25568
-[16:48:51] [Server thread/INFO]: Using default channel type
-[16:48:52] [Server thread/ERROR]: Could not load 'plugins\RemoteRedirector-1.0-SNAPSHOT.jar' in folder 'plugins'
+[07:53:52] [main/INFO]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', name='PROD'
+[07:53:53] [main/INFO]: Reloading ResourceManager: Default, bukkit
+[07:53:54] [Server-Worker-13/INFO]: Loaded 7 recipes
+[07:53:55] [Server thread/INFO]: Starting minecraft server version 1.16.1
+[07:53:55] [Server thread/INFO]: Loading properties
+[07:53:55] [Server thread/INFO]: This server is running Paper version git-Paper-135 (MC: 1.16.1) (Implementing API version 1.16.1-R0.1-SNAPSHOT)
+[07:53:55] [Server thread/INFO]: Debug logging is disabled
+[07:53:55] [Server thread/INFO]: Using 4 threads for Netty based IO
+[07:53:55] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[07:53:55] [Server thread/INFO]: Default game type: SURVIVAL
+[07:53:55] [Server thread/INFO]: Generating keypair
+[07:53:56] [Server thread/INFO]: Starting Minecraft server on *:25568
+[07:53:56] [Server thread/INFO]: Using default channel type
+[07:53:56] [Server thread/ERROR]: Could not load 'plugins\RemoteRedirector-1.0-SNAPSHOT.jar' in folder 'plugins'
 org.bukkit.plugin.InvalidDescriptionException: Invalid plugin.yml
 	at org.bukkit.plugin.java.JavaPluginLoader.getPluginDescription(JavaPluginLoader.java:162) ~[patched_1.16.1.jar:git-Paper-135]
 	at org.bukkit.plugin.SimplePluginManager.loadPlugins(SimplePluginManager.java:148) ~[patched_1.16.1.jar:git-Paper-135]
@@ -22,566 +22,681 @@ org.bukkit.plugin.InvalidDescriptionException: Invalid plugin.yml
 	at java.lang.Thread.run(Thread.java:834) [?:?]
 Caused by: java.io.FileNotFoundException: Jar does not contain plugin.yml
 	... 7 more
-[16:48:52] [Server thread/WARN]: [WorldTeleporter] Loaded class kotlin.TypeCastException from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:53] [Server thread/WARN]: [ServerCore] Loaded class kotlin.TypeCastException from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:53] [Server thread/INFO]: [WorldGenerator] Loading WorldGenerator v1.0
-[16:48:53] [Server thread/INFO]: [Citizens] Loading Citizens v2.0.27-SNAPSHOT (build 2058)
-[16:48:53] [Server thread/INFO]: [WorldEdit] Loading WorldEdit v7.2.0-beta-02+d10d7d6
-[16:48:54] [Server thread/INFO]: Got request to register class com.sk89q.worldedit.bukkit.BukkitServerInterface with WorldEdit [com.sk89q.worldedit.extension.platform.PlatformManager@62bd2381]
-[16:48:54] [Server thread/INFO]: [OperationFinder] Loading OperationFinder v1.0
-[16:48:54] [Server thread/INFO]: [BookNoticer] Loading BookNoticer v1.0
-[16:48:54] [Server thread/INFO]: [PrevHacking] Loading PrevHacking v1.0
-[16:48:54] [Server thread/INFO]: [WorldTeleporter] Loading WorldTeleporter v1.0
-[16:48:54] [Server thread/INFO]: [ServerScript] Loading ServerScript v1.0
-[16:48:54] [Server thread/INFO]: [Translator] Loading Translator v1.0
-[16:48:54] [Server thread/INFO]: [ServerCore] Loading ServerCore v1.0
-[16:48:54] [Server thread/INFO]: [CustomTutorial] Loading CustomTutorial v1.0
-[16:48:54] [Server thread/INFO]: [CraftWeb] Loading CraftWeb v1.0
-[16:48:54] [Server thread/INFO]: [PlayerUtil] Loading PlayerUtil v1.0
-[16:48:54] [Server thread/INFO]: [Skinny] Loading Skinny v1.1-SNAPSHOT
-[16:48:54] [Server thread/INFO]: [TenMinSur] Loading TenMinSur v1.0
-[16:48:54] [Server thread/INFO]: [ServerBoss] Loading ServerBoss v1.0
-[16:48:54] [Server thread/INFO]: [ItemManager] Loading ItemManager v1.0
-[16:48:54] [Server thread/INFO]: [ChunkWall] Loading ChunkWall v1.0
-[16:48:54] [Server thread/INFO]: [CurrencySystem] Loading CurrencySystem v1.0
-[16:48:54] [Server thread/INFO]: [BlockLocker] Loading BlockLocker v1.0
-[16:48:54] [Server thread/INFO]: [UserManager] Loading UserManager v1.0
-[16:48:54] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
-[16:48:54] [Server thread/INFO]: [WorldGenerator] Enabling WorldGenerator v1.0
-[16:48:54] [Server thread/INFO]: [WorldEdit] Enabling WorldEdit v7.2.0-beta-02+d10d7d6
-[16:48:54] [Server thread/INFO]: WEPIF: Using the Bukkit Permissions API.
-[16:48:55] [Server thread/INFO]: Using com.sk89q.worldedit.bukkit.adapter.impl.Spigot_v1_16_R1 as the Bukkit adapter
-[16:48:56] [Server thread/INFO]: [Skinny] Enabling Skinny v1.1-SNAPSHOT
-[16:48:56] [Server thread/WARN]: [Skinny] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:56] [Server thread/INFO]: [Skinny] Loaded providers:
-[16:48:56] [Server thread/INFO]: [Skinny] * tw.davy.minecraft.skinny.providers.LegacyProvider
-[16:48:56] [Server thread/INFO]: [Skinny] * tw.davy.minecraft.skinny.providers.MojangProvider
-[16:48:56] [Server thread/WARN]: [Skinny] Loaded class kotlin.Function from ServerCore v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:56] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
-[16:48:56] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
-[16:48:56] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
-[16:48:56] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
-[16:48:56] [Server thread/INFO]: Preparing level "world"
-[16:48:56] [Server thread/WARN]: [WorldGenerator] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:56] [Server thread/WARN]: [WorldGenerator] Loaded class com.zhufu.opencraft.chunkgenerator.VoidGenerator from CurrencySystem v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:56] [Server thread/INFO]: -------- World Settings For [world] --------
-[16:48:56] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
-[16:48:56] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
-[16:48:56] [Server thread/INFO]: View Distance: 10
-[16:48:56] [Server thread/INFO]: Item Merge Radius: 2.5
-[16:48:56] [Server thread/INFO]: Item Despawn Rate: 6000
-[16:48:56] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
-[16:48:56] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
-[16:48:56] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
-[16:48:56] [Server thread/INFO]: Cactus Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Cane Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Melon Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Mushroom Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Sapling Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Beetroot Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Carrot Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Potato Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Wheat Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: NetherWart Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Vine Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Cocoa Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Bamboo Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Kelp Growth Modifier: 100%
-[16:48:56] [Server thread/INFO]: Experience Merge Radius: 3.0
-[16:48:56] [Server thread/INFO]: Max TNT Explosions: 100
-[16:48:56] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
-[16:48:56] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
-[16:48:56] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
-[16:48:56] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
-[16:48:56] [Server thread/INFO]: Mob Spawn Range: 8
-[16:48:56] [Server thread/INFO]: Registering commands with com.sk89q.worldedit.bukkit.BukkitServerInterface
-[16:48:57] [Server thread/INFO]: -------- World Settings For [world_nether] --------
-[16:48:57] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
-[16:48:57] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
-[16:48:57] [Server thread/INFO]: View Distance: 10
-[16:48:57] [Server thread/INFO]: Item Merge Radius: 2.5
-[16:48:57] [Server thread/INFO]: Item Despawn Rate: 6000
-[16:48:57] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
-[16:48:57] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
-[16:48:57] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
-[16:48:57] [Server thread/INFO]: Cactus Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Cane Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Melon Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Mushroom Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Sapling Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Beetroot Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Carrot Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Potato Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Wheat Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: NetherWart Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Vine Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Cocoa Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Bamboo Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Kelp Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Experience Merge Radius: 3.0
-[16:48:57] [Server thread/INFO]: Max TNT Explosions: 100
-[16:48:57] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
-[16:48:57] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
-[16:48:57] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
-[16:48:57] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
-[16:48:57] [Server thread/INFO]: Mob Spawn Range: 8
-[16:48:57] [Server thread/INFO]: -------- World Settings For [world_the_end] --------
-[16:48:57] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
-[16:48:57] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
-[16:48:57] [Server thread/INFO]: View Distance: 10
-[16:48:57] [Server thread/INFO]: Item Merge Radius: 2.5
-[16:48:57] [Server thread/INFO]: Item Despawn Rate: 6000
-[16:48:57] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
-[16:48:57] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
-[16:48:57] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
-[16:48:57] [Server thread/INFO]: Cactus Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Cane Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Melon Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Mushroom Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Sapling Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Beetroot Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Carrot Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Potato Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Wheat Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: NetherWart Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Vine Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Cocoa Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Bamboo Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Kelp Growth Modifier: 100%
-[16:48:57] [Server thread/INFO]: Experience Merge Radius: 3.0
-[16:48:57] [Server thread/INFO]: Max TNT Explosions: 100
-[16:48:57] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
-[16:48:57] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
-[16:48:57] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
-[16:48:57] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
-[16:48:57] [Server thread/INFO]: Mob Spawn Range: 8
-[16:48:57] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
-[16:48:58] [Server thread/INFO]: Loaded 0 spawn chunks for world world
-[16:48:58] [Server thread/INFO]: Preparing spawn area: 0%
-[16:48:58] [Server thread/INFO]: Preparing spawn area: 0%
-[16:48:58] [Server thread/INFO]: Preparing spawn area: 84%
-[16:48:58] [Server thread/INFO]: Time elapsed: 1137 ms
-[16:48:58] [Server thread/INFO]: Preparing start region for dimension minecraft:the_nether
-[16:48:58] [Server thread/INFO]: Loaded 0 spawn chunks for world world_nether
-[16:48:58] [Server thread/INFO]: Preparing spawn area: 0%
-[16:48:58] [Server thread/INFO]: Time elapsed: 126 ms
-[16:48:58] [Server thread/INFO]: Preparing start region for dimension minecraft:the_end
-[16:48:58] [Server thread/INFO]: Loaded 0 spawn chunks for world world_the_end
-[16:48:58] [Server thread/INFO]: Time elapsed: 116 ms
-[16:48:58] [Server thread/INFO]: [Citizens] Enabling Citizens v2.0.27-SNAPSHOT (build 2058)
-[16:48:59] [Server-Worker-10/WARN]: [CurrencySystem] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [Server thread/INFO]: [Citizens] 无法使用经济. 是否已启用 Vault?
-[16:48:59] [Server thread/INFO]: [OperationFinder] Enabling OperationFinder v1.0
-[16:48:59] [Server thread/INFO]: [BookNoticer] Enabling BookNoticer v1.0
-[16:48:59] [Server thread/WARN]: [BookNoticer] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [Server thread/INFO]: [PrevHacking] Enabling PrevHacking v1.0
-[16:48:59] [Server thread/WARN]: [PrevHacking] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [Server thread/INFO]: [WorldTeleporter] Enabling WorldTeleporter v1.0
-[16:48:59] [Server thread/INFO]: [ServerScript] Enabling ServerScript v1.0
-[16:48:59] [Server thread/INFO]: [ServerScript] Loading scripts under plugins directory.
-[16:48:59] [Server thread/WARN]: [ServerScript] Loaded class kotlin.Function from ServerCore v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [Server thread/WARN]: [ServerScript] Loaded class kotlin.jvm.internal.Lambda from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [Server thread/WARN]: [ServerScript] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [Server thread/INFO]: [Translator] Enabling Translator v1.0
-[16:48:59] [Server thread/WARN]: [Translator] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [ServerScript Initialization/WARN]: [ServerScript] Loaded class com.zhufu.opencraft.Scripting from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [ServerScript Initialization/WARN]: [PlayerUtil] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [Server thread/WARN]: [Translator] Loaded class kotlin.Function from ServerCore v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [Server thread/WARN]: [Translator] Loaded class kotlin.jvm.internal.Lambda from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [Server thread/INFO]: [ServerCore] Enabling ServerCore v1.0
-[16:48:59] [Server thread/WARN]: [ServerCore] Loaded class com.zhufu.opencraft.chunkgenerator.VoidGenerator from CurrencySystem v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:48:59] [Server thread/INFO]: -------- World Settings For [world_spawn] --------
-[16:48:59] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
-[16:48:59] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
-[16:48:59] [Server thread/INFO]: View Distance: 10
-[16:48:59] [Server thread/INFO]: Item Merge Radius: 2.5
-[16:48:59] [Server thread/INFO]: Item Despawn Rate: 6000
-[16:48:59] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
-[16:48:59] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
-[16:48:59] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
-[16:48:59] [Server thread/INFO]: Cactus Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Cane Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Melon Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Mushroom Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Sapling Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Beetroot Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Carrot Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Potato Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Wheat Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: NetherWart Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Vine Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Cocoa Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Bamboo Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Kelp Growth Modifier: 100%
-[16:48:59] [Server thread/INFO]: Experience Merge Radius: 3.0
-[16:48:59] [Server thread/INFO]: Max TNT Explosions: 100
-[16:48:59] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
-[16:48:59] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
-[16:48:59] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
-[16:48:59] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
-[16:48:59] [Server thread/INFO]: Mob Spawn Range: 8
-[16:48:59] [Server thread/INFO]: Preparing start region for dimension minecraft:world_spawn
-[16:49:00] [Server thread/INFO]: Loaded 0 spawn chunks for world world_spawn
-[16:49:00] [Server thread/INFO]: Time elapsed: 415 ms
-[16:49:00] [Server thread/INFO]: -------- World Settings For [world_survive] --------
-[16:49:00] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
-[16:49:00] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
-[16:49:00] [Server thread/INFO]: View Distance: 10
-[16:49:00] [Server thread/INFO]: Item Merge Radius: 2.5
-[16:49:00] [Server thread/INFO]: Item Despawn Rate: 6000
-[16:49:00] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
-[16:49:00] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
-[16:49:00] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
-[16:49:00] [Server thread/INFO]: Cactus Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Cane Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Melon Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Mushroom Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Sapling Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Beetroot Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Carrot Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Potato Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Wheat Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: NetherWart Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Vine Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Cocoa Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Bamboo Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Kelp Growth Modifier: 100%
-[16:49:00] [Server thread/INFO]: Experience Merge Radius: 3.0
-[16:49:00] [Server thread/INFO]: Max TNT Explosions: 100
-[16:49:00] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
-[16:49:00] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
-[16:49:00] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
-[16:49:00] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
-[16:49:00] [Server thread/INFO]: Mob Spawn Range: 8
-[16:49:00] [Server thread/INFO]: Preparing start region for dimension minecraft:world_survive
-[16:49:00] [Server thread/INFO]: Loaded 0 spawn chunks for world world_survive
-[16:49:01] [ServerScript Initialization/WARN]: [PlayerUtil] Loaded class kotlin.jvm.functions.Function1 from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:01] [Server thread/INFO]: Preparing spawn area: 0%
-[16:49:01] [Server thread/INFO]: Preparing spawn area: 0%
-[16:49:01] [Server thread/INFO]: Time elapsed: 851 ms
-[16:49:01] [Server thread/WARN]: [ServerCore] Loaded class com.zhufu.opencraft.events.PlayerJoinGameEvent from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:01] [Server thread/WARN]: [PlayerUtil] Loaded class com.zhufu.opencraft.events.PlayerTeleportedEvent from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:01] [Server thread/WARN]: [PlayerUtil] Loaded class com.zhufu.opencraft.ChatInfo from Translator v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:01] [Server thread/WARN]: [ServerCore] Loaded class kotlin.jvm.functions.Function0 from ServerScript v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:01] [Server thread/WARN]: [ServerCore] Loaded class kotlin.jvm.internal.FunctionBase from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:01] [Server thread/WARN]: [ServerCore] Loaded class kotlin.jvm.functions.Function2 from Translator v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:02] [Server thread/WARN]: [ServerCore] Loaded class kotlin.Metadata from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [BookNoticer] Loaded class kotlin.Unit from ServerCore v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [BookNoticer] Loaded class com.zhufu.opencraft.Info from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [BookNoticer] Loaded class com.zhufu.opencraft.ChatInfo from Translator v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [BookNoticer] Loaded class kotlin.jvm.functions.Function1 from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [PlayerUtil] Loaded class kotlin.jvm.functions.Function0 from ServerScript v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/INFO]: [CustomTutorial] Enabling CustomTutorial v1.0
-[16:49:03] [Server thread/WARN]: [CustomTutorial] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [CustomTutorial] Loaded class com.zhufu.opencraft.events.PlayerTeleportedEvent from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [CustomTutorial] Loaded class com.zhufu.opencraft.Info from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [CustomTutorial] Loaded class com.zhufu.opencraft.ServerCaller from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/INFO]: [CraftWeb] Enabling CraftWeb v1.0
-[16:49:03] [Server thread/WARN]: [CraftWeb] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [CraftWeb] Loaded class com.zhufu.opencraft.ServerCaller from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/INFO]: [PlayerUtil] Enabling PlayerUtil v1.0
-[16:49:03] [Server thread/INFO]: [TenMinSur] Enabling TenMinSur v1.0
-[16:49:03] [Server thread/WARN]: [TenMinSur] Loaded class com.zhufu.opencraft.GameManager from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [PlayerUtil] Loaded class com.zhufu.opencraft.games.TMS from TenMinSur v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [TenMinSur] Loaded class kotlin.TypeCastException from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/WARN]: [TenMinSur] Loaded class com.zhufu.opencraft.events.PlayerTeleportedEvent from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:03] [Server thread/INFO]: -------- World Settings For [game_tms_0] --------
-[16:49:03] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
-[16:49:03] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
-[16:49:03] [Server thread/INFO]: View Distance: 10
-[16:49:03] [Server thread/INFO]: Item Merge Radius: 2.5
-[16:49:03] [Server thread/INFO]: Item Despawn Rate: 6000
-[16:49:03] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
-[16:49:03] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
-[16:49:03] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
-[16:49:03] [Server thread/INFO]: Cactus Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Cane Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Melon Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Mushroom Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Sapling Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Beetroot Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Carrot Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Potato Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Wheat Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: NetherWart Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Vine Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Cocoa Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Bamboo Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Kelp Growth Modifier: 100%
-[16:49:03] [Server thread/INFO]: Experience Merge Radius: 3.0
-[16:49:03] [Server thread/INFO]: Max TNT Explosions: 100
-[16:49:03] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
-[16:49:03] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
-[16:49:03] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
-[16:49:03] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
-[16:49:03] [Server thread/INFO]: Mob Spawn Range: 8
-[16:49:03] [Server thread/INFO]: Preparing start region for dimension minecraft:game_tms_0
-[16:49:04] [Server thread/INFO]: Loaded 0 spawn chunks for world game_tms_0
-[16:49:04] [Server thread/INFO]: Preparing spawn area: 0%
-[16:49:04] [Server thread/INFO]: Preparing spawn area: 0%
-[16:49:04] [Server thread/INFO]: Time elapsed: 708 ms
-[16:49:04] [Server thread/INFO]: [ServerBoss] Enabling ServerBoss v1.0
-[16:49:04] [Server thread/WARN]: [ServerBoss] Loaded class kotlin.TypeCastException from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:04] [Server thread/WARN]: [ServerBoss] Loaded class kotlin.jvm.functions.Function0 from ServerScript v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:04] [Server thread/WARN]: [ServerBoss] Loaded class kotlin.jvm.internal.Lambda from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:04] [Server thread/INFO]: [ServerBoss] Fixed spawn count is 11.
-[16:49:04] [Server thread/INFO]: [ServerBoss] Boss will spawn at 08/15 16:30:00.
-[16:49:04] [Server thread/INFO]: [ItemManager] Enabling ItemManager v1.0
-[16:49:04] [Server thread/WARN]: [ItemManager] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:04] [Server thread/INFO]: [ChunkWall] Enabling ChunkWall v1.0
-[16:49:04] [Server thread/WARN]: [ChunkWall] Loaded class com.zhufu.opencraft.GameManager from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:04] [Server thread/WARN]: [ChunkWall] Loaded class com.zhufu.opencraft.GameBase from TenMinSur v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:04] [Server thread/WARN]: [ChunkWall] Loaded class kotlin.TypeCastException from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:04] [Server thread/INFO]: -------- World Settings For [game_cw_origin] --------
-[16:49:04] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
-[16:49:04] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
-[16:49:04] [Server thread/INFO]: View Distance: 10
-[16:49:04] [Server thread/INFO]: Item Merge Radius: 2.5
-[16:49:04] [Server thread/INFO]: Item Despawn Rate: 6000
-[16:49:04] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
-[16:49:04] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
-[16:49:04] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
-[16:49:04] [Server thread/INFO]: Cactus Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Cane Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Melon Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Mushroom Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Sapling Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Beetroot Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Carrot Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Potato Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Wheat Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: NetherWart Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Vine Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Cocoa Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Bamboo Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Kelp Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Experience Merge Radius: 3.0
-[16:49:04] [Server thread/INFO]: Max TNT Explosions: 100
-[16:49:04] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
-[16:49:04] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
-[16:49:04] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
-[16:49:04] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
-[16:49:04] [Server thread/INFO]: Mob Spawn Range: 8
-[16:49:04] [Server thread/INFO]: Preparing start region for dimension minecraft:game_cw_origin
-[16:49:04] [Server thread/INFO]: Loaded 0 spawn chunks for world game_cw_origin
-[16:49:04] [Server thread/INFO]: Time elapsed: 89 ms
-[16:49:04] [Server thread/WARN]: [PlayerUtil] Loaded class com.zhufu.opencraft.games.CW from ChunkWall v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:04] [Server thread/WARN]: [ChunkWall] Loaded class com.zhufu.opencraft.chunkgenerator.VoidGenerator from CurrencySystem v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:04] [Server thread/INFO]: -------- World Settings For [game_cw_1] --------
-[16:49:04] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
-[16:49:04] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
-[16:49:04] [Server thread/INFO]: View Distance: 10
-[16:49:04] [Server thread/INFO]: Item Merge Radius: 2.5
-[16:49:04] [Server thread/INFO]: Item Despawn Rate: 6000
-[16:49:04] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
-[16:49:04] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
-[16:49:04] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
-[16:49:04] [Server thread/INFO]: Cactus Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Cane Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Melon Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Mushroom Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Sapling Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Beetroot Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Carrot Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Potato Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Wheat Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: NetherWart Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Vine Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Cocoa Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Bamboo Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Kelp Growth Modifier: 100%
-[16:49:04] [Server thread/INFO]: Experience Merge Radius: 3.0
-[16:49:04] [Server thread/INFO]: Max TNT Explosions: 100
-[16:49:04] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
-[16:49:04] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
-[16:49:04] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
-[16:49:04] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
-[16:49:04] [Server thread/INFO]: Mob Spawn Range: 8
-[16:49:04] [Server thread/INFO]: Preparing start region for dimension minecraft:game_cw_1
-[16:49:04] [Server thread/INFO]: Loaded 0 spawn chunks for world game_cw_1
-[16:49:04] [Server thread/INFO]: Time elapsed: 56 ms
-[16:49:05] [Server thread/INFO]: Spawning blocks for chunk 0 0
-[16:49:08] [ServerScript Initialization/INFO]: [org.reflections.Reflections] Reflections took 68 ms to scan 1 urls, producing 6 keys and 32 values 
-[16:49:08] [ServerScript Initialization/WARN]: [ServerScript] Loaded class kotlin.Metadata from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:08] [ServerScript Initialization/INFO]: [Server] 0 were loaded.
-[16:49:08] [ServerScript Initialization/INFO]: [ServerScript] Finished in 9100ms.
-[16:49:09] [Server thread/INFO]: Spawning blocks for chunk -1 -1
-[16:49:10] [Server thread/INFO]: Spawning blocks for chunk 0 -1
-[16:49:10] [Server thread/INFO]: Spawning blocks for chunk -1 0
-[16:49:10] [Server thread/INFO]: Using Biome [DARK_FOREST, FOREST, WOODED_MOUNTAINS, BIRCH_FOREST]
-[16:49:11] [Server thread/INFO]: [CurrencySystem] Enabling CurrencySystem v1.0
-[16:49:11] [Server thread/INFO]: -------- World Settings For [world_trade] --------
-[16:49:11] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
-[16:49:11] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
-[16:49:11] [Server thread/INFO]: View Distance: 10
-[16:49:11] [Server thread/INFO]: Item Merge Radius: 2.5
-[16:49:11] [Server thread/INFO]: Item Despawn Rate: 6000
-[16:49:11] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
-[16:49:11] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
-[16:49:11] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
-[16:49:11] [Server thread/INFO]: Cactus Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Cane Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Melon Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Mushroom Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Sapling Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Beetroot Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Carrot Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Potato Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Wheat Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: NetherWart Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Vine Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Cocoa Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Bamboo Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Kelp Growth Modifier: 100%
-[16:49:11] [Server thread/INFO]: Experience Merge Radius: 3.0
-[16:49:11] [Server thread/INFO]: Max TNT Explosions: 100
-[16:49:11] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
-[16:49:11] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
-[16:49:11] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
-[16:49:11] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
-[16:49:11] [Server thread/INFO]: Mob Spawn Range: 8
-[16:49:11] [Server thread/INFO]: Preparing start region for dimension minecraft:world_trade
-[16:49:11] [Server thread/INFO]: Loaded 0 spawn chunks for world world_trade
-[16:49:11] [Server thread/INFO]: Preparing spawn area: 0%
-[16:49:12] [Server thread/INFO]: Preparing spawn area: 0%
-[16:49:12] [Server thread/INFO]: Preparing spawn area: 0%
-[16:49:12] [Server thread/INFO]: Time elapsed: 1035 ms
-[16:49:12] [Server thread/WARN]: [CurrencySystem] Loaded class kotlin.jvm.functions.Function1 from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/WARN]: [CurrencySystem] Donation map doesn't exists! Put it at D:\IdeaProjects\OpenCraftProject\server\plugins\trade\donation.png
-[16:49:12] [Server thread/WARN]: [CurrencySystem] Loaded class com.zhufu.opencraft.OfflineInfo from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/WARN]: [CurrencySystem] Loaded class com.zhufu.opencraft.events.PlayerTeleportedEvent from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/INFO]: [BlockLocker] Enabling BlockLocker v1.0
-[16:49:12] [Server thread/WARN]: [BlockLocker] Loaded class kotlin.TypeCastException from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/WARN]: [BlockLocker] Loaded class com.zhufu.opencraft.ServerCaller from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/INFO]: [UserManager] Enabling UserManager v1.0
-[16:49:12] [Server thread/WARN]: [UserManager] Loaded class kotlin.TypeCastException from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/WARN]: [UserManager] Loaded class com.zhufu.opencraft.PlayerManager from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/WARN]: [UserManager] Loaded class com.zhufu.opencraft.Info from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/WARN]: [UserManager] Loaded class com.zhufu.opencraft.ServerCaller from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/INFO]: Running delayed init tasks
-[16:49:12] [Server thread/INFO]: Saving everything...
-[16:49:12] [Server thread/INFO]: [Server] 0 were saved.
-[16:49:12] [Server thread/WARN]: [ServerBoss] Loaded class com.zhufu.opencraft.TextUtilKt from CurrencySystem v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/WARN]: [Citizens] Loaded class net.citizensnpcs.api.ai.tree.BehaviorStatus from ServerBoss v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/WARN]: [ServerBoss] Loaded class com.zhufu.opencraft.PlayerManager from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:12] [Server thread/INFO]: [ServerBoss] Boss will spawn at 08/15 18:00:00.
-[16:49:12] [Server thread/INFO]: [UserManager] Creating spwan chunk blocks.
-[16:49:12] [Server thread/INFO]: [UserManager] Chunk created.
-[16:49:12] [Server thread/INFO]: [Citizens] 已载入 3 个NPC.
-[16:49:12] [Server thread/INFO]: Done (21.681s)! For help, type "help"
-[16:49:12] [Server thread/INFO]: Timings Reset
-[16:49:15] [Server thread/INFO]: [ServerCore] Loading NPC file test.yml
-[16:49:15] [Server thread/INFO]: [DualLang] Loading language file for en.yml
-[16:49:15] [Server thread/INFO]: [DualLang] Loading language file for zh.yml
-[16:49:16] [User Authenticator #1/WARN]: [Skinny] Loaded class com.zhufu.opencraft.PlayerManager from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:16] [User Authenticator #1/WARN]: [Skinny] Loaded class com.zhufu.opencraft.OfflineInfo from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:16] [User Authenticator #1/INFO]: UUID of player zhufucdev is 9e602dba-2131-3b74-95fa-699098d5889d
-[16:49:16] [Server thread/WARN]: [CurrencySystem] Loaded class com.zhufu.opencraft.ChatInfo from Translator v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:16] [Server thread/WARN]: [PlayerUtil] Loaded class com.zhufu.opencraft.Language from CurrencySystem v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:16] [Server thread/WARN]: [PlayerUtil] Loaded class kotlin.jvm.internal.Ref$ObjectRef from ServerBoss v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:17] [Server thread/INFO]: Present inventory of zhufucdev is reset
-[16:49:17] [Server thread/INFO]: zhufucdev[/127.0.0.1:57971] logged in with entity id 760 at ([world_trade]7.52220310489406, 62.0, 5.759596061439104)
-[16:49:17] [Server thread/WARN]: [BookNoticer] Loaded class com.zhufu.opencraft.ExtendsKt from CurrencySystem v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:18] [Server thread/WARN]: [PrevHacking] Loaded class kotlin.collections.SetsKt from ServerCore v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:25] [Server thread/INFO]: Computer booted.
-[16:49:25] [Craft Scheduler Thread - 3/INFO]: [UserManager] zhufucdev login with address: 127.0.0.1
-[16:49:25] [Craft Scheduler Thread - 3/WARN]: [CurrencySystem] Loaded class kotlin.jvm.internal.Ref$ObjectRef from ServerBoss v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:25] [Server thread/INFO]: Saving inventory named reset for player zhufucdev
-[16:49:25] [Server thread/INFO]: Present inventory of zhufucdev is survivor
-[16:49:25] [Server thread/WARN]: [SpecialItem] Adapter RealClock doesn't contain any method of deserialization.
-[16:49:25] [Server thread/WARN]: [UserManager] Loaded class com.zhufu.opencraft.PlayerManagerKt from ServerBoss v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:25] [Server thread/WARN]: [ServerBoss] Loaded class com.zhufu.opencraft.ChatInfo from Translator v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:25] [Server thread/WARN]: [ServerBoss] Loaded class com.zhufu.opencraft.Info from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:29] [Server thread/INFO]: zhufucdev issued server command: /trade center
-[16:49:29] [Server thread/INFO]: Saving inventory named survivor for player zhufucdev
-[16:49:29] [Server thread/INFO]: Present inventory of zhufucdev is reset
-[16:49:30] [Server thread/INFO]: Saving inventory named reset for player zhufucdev[InventoryOnly]
-[16:49:30] [Server thread/INFO]: Present inventory of zhufucdev is reset
-[16:49:31] [Server thread/INFO]: Present inventory of zhufucdev is survivor
-[16:49:31] [Server thread/WARN]: [SpecialItem] Adapter RealClock doesn't contain any method of deserialization.
-[16:49:31] [Server thread/WARN]: [OperationFinder] Loaded class kotlin.NoWhenBranchMatchedException from WorldTeleporter v1.0 which is not a depend, softdepend or loadbefore of this plugin.
-[16:49:33] [Server thread/INFO]: Saving inventory named survivor for player zhufucdev[InventoryOnly]
-[16:49:33] [Server thread/INFO]: Present inventory of zhufucdev is reset
-[16:49:34] [Server thread/INFO]: Present inventory of zhufucdev is survivor
-[16:49:34] [Server thread/WARN]: [SpecialItem] Adapter RealClock doesn't contain any method of deserialization.
-[16:49:36] [Server thread/INFO]: Saving inventory named survivor for player zhufucdev[InventoryOnly]
-[16:49:36] [Server thread/INFO]: Present inventory of zhufucdev is reset
-[16:49:38] [Server thread/INFO]: zhufucdev issued server command: /stop
-[16:49:38] [Server thread/INFO]: [zhufucdev: Stopping the server]
-[16:49:38] [Server thread/INFO]: Stopping server
-[16:49:38] [Server thread/INFO]: [UserManager] Disabling UserManager v1.0
-[16:49:38] [Server thread/INFO]: [BlockLocker] Disabling BlockLocker v1.0
-[16:49:38] [Server thread/INFO]: [CurrencySystem] Disabling CurrencySystem v1.0
-[16:49:38] [Server thread/INFO]: [ChunkWall] Disabling ChunkWall v1.0
-[16:49:38] [Server thread/INFO]: [ItemManager] Disabling ItemManager v1.0
-[16:49:38] [Server thread/INFO]: [ServerBoss] Disabling ServerBoss v1.0
-[16:49:38] [Server thread/INFO]: [TenMinSur] Disabling TenMinSur v1.0
-[16:49:38] [Server thread/INFO]: [Skinny] Disabling Skinny v1.1-SNAPSHOT
-[16:49:38] [Server thread/INFO]: [PlayerUtil] Disabling PlayerUtil v1.0
-[16:49:38] [Server thread/INFO]: [CraftWeb] Disabling CraftWeb v1.0
-[16:49:38] [Server thread/INFO]: [CustomTutorial] Disabling CustomTutorial v1.0
-[16:49:38] [Server thread/INFO]: [ServerCore] Disabling ServerCore v1.0
-[16:49:38] [Server thread/INFO]: Saving everything...
-[16:49:38] [Server thread/INFO]: Saving inventory named reset for player zhufucdev[InventoryOnly]
-[16:49:39] [Server thread/INFO]: [Translator] Disabling Translator v1.0
-[16:49:39] [Server thread/INFO]: [ServerScript] Disabling ServerScript v1.0
-[16:49:39] [Server thread/INFO]: [WorldTeleporter] Disabling WorldTeleporter v1.0
-[16:49:39] [Server thread/INFO]: [PrevHacking] Disabling PrevHacking v1.0
-[16:49:39] [Server thread/INFO]: [BookNoticer] Disabling BookNoticer v1.0
-[16:49:39] [Server thread/INFO]: [OperationFinder] Disabling OperationFinder v1.0
-[16:49:39] [Server thread/INFO]: [WorldEdit] Disabling WorldEdit v7.2.0-beta-02+d10d7d6
-[16:49:39] [Server thread/INFO]: Unregistering com.sk89q.worldedit.bukkit.BukkitServerInterface from WorldEdit
-[16:49:39] [Server thread/INFO]: [Citizens] Disabling Citizens v2.0.27-SNAPSHOT (build 2058)
-[16:49:39] [Server thread/INFO]: [WorldGenerator] Disabling WorldGenerator v1.0
-[16:49:39] [Server thread/INFO]: Saving players
-[16:49:39] [Server thread/INFO]: zhufucdev lost connection: Server closed
-[16:49:39] [Server thread/INFO]: zhufucdev left the game
-[16:49:39] [Server thread/INFO]: Saving worlds
-[16:49:39] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
-[16:49:39] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
-[16:49:39] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_nether]'/minecraft:the_nether
-[16:49:39] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
-[16:49:39] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_the_end]'/minecraft:the_end
-[16:49:39] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
-[16:49:39] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_spawn]'/minecraft:world_spawn
-[16:49:39] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_spawn): All chunks are saved
-[16:49:39] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_survive]'/minecraft:world_survive
-[16:49:40] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_survive): All chunks are saved
-[16:49:40] [Server thread/INFO]: Saving chunks for level 'ServerLevel[game_tms_0]'/minecraft:game_tms_0
-[16:49:41] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_tms_0): All chunks are saved
-[16:49:41] [Server thread/INFO]: Saving chunks for level 'ServerLevel[game_cw_origin]'/minecraft:game_cw_origin
-[16:49:41] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_cw_origin): All chunks are saved
-[16:49:41] [Server thread/INFO]: Saving chunks for level 'ServerLevel[game_cw_1]'/minecraft:game_cw_1
-[16:49:41] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_cw_1): All chunks are saved
-[16:49:41] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_trade]'/minecraft:world_trade
-[16:49:42] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_trade): All chunks are saved
-[16:49:42] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
-[16:49:42] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
-[16:49:42] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
-[16:49:42] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_spawn): All chunks are saved
-[16:49:42] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_survive): All chunks are saved
-[16:49:42] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_tms_0): All chunks are saved
-[16:49:42] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_cw_origin): All chunks are saved
-[16:49:42] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_cw_1): All chunks are saved
-[16:49:42] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_trade): All chunks are saved
-[16:49:42] [Server thread/INFO]: Flushing Chunk IO
-[16:49:42] [Server thread/INFO]: Closing Thread Pool
-[16:49:42] [Server thread/INFO]: Closing Server
+[07:53:57] [Server thread/WARN]: [Skinny] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:53:57] [Server thread/INFO]: [WorldGenerator] Loading WorldGenerator v1.0
+[07:53:57] [Server thread/INFO]: [OperationFinder] Loading OperationFinder v1.0
+[07:53:57] [Server thread/INFO]: [BookNoticer] Loading BookNoticer v1.0
+[07:53:57] [Server thread/INFO]: [PrevHacking] Loading PrevHacking v1.0
+[07:53:57] [Server thread/INFO]: [WorldTeleporter] Loading WorldTeleporter v1.0
+[07:53:57] [Server thread/INFO]: [ServerScript] Loading ServerScript v1.0
+[07:53:57] [Server thread/INFO]: [Translator] Loading Translator v1.0
+[07:53:57] [Server thread/INFO]: [ServerCore] Loading ServerCore v1.0
+[07:53:57] [Server thread/INFO]: [CustomTutorial] Loading CustomTutorial v1.0
+[07:53:57] [Server thread/INFO]: [CraftWeb] Loading CraftWeb v1.0
+[07:53:57] [Server thread/INFO]: [PlayerUtil] Loading PlayerUtil v1.0
+[07:53:57] [Server thread/INFO]: [Skinny] Loading Skinny v1.1-SNAPSHOT
+[07:53:57] [Server thread/INFO]: [TenMinSur] Loading TenMinSur v1.0
+[07:53:57] [Server thread/INFO]: [ServerBoss] Loading ServerBoss v1.0
+[07:53:57] [Server thread/INFO]: [ItemManager] Loading ItemManager v1.0
+[07:53:57] [Server thread/INFO]: [ChunkWall] Loading ChunkWall v1.0
+[07:53:57] [Server thread/INFO]: [CurrencySystem] Loading CurrencySystem v1.0
+[07:53:57] [Server thread/INFO]: [BlockLocker] Loading BlockLocker v1.0
+[07:53:57] [Server thread/INFO]: [UserManager] Loading UserManager v1.0
+[07:53:57] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
+[07:53:57] [Server thread/INFO]: [WorldGenerator] Enabling WorldGenerator v1.0
+[07:53:57] [Server thread/INFO]: [Skinny] Enabling Skinny v1.1-SNAPSHOT
+[07:53:57] [Server thread/INFO]: [Skinny] Loaded providers:
+[07:53:57] [Server thread/INFO]: [Skinny] * tw.davy.minecraft.skinny.providers.LegacyProvider
+[07:53:57] [Server thread/INFO]: [Skinny] * tw.davy.minecraft.skinny.providers.MojangProvider
+[07:53:57] [Server thread/WARN]: [Skinny] Loaded class kotlin.Function from ServerCore v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:53:57] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[07:53:57] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
+[07:53:57] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[07:53:57] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
+[07:53:57] [Server thread/INFO]: Preparing level "world"
+[07:53:57] [Server thread/WARN]: [WorldGenerator] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:53:57] [Server thread/WARN]: [WorldGenerator] Loaded class com.zhufu.opencraft.chunkgenerator.VoidGenerator from CurrencySystem v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:53:57] [Server thread/INFO]: -------- World Settings For [world] --------
+[07:53:57] [Server thread/INFO]: Item Merge Radius: 2.5
+[07:53:57] [Server thread/INFO]: Item Despawn Rate: 6000
+[07:53:57] [Server thread/INFO]: Mob Spawn Range: 8
+[07:53:57] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
+[07:53:57] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
+[07:53:57] [Server thread/INFO]: View Distance: 10
+[07:53:57] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
+[07:53:57] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
+[07:53:57] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
+[07:53:57] [Server thread/INFO]: Experience Merge Radius: 3.0
+[07:53:57] [Server thread/INFO]: Cactus Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Cane Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Melon Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Mushroom Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Sapling Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Beetroot Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Carrot Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Potato Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Wheat Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: NetherWart Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Vine Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Cocoa Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Bamboo Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Kelp Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
+[07:53:57] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
+[07:53:57] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
+[07:53:57] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
+[07:53:57] [Server thread/INFO]: Max TNT Explosions: 100
+[07:53:57] [Server thread/INFO]: -------- World Settings For [world_nether] --------
+[07:53:57] [Server thread/INFO]: Item Merge Radius: 2.5
+[07:53:57] [Server thread/INFO]: Item Despawn Rate: 6000
+[07:53:57] [Server thread/INFO]: Mob Spawn Range: 8
+[07:53:57] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
+[07:53:57] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
+[07:53:57] [Server thread/INFO]: View Distance: 10
+[07:53:57] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
+[07:53:57] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
+[07:53:57] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
+[07:53:57] [Server thread/INFO]: Experience Merge Radius: 3.0
+[07:53:57] [Server thread/INFO]: Cactus Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Cane Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Melon Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Mushroom Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Sapling Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Beetroot Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Carrot Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Potato Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Wheat Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: NetherWart Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Vine Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Cocoa Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Bamboo Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Kelp Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
+[07:53:57] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
+[07:53:57] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
+[07:53:57] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
+[07:53:57] [Server thread/INFO]: Max TNT Explosions: 100
+[07:53:57] [Server thread/INFO]: -------- World Settings For [world_the_end] --------
+[07:53:57] [Server thread/INFO]: Item Merge Radius: 2.5
+[07:53:57] [Server thread/INFO]: Item Despawn Rate: 6000
+[07:53:57] [Server thread/INFO]: Mob Spawn Range: 8
+[07:53:57] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
+[07:53:57] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
+[07:53:57] [Server thread/INFO]: View Distance: 10
+[07:53:57] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
+[07:53:57] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
+[07:53:57] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
+[07:53:57] [Server thread/INFO]: Experience Merge Radius: 3.0
+[07:53:57] [Server thread/INFO]: Cactus Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Cane Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Melon Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Mushroom Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Sapling Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Beetroot Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Carrot Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Potato Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Wheat Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: NetherWart Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Vine Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Cocoa Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Bamboo Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Kelp Growth Modifier: 100%
+[07:53:57] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
+[07:53:57] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
+[07:53:57] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
+[07:53:57] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
+[07:53:57] [Server thread/INFO]: Max TNT Explosions: 100
+[07:53:57] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+[07:53:58] [Server thread/INFO]: Loaded 0 spawn chunks for world world
+[07:53:58] [Server thread/INFO]: Preparing spawn area: 0%
+[07:53:58] [Server thread/INFO]: Preparing spawn area: 0%
+[07:53:58] [Server thread/INFO]: Time elapsed: 975 ms
+[07:53:58] [Server thread/INFO]: Preparing start region for dimension minecraft:the_nether
+[07:53:59] [Server thread/INFO]: Loaded 0 spawn chunks for world world_nether
+[07:53:59] [Server thread/INFO]: Preparing spawn area: 0%
+[07:53:59] [Server thread/INFO]: Time elapsed: 228 ms
+[07:53:59] [Server thread/INFO]: Preparing start region for dimension minecraft:the_end
+[07:53:59] [Server thread/INFO]: Loaded 0 spawn chunks for world world_the_end
+[07:53:59] [Server thread/INFO]: Preparing spawn area: 0%
+[07:53:59] [Server thread/INFO]: Preparing spawn area: 0%
+[07:53:59] [Server-Worker-11/WARN]: [CurrencySystem] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server-Worker-14/INFO]: Preparing spawn area: 100%
+[07:54:00] [Server thread/INFO]: Time elapsed: 1288 ms
+[07:54:00] [Server thread/INFO]: [OperationFinder] Enabling OperationFinder v1.0
+[07:54:00] [Server thread/INFO]: [BookNoticer] Enabling BookNoticer v1.0
+[07:54:00] [Server thread/WARN]: [BookNoticer] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/INFO]: [PrevHacking] Enabling PrevHacking v1.0
+[07:54:00] [Server thread/WARN]: [PrevHacking] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/INFO]: [WorldTeleporter] Enabling WorldTeleporter v1.0
+[07:54:00] [Server thread/WARN]: [WorldTeleporter] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/INFO]: [ServerScript] Enabling ServerScript v1.0
+[07:54:00] [Server thread/INFO]: [ServerScript] Loading scripts under plugins directory.
+[07:54:00] [Server thread/WARN]: [ServerScript] Loaded class kotlin.Function from ServerCore v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/WARN]: [ServerScript] Loaded class kotlin.jvm.internal.Lambda from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/WARN]: [ServerScript] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/INFO]: [Translator] Enabling Translator v1.0
+[07:54:00] [Server thread/WARN]: [Translator] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/WARN]: [Translator] Loaded class kotlin.Function from ServerCore v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/WARN]: [Translator] Loaded class kotlin.jvm.internal.Lambda from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/INFO]: [ServerCore] Enabling ServerCore v1.0
+[07:54:00] [ServerScript Initialization/WARN]: [ServerScript] Loaded class com.zhufu.opencraft.Scripting from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [ServerScript Initialization/WARN]: [PlayerUtil] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/WARN]: [ServerCore] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/WARN]: [ServerCore] Loaded class com.zhufu.opencraft.chunkgenerator.VoidGenerator from CurrencySystem v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:00] [Server thread/INFO]: -------- World Settings For [world_spawn] --------
+[07:54:00] [Server thread/INFO]: Item Merge Radius: 2.5
+[07:54:00] [Server thread/INFO]: Item Despawn Rate: 6000
+[07:54:00] [Server thread/INFO]: Mob Spawn Range: 8
+[07:54:00] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
+[07:54:00] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
+[07:54:00] [Server thread/INFO]: View Distance: 10
+[07:54:00] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
+[07:54:00] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
+[07:54:00] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
+[07:54:00] [Server thread/INFO]: Experience Merge Radius: 3.0
+[07:54:00] [Server thread/INFO]: Cactus Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Cane Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Melon Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Mushroom Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Sapling Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Beetroot Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Carrot Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Potato Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Wheat Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: NetherWart Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Vine Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Cocoa Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Bamboo Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Kelp Growth Modifier: 100%
+[07:54:00] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
+[07:54:00] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
+[07:54:00] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
+[07:54:00] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
+[07:54:00] [Server thread/INFO]: Max TNT Explosions: 100
+[07:54:00] [Server thread/INFO]: Preparing start region for dimension minecraft:world_spawn
+[07:54:01] [Server thread/INFO]: Loaded 0 spawn chunks for world world_spawn
+[07:54:01] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:01] [Server thread/INFO]: Time elapsed: 393 ms
+[07:54:01] [Server thread/INFO]: -------- World Settings For [world_survive] --------
+[07:54:01] [Server thread/INFO]: Item Merge Radius: 2.5
+[07:54:01] [Server thread/INFO]: Item Despawn Rate: 6000
+[07:54:01] [Server thread/INFO]: Mob Spawn Range: 8
+[07:54:01] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
+[07:54:01] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
+[07:54:01] [Server thread/INFO]: View Distance: 10
+[07:54:01] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
+[07:54:01] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
+[07:54:01] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
+[07:54:01] [Server thread/INFO]: Experience Merge Radius: 3.0
+[07:54:01] [Server thread/INFO]: Cactus Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Cane Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Melon Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Mushroom Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Sapling Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Beetroot Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Carrot Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Potato Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Wheat Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: NetherWart Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Vine Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Cocoa Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Bamboo Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Kelp Growth Modifier: 100%
+[07:54:01] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
+[07:54:01] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
+[07:54:01] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
+[07:54:01] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
+[07:54:01] [Server thread/INFO]: Max TNT Explosions: 100
+[07:54:01] [Server thread/INFO]: Preparing start region for dimension minecraft:world_survive
+[07:54:01] [Server thread/INFO]: Loaded 0 spawn chunks for world world_survive
+[07:54:01] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:01] [Server thread/INFO]: Time elapsed: 316 ms
+[07:54:01] [Server thread/WARN]: [ServerCore] Loaded class com.zhufu.opencraft.events.PlayerJoinGameEvent from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:02] [ServerScript Initialization/WARN]: [PlayerUtil] Loaded class kotlin.jvm.functions.Function1 from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:02] [Server thread/WARN]: [PlayerUtil] Loaded class com.zhufu.opencraft.events.PlayerTeleportedEvent from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:02] [Server thread/WARN]: [PlayerUtil] Loaded class com.zhufu.opencraft.ChatInfo from Translator v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:02] [Server thread/WARN]: [ServerCore] Loaded class kotlin.jvm.functions.Function0 from ServerScript v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:02] [Server thread/WARN]: [ServerCore] Loaded class kotlin.jvm.internal.FunctionBase from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:02] [Server thread/WARN]: [ServerCore] Loaded class kotlin.jvm.functions.Function2 from Translator v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:03] [Server thread/WARN]: [ServerCore] Loaded class kotlin.Metadata from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:05] [Server thread/WARN]: [BookNoticer] Loaded class kotlin.Unit from ServerCore v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:05] [Server thread/WARN]: [BookNoticer] Loaded class com.zhufu.opencraft.Info from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:05] [Server thread/WARN]: [BookNoticer] Loaded class com.zhufu.opencraft.ChatInfo from Translator v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:05] [Server thread/WARN]: [BookNoticer] Loaded class kotlin.jvm.functions.Function1 from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:05] [Server thread/WARN]: [PlayerUtil] Loaded class kotlin.jvm.functions.Function0 from ServerScript v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:05] [Server thread/WARN]: [ServerCore] Citizens is not enabled.
+[07:54:05] [Server thread/WARN]: [ServerCore] Disabling NPC functionality.
+[07:54:05] [Server thread/INFO]: [CustomTutorial] Enabling CustomTutorial v1.0
+[07:54:05] [Server thread/WARN]: [CustomTutorial] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:05] [Server thread/WARN]: [CustomTutorial] Loaded class com.zhufu.opencraft.events.PlayerTeleportedEvent from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:05] [Server thread/WARN]: [CustomTutorial] Loaded class com.zhufu.opencraft.Info from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:06] [Server thread/WARN]: [CustomTutorial] Loaded class com.zhufu.opencraft.ServerCaller from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:06] [Server thread/INFO]: [CraftWeb] Enabling CraftWeb v1.0
+[07:54:06] [Server thread/WARN]: [CraftWeb] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:06] [Server thread/WARN]: [CraftWeb] Loaded class com.zhufu.opencraft.ServerCaller from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:06] [Server thread/INFO]: [PlayerUtil] Enabling PlayerUtil v1.0
+[07:54:06] [Server thread/INFO]: [TenMinSur] Enabling TenMinSur v1.0
+[07:54:06] [Server thread/WARN]: [TenMinSur] Loaded class com.zhufu.opencraft.GameManager from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:06] [Server thread/WARN]: [PlayerUtil] Loaded class com.zhufu.opencraft.games.TMS from TenMinSur v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:06] [Server thread/WARN]: [TenMinSur] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:06] [Server thread/WARN]: [TenMinSur] Loaded class com.zhufu.opencraft.events.PlayerTeleportedEvent from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:06] [Server thread/INFO]: -------- World Settings For [game_tms_0] --------
+[07:54:06] [Server thread/INFO]: Item Merge Radius: 2.5
+[07:54:06] [Server thread/INFO]: Item Despawn Rate: 6000
+[07:54:06] [Server thread/INFO]: Mob Spawn Range: 8
+[07:54:06] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
+[07:54:06] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
+[07:54:06] [Server thread/INFO]: View Distance: 10
+[07:54:06] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
+[07:54:06] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
+[07:54:06] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
+[07:54:06] [Server thread/INFO]: Experience Merge Radius: 3.0
+[07:54:06] [Server thread/INFO]: Cactus Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Cane Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Melon Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Mushroom Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Sapling Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Beetroot Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Carrot Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Potato Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Wheat Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: NetherWart Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Vine Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Cocoa Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Bamboo Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Kelp Growth Modifier: 100%
+[07:54:06] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
+[07:54:06] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
+[07:54:06] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
+[07:54:06] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
+[07:54:06] [Server thread/INFO]: Max TNT Explosions: 100
+[07:54:06] [Server thread/INFO]: Preparing start region for dimension minecraft:game_tms_0
+[07:54:07] [Server thread/INFO]: Loaded 0 spawn chunks for world game_tms_0
+[07:54:08] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:08] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:08] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:08] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:08] [Server thread/INFO]: Time elapsed: 1638 ms
+[07:54:08] [Server thread/INFO]: [ServerBoss] Enabling ServerBoss v1.0
+[07:54:08] [Server thread/WARN]: [ServerBoss] Loaded class kotlin.jvm.functions.Function0 from ServerScript v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:08] [Server thread/WARN]: [ServerBoss] Loaded class kotlin.jvm.internal.Lambda from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:08] [Server thread/WARN]: [ServerBoss] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:08] [Server thread/WARN]: [ServerBoss] Loaded class net.citizensnpcs.api.event.NPCEvent from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:08] [Server thread/INFO]: [ServerBoss] Fixed spawn count is 5.
+[07:54:08] [Server thread/INFO]: [ServerBoss] Boss will spawn at 08/27 07:30:00.
+[07:54:08] [Server thread/INFO]: [ItemManager] Enabling ItemManager v1.0
+[07:54:08] [Server thread/WARN]: [ItemManager] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:08] [Server thread/INFO]: [ChunkWall] Enabling ChunkWall v1.0
+[07:54:08] [Server thread/WARN]: [ChunkWall] Loaded class com.zhufu.opencraft.GameManager from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:08] [Server thread/WARN]: [ChunkWall] Loaded class com.zhufu.opencraft.GameBase from TenMinSur v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:08] [Server thread/INFO]: -------- World Settings For [game_cw_origin] --------
+[07:54:08] [Server thread/INFO]: Item Merge Radius: 2.5
+[07:54:08] [Server thread/INFO]: Item Despawn Rate: 6000
+[07:54:08] [Server thread/INFO]: Mob Spawn Range: 8
+[07:54:08] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
+[07:54:08] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
+[07:54:08] [Server thread/INFO]: View Distance: 10
+[07:54:08] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
+[07:54:08] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
+[07:54:08] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
+[07:54:08] [Server thread/INFO]: Experience Merge Radius: 3.0
+[07:54:08] [Server thread/INFO]: Cactus Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Cane Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Melon Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Mushroom Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Sapling Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Beetroot Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Carrot Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Potato Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Wheat Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: NetherWart Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Vine Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Cocoa Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Bamboo Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Kelp Growth Modifier: 100%
+[07:54:08] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
+[07:54:08] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
+[07:54:08] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
+[07:54:08] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
+[07:54:08] [Server thread/INFO]: Max TNT Explosions: 100
+[07:54:08] [Server thread/INFO]: Preparing start region for dimension minecraft:game_cw_origin
+[07:54:10] [Server thread/INFO]: Loaded 0 spawn chunks for world game_cw_origin
+[07:54:10] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:10] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:10] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:10] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:10] [Server thread/INFO]: Time elapsed: 1672 ms
+[07:54:10] [Server thread/WARN]: [ChunkWall] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:10] [Server thread/WARN]: [PlayerUtil] Loaded class com.zhufu.opencraft.games.CW from ChunkWall v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:10] [Server thread/WARN]: [ChunkWall] Loaded class com.zhufu.opencraft.chunkgenerator.VoidGenerator from CurrencySystem v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:10] [Server thread/INFO]: -------- World Settings For [game_cw_1] --------
+[07:54:10] [Server thread/INFO]: Item Merge Radius: 2.5
+[07:54:10] [Server thread/INFO]: Item Despawn Rate: 6000
+[07:54:10] [Server thread/INFO]: Mob Spawn Range: 8
+[07:54:10] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
+[07:54:10] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
+[07:54:10] [Server thread/INFO]: View Distance: 10
+[07:54:10] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
+[07:54:10] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
+[07:54:10] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
+[07:54:10] [Server thread/INFO]: Experience Merge Radius: 3.0
+[07:54:10] [Server thread/INFO]: Cactus Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Cane Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Melon Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Mushroom Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Sapling Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Beetroot Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Carrot Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Potato Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Wheat Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: NetherWart Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Vine Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Cocoa Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Bamboo Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Kelp Growth Modifier: 100%
+[07:54:10] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
+[07:54:10] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
+[07:54:10] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
+[07:54:10] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
+[07:54:10] [Server thread/INFO]: Max TNT Explosions: 100
+[07:54:10] [Server thread/INFO]: Preparing start region for dimension minecraft:game_cw_1
+[07:54:11] [Server thread/INFO]: Loaded 0 spawn chunks for world game_cw_1
+[07:54:11] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:11] [Server thread/INFO]: Time elapsed: 404 ms
+[07:54:15] [Server thread/INFO]: Spawning blocks for chunk 0 0
+[07:54:16] [ServerScript Initialization/INFO]: [org.reflections.Reflections] Reflections took 222 ms to scan 1 urls, producing 6 keys and 32 values 
+[07:54:16] [ServerScript Initialization/WARN]: [ServerScript] Loaded class kotlin.Metadata from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:16] [ServerScript Initialization/INFO]: [Server] 0 were loaded.
+[07:54:16] [ServerScript Initialization/INFO]: [ServerScript] Finished in 16423ms.
+[07:54:22] [Server thread/INFO]: Spawning blocks for chunk -1 -1
+[07:54:23] [Server thread/INFO]: Spawning blocks for chunk 0 -1
+[07:54:24] [Server thread/INFO]: Spawning blocks for chunk -1 0
+[07:54:24] [Server thread/INFO]: Using Biome [MOUNTAINS, DARK_FOREST, MODIFIED_GRAVELLY_MOUNTAINS, BIRCH_FOREST]
+[07:54:24] [Server thread/INFO]: [CurrencySystem] Enabling CurrencySystem v1.0
+[07:54:24] [Server thread/INFO]: -------- World Settings For [world_trade] --------
+[07:54:24] [Server thread/INFO]: Item Merge Radius: 2.5
+[07:54:24] [Server thread/INFO]: Item Despawn Rate: 6000
+[07:54:24] [Server thread/INFO]: Mob Spawn Range: 8
+[07:54:24] [Server thread/INFO]: Entity Tracking Range: Pl 48 / An 48 / Mo 48 / Mi 32 / Other 64
+[07:54:24] [Server thread/INFO]: Allow Zombie Pigmen to spawn from portal blocks: true
+[07:54:24] [Server thread/INFO]: View Distance: 10
+[07:54:24] [Server thread/INFO]: Arrow Despawn Rate: 1200 Trident Respawn Rate:1200
+[07:54:24] [Server thread/INFO]: Nerfing mobs spawned from spawners: false
+[07:54:24] [Server thread/INFO]: Zombie Aggressive Towards Villager: true
+[07:54:24] [Server thread/INFO]: Experience Merge Radius: 3.0
+[07:54:24] [Server thread/INFO]: Cactus Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Cane Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Melon Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Mushroom Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Pumpkin Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Sapling Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Beetroot Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Carrot Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Potato Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Wheat Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: NetherWart Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Vine Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Cocoa Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Bamboo Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: SweetBerry Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Kelp Growth Modifier: 100%
+[07:54:24] [Server thread/INFO]: Entity Activation Range: An 32 / Mo 32 / Ra 48 / Mi 16 / Tiv true
+[07:54:24] [Server thread/INFO]: Hopper Transfer: 8 Hopper Check: 1 Hopper Amount: 1
+[07:54:24] [Server thread/INFO]: Custom Map Seeds:  Village: 10387312 Desert: 14357617 Igloo: 14357618 Jungle: 14357619 Swamp: 14357620 Monument: 10387313 Ocean: 14357621 Shipwreck: 165745295 End City: 10387313 Slime: 987234911 Bastion: 30084232 Fortress: 30084232 Mansion: 10387319 Fossil: 14357921 Portal: 34222645
+[07:54:24] [Server thread/INFO]: Tile Max Tick Time: 50ms Entity max Tick Time: 50ms
+[07:54:24] [Server thread/INFO]: Max TNT Explosions: 100
+[07:54:24] [Server thread/INFO]: Preparing start region for dimension minecraft:world_trade
+[07:54:24] [Server thread/INFO]: Loaded 0 spawn chunks for world world_trade
+[07:54:24] [Server thread/INFO]: Preparing spawn area: 0%
+[07:54:25] [Server-Worker-16/INFO]: Preparing spawn area: 100%
+[07:54:25] [Server-Worker-11/INFO]: Preparing spawn area: 100%
+[07:54:26] [Server-Worker-12/INFO]: Preparing spawn area: 100%
+[07:54:26] [Server thread/INFO]: Time elapsed: 1823 ms
+[07:54:26] [Server thread/WARN]: [CurrencySystem] Loaded class kotlin.jvm.functions.Function1 from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:26] [Server thread/WARN]: [CurrencySystem] Loaded class net.citizensnpcs.api.event.NPCRightClickEvent from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:26] [Server thread/WARN]: [CurrencySystem] Donation map doesn't exists! Put it at D:\IdeaProjects\OpenCraftProject\server\plugins\trade\donation.png
+[07:54:26] [Server thread/WARN]: [CurrencySystem] Loaded class com.zhufu.opencraft.events.PlayerTeleportedEvent from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:26] [Server thread/INFO]: [BlockLocker] Enabling BlockLocker v1.0
+[07:54:26] [Server thread/WARN]: [BlockLocker] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:26] [Server thread/WARN]: [BlockLocker] Loaded class com.zhufu.opencraft.ServerCaller from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:26] [Server thread/INFO]: [UserManager] Enabling UserManager v1.0
+[07:54:26] [Server thread/WARN]: [UserManager] Loaded class kotlin.jvm.internal.Intrinsics from OperationFinder v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:26] [Server thread/WARN]: [UserManager] Loaded class com.zhufu.opencraft.PlayerManager from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:26] [Server thread/WARN]: [UserManager] Loaded class com.zhufu.opencraft.Info from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:26] [Server thread/WARN]: [UserManager] Loaded class com.zhufu.opencraft.ServerCaller from Skinny v1.1-SNAPSHOT which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:26] [Server thread/INFO]: Running delayed init tasks
+[07:54:26] [Server thread/INFO]: Saving everything...
+[07:54:26] [Server thread/INFO]: [Server] 0 were saved.
+[07:54:26] [Server thread/INFO]: [UserManager] Creating spwan chunk blocks.
+[07:54:26] [Server thread/INFO]: [UserManager] Chunk created.
+[07:54:26] [Server thread/INFO]: Done (31.319s)! For help, type "help"
+[07:54:27] [Server thread/INFO]: Timings Reset
+[07:54:49] [User Authenticator #1/WARN]: [Skinny] Loaded class com.zhufu.opencraft.PlayerManager from BookNoticer v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:49] [User Authenticator #1/WARN]: [Skinny] Loaded class com.zhufu.opencraft.OfflineInfo from PlayerUtil v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:50] [User Authenticator #1/INFO]: UUID of player zhufucdev is 9e602dba-2131-3b74-95fa-699098d5889d
+[07:54:50] [Server thread/INFO]: [DualLang] Loading language file for en.yml
+[07:54:50] [Server thread/INFO]: [DualLang] Loading language file for zh.yml
+[07:54:50] [Server thread/WARN]: [PlayerUtil] Loaded class com.zhufu.opencraft.TextUtil from CurrencySystem v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:54:50] [Server thread/INFO]: Present inventory of zhufucdev is reset
+[07:54:51] [Server thread/INFO]: zhufucdev[/127.0.0.1:51313] logged in with entity id 1050 at ([world_survive]-149.49071572149253, 82.28330657987128, -171.7536698111262)
+[07:54:51] [Server thread/WARN]: [ServerCore] Task #2671 for ServerCore v1.0 generated an exception
+java.lang.NoClassDefFoundError: com/sk89q/worldedit/regions/CuboidRegion
+	at com.zhufu.opencraft.lobby.PlayerLobby$initialize$1.accept(PlayerLobby.kt:154) ~[?:?]
+	at com.zhufu.opencraft.lobby.PlayerLobby$initialize$1.accept(PlayerLobby.kt:22) ~[?:?]
+	at org.bukkit.craftbukkit.v1_16_R1.scheduler.CraftTask.run(CraftTask.java:101) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.craftbukkit.v1_16_R1.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:468) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.b(MinecraftServer.java:1298) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.DedicatedServer.b(DedicatedServer.java:377) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.a(MinecraftServer.java:1213) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.v(MinecraftServer.java:1001) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.lambda$a$0(MinecraftServer.java:177) ~[patched_1.16.1.jar:git-Paper-135]
+	at java.lang.Thread.run(Thread.java:834) [?:?]
+Caused by: java.lang.ClassNotFoundException: com.sk89q.worldedit.regions.CuboidRegion
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:471) ~[?:?]
+	at org.bukkit.plugin.java.PluginClassLoader.findClass(PluginClassLoader.java:171) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.java.PluginClassLoader.findClass(PluginClassLoader.java:100) ~[patched_1.16.1.jar:git-Paper-135]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:589) ~[?:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:522) ~[?:?]
+	... 10 more
+[07:54:52] [Server thread/WARN]: [PrevHacking] Loaded class kotlin.collections.SetsKt from ServerCore v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:55:10] [Server thread/INFO]: zhufucdev issued server command: /server reload ss
+[07:55:10] [Server thread/INFO]: [ServerScript] Loading scripts under plugins directory.
+[07:55:10] [ServerScript Initialization/INFO]: [Server] 0 were saved.
+[07:55:11] [ServerScript Initialization/INFO]: [Server] 0 were loaded.
+[07:55:11] [ServerScript Initialization/INFO]: [ServerScript] Finished in 1375ms.
+[07:55:26] [Server thread/WARN]: [OperationFinder] Loaded class kotlin.NoWhenBranchMatchedException from WorldTeleporter v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:55:44] [Server thread/INFO]: zhufucdev issued server command: /server reload ss
+[07:55:44] [Server thread/INFO]: [ServerScript] Loading scripts under plugins directory.
+[07:55:44] [ServerScript Initialization/INFO]: [Server] 0 were saved.
+[07:55:46] [ServerScript Initialization/INFO]: [Server] 0 were loaded.
+[07:55:46] [ServerScript Initialization/INFO]: [ServerScript] Finished in 1151ms.
+[07:56:26] [Server thread/INFO]: Saving everything...
+[07:56:26] [Server thread/INFO]: Saving inventory named reset for player zhufucdev
+[07:56:26] [Server thread/INFO]: [Server] 0 were saved.
+[07:56:46] [Server thread/INFO]: zhufucdev issued server command: /server reload ss
+[07:56:46] [Server thread/INFO]: [ServerScript] Loading scripts under plugins directory.
+[07:56:46] [Server thread/WARN]: [ServerCore] Task #129 for ServerCore v1.0 generated an exception
+java.util.ConcurrentModificationException: null
+	at java.util.ArrayList$Itr.checkForComodification(ArrayList.java:1042) ~[?:?]
+	at java.util.ArrayList$Itr.next(ArrayList.java:996) ~[?:?]
+	at com.zhufu.opencraft.special_item.SpecialItem$Companion.isSpecial(SpecialItem.kt:143) ~[?:?]
+	at com.zhufu.opencraft.ExtendsKt.getContainsSpecialItem(Extends.kt:168) ~[?:?]
+	at com.zhufu.opencraft.Core$handleTasks$3$1.invoke(Core.kt:285) ~[?:?]
+	at com.zhufu.opencraft.Core$handleTasks$3$1.invoke(Core.kt:53) ~[?:?]
+	at com.zhufu.opencraft.PlayerManager.forEachPlayer(PlayerManager.kt:120) ~[?:?]
+	at com.zhufu.opencraft.Core$handleTasks$3.run(Core.kt:245) ~[?:?]
+	at org.bukkit.craftbukkit.v1_16_R1.scheduler.CraftTask.run(CraftTask.java:99) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.craftbukkit.v1_16_R1.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:468) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.b(MinecraftServer.java:1298) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.DedicatedServer.b(DedicatedServer.java:377) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.a(MinecraftServer.java:1213) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.v(MinecraftServer.java:1001) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.lambda$a$0(MinecraftServer.java:177) ~[patched_1.16.1.jar:git-Paper-135]
+	at java.lang.Thread.run(Thread.java:834) [?:?]
+[07:56:46] [ServerScript Initialization/INFO]: [Server] 0 were saved.
+[07:56:47] [ServerScript Initialization/INFO]: [Server] 0 were loaded.
+[07:56:47] [ServerScript Initialization/INFO]: [ServerScript] Finished in 990ms.
+[07:57:13] [Server thread/INFO]: zhufucdev issued server command: /server reload ss
+[07:57:13] [Server thread/INFO]: [ServerScript] Loading scripts under plugins directory.
+[07:57:13] [ServerScript Initialization/INFO]: [Server] 0 were saved.
+[07:57:14] [ServerScript Initialization/INFO]: [Server] 0 were loaded.
+[07:57:14] [ServerScript Initialization/INFO]: [ServerScript] Finished in 773ms.
+[07:57:29] [Server thread/INFO]: zhufucdev issued server command: /user l ZhuFu132
+[07:57:29] [Server thread/WARN]: [UserManager] Loaded class com.zhufu.opencraft.ChatInfo from Translator v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:57:29] [Server thread/WARN]: [UserManager] Loaded class kotlin.jvm.functions.Function0 from ServerScript v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[07:57:33] [Server thread/INFO]: zhufucdev issued server command: /user l 233
+[07:57:33] [Server thread/INFO]: Saving inventory named reset for player zhufucdev
+[07:57:33] [Server thread/INFO]: Present inventory of zhufucdev is survivor
+[07:57:33] [Server thread/WARN]: [SpecialItem] Adapter RealClock doesn't contain any method of deserialization.
+[07:58:26] [Server thread/INFO]: Saving everything...
+[07:58:26] [Craft Scheduler Thread - 21/INFO]: Saving inventory named survivor for player zhufucdev
+[07:58:26] [Server thread/INFO]: Saving inventory named survivor for player zhufucdev
+[07:58:26] [Server thread/ERROR]: Could not pass event ServerReloadEvent to ServerCore v1.0
+java.lang.NullPointerException: Nodes must be provided.
+	at org.yaml.snakeyaml.nodes.NodeTuple.<init>(NodeTuple.java:28) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.yaml.snakeyaml.representer.BaseRepresenter.representMapping(BaseRepresenter.java:164) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.yaml.snakeyaml.representer.SafeRepresenter$RepresentMap.representData(SafeRepresenter.java:321) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.configuration.file.YamlRepresenter$RepresentConfigurationSerializable.representData(YamlRepresenter.java:38) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.yaml.snakeyaml.representer.BaseRepresenter.representData(BaseRepresenter.java:95) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.yaml.snakeyaml.representer.BaseRepresenter.representMapping(BaseRepresenter.java:157) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.yaml.snakeyaml.representer.SafeRepresenter$RepresentMap.representData(SafeRepresenter.java:321) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.yaml.snakeyaml.representer.BaseRepresenter.representData(BaseRepresenter.java:95) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.yaml.snakeyaml.representer.BaseRepresenter.represent(BaseRepresenter.java:65) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.yaml.snakeyaml.Yaml.dumpAll(Yaml.java:275) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.yaml.snakeyaml.Yaml.dumpAll(Yaml.java:243) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.yaml.snakeyaml.Yaml.dump(Yaml.java:220) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.configuration.file.YamlConfiguration.saveToString(YamlConfiguration.java:41) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.configuration.file.FileConfiguration.save(FileConfiguration.java:65) ~[patched_1.16.1.jar:git-Paper-135]
+	at com.zhufu.opencraft.ServerPlayer.saveTag(ServerPlayer.kt:127) ~[?:?]
+	at com.zhufu.opencraft.Info.saveServerID(Info.kt:203) ~[?:?]
+	at com.zhufu.opencraft.Core$saveAll$1.invoke(Core.kt:193) ~[?:?]
+	at com.zhufu.opencraft.Core$saveAll$1.invoke(Core.kt:53) ~[?:?]
+	at com.zhufu.opencraft.PlayerManager.forEachPlayer(PlayerManager.kt:120) ~[?:?]
+	at com.zhufu.opencraft.Core.saveAll(Core.kt:193) ~[?:?]
+	at com.zhufu.opencraft.Core.onServeReload(Core.kt:1046) ~[?:?]
+	at com.destroystokyo.paper.event.executor.asm.generated.GeneratedEventExecutor12.execute(Unknown Source) ~[?:?]
+	at org.bukkit.plugin.EventExecutor.lambda$create$1(EventExecutor.java:69) ~[patched_1.16.1.jar:git-Paper-135]
+	at co.aikar.timings.TimedEventExecutor.execute(TimedEventExecutor.java:80) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.RegisteredListener.callEvent(RegisteredListener.java:70) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.SimplePluginManager.callEvent(SimplePluginManager.java:607) ~[patched_1.16.1.jar:git-Paper-135]
+	at com.zhufu.opencraft.Core$handleTasks$2.run(Core.kt:238) ~[?:?]
+	at org.bukkit.craftbukkit.v1_16_R1.scheduler.CraftTask.run(CraftTask.java:99) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.craftbukkit.v1_16_R1.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:468) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.b(MinecraftServer.java:1298) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.DedicatedServer.b(DedicatedServer.java:377) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.a(MinecraftServer.java:1213) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.v(MinecraftServer.java:1001) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.lambda$a$0(MinecraftServer.java:177) ~[patched_1.16.1.jar:git-Paper-135]
+	at java.lang.Thread.run(Thread.java:834) [?:?]
+[07:58:26] [Server thread/INFO]: [Server] 0 were saved.
+[07:59:03] [Server thread/INFO]: [Server] [Location{world=CraftWorld{name=world_survive},x=-150.0,y=73.0,z=-150.0,pitch=0.0,yaw=0.0}] onBroken
+[07:59:08] [Server thread/INFO]: [Server] [Location{world=CraftWorld{name=world_survive},x=-150.0,y=73.0,z=-149.0,pitch=0.0,yaw=0.0}] onBroken
+[07:59:42] [Server thread/INFO]: zhufucdev issued server command: /difficulty
+[08:00:00] [Server thread/INFO]: Stopping the server
+[08:00:00] [Server thread/INFO]: Stopping server
+[08:00:00] [Server thread/INFO]: [UserManager] Disabling UserManager v1.0
+[08:00:00] [Server thread/INFO]: [BlockLocker] Disabling BlockLocker v1.0
+[08:00:00] [Server thread/INFO]: [CurrencySystem] Disabling CurrencySystem v1.0
+[08:00:00] [Server thread/WARN]: [CurrencySystem] Loaded class net.citizensnpcs.api.CitizensAPI from ServerBoss v1.0 which is not a depend, softdepend or loadbefore of this plugin.
+[08:00:00] [Server thread/ERROR]: Error occurred while disabling CurrencySystem v1.0 (Is it up to date?)
+java.lang.IllegalStateException: no implementation set
+	at net.citizensnpcs.api.CitizensAPI.getImplementation(CitizensAPI.java:68) ~[?:?]
+	at net.citizensnpcs.api.CitizensAPI.getNPCRegistry(CitizensAPI.java:100) ~[?:?]
+	at com.zhufu.opencraft.CurrencySystem.onDisable(CurrencySystem.kt:575) ~[?:?]
+	at org.bukkit.plugin.java.JavaPlugin.setEnabled(JavaPlugin.java:265) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.java.JavaPluginLoader.disablePlugin(JavaPluginLoader.java:415) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.SimplePluginManager.disablePlugin(SimplePluginManager.java:516) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.SimplePluginManager.disablePlugins(SimplePluginManager.java:502) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.SimplePluginManager.disablePlugins(SimplePluginManager.java:495) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.craftbukkit.v1_16_R1.CraftServer.disablePlugins(CraftServer.java:434) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.stop(MinecraftServer.java:775) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.DedicatedServer.stop(DedicatedServer.java:699) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.v(MinecraftServer.java:1048) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.lambda$a$0(MinecraftServer.java:177) ~[patched_1.16.1.jar:git-Paper-135]
+	at java.lang.Thread.run(Thread.java:834) [?:?]
+[08:00:00] [Server thread/INFO]: [ChunkWall] Disabling ChunkWall v1.0
+[08:00:00] [Server thread/INFO]: [ItemManager] Disabling ItemManager v1.0
+[08:00:00] [Server thread/INFO]: [ServerBoss] Disabling ServerBoss v1.0
+[08:00:00] [Server thread/ERROR]: Error occurred while disabling ServerBoss v1.0 (Is it up to date?)
+java.lang.IllegalStateException: no implementation set
+	at net.citizensnpcs.api.CitizensAPI.getImplementation(CitizensAPI.java:68) ~[?:?]
+	at net.citizensnpcs.api.CitizensAPI.getNPCRegistry(CitizensAPI.java:100) ~[?:?]
+	at com.zhufu.opencraft.NPCController.close(NPCController.kt:58) ~[?:?]
+	at com.zhufu.opencraft.ServerBoss.onDisable(ServerBoss.kt:50) ~[?:?]
+	at org.bukkit.plugin.java.JavaPlugin.setEnabled(JavaPlugin.java:265) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.java.JavaPluginLoader.disablePlugin(JavaPluginLoader.java:415) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.SimplePluginManager.disablePlugin(SimplePluginManager.java:516) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.SimplePluginManager.disablePlugins(SimplePluginManager.java:502) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.plugin.SimplePluginManager.disablePlugins(SimplePluginManager.java:495) ~[patched_1.16.1.jar:git-Paper-135]
+	at org.bukkit.craftbukkit.v1_16_R1.CraftServer.disablePlugins(CraftServer.java:434) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.stop(MinecraftServer.java:775) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.DedicatedServer.stop(DedicatedServer.java:699) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.v(MinecraftServer.java:1048) ~[patched_1.16.1.jar:git-Paper-135]
+	at net.minecraft.server.v1_16_R1.MinecraftServer.lambda$a$0(MinecraftServer.java:177) ~[patched_1.16.1.jar:git-Paper-135]
+	at java.lang.Thread.run(Thread.java:834) [?:?]
+[08:00:00] [Server thread/INFO]: [TenMinSur] Disabling TenMinSur v1.0
+[08:00:00] [Server thread/INFO]: [Skinny] Disabling Skinny v1.1-SNAPSHOT
+[08:00:00] [Server thread/INFO]: [PlayerUtil] Disabling PlayerUtil v1.0
+[08:00:00] [Server thread/INFO]: [CraftWeb] Disabling CraftWeb v1.0
+[08:00:00] [Server thread/INFO]: [CustomTutorial] Disabling CustomTutorial v1.0
+[08:00:00] [Server thread/INFO]: [ServerCore] Disabling ServerCore v1.0
+[08:00:00] [Server thread/INFO]: Saving everything...
+[08:00:00] [Server thread/INFO]: Saving inventory named survivor for player zhufucdev
+[08:00:00] [Server thread/INFO]: [Translator] Disabling Translator v1.0
+[08:00:00] [Server thread/INFO]: [ServerScript] Disabling ServerScript v1.0
+[08:00:00] [Server thread/INFO]: [WorldTeleporter] Disabling WorldTeleporter v1.0
+[08:00:00] [Server thread/INFO]: [PrevHacking] Disabling PrevHacking v1.0
+[08:00:00] [Server thread/INFO]: [BookNoticer] Disabling BookNoticer v1.0
+[08:00:00] [Server thread/INFO]: [OperationFinder] Disabling OperationFinder v1.0
+[08:00:00] [Server thread/INFO]: [WorldGenerator] Disabling WorldGenerator v1.0
+[08:00:05] [Server thread/ERROR]: Nag author: 'zhufucomcom' of 'ServerCore' about the following: This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies.
+[08:00:05] [Server thread/INFO]: Saving players
+[08:00:05] [Server thread/INFO]: zhufucdev lost connection: Server closed
+[08:00:05] [Server thread/INFO]: zhufucdev left the game
+[08:00:05] [Server thread/INFO]: Saving worlds
+[08:00:05] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[08:00:05] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[08:00:05] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_nether]'/minecraft:the_nether
+[08:00:05] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[08:00:05] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_the_end]'/minecraft:the_end
+[08:00:05] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[08:00:05] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_spawn]'/minecraft:world_spawn
+[08:00:05] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_spawn): All chunks are saved
+[08:00:05] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_survive]'/minecraft:world_survive
+[08:00:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_survive): All chunks are saved
+[08:00:06] [Server thread/INFO]: Saving chunks for level 'ServerLevel[game_tms_0]'/minecraft:game_tms_0
+[08:00:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_tms_0): All chunks are saved
+[08:00:06] [Server thread/INFO]: Saving chunks for level 'ServerLevel[game_cw_origin]'/minecraft:game_cw_origin
+[08:00:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_cw_origin): All chunks are saved
+[08:00:06] [Server thread/INFO]: Saving chunks for level 'ServerLevel[game_cw_1]'/minecraft:game_cw_1
+[08:00:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_cw_1): All chunks are saved
+[08:00:06] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_trade]'/minecraft:world_trade
+[08:00:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_trade): All chunks are saved
+[08:00:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[08:00:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[08:00:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[08:00:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_spawn): All chunks are saved
+[08:00:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_survive): All chunks are saved
+[08:00:07] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_tms_0): All chunks are saved
+[08:00:07] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_cw_origin): All chunks are saved
+[08:00:07] [Server thread/INFO]: ThreadedAnvilChunkStorage (game_cw_1): All chunks are saved
+[08:00:07] [Server thread/INFO]: ThreadedAnvilChunkStorage (world_trade): All chunks are saved
+[08:00:07] [Server thread/INFO]: Flushing Chunk IO
+[08:00:07] [Server thread/INFO]: Closing Thread Pool
+[08:00:07] [Server thread/INFO]: Closing Server

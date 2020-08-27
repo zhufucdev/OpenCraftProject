@@ -15,9 +15,7 @@ import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.HumanEntity
-import org.bukkit.entity.Player
-import org.bukkit.entity.Projectile
+import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -25,6 +23,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.*
@@ -68,7 +67,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             if (info.isSurvivor) {
                 if (info.status == Surviving) {
                     isInvulnerable = false
-                    return false
+                    return true
                 }
                 val inventory = info.inventory.create("survivor")
 
@@ -607,6 +606,13 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     handlePlayer(shooter)
                 }
             }
+        }
+    }
+
+    @EventHandler
+    fun onCreeperExplode(event: EntityExplodeEvent) {
+        if (event.entity is Creeper || event.entity is Wither) {
+            event.blockList().clear()
         }
     }
 }

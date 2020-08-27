@@ -1,7 +1,13 @@
 import bukkit.Server
+import com.zhufu.opencraft.Base
+import com.zhufu.opencraft.PlayerManager
+import com.zhufu.opencraft.Scripting
 import com.zhufu.opencraft.TextUtil
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Difficulty
+import org.bukkit.GameRule
+import org.bukkit.World
 import org.bukkit.event.server.ServerListPingEvent
 
 import java.text.SimpleDateFormat

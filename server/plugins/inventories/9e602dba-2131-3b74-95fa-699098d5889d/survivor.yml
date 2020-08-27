@@ -7,29 +7,19 @@ exp: 0
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: -641.0618157580461
-  y: 63.0
-  z: 4138.450545894177
-  pitch: 34.100033
-  yaw: -336.7226
+  x: -144.74101159334813
+  y: 71.0
+  z: -134.2074130792427
+  pitch: 16.950197
+  yaw: -167.54993
 potion: {}
 inventory:
+  '0':
+    ==: org.bukkit.inventory.ItemStack
+    v: 2567
+    type: CREEPER_SPAWN_EGG
+    amount: 64
   '1':
     ==: org.bukkit.inventory.ItemStack
     v: 2567
-    type: RED_TULIP
-  '2':
-    isSpecialItem: true
-    type: RealClock
-  '3':
-    ==: org.bukkit.inventory.ItemStack
-    v: 2567
-    type: DIAMOND_PICKAXE
-    meta:
-      ==: ItemMeta
-      meta-type: UNSPECIFIC
-      Damage: 3
-  '4':
-    ==: org.bukkit.inventory.ItemStack
-    v: 2567
-    type: GOLD_BLOCK
+    type: FLINT_AND_STEEL

@@ -14651,3 +14651,13 @@
 {"time":1597481272564,"player":"zhufucdev","type":"MOVE","data":{"x":7.52220310489406,"y":62.0,"z":5.759596061439104,"world":"world_trade"}}
 {"time":1597481371805,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
 {"time":1597481374491,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
+{"time":1598364778523,"player":"zhufucdev","type":"MOVE","data":{"x":30.100337792144998,"y":73.0,"z":1.4638097802949865,"world":"world_nether"}}
+{"time":1598485736330,"player":"zhufucdev","type":"MOVE","data":{"x":-169.8375404154128,"y":66.0,"z":-120.31979838539115,"world":"world_survive"}}
+{"time":1598485882517,"player":"zhufucdev","type":"MOVE","data":{"x":-147.3910454756121,"y":82.28330657987128,"z":-168.02045156493583,"world":"world_survive"}}
+{"time":1598486126865,"player":"zhufucdev","type":"MOVE","data":{"x":-151.17699476609448,"y":70.0,"z":-137.21752496918896,"world":"world_survive"}}
+{"time":1598486186861,"player":"zhufucdev","type":"MOVE","data":{"x":-149.30949948741403,"y":71.41294637566496,"z":-139.08148550921825,"world":"world_survive"}}
+{"time":1598486246862,"player":"zhufucdev","type":"MOVE","data":{"x":-151.29074561532292,"y":70.0,"z":-139.5827159933203,"world":"world_survive"}}
+{"time":1598486306862,"player":"zhufucdev","type":"MOVE","data":{"x":-148.32856825599876,"y":76.07353793084232,"z":-148.29515818781553,"world":"world_survive"}}
+{"time":1598486343660,"player":"zhufucdev","type":"BLOCK","data":{"type":"BREAK","block":{"type":"GOLD_BLOCK","location":{"x":-150,"y":73,"z":-150,"world":"world_survive"}}}}
+{"time":1598486348553,"player":"zhufucdev","type":"BLOCK","data":{"type":"BREAK","block":{"type":"GOLD_BLOCK","location":{"x":-150,"y":73,"z":-149,"world":"world_survive"}}}}
+{"time":1598486366862,"player":"zhufucdev","type":"MOVE","data":{"x":-148.96416910945305,"y":70.0,"z":-139.8184393268996,"world":"world_survive"}}
