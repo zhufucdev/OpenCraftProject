@@ -147,7 +147,6 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
         player.walkSpeed = 0.2f
         player.flySpeed = 0.1f
         player.gameMode = GameMode.SURVIVAL
-        player.teleport(Base.spawnWorld.spawnLocation)
         player.isInvulnerable = false
 
         plugin.server.onlinePlayers.forEach { it.showPlayer(plugin, player) }
@@ -161,6 +160,9 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
         player.info(getter()["user.login.success"])
     }
 
+    /**
+     * Logout before starting survival
+     */
     fun logout(borderLocation: Location) {
         player.addPotionEffect(
             PotionEffect(
@@ -184,8 +186,12 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
         isLogin = false
     }
 
+    /**
+     * Logout before getting into lobby
+     */
     fun logout() {
         inventory.create(DualInventory.RESET).load()
+
         status = GameStatus.InLobby
         isLogin = false
     }

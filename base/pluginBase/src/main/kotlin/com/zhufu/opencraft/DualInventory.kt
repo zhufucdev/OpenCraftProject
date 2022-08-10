@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import java.io.File
 
 class DualInventory(val player: Player? = null, private val parent: ServerPlayer) {
@@ -210,6 +211,9 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
                         )
                     ) ?: Bukkit.getLogger().warning("SolvePlayerLobby of ServerCaller is missing out.")
                     player.gameMode = GameMode.CREATIVE
+                    player.removePotionEffect(PotionEffectType.BLINDNESS)
+                    player.walkSpeed = 0.2f
+                    player.flySpeed = 0.1f
                 } else {
                     player.inventory.clear()
                     return

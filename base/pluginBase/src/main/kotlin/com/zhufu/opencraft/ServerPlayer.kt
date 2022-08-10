@@ -124,7 +124,7 @@ abstract class ServerPlayer(
         checkpoints.forEach {
             tag.set("checkpoints.${it.name}", it.location)
         }
-        val backup: ByteArray = tagFile.readBytes()
+        val backup: ByteArray = if (tagFile.exists()) tagFile.readBytes() else byteArrayOf()
         try {
             tag.save(tagFile)
         } catch (e: Exception) {
