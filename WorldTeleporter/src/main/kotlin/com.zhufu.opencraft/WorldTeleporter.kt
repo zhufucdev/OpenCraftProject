@@ -59,12 +59,14 @@ class WorldTeleporter : JavaPlugin() {
                                     false,
                                     false
                                 )
+
                                 WorldPermissions.PRIVATE -> TextUtil.getColoredText(
                                     "*${it.world.name}",
                                     TextUtil.TextColor.WHITE,
                                     true,
                                     false
                                 )
+
                                 WorldPermissions.PROTECTED -> TextUtil.getColoredText(
                                     "!${it.world.name}",
                                     TextUtil.TextColor.GREY,
@@ -74,7 +76,7 @@ class WorldTeleporter : JavaPlugin() {
                             }
                         )
                 }
-                sender.sendMessage(sb.toTypedArray())
+                sender.sendMessage(*sb.toTypedArray())
             } else if (args[0] == "des" || args[0] == "set") {
                 if (sender is Player && !(sender.isOp)) {
                     sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
@@ -117,7 +119,9 @@ class WorldTeleporter : JavaPlugin() {
                     return true
                 }
                 val type =
-                    if (WorldType.values().any { it.name == args[1].toUpperCase() }) WorldType.valueOf(args[1].toUpperCase()) else null
+                    if (WorldType.values()
+                            .any { it.name == args[1].toUpperCase() }
+                    ) WorldType.valueOf(args[1].toUpperCase()) else null
                 val name = args[2]
                 if (type == null) {
                     sender.error("Not such type ${args[1]}")
@@ -217,15 +221,12 @@ class WorldTeleporter : JavaPlugin() {
                                 return if (!isCompleted) results.toMutableList()
                                 else showPermissions("")
                             }
+
                             args.size == 3 -> return showPermissions(args[2])
-                            else -> sender.sendMessage(
-                                arrayOf(
-                                    TextUtil.error("用法错误"),
-                                    server.getPluginCommand("wt set")!!.usage
-                                )
-                            )
+                            else -> sender.error("用法错误")
                         }
                     }
+
                     "des" -> {
                         if (!hasPermission(sender)) {
                             sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
@@ -237,6 +238,7 @@ class WorldTeleporter : JavaPlugin() {
                             sender.sendMessage(server.getPluginCommand("wt des")!!.usage)
                         }
                     }
+
                     "new" -> {
                         if (!hasPermission(sender)) {
                             return mutableListOf()
@@ -253,6 +255,7 @@ class WorldTeleporter : JavaPlugin() {
                             }
                         }
                     }
+
                     "unload" -> {
                         if (!hasPermission(sender)) {
                             return mutableListOf()
@@ -265,6 +268,7 @@ class WorldTeleporter : JavaPlugin() {
                             }
                         }
                     }
+
                     else -> {
                         val r = ArrayList<String>()
                         val t = ArrayList<String>()

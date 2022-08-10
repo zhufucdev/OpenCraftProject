@@ -27,10 +27,10 @@ class FriendShareInventory(info: Info, friend: FriendWrap, plugin: Plugin, overr
             return if (index < info.checkpoints.size) {
                 val point = info.checkpoints[index]
                 ItemStack(Material.ENDER_PEARL).updateItemMeta<ItemMeta> {
-                    setDisplayName(point.name.toInfoMessage())
+                    displayName(point.name.toInfoMessage())
                     val contains = friend.sharedCheckpoints.contains(point)
-                    lore = listOf(getter["ui.friend.point.title"], getter["ui.friend.share." +
-                            if (!contains) "start" else "stop"].toTipMessage())
+                    lore(listOf(getter["ui.friend.point.title"].toComponent(), getter["ui.friend.share." +
+                            if (!contains) "start" else "stop"].toTipMessage()))
                     if (contains) {
                         addEnchant(Enchantment.ARROW_INFINITE, 1, true)
                         addItemFlags(ItemFlag.HIDE_ENCHANTS)
@@ -38,9 +38,9 @@ class FriendShareInventory(info: Info, friend: FriendWrap, plugin: Plugin, overr
                 }
             } else {
                 info.skullItem.updateItemMeta<ItemMeta> {
-                    setDisplayName(info.name)
-                    lore = listOf(getter["ui.friend.location.title"], getter["ui.friend.share." +
-                            if (!friend.shareLocation) "start" else "stop"].toTipMessage())
+                    displayName(info.name?.toComponent())
+                    lore(listOf(getter["ui.friend.location.title"].toComponent(), getter["ui.friend.share." +
+                            if (!friend.shareLocation) "start" else "stop"].toTipMessage()))
                     if (friend.shareLocation) {
                         addEnchant(Enchantment.ARROW_INFINITE, 1, true)
                         addItemFlags(ItemFlag.HIDE_ENCHANTS)
@@ -52,7 +52,7 @@ class FriendShareInventory(info: Info, friend: FriendWrap, plugin: Plugin, overr
         override fun getToolbarItem(index: Int): ItemStack {
             return if (index == 6) {
                 Widgets.back.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.back"].toInfoMessage())
+                    displayName(getter["ui.back"].toInfoMessage())
                 }
             } else {
                 super.getToolbarItem(index)

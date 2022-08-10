@@ -6,6 +6,6 @@ repositories {
 }
 
 dependencies {
-    compile project(':pluginBase')
-    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.1.1-SNAPSHOT'
+    implementation project(':pluginBase')
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.12-SNAPSHOT'
 }

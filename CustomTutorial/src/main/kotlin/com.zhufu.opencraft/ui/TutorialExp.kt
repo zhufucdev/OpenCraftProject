@@ -9,7 +9,7 @@ import java.util.*
 
 class TutorialExp(val player: Player)
     : PageInventory<TutorialExp.Adapter>(
-        TextUtil.info("教程浏览器[uuid:${++id}]"),
+        "教程浏览器[uuid:${++id}]".toInfoMessage(),
         Adapter(player),
         4*9,
         TutorialManager.mPlugin!!) {
@@ -32,7 +32,7 @@ class TutorialExp(val player: Player)
                                     if (t.isDraft)"草稿" else "成品"
                             ),
                             TextUtil.info("共有${t.size}个步骤"),
-                            Bukkit.getOfflinePlayer(UUID.fromString(t.creator))?.name + "原著",
+                            Bukkit.getOfflinePlayer(UUID.fromString(t.creator)).name + "原著",
                             TextUtil.tip(
                                     if (t.creator == player.uniqueId.toString()) "点击修改" else "点击播放"
                             )
@@ -50,8 +50,8 @@ class TutorialExp(val player: Player)
     }
 
     init {
-        setOnItemClickListener { index, item ->
-            val e = (this.adapter as Adapter).tutorialList
+        setOnItemClickListener { index, _ ->
+            val e = this.adapter.tutorialList
             if (index == e.size){
                 val r = TutorialManager.Tutorial(player.uniqueId.toString(),"未命名")
                 TutorialManager.addAsDraft(r)

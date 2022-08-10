@@ -15,14 +15,14 @@ import org.bukkit.util.Vector
 import java.util.*
 import kotlin.concurrent.timer
 
-class TMS : GameBase() {
+class TMS : MiniGame() {
     private var winner: Team = Team.NONE
-    var world: World? = null
+    lateinit var world: World
 
     override fun initGame(id: Int, player: Player?, plugin: JavaPlugin) {
         super.initGame(id, player, plugin)
         player?.sendMessage(TextUtil.info("正在创建新的房间，请稍后"))
-        world = Bukkit.createWorld(WorldCreator("game_tms_$id"))
+        world = Bukkit.createWorld(WorldCreator("game_tms_$id"))!!
     }
 
     override fun getGameRulers(): Array<GameRuler> = arrayOf(gameRuler, pvpRuler, resultRuler)
@@ -39,22 +39,22 @@ class TMS : GameBase() {
 
         override fun getTimeLimit(): Long = 10 * 60 * 1000L
 
-        override fun getWorld(): World = world!!
+        override fun getWorld(): World = world
 
         override fun getPlayerLocation(info: Gaming.PlayerGamingInfo): Location = locations[info.team.ordinal]
 
         override fun getGameMode(): GameMode = GameMode.SURVIVAL
 
         override fun onEnable() {
-            world!!.time = Random().nextInt(10000).toLong()
-            world!!.setGameRuleValue("doDaylightCycle", "true")
+            world.time = Random().nextInt(10000).toLong()
+            world.setGameRuleValue("doDaylightCycle", "true")
 
             locations = Array(getTeams().size) {
-                var r = Base.getRandomLocation(world!!, 1000, y = 128)
-                var b = world!!.getBiome(r.blockX, r.blockZ)
-                while (b == Biome.DESERT || b == Biome.DESERT_HILLS || b == Biome.DEEP_OCEAN || b == Biome.MUSHROOM_FIELDS) {
-                    r = Base.getRandomLocation(world!!, 1000, y = 128)
-                    b = world!!.getBiome(r.blockX, r.blockZ)
+                var r = Base.getRandomLocation(world, 1000, y = 128)
+                var b = world.getBiome(r.blockX, world.getHighestBlockYAt(r), r.blockZ)
+                while (b == Biome.DESERT || b == Biome.OCEAN || b == Biome.DEEP_OCEAN || b == Biome.MUSHROOM_FIELDS) {
+                    r = Base.getRandomLocation(world, 1000, y = 128)
+                    b = world.getBiome(r.blockX, world.getHighestBlockYAt(r), r.blockZ)
                 }
                 r
             }
@@ -99,7 +99,7 @@ class TMS : GameBase() {
             player.gameMode = GameMode.SPECTATOR
             player.sendTitle(TextUtil.error("您输了"), TextUtil.info("现在处于旁观者"), 7, 30, 7)
             players?.findInfoByPlayer(event.player)?.gameOver = true
-            event.respawnLocation = world!!.spawnLocation
+            event.respawnLocation = world.spawnLocation
 
             //When all the team members are dead
             if (livingTeamCount == 0) {
@@ -166,7 +166,7 @@ class TMS : GameBase() {
             detectTeams()
             players!!.forEach {
                 val player = it.player
-                player.teleport(world!!.spawnLocation)
+                player.teleport(world.spawnLocation)
                 player.sendTitle(TextUtil.error("PVP时间到！"), "", 7, 90, 7)
                 if (player.isInvulnerable) {
                     player.isInvulnerable = false
@@ -193,12 +193,12 @@ class TMS : GameBase() {
             if (!validatePlayer(player))
                 return
 
-            event.respawnLocation = world!!.spawnLocation
+            event.respawnLocation = world.spawnLocation
             player.gameMode = GameMode.SPECTATOR
             player.sendTitle(TextUtil.error("您输了"), TextUtil.info("现在处于傍观者"), 7, 80, 7)
             players?.findInfoByPlayer(event.player)?.gameOver = true
             Bukkit.getScheduler().runTask(plugin) { t ->
-                player.teleport(world!!.spawnLocation)
+                player.teleport(world.spawnLocation)
             }
             detectTeams()
         }
@@ -228,9 +228,9 @@ class TMS : GameBase() {
 
         override fun getTimeLimit(): Long = 5 * 60 * 1000L
 
-        override fun getWorld(): World = world!!
+        override fun getWorld(): World = world
 
-        override fun getPlayerLocation(info: GameBase.Gaming.PlayerGamingInfo): Location = world!!.spawnLocation
+        override fun getPlayerLocation(info: MiniGame.Gaming.PlayerGamingInfo): Location = world.spawnLocation
 
         override fun getGameMode(): GameMode = GameMode.SURVIVAL
     }
@@ -251,12 +251,12 @@ class TMS : GameBase() {
             super.onEnable()
         }
 
-        override fun getPlayerLocation(info: Gaming.PlayerGamingInfo): Location = world!!.spawnLocation
+        override fun getPlayerLocation(info: Gaming.PlayerGamingInfo): Location = world.spawnLocation
 
-        override fun getWorld(): World = this@TMS.world!!
+        override fun getWorld(): World = this@TMS.world
     }
 
-    override fun getWaitingRoom(player: Player): Location = world!!.spawnLocation
+    override fun getWaitingRoom(player: Player): Location = world.spawnLocation
 
     override fun getTeams(): Array<Team> = arrayOf(Team.BLUE, Team.RED, Team.GREEN, Team.YELLOW)
 

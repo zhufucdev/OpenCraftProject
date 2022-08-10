@@ -4,13 +4,14 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.*
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 open class MessagePool private constructor() {
     enum class Type {
@@ -36,7 +37,7 @@ open class MessagePool private constructor() {
         }
 
         override fun sendTo(player: ChatInfo, msg: Message) {
-            player.playerOutputStream.sendRaw(getJson(msg, player))
+            player.playerOutputStream.send(msg.toComponent(player))
             if (msg.type == Type.OneTime) {
                 msg.apply {
                     if (extra == null) extra = YamlConfiguration()
@@ -103,6 +104,31 @@ open class MessagePool private constructor() {
                 extra!!.set("sender", value)
             }
 
+        fun toComponent(player: ChatInfo): Component {
+            return MiniMessage.miniMessage().deserialize(buildString {
+                // time & date prefix
+                if (time >= 0) {
+                    val simple = SimpleDateFormat("MM/dd HH:mm").format(Date(time))
+                    val detailed = SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Date(time))
+                    append("<hover:show_text:$detailed>($simple)</hover> ")
+                }
+                if (sender != null) {
+                    append("$sender ")
+                }
+                // main content
+                append(TextUtil.getCustomizedText(text, player) + ' ')
+                // [Read] label
+                val tip = TextUtil.tip(Language[player.targetLang, "msg.clickToRead"])
+                val command = "/pu server:markMessageRead ${id}${if (type == Type.Public) " public" else ""}"
+                val readLabel = TextUtil.getColoredText(
+                    "[${Language.byChat(player, "msg.read")}]",
+                    TextUtil.TextColor.GREEN,
+                    true
+                )
+                append("<hover:show_text:$tip><click:run_command:$command>$readLabel</click></hover>")
+            })
+        }
+
         override fun equals(other: Any?): Boolean =
             other is Message
                     && other.text == text
@@ -120,7 +146,7 @@ open class MessagePool private constructor() {
 
     val messages = ArrayList<Message>()
     fun add(text: String, type: Type, extra: ConfigurationSection? = null): Message {
-        val max = messages.maxBy { it.id }?.id ?: -1
+        val max = messages.maxBy { it.id }.id
         val msg = Message(text, false, max + 1, type, extra, this)
         messages.add(msg)
         return msg
@@ -135,7 +161,7 @@ open class MessagePool private constructor() {
     operator fun get(id: Int) = messages.firstOrNull { it.id == id }
 
     open fun sendTo(player: ChatInfo, msg: Message) {
-        player.playerOutputStream.sendRaw(getJson(msg, player))
+        player.playerOutputStream.send(msg.toComponent(player))
         if (msg.type == Type.OneTime) {
             messages.remove(msg)
         }
@@ -193,6 +219,7 @@ open class MessagePool private constructor() {
     val isEmpty get() = messages.isEmpty()
 
     companion object {
+        @Deprecated("Not safe", ReplaceWith("MessagePool.toComponent"))
         fun getJson(msg: Message, player: ChatInfo): JsonElement {
             val sr = StringWriter()
             val writer = JsonWriter(sr)
@@ -234,7 +261,7 @@ open class MessagePool private constructor() {
                 .endObject()
                 .endObject()
                 .endArray()
-            return JsonParser().parse(sr.toString())
+            return JsonParser.parseString(sr.toString())
         }
 
         private val cache = HashMap<ServerPlayer, MessagePool>()

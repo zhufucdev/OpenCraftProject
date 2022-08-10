@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.games.TMS
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -7,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class TenMinSur : JavaPlugin() {
     override fun onEnable() {
+        GameManager.registerGameType(TMS::class)
         GameManager.addNew("TMS")
     }
 

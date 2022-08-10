@@ -4,10 +4,8 @@ import com.zhufu.opencraft.ClickableInventory
 import com.zhufu.opencraft.TextUtil
 import com.zhufu.opencraft.Widgets
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
-import org.bukkit.material.MaterialData
 import org.bukkit.plugin.Plugin
 
 class TriggerUI(plugin: Plugin) : ClickableInventory(plugin) {

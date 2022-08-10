@@ -1,15 +1,16 @@
 package com.zhufu.opencraft
 
 import org.bukkit.*
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftFirework
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Firework
 import org.bukkit.entity.Player
+import org.bukkit.inventory.meta.FireworkMeta
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
 import java.util.ArrayList
 
 abstract class ResultRuler : GameRuler() {
-    abstract val winner: GameBase.Team
+    abstract val winner: MiniGame.Team
 
     override fun getAllowPVP(): Boolean = false
 
@@ -19,7 +20,7 @@ abstract class ResultRuler : GameRuler() {
     abstract val isGameStarted: Boolean
     val winners = ArrayList<Player>()
     override fun onEnable() {
-        if (winner != GameBase.Team.NONE){
+        if (winner != MiniGame.Team.NONE){
             players!!.forEach {
                 it.player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
                 it.player.sendTitle(TextUtil.getColoredText("${winner.name}获得了胜利",winner.getTextColor(),true,false),"",7,80,7)
@@ -35,10 +36,7 @@ abstract class ResultRuler : GameRuler() {
                         .with(FireworkEffect.Type.BALL)
                         .build()
                 Bukkit.getScheduler().runTask(plugin) { _ ->
-                    val firework = getWorld().spawnEntity(
-                            location,
-                            EntityType.FIREWORK
-                    ) as CraftFirework
+                    val firework = getWorld().spawnEntity(location, EntityType.FIREWORK) as Firework
 
                     val data = firework.fireworkMeta
                     data.power = 2

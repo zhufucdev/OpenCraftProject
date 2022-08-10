@@ -12,6 +12,8 @@ import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.plugin.Plugin
+import java.util.*
+import kotlin.collections.ArrayList
 
 object BuilderListener : Listener {
     private var mPlugin: Plugin? = null
@@ -111,9 +113,9 @@ object BuilderListener : Listener {
         }
     }
 
-    fun isBlockLimit(type: Material) =
+    private fun isBlockLimit(type: Material) =
         mPlugin!!.config.getStringList("limitsOfBlock").any {
-            Regex(it).matches(type.name.toLowerCase())
+            Regex(it).matches(type.name.lowercase(Locale.getDefault()))
         }
     fun init(plugin: Plugin) {
         mPlugin = plugin

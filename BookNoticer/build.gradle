@@ -2,7 +2,7 @@ group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    compile project(':playerManagment')
-    compile group: 'io.netty', name: 'netty-all', version: '4.1.33.Final'
+    compileOnly project(':playerManagment')
+    implementation group: 'io.netty', name: 'netty-all', version: '4.1.33.Final'
     compileOnly fileTree(rootDir.path + '/libs/server_api.jar')
 }

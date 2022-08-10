@@ -177,6 +177,7 @@ class BlockLocker : JavaPlugin(), Listener {
                             sender.error(getter["block.error.notOwnBlock"])
                         }
                     }
+
                     "unset" -> {
                         (if (selected) 2 else 3).apply {
                             if (args.size < this) {
@@ -291,6 +292,7 @@ class BlockLocker : JavaPlugin(), Listener {
                             sender.error(getter["block.error.notOwnBlock"])
                         }
                     }
+
                     "rename" -> {
                         (if (selected) 2 else 3).apply {
                             if (args.size < this) {
@@ -309,6 +311,7 @@ class BlockLocker : JavaPlugin(), Listener {
                         info.name = newName
                         sender.success(getter["block.rename.done", oldName, newName])
                     }
+
                     else -> {
                         when {
                             BlockLockManager.contains(args.first()) -> {
@@ -370,10 +373,8 @@ class BlockLocker : JavaPlugin(), Listener {
                                         BlockLockManager.add(new)
                                     } else {
                                         sender.sendMessage(
-                                            arrayOf(
-                                                TextUtil.error(getter["block.grouping.nameUnknown"]),
-                                                Bukkit.getPluginCommand("bl ${if (mode == 'G') "->" else "<-"}")!!.usage
-                                            )
+                                            TextUtil.error(getter["block.grouping.nameUnknown"]),
+                                            Bukkit.getPluginCommand("bl ${if (mode == 'G') "->" else "<-"}")!!.usage
                                         )
                                         return true
                                     }
@@ -402,6 +403,7 @@ class BlockLocker : JavaPlugin(), Listener {
                                 }
                                 sender.success(getter["block.grouping.done"])
                             }
+
                             else -> {
                                 sender.error(getter["command.error.usage"])
                                 return false
@@ -435,6 +437,7 @@ class BlockLocker : JavaPlugin(), Listener {
                 } else {
                     mutableListOf(block.x.toString())
                 }
+
                 args.size == 6 -> players.toMutableList()
                 else -> mutableListOf()
             }
@@ -489,6 +492,7 @@ class BlockLocker : JavaPlugin(), Listener {
                                     players.toMutableList()
                                 }
                             }
+
                             3 -> {
                                 return if (args[2].isNotEmpty()) {
                                     val r = ArrayList<String>()
@@ -502,6 +506,7 @@ class BlockLocker : JavaPlugin(), Listener {
                             }
                         }
                     }
+
                     "unset" -> {
                         when (args.size) {
                             1 -> return players.toMutableList()
@@ -514,6 +519,7 @@ class BlockLocker : JavaPlugin(), Listener {
                                     players.toMutableList()
                                 }
                             }
+
                             3 -> {
                                 return if (args[2].isNotEmpty()) {
                                     val r = ArrayList<String>()
@@ -528,6 +534,7 @@ class BlockLocker : JavaPlugin(), Listener {
                             }
                         }
                     }
+
                     "del" -> {
                         val r = mutableListOf<String>()
                         BlockLockManager.forEach {
@@ -539,12 +546,15 @@ class BlockLocker : JavaPlugin(), Listener {
                             1 -> {
                                 r
                             }
+
                             2 -> {
                                 r.filter { it.startsWith(args[1]) }.toMutableList()
                             }
+
                             else -> mutableListOf()
                         }
                     }
+
                     "check" -> {
                         val r = mutableListOf<String>()
                         BlockLockManager.forEach {
@@ -556,9 +566,11 @@ class BlockLocker : JavaPlugin(), Listener {
                             1 -> {
                                 r
                             }
+
                             2 -> {
                                 r.filter { it.startsWith(args[1]) }.toMutableList()
                             }
+
                             else -> mutableListOf()
                         }
                     }

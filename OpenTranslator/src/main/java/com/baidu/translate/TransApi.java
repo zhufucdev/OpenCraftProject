@@ -1,21 +1,11 @@
 package com.baidu.translate;
 
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 public class TransApi {
-    static final OkHttpClient client = new OkHttpClient();
     private static final String TRANS_API_HOST = "fanyi-api.baidu.com";
     private static final String TRANS_API_PATHS = "api/trans/vip/translate";
 
-    private String appid;
-    private String securityKey;
+    private final String appid;
+    private final String securityKey;
 
     public TransApi(String appid, String securityKey) {
         this.appid = appid;
@@ -23,37 +13,21 @@ public class TransApi {
     }
 
     public String getTransResult(String query, String from, String to) {
-        Request request = new Request.Builder()
-                .url(buildParams(query, from, to))
-                .build();
+        String url = buildParams(query, from, to);
 
         try {
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()){
-                return response.body().string();
-            } else {
-                return null;
-            }
+            return HTTPUtil.request(url);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private HttpUrl buildParams(String query, String from, String to) {
+    private String buildParams(String query, String from, String to) {
         String salt = String.valueOf(System.currentTimeMillis());
         String src = appid + query + salt + securityKey;
-        return new HttpUrl.Builder()
-                .scheme("https")
-                .host(TRANS_API_HOST)
-                .addEncodedPathSegments(TRANS_API_PATHS)
-                .addQueryParameter("q",query)
-                .addQueryParameter("from",from)
-                .addQueryParameter("to",to)
-                .addQueryParameter("appid",appid)
-                .addQueryParameter("salt",salt)
-                .addQueryParameter("sign",MD5.md5(src))
-                .build();
+        return "https://" + TRANS_API_HOST + "/" + TRANS_API_PATHS + "?q" + query + "&from=" + from
+                + "&to=" + to + "&appid=" + appid + "&salt=" + salt + "&sign=" + MD5.md5(src);
     }
 
 }

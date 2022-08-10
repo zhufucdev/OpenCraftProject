@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -8,7 +9,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-abstract class KeypadInventory(plugin: Plugin, protected val getter: Language.LangGetter, title: String) :
+abstract class KeypadInventory(plugin: Plugin, protected val getter: Language.LangGetter, title: Component) :
     ClickableInventory(plugin) {
     final override val inventory: Inventory = Bukkit.createInventory(null, 36, title)
     var amount: Int
@@ -28,10 +29,10 @@ abstract class KeypadInventory(plugin: Plugin, protected val getter: Language.La
             setItem(25, num(2))
             setItem(26, num(3))
             setItem(34, num(0))
-            setItem(33, Widgets.back.updateItemMeta<ItemMeta> { setDisplayName(getter["ui.delete"].toInfoMessage()) })
+            setItem(33, Widgets.back.updateItemMeta<ItemMeta> { displayName(getter["ui.delete"].toInfoMessage()) })
             setItem(
                 35,
-                Widgets.confirm.updateItemMeta<ItemMeta> { setDisplayName(getter["ui.confirm"].toInfoMessage()) }
+                Widgets.confirm.updateItemMeta<ItemMeta> { displayName(getter["ui.confirm"].toInfoMessage()) }
             )
         }
         amount = 0
@@ -41,7 +42,7 @@ abstract class KeypadInventory(plugin: Plugin, protected val getter: Language.La
     private fun updateAmount() {
         fun set(index: Int) =
             inventory.setItem(index, ItemStack(Material.GREEN_STAINED_GLASS_PANE).updateItemMeta<ItemMeta> {
-                setDisplayName(amount.toString().toSuccessMessage())
+                displayName(amount.toString().toSuccessMessage())
             })
         set(10)
         set(11)

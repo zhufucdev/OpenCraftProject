@@ -3,30 +3,24 @@ package com.zhufu.opencraft.util
 import com.google.gson.JsonElement
 import com.zhufu.opencraft.ChatInfo
 import com.zhufu.opencraft.Language
-import com.zhufu.opencraft.player_community.PlayerOutputStream
 import com.zhufu.opencraft.getter
-import net.minecraft.server.v1_16_R1.ChatMessageType
-import net.minecraft.server.v1_16_R1.IChatBaseComponent
-import net.minecraft.server.v1_16_R1.PacketPlayOutChat
+import com.zhufu.opencraft.player_community.PlayerOutputStream
+import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer
 import org.bukkit.entity.Player
 import java.io.File
-import java.util.*
 
 class CommonPlayerOutputStream(val player: Player) : PlayerOutputStream() {
     override fun send(text: String) {
         player.sendMessage(text)
     }
 
+    override fun send(component: Component) {
+        player.sendMessage(component)
+    }
+
     override fun sendRaw(json: JsonElement) {
-        (player as CraftPlayer).handle.playerConnection.sendPacket(
-            PacketPlayOutChat(
-                IChatBaseComponent.ChatSerializer.a(json),
-                ChatMessageType.SYSTEM,
-                UUID.randomUUID()
-            )
-        )
+        TODO()
     }
 
     override fun sendChat(sender: ChatInfo, regularText: String, translatedText: String, images: List<File>) =

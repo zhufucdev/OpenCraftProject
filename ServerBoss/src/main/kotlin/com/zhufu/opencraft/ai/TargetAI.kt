@@ -265,13 +265,13 @@ class TargetAI(
             if (npc.entity.type == EntityType.SPIDER) EntityType.CAVE_SPIDER
             else npc.entity.type
         for (i in 0 until num) {
-            npc.owningRegistry.createNPC(littleOneType, "Little Boss # $i".toInfoMessage()).apply {
+            npc.owningRegistry.createNPC(littleOneType, TextUtil.info("Little Boss # $i")).apply {
                 isProtected = false
                 isFlyable = true
 
                 onSpawn {
                     if (npc.entity.type.name.contains("ZOMBIE") || npc.entity.type == EntityType.DROWNED)
-                        (entity as Zombie).isBaby = true
+                        (entity as Zombie).setBaby()
                     if (madness > 0)
                         (entity as LivingEntity).addPotionEffect(
                             PotionEffect(

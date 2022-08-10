@@ -4,18 +4,15 @@ import com.zhufu.opencraft.inventory.BankInventory
 import com.zhufu.opencraft.special_item.Coin
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCRightClickEvent
-import net.citizensnpcs.api.event.NPCSpawnEvent
 import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.trait.SkinTrait
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.CraftItemEvent
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.CraftingInventory
 import org.bukkit.plugin.Plugin
 import java.io.File
 import java.util.*
@@ -69,9 +66,9 @@ object BankManager : Listener {
     fun createBanker(location: Location) {
         bankers.add(
             with(CitizensAPI.getNPCRegistry()) {
-                createNPC(EntityType.PLAYER, Language.getDefault("bank.bankerName").toInfoMessage()).apply {
+                createNPC(EntityType.PLAYER, TextUtil.info(Language.getDefault("bank.bankerName"))).apply {
+                    getOrAddTrait(SkinTrait::class.java).skinName = "Bankder"
                     spawn(location)
-                    data()[NPC.PLAYER_SKIN_UUID_METADATA] = "Banker"
                 }
             }
         )

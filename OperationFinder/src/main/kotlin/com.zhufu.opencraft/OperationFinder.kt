@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.StringReader
 import java.lang.IllegalArgumentException
 import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.collections.ArrayList
 
 class OperationFinder : JavaPlugin() {
@@ -23,7 +24,7 @@ class OperationFinder : JavaPlugin() {
         fun Location.toPrettyString(): String = "${world!!.name}($x,$y,$z)"
     }
 
-    val everyThing = EveryThing(this)
+    private val everyThing = EveryThing(this)
     override fun onEnable() {
         server.pluginManager.registerEvents(everyThing,this)
         everyThing.startMonitoring(60*20L)
@@ -35,14 +36,14 @@ class OperationFinder : JavaPlugin() {
     }
 
 
-    val format = SimpleDateFormat("yyyy/MM/dd/kk:mm:ss")
+    private val format = SimpleDateFormat("yyyy/MM/dd/kk:mm:ss")
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (command.name == "of"){
             if (args.isEmpty()){
                 sender.sendMessage(TextUtil.error("用法错误"))
                 return false
             }
-            if (sender !is ConsoleCommandSender && !sender!!.isOp){
+            if (sender !is ConsoleCommandSender && !sender.isOp){
                 sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
                 return true
             }
@@ -104,25 +105,26 @@ class OperationFinder : JavaPlugin() {
                             = (if (json.has("type")){
                                 val value = json["type"].asString
                                 if (!value.contains('/'))
-                                    OperationChecker.OperationType.valueOf(value.toUpperCase())
+                                    OperationChecker.OperationType.valueOf(value.uppercase(Locale.getDefault()))
                                 else {
                                     val index = value.indexOf('/')
-                                    specialSelector = value.substring(index+1).toUpperCase()
+                                    specialSelector = value.substring(index+1).uppercase(Locale.getDefault())
                                     if (specialSelector.isNotEmpty() && !Material.values().any{ it.name == specialSelector }){
                                         sender.sendMessage(TextUtil.error("找不到方块: $specialSelector"))
                                         return true
                                     }
 
-                                    OperationChecker.OperationType.valueOf(value.substring(0,index).toUpperCase())
+                                    OperationChecker.OperationType.valueOf(value.substring(0,index)
+                                        .uppercase(Locale.getDefault()))
                                 }
                             } else null)
                                 ?.also { sender.sendMessage(TextUtil.info("种类选择器: ${it.name}    特殊参数: $specialSelector")) }
 
                         Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
                             val material = when {
-                                type == OperationChecker.OperationType.BLOCK -> Material.valueOf(specialSelector)
                                 type == OperationChecker.OperationType.BLOCK
                                         && try{ Material.valueOf(specialSelector);false } catch (e: IllegalArgumentException) { true } -> return@runTaskAsynchronously
+                                type == OperationChecker.OperationType.BLOCK -> Material.valueOf(specialSelector)
                                 else -> null
                             }
                             OperationChecker.forEach {
@@ -174,7 +176,7 @@ class OperationFinder : JavaPlugin() {
                     val r = ArrayList<String>()
                     search.forEach { r.add(it.toLocalMessage()) }
                     sender.sendMessage(header)
-                    sender.sendMessage(r.toTypedArray())
+                    sender.sendMessage(*r.toTypedArray())
                 }
             }
         }

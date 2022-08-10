@@ -27,32 +27,32 @@ class ChartUI(plugin: Plugin, info: Info, override val parentInventory: Clickabl
         override fun getItem(index: Int, currentPage: Int): ItemStack {
             val player = chart[index]
             return player.skullItem.updateItemMeta<ItemMeta> {
-                setDisplayName(
+                displayName(
                     if (player == info)
                         getter["ui.chart.self"].toInfoMessage()
                     else
-                        player.name?.toInfoMessage() ?: getter["player.unknownName"]
+                        player.name?.toInfoMessage() ?: getter["player.unknownName"].toErrorMessage()
                 )
-                lore = listOf(getter["ui.chart.pos", index + 1])
+                lore(listOf(getter["ui.chart.pos", index + 1].toComponent()))
             }
         }
 
         override fun getToolbarItem(index: Int): ItemStack {
             return when (index) {
                 6 -> Widgets.back.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.back"].toInfoMessage())
+                    displayName(getter["ui.back"].toInfoMessage())
                 }
                 5 -> Widgets.confirm.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.chart.all"].toInfoMessage())
-                    if (isDaily) lore = listOf(getter["ui.chart.click"].toTipMessage())
+                    displayName(getter["ui.chart.all"].toInfoMessage())
+                    if (isDaily) lore(listOf(getter["ui.chart.click"].toTipMessage()))
                     else {
                         addEnchant(Enchantment.ARROW_INFINITE, 1, true)
                         addItemFlags(ItemFlag.HIDE_ENCHANTS)
                     }
                 }
                 4 -> Widgets.confirm.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.chart.daily"].toInfoMessage())
-                    if (!isDaily) lore = listOf(getter["ui.chart.click"].toTipMessage())
+                    displayName(getter["ui.chart.daily"].toInfoMessage())
+                    if (!isDaily) lore(listOf(getter["ui.chart.click"].toTipMessage()))
                     else {
                         addEnchant(Enchantment.ARROW_INFINITE, 1, true)
                         addItemFlags(ItemFlag.HIDE_ENCHANTS)

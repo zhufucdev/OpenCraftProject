@@ -1,6 +1,5 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.Base.TutorialUtil.linearTo
 import com.zhufu.opencraft.Everything.mPlugin
 import com.zhufu.opencraft.Everything.near
 import com.zhufu.opencraft.special_item.Portal
@@ -96,7 +95,7 @@ object PortalHandler : Listener {
                 if (cube.from.near(event.to.clone().add(Vector(0, -1, 0)))) {
                     doTeleport(cube.to.clone().setDirection(event.player.location.direction))
                     break
-                } else if (cube.to.near(event.to!!.clone().add(Vector(0, -1, 0)))) {
+                } else if (cube.to.near(event.to.clone().add(Vector(0, -1, 0)))) {
                     doTeleport(cube.from.clone().setDirection(event.player.location.direction))
                     break
                 }

@@ -27,8 +27,8 @@ object RPGManager {
         constructor(player: Player): this(player.uniqueId)
 
         var kit: RPGKit
-            get() = RPGKit.valueOf(config.getString("kit","none")!!.toUpperCase())
-            set(value) = config.set("kit",value.name.toLowerCase())
+            get() = RPGKit.valueOf(config.getString("kit","none")!!.uppercase())
+            set(value) = config.set("kit",value.name.uppercase())
         val isKitSelected: Boolean
             get() = kit == RPGKit.NONE
         val level: Int

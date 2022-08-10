@@ -3,6 +3,8 @@ package com.zhufu.opencraft.ui
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.Game.env
 import com.zhufu.opencraft.TextUtil.TextColor.*
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -25,7 +27,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
     private val info = player.info()
     private val getter = getLangGetter(info)
     override val inventory: Inventory =
-        Bukkit.createInventory(null, 36, TextUtil.info(getter["ui.puTitle"] + "[${++id}]"))
+        Bukkit.createInventory(null, 36, (getter["ui.puTitle"] + "[${++id}]").toInfoMessage())
 
     init {
         inventory.apply {
@@ -33,7 +35,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 0,
                 ItemStack(Material.PAPER).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.statics.title"], AQUA))
+                        displayName(getter["ui.statics.title"].toComponent().color(NamedTextColor.DARK_AQUA))
                     }
                 }
             )
@@ -42,14 +44,18 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 ItemStack(Material.PLAYER_HEAD).apply {
                     itemMeta = (itemMeta as SkullMeta).apply {
                         owningPlayer = Bukkit.getOfflinePlayer(player.uniqueId)
-                        setDisplayName(TextUtil.getColoredText(getter["ui.statics.face.title", player.name], GREEN))
+                        displayName(
+                            getter["ui.statics.face.title", player.name].toComponent().color(NamedTextColor.GREEN)
+                        )
                         val chart = info?.let { Game.dailyChart.indexOf(it) } ?: -1
-                        lore = listOf(
-                            getter["ui.statics.face.tip"].toTipMessage(),
-                            (if (chart != -1)
-                                getter["ui.statics.face.chart", chart + 1]
-                            else
-                                getter["ui.statics.face.noChart"]).toInfoMessage()
+                        lore(
+                            listOf(
+                                getter["ui.statics.face.tip"].toTipMessage(),
+                                (if (chart != -1)
+                                    getter["ui.statics.face.chart", chart + 1]
+                                else
+                                    getter["ui.statics.face.noChart"]).toInfoMessage()
+                            )
                         )
                     }
                 }
@@ -59,7 +65,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 ItemStack(Material.CLOCK).apply {
                     itemMeta = itemMeta!!.apply {
                         val rename = TextUtil.formatLore(TextUtil.format(info?.gameTime ?: 0, getter))
-                        setDisplayName(TextUtil.info(rename.first()))
+                        displayName(rename.first().toInfoMessage())
                         val newLore = ArrayList<String>()
                         for (i in 1 until rename.size) {
                             newLore.add(TextUtil.info(rename[i]))
@@ -81,12 +87,8 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                                         .round(MathContext(3))
                             ]
                         )
-                        setDisplayName(TextUtil.info(rename.first()))
-                        val newLore = ArrayList<String>()
-                        for (i in 1 until rename.size) {
-                            newLore.add(TextUtil.info(rename[i]))
-                        }
-                        lore = newLore
+                        displayName(rename.first().toInfoMessage())
+                        lore(rename.drop(1).map { it.toInfoMessage() })
                     }
                 }
             )
@@ -94,7 +96,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 8,
                 ItemStack(Material.BARRIER).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.close"], RED))
+                        displayName(getter["ui.close"].toComponent().color(NamedTextColor.RED))
                     }
                 }
             )
@@ -103,7 +105,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 9,
                 ItemStack(Material.PAPER).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.miniGame.title"], AQUA))
+                        displayName(getter["ui.miniGame.title"].toComponent().color(NamedTextColor.DARK_AQUA))
                     }
                 }
             )
@@ -111,14 +113,10 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 10,
                 ItemStack(Material.IRON_PICKAXE).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.miniGame.cw.title"], RED))
+                        displayName(getter["ui.miniGame.cw.title"].toComponent().color(NamedTextColor.RED))
                         val rename = TextUtil.formatLore(getter["ui.miniGame.cw.subtitle"])
-                        val newLore = ArrayList<String>()
-                        rename.forEach {
-                            newLore.add(TextUtil.getColoredText(it, AQUA))
-                        }
                         addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-                        lore = newLore
+                        lore(rename.map { it.toComponent().color(NamedTextColor.DARK_AQUA) })
                     }
                 }
             )
@@ -126,14 +124,10 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 11,
                 ItemStack(Material.DIAMOND_SWORD).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.miniGame.tms.title"], RED))
+                        displayName(getter["ui.miniGame.tms.title"].toInfoMessage().color(NamedTextColor.RED))
                         val rename = TextUtil.formatLore(getter["ui.miniGame.tms.subtitle"])
-                        val newLore = ArrayList<String>()
-                        rename.forEach {
-                            newLore.add(TextUtil.getColoredText(it, AQUA))
-                        }
                         addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-                        lore = newLore
+                        lore(rename.map { it.toComponent().color(NamedTextColor.DARK_AQUA) })
                     }
                 }
             )
@@ -141,7 +135,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 12,
                 ItemStack(Material.PAPER).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.success(getter["ui.miniGame.paper"]))
+                        displayName(getter["ui.miniGame.paper"].toSuccessMessage())
                     }
                 }
             )
@@ -149,7 +143,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 18,
                 ItemStack(Material.PAPER).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.survival.title"], AQUA))
+                        displayName(getter["ui.survival.title"].toInfoMessage().color(NamedTextColor.DARK_AQUA))
                     }
                 }
             )
@@ -157,16 +151,18 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 19,
                 ItemStack(Material.CHEST).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.survival.grass.title"], GREEN))
+                        displayName(getter["ui.survival.grass.title"].toInfoMessage().color(NamedTextColor.GREEN))
                         var count = 0
                         val uuid = player.uniqueId.toString()
                         BlockLockManager.forEach {
                             if (it.owner == uuid)
                                 count++
                         }
-                        lore = listOf(
-                            TextUtil.info(getter["ui.survival.grass.subtitle", count]),
-                            TextUtil.tip(getter["ui.survival.grass.click"])
+                        lore(
+                            listOf(
+                                getter["ui.survival.grass.subtitle", count].toInfoMessage(),
+                                getter["ui.survival.grass.click"].toTipMessage()
+                            )
                         )
                     }
                 }
@@ -175,10 +171,12 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 20,
                 ItemStack(Material.ENDER_PEARL).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.survival.pearl.title"], AQUA))
-                        lore = listOf(
-                            TextUtil.info(getter["ui.survival.pearl.subtitle"]),
-                            TextUtil.tip(getter["ui.survival.pearl.click"])
+                        displayName(getter["ui.survival.pearl.title"].toInfoMessage().color(NamedTextColor.AQUA))
+                        lore(
+                            listOf(
+                                getter["ui.survival.pearl.subtitle"].toInfoMessage(),
+                                getter["ui.survival.pearl.click"].toTipMessage()
+                            )
                         )
                     }
                 }
@@ -186,22 +184,24 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
             setItem(
                 21,
                 ItemStack(Material.GRASS_BLOCK).updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.world.title"].toSuccessMessage())
-                    lore = listOf(getter["ui.world.click"].toTipMessage())
+                    displayName(getter["ui.world.title"].toSuccessMessage())
+                    lore(listOf(getter["ui.world.click"].toTipMessage()))
                 }
             )
             setItem(
                 22,
                 ItemStack(Material.PLAYER_HEAD).updateItemMeta<ItemMeta> {
-                    setDisplayName(TextUtil.getColoredText(getter["ui.friend.title"], AQUA, bold = true))
-                    lore = listOf(getter["ui.friend.check"].toTipMessage())
+                    displayName(
+                        getter["ui.friend.title"].toComponent().color(NamedTextColor.DARK_AQUA).decorate(TextDecoration.BOLD)
+                    )
+                    lore(listOf(getter["ui.friend.check"].toTipMessage()))
                 }
             )
             setItem(
                 27,
                 ItemStack(Material.PAPER).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.others.title"], AQUA))
+                        displayName(getter["ui.others.title"].toComponent().color(NamedTextColor.DARK_AQUA))
                     }
                 }
             )
@@ -209,11 +209,11 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 28,
                 ItemStack(Material.SNOWBALL).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.others.snowball.title"], AQUA))
-                        lore = listOf(
-                            TextUtil.info(getter["ui.others.snowball.subtitle"]),
-                            TextUtil.tip(getter["ui.others.snowball.click"])
-                        )
+                        displayName(getter["ui.others.snowball.title"].toComponent().color(NamedTextColor.DARK_AQUA))
+                        lore(listOf(
+                            getter["ui.others.snowball.subtitle"].toInfoMessage(),
+                            getter["ui.others.snowball.click"].toTipMessage()
+                        ))
                     }
                 }
             )
@@ -221,11 +221,11 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 29,
                 ItemStack(Material.ARMOR_STAND).apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.others.armor.title"], AQUA))
-                        lore = listOf(
-                            TextUtil.info(getter["ui.others.armor.subtitle", info?.skin ?: player.name]),
-                            TextUtil.tip(getter["ui.others.armor.click"])
-                        )
+                        displayName(getter["ui.others.armor.title"].toComponent().color(NamedTextColor.DARK_AQUA))
+                        lore(listOf(
+                            getter["ui.others.armor.subtitle", info?.skin ?: player.name].toInfoMessage(),
+                            getter["ui.others.armor.click"].toTipMessage()
+                        ))
                     }
                 }
             )
@@ -238,7 +238,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
                     val info = player.info()
                     if (info != null) {
-                        player.sendActionText(getter["ui.chart.booting"].toInfoMessage())
+                        player.sendActionBar(getter["ui.chart.booting"].toInfoMessage())
                         val ui = ChartUI(plugin, info, this)
                         Bukkit.getScheduler().callSyncMethod(plugin) {
                             ui.show(info.player)
@@ -247,6 +247,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                 }
                 close()
             }
+
             8 -> close()
             10 -> GameManager.joinPlayerCorrectly(player, "CW")
             11 -> GameManager.joinPlayerCorrectly(player, "TMS")
@@ -259,6 +260,7 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                     CheckpointUI(info, plugin, this).show(player)
                 }
             }
+
             21 -> {
                 val info = player.info()
                 if (info == null) {
@@ -267,13 +269,14 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                     WorldUI(plugin, info, this).show(player)
                 }
             }
+
             22 -> {
                 val info = player.info()
                 if (info == null) {
                     close()
                 } else {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
-                        player.sendActionText(getter["ui.friend.booting"].toInfoMessage())
+                        player.sendActionBar(getter["ui.friend.booting"].toInfoMessage())
                         val ui = FriendListUI(info, plugin, this)
                         Bukkit.getScheduler().callSyncMethod(plugin) {
                             ui.show(player)
@@ -282,9 +285,11 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                     close()
                 }
             }
+
             28 -> {
                 ServerCaller["showTutorialUI"]?.invoke(listOf(player))
             }
+
             29 -> {
                 player.tip(getter["ui.others.armor.click"])
                 close()

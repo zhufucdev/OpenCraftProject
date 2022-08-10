@@ -2,7 +2,7 @@ group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    compile project(':miniGameBase')
-    implementation project(':utils')
+    compileOnly project(':miniGameBase')
+    compileOnly project(':utils')
     implementation 'com.scireum:parsii:4.0'
 }

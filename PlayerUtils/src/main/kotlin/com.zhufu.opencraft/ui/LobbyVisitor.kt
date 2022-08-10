@@ -13,7 +13,7 @@ import org.bukkit.plugin.Plugin
 import kotlin.math.absoluteValue
 
 class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<LobbyVisitor.Adapter>(
-    title = info.getter()["ui.visitor.title"],
+    title = info.getter()["ui.visitor.title"].toComponent(),
     plugin = plugin,
     adapter = Adapter(info),
     itemsOnePage = 36
@@ -41,12 +41,12 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
             if (index < list.size)
                 list[index].let { lobby ->
                     lobby.owner.skullItem.updateItemMeta<ItemMeta> {
-                        setDisplayName(lobby.owner.name ?: getter["player.unknownName"])
-                        lore =
+                        displayName((lobby.owner.name ?: getter["player.unknownName"]).toComponent())
+                        lore(
                             if (!isGathering)
                                 listOf(
                                     getter["ui.visitor.located", "(${lobby.x}, ${lobby.z})"].toInfoMessage(),
-                                    getter["lobby.get.views", lobby.views],
+                                    getter["lobby.get.views", lobby.views].toComponent(),
                                     getReviewMsg(lobby)
                                 )
                             else {
@@ -61,29 +61,29 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
                                         .toTipMessage()
                                 )
                             }
-
+                        )
                     }
                 }
             else
                 Widgets.back.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.visitor.back"].toInfoMessage())
+                    displayName(getter["ui.visitor.back"].toInfoMessage())
                 }
 
         override fun getToolbarItem(index: Int): ItemStack {
             return if (!PlayerLobbyManager.isInOwnLobby(info)) {
                 when (index) {
                     6 -> ItemStack(Material.APPLE).updateItemMeta<ItemMeta> {
-                        setDisplayName(getter["lobby.like"].toInfoMessage())
+                        displayName(getter["lobby.like"].toInfoMessage())
                         if (review == true) {
-                            lore = listOf(getter["lobby.cancel"].toTipMessage())
+                            lore(listOf(getter["lobby.cancel"].toTipMessage()))
                             addEnchant(Enchantment.ARROW_INFINITE, 1, true)
                             addItemFlags(ItemFlag.HIDE_ENCHANTS)
                         }
                     }
                     5 -> ItemStack(Material.POISONOUS_POTATO).updateItemMeta<ItemMeta> {
-                        setDisplayName(getter["lobby.dislike"].toErrorMessage())
+                        displayName(getter["lobby.dislike"].toErrorMessage())
                         if (review == false) {
-                            lore = listOf(getter["lobby.cancel"].toTipMessage())
+                            lore(listOf(getter["lobby.cancel"].toTipMessage()))
                             addEnchant(Enchantment.ARROW_INFINITE, 1, true)
                             addItemFlags(ItemFlag.HIDE_ENCHANTS)
                         }
@@ -92,21 +92,21 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
                 }
             } else if (index == 6) {
                 info.skullItem.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["lobby.yours"].toInfoMessage())
-                    lore = listOf(getReviewMsg(PlayerLobbyManager[info]))
+                    displayName(getter["lobby.yours"].toInfoMessage())
+                    lore(listOf(getReviewMsg(PlayerLobbyManager[info])))
                 }
             } else if (index == 5) {
                 if (!isGathering)
                     ItemStack(Material.GRASS_BLOCK).updateItemMeta<ItemMeta> {
-                        setDisplayName(getter["lobby.gather.title"].toInfoMessage())
-                        lore = listOf(
-                            getter["lobby.gather.info", PlayerLobbyManager[info].partners().size],
+                        displayName(getter["lobby.gather.title"].toInfoMessage())
+                        lore(listOf(
+                            getter["lobby.gather.info", PlayerLobbyManager[info].partners().size].toComponent(),
                             getter["lobby.gather.click"].toTipMessage()
-                        )
+                        ))
                     }
                 else
                     Widgets.back.updateItemMeta<ItemMeta> {
-                        setDisplayName(getter["ui.back"].toInfoMessage())
+                        displayName(getter["ui.back"].toInfoMessage())
                     }
             } else {
                 super.getToolbarItem(index)

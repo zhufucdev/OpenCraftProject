@@ -2,7 +2,7 @@ group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    compile project(':pluginBase')
-    compile project(':playerManagment')
-    compile 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
+    implementation project(':pluginBase')
+    implementation project(':playerManagment')
+    implementation 'net.citizensnpcs:citizensapi:' + rootProject.ext.citizens_version
 }

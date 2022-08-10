@@ -2,15 +2,22 @@ package com.zhufu.opencraft
 
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 object GameManager {
-    private val mList = ArrayList<GameBase>()
-    private var plugin: JavaPlugin? = null
+    private val mList = arrayListOf<MiniGame>()
+    private val registration = mutableSetOf<KClass<*>>()
+    private lateinit var plugin: JavaPlugin
     val isInit: Boolean
-        get() = plugin != null
+        get() = ::plugin.isInitialized
 
     fun init(plugin: JavaPlugin) {
         GameManager.plugin = plugin
+    }
+
+    fun registerGameType(clazz: KClass<*>) {
+        registration.add(clazz)
     }
 
     private fun getNewID(): Int {
@@ -27,26 +34,29 @@ object GameManager {
         return new
     }
 
-    fun addNew(name: String) {
-        mList.add(
-            (Class.forName("com.zhufu.opencraft.games.$name").newInstance() as GameBase)
-                .also { it.initGame(getNewID(), null, plugin!!) }
-        )
+    private fun constructGame(name: String): MiniGame {
+        return (registration.firstOrNull { it.simpleName == name }?.primaryConstructor?.call() as MiniGame?)
+            ?.also { it.initGame(getNewID(), null, plugin) }
+            ?: throw NullPointerException("$name isn't in registration.")
     }
 
-    fun joinPlayerCorrectly(player: Player, name: String): GameBase.JoinGameResult {
-        var result: GameBase.JoinGameResult = GameBase.JoinGameResult.ROOM_FULL
+    fun addNew(name: String) {
+        mList.add(constructGame(name))
+    }
+
+    fun joinPlayerCorrectly(player: Player, name: String): MiniGame.JoinGameResult {
+        var result: MiniGame.JoinGameResult = MiniGame.JoinGameResult.ROOM_FULL
         mList.forEach {
             if (it.getGameName() == name) {
                 result = it.joinPlayer(player)
-                if (result == GameBase.JoinGameResult.SUCCESSFUL || result == GameBase.JoinGameResult.ALREADY_IN)
+                if (result == MiniGame.JoinGameResult.SUCCESSFUL || result == MiniGame.JoinGameResult.ALREADY_IN)
                     return result
             }
         }
-        if (result == GameBase.JoinGameResult.ROOM_FULL) {
+        if (result == MiniGame.JoinGameResult.ROOM_FULL) {
             val id = getNewID()
             mList.add(
-                (Class.forName("com.zhufu.opencraft.games.$name").newInstance() as GameBase)
+                constructGame(name)
                     .apply { initGame(id, player, plugin) }
             )
             return joinPlayerTo(id, player)
@@ -54,8 +64,8 @@ object GameManager {
         return result
     }
 
-    fun joinPlayerTo(id: Int, player: Player): GameBase.JoinGameResult =
-        mList.firstOrNull { it.gameID == id }?.joinPlayer(player) ?: GameBase.JoinGameResult.CANCELLED
+    fun joinPlayerTo(id: Int, player: Player): MiniGame.JoinGameResult =
+        mList.firstOrNull { it.gameID == id }?.joinPlayer(player) ?: MiniGame.JoinGameResult.CANCELLED
 
     private fun maxID(): Int {
         var max = -1
@@ -67,7 +77,7 @@ object GameManager {
         return max
     }
 
-    fun forEach(action: (GameBase) -> Unit) = mList.forEach { action(it) }
+    fun forEach(action: (MiniGame) -> Unit) = mList.forEach { action(it) }
 
     fun removeGame(id: Int) {
         println("[GameManager] Removing game IDed $id from list.")

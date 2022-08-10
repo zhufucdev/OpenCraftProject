@@ -167,7 +167,7 @@ object Base {
             }
         }
 
-        fun Entity.linearTo(
+        fun Entity.linearMotion(
             location: Location,
             delay: Long,
             period: Long = 50,
@@ -202,14 +202,14 @@ object Base {
 
             var i = 1L
             val scheduler = Bukkit.getScheduler()
-            fixedRateTimer("linearTask", period = period) {
-                scheduler.runTask(pluginCore) { _ ->
-                    teleport(this@linearTo.location.clone().add(locationOnce).apply {
+            fixedRateTimer("linearMotionTask", period = period) {
+                teleportAsync(
+                    this@linearMotion.location.clone().add(locationOnce).apply {
                         pitch += pitchOnce
                         if (!ignoreYaw)
                             yaw = yawAdd(yaw, yawOnce)
-                    })
-                }
+                    }
+                )
                 if (i >= times) {
                     scheduler.runTask(pluginCore) { _ ->
                         teleport(location)

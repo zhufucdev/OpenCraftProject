@@ -2,7 +2,9 @@ name: ServerCore
 main: com.zhufu.opencraft.Core
 author: zhufucomcom
 version: '1.0'
-softdepend: [Citizens, WorldTeleporter]
+softdepend:
+  - Citizens
+  - WorldTeleporter
 api-version: '1.14'
 commands:
   server:

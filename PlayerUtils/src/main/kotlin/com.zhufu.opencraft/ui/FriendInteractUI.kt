@@ -27,45 +27,46 @@ class FriendInteractUI(
         if (friend.exits)
             inventory.apply {
                 setItem(13, friend.friend.skullItem.updateItemMeta<ItemMeta> {
-                    setDisplayName(friend.name)
+                    displayName(friend.name?.toComponent())
                     if (friend.isFriend)
-                        lore = arrayListOf<String>().apply {
+                        lore(buildList {
                             friend.statics(getter).forEach {
                                 add(it.toInfoMessage())
                             }
-                        }
+                        })
                 })
                 val deleteItem = Widgets.cancel.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.friend.del"].toErrorMessage())
+                    displayName(getter["ui.friend.del"].toErrorMessage())
                 }
                 if (friend.isFriend) {
                     setItem(18, ItemStack(Material.GOLD_INGOT).updateItemMeta<ItemMeta> {
-                        setDisplayName(getter["ui.friend.transfer.title"].toInfoMessage())
-                        lore = listOf(getter["ui.friend.transfer.click"].toTipMessage())
+                        displayName(getter["ui.friend.transfer.title"].toInfoMessage())
+                        lore(listOf(getter["ui.friend.transfer.click"].toTipMessage()))
                     })
                     setItem(20, ItemStack(Material.OAK_SIGN).updateItemMeta<ItemMeta> {
-                        setDisplayName(getter["ui.friend.msg.title"].toInfoMessage())
-                        lore = listOf(getter["ui.friend.msg.tip", friend.name].toTipMessage())
+                        displayName(getter["ui.friend.msg.title"].toInfoMessage())
+                        lore(listOf(getter["ui.friend.msg.tip", friend.name].toTipMessage()))
                     })
                     setItem(22, ItemStack(Material.CHEST).updateItemMeta<ItemMeta> {
-                        setDisplayName(getter["ui.friend.inventory.title"].toInfoMessage())
-                        lore = listOf(
-                            getter["ui.friend.inventory.${if (friend.sharedInventory == null) "buy" else "check"}"].toTipMessage()
-                        )
+                        displayName(getter["ui.friend.inventory.title"].toInfoMessage())
+                        lore(listOf(
+                            getter["ui.friend.inventory.${if (friend.sharedInventory == null) "buy" else "check"}"]
+                                .toTipMessage()
+                        ))
                     })
                     setItem(24, ItemStack(Material.CAKE).updateItemMeta<ItemMeta> {
-                        setDisplayName(getter["ui.friend.share.title"].toInfoMessage())
-                        lore = listOf(getter["ui.friend.share.click"].toTipMessage())
+                        displayName(getter["ui.friend.share.title"].toInfoMessage())
+                        lore(listOf(getter["ui.friend.share.click"].toTipMessage()))
                     })
                     setItem(26, deleteItem)
                 } else {
                     setItem(18, Widgets.confirm.updateItemMeta<ItemMeta> {
-                        setDisplayName(getter["ui.friend.add"].toSuccessMessage())
+                        displayName(getter["ui.friend.add"].toSuccessMessage())
                     })
                     setItem(20, deleteItem)
                 }
                 setItem(inventory.size - 1, Widgets.back.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.back"].toInfoMessage())
+                    displayName(getter["ui.back"].toInfoMessage())
                 })
             }
         else {
@@ -171,7 +172,7 @@ class FriendInteractUI(
                                 player = info.player,
                                 sellingItems = SellingItemInfo(
                                     item = ItemStack(Material.CHEST).updateItemMeta<ItemMeta> {
-                                        setDisplayName(getter["user.friend.sharingInventory"].toInfoMessage())
+                                        displayName(getter["user.friend.sharingInventory"].toInfoMessage())
                                     },
                                     amount = 1,
                                     unitPrise = 10

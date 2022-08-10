@@ -1,8 +1,6 @@
 package com.zhufu.opencraft.special_item
 
-import com.zhufu.opencraft.Language
-import com.zhufu.opencraft.toInfoMessage
-import com.zhufu.opencraft.updateItemMeta
+import com.zhufu.opencraft.*
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.enchantments.Enchantment
@@ -15,15 +13,15 @@ class Insurance(getter: Language.LangGetter, val player: String, val number: Lon
 
     init {
         updateItemMeta<BookMeta> {
-            title = getter["insurance.name"].toInfoMessage()
+            title = TextUtil.info(getter["insurance.name"])
             author = getter["insurance.content.2"]
-            addPage(buildString {
-                appendln(getter["insurance.content.1", player])
+            addPages(buildString {
+                appendLine(getter["insurance.content.1", player])
                 for (i in 2..3)
-                    appendln(getter["insurance.content.$i"])
-            })
+                    appendLine(getter["insurance.content.$i"])
+            }.toComponent())
 
-            lore = listOf(player, number.toString())
+            lore(listOf(player.toComponent(), number.toString().toComponent()))
             addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ENCHANTS)
             isUnbreakable = true
             addUnsafeEnchantment(Enchantment.KNOCKBACK, 1)

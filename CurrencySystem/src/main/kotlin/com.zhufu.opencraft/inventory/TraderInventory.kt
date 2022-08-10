@@ -41,7 +41,7 @@ class TraderInventory(val player: Player) {
     fun show() {
         val info = PlayerManager.findInfoByPlayer(player)
         if (info == null) {
-            player.sendMessage(arrayOf(TextUtil.error(Language.getDefault("player.error.unknown"))))
+            player.sendMessage(Language.getDefault("player.error.unknown").toErrorMessage())
             return
         }
         info.inventory.create("survivor").load(false, true)
@@ -138,12 +138,8 @@ class TraderInventory(val player: Player) {
 
                         val survivor = info.inventory.create("survivor")
                         if (survivor.any { item -> FlyWand.isThis(item) }) {
-                            player.sendMessage(
-                                arrayOf(
-                                    TextUtil.error("抱歉，但你不能同时拥有两支权杖"),
-                                    TextUtil.tip("为了同时拥有两支权杖，您可以尝试使用箱子等容器，但这并不会带来好的游戏体验")
-                                )
-                            )
+                            player.error(getter["wand.duplicate.title"])
+                            player.tip(getter["wand.duplicate.tip"])
                         } else if (!survivor.addItem(FlyWand(getter))) {
                             player.error(getter["trade.error.inventoryFull"])
                             return@setOnPayListener false

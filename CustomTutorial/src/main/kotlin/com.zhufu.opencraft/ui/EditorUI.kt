@@ -8,7 +8,7 @@ import java.util.*
 
 class EditorUI(val project: TutorialManager.Tutorial)
     : PageInventory<EditorUI.Adapter>(
-        TextUtil.info("项目编辑器[项目ID:${project.id}]"),
+        "项目编辑器[项目ID:${project.id}]".toInfoMessage(),
         Adapter(project),
         4*9,
         TutorialManager.mPlugin!!) {
@@ -74,11 +74,11 @@ class EditorUI(val project: TutorialManager.Tutorial)
     }
 
     init {
-        setOnItemClickListener { index, item ->
+        setOnItemClickListener { index, _ ->
             close()
             TutorialListener.instance.recorder(Bukkit.getPlayer(UUID.fromString(project.creator))!!,project[index])
         }
-        setOnToolbarItemClickListener { index, item ->
+        setOnToolbarItemClickListener { index, _ ->
             when (index){
                 0 -> {
                     close()

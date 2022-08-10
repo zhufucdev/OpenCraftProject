@@ -1,13 +1,7 @@
 import bukkit.Server
-import com.zhufu.opencraft.Base
-import com.zhufu.opencraft.PlayerManager
-import com.zhufu.opencraft.Scripting
 import com.zhufu.opencraft.TextUtil
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.Difficulty
-import org.bukkit.GameRule
-import org.bukkit.World
 import org.bukkit.event.server.ServerListPingEvent
 
 import java.text.SimpleDateFormat
@@ -17,7 +11,7 @@ def speeches = ["我们使用了新的硬件", "并将服务器合并进入新�
 Server.listenEvent(ServerListPingEvent.class) {
     serverIcon = Bukkit.loadServerIcon(new File("logo.png"))
     def count = map.getOrDefault(address, 0)
-    String speech = ""
+    String speech
     if (count < speeches.size()) {
         speech = speeches[count]
         map.put(address as InetAddress, count + 1)

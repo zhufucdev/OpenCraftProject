@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -10,25 +11,25 @@ import org.bukkit.plugin.Plugin
 open class PageInventory<T : PageInventory.Adapter> : ClickableInventory {
     var adapter: T
     val itemsOnePage: Int
-    val title: String
+    val title: Component
     final override val inventory: Inventory
     private val adapterCreator: (() -> T)?
 
-    constructor(title: String, adapter: T, itemsOnePage: Int, plugin: Plugin) : super(plugin) {
+    constructor(title: Component, adapter: T, itemsOnePage: Int, plugin: Plugin) : super(plugin) {
         this.adapter = adapter
         adapterCreator = null
         this.itemsOnePage = itemsOnePage
         this.title = title
-        inventory = Bukkit.createInventory(null, itemsOnePage, "$title[$id]")
+        inventory = Bukkit.createInventory(null, itemsOnePage, title.append(Component.text("[$id]")))
         page(0)
     }
 
-    constructor(title: String, adapter: () -> T, itemsOnePage: Int, plugin: Plugin) : super(plugin) {
+    constructor(title: Component, adapter: () -> T, itemsOnePage: Int, plugin: Plugin) : super(plugin) {
         this.adapter = adapter()
         adapterCreator = adapter
         this.itemsOnePage = itemsOnePage
         this.title = title
-        inventory = Bukkit.createInventory(null, itemsOnePage, "$title[$id]")
+        inventory = Bukkit.createInventory(null, itemsOnePage, title.append(Component.text("[$id]")))
         page(0)
     }
 

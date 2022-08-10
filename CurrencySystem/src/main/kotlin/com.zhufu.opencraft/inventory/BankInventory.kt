@@ -13,14 +13,14 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
 class BankInventory(plugin: Plugin, private val info: Info) :
-    KeypadInventory(plugin, info.getter(), info.getter()["bank.title"]) {
+    KeypadInventory(plugin, info.getter(), info.getter()["bank.title"].toComponent()) {
     private val player get() = info.player
 
     private var deposit: Boolean
     init {
         inventory.setItem(
             0,
-            ItemStack(Material.PAPER).updateItemMeta<ItemMeta> { setDisplayName(getter["bank.tip"].toTipMessage()) })
+            ItemStack(Material.PAPER).updateItemMeta<ItemMeta> { displayName(getter["bank.tip"].toTipMessage()) })
         deposit = true
         updateMode()
     }
@@ -28,8 +28,8 @@ class BankInventory(plugin: Plugin, private val info: Info) :
     private fun updateMode() {
         inventory.setItem(27, ItemStack(if (deposit) Material.CHEST else Material.DROPPER).updateItemMeta<ItemMeta> {
             val modeName = "bank.mode.${if (deposit) "deposit" else "withdraw"}"
-            setDisplayName(getter["$modeName.title"].toInfoMessage())
-            lore = listOf(getter["$modeName.subtitle"], getter["bank.mode.tip"].toTipMessage())
+            displayName(getter["$modeName.title"].toInfoMessage())
+            lore(listOf(getter["$modeName.subtitle"].toComponent(), getter["bank.mode.tip"].toTipMessage()))
         })
     }
 

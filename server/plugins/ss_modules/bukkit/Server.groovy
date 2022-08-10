@@ -15,7 +15,7 @@ class Server {
 
     /**
      * Start a listening action via the public event listener.
-     * @param clazz Type of bukkit event to listen.
+     * @param clazz Type of bukkit event to listen to.
      * @param executor Called when the event is triggered.
      * @return The public listener.
      */

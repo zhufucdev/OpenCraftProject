@@ -87,19 +87,19 @@ object PlayerManager : Listener {
 }
 
 fun broadcast(value: String, color: TextUtil.TextColor, vararg replaceWith: String?) {
-    val langMap = HashMap<String, String>()
+    val cache = HashMap<String, String>()
     PlayerManager.forEachChatter {
         if (it is Info && !it.isLogin) return@forEachChatter
         val lang = it.targetLang
-        if (!langMap.containsKey(lang)) {
-            langMap[lang] = TextUtil.getColoredText(
+        if (!cache.containsKey(lang)) {
+            cache[lang] = TextUtil.getColoredText(
                 Language.got(lang, value, replaceWith), color,
                 bold = false,
                 underlined = false
             )
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
-            it.playerOutputStream.send(langMap[lang]!!)
+            it.playerOutputStream.send(cache[lang]!!)
         }
     }
 }

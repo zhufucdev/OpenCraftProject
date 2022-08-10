@@ -143,7 +143,7 @@ object ChartHandler : Listener {
             val info = event.clicker.info()
             if (info != null) {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
-                    event.clicker.sendActionText(info.getter()["ui.chart.booting"].toInfoMessage())
+                    event.clicker.sendActionBar(info.getter()["ui.chart.booting"].toInfoMessage())
                     val ui = ChartUI(plugin, info, null)
                     Bukkit.getScheduler().callSyncMethod(plugin) {
                         ui.show(event.clicker)

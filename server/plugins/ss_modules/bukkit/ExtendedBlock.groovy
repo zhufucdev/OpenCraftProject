@@ -176,7 +176,7 @@ abstract class ExtendedBlock {
                 }
             })
             // Remove old files
-            if (list.size() > index) {
+            if (list != null && list.size() > index) {
                 list.each {
                     def dot = it.name.lastIndexOf('.')
                     if (dot == -1) return

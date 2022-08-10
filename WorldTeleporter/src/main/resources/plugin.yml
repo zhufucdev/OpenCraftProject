@@ -2,7 +2,9 @@ name: WorldTeleporter
 main: com.zhufu.opencraft.WorldTeleporter
 author: zhufucomcom
 version: '1.0'
-api-version: '1.16'
+api-version: '1.19'
+depend:
+  - ServerCore
 commands:
   wt:
     description: 跨世界传送

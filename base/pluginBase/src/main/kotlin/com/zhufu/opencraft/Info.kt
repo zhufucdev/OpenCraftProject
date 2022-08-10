@@ -125,7 +125,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
             pwd == password -> try {
                 login()
             } catch (e: Exception) {
-                player.sendMessage(TextUtil.printException(e))
+                player.sendMessage(*TextUtil.printException(e))
 
                 isLogin = false
                 isRegistered = false

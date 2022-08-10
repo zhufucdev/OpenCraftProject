@@ -9,21 +9,25 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
-class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory: ClickableInventory)
-    : PageInventory<CheckpointUI.Adapter>(Language[info.userLanguage, "ui.checkpoint.title"],
-        Adapter(info.checkpoints, Language.LangGetter(info)), 36, plugin), Backable {
+class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory: ClickableInventory) :
+    PageInventory<CheckpointUI.Adapter>(
+        Language[info.userLanguage, "ui.checkpoint.title"].toComponent(),
+        Adapter(info.checkpoints, Language.LangGetter(info)), 36, plugin
+    ), Backable {
     private val tasks
         get() = adapter.tasks
-    class Adapter(val checkopints: ArrayList<CheckpointInfo>, val getter: Language.LangGetter) : PageInventory.Adapter() {
+
+    class Adapter(val checkopints: ArrayList<CheckpointInfo>, val getter: Language.LangGetter) :
+        PageInventory.Adapter() {
         override val size: Int
             get() = checkopints.size + if (!isManaging) 1 else 0
         override val hasToolbar: Boolean
             get() = true
-        val tasks = HashMap<CheckpointInfo,Char>()
+        val tasks = HashMap<CheckpointInfo, Char>()
         var isManaging = false
         var isDeleting = false
         var isRenaming = false
-        fun reset(){
+        fun reset() {
             isManaging = false
             isRenaming = false
             isDeleting = false
@@ -41,20 +45,24 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                         for (i in 1 until rename.size) {
                             newLore.add(TextUtil.getColoredText(rename[i], TextUtil.TextColor.AQUA))
                         }
-                        newLore.add(TextUtil.tip(getter[
-                                if (!isManaging)
-                                    "ui.checkpoint.click"
-                                else {
-                                    if (isDeleting) {
-                                        if (tasks[info] == 'D')
-                                            "ui.checkpoint.delete.undo"
-                                        else
-                                            "ui.checkpoint.delete.do"
-                                    } else if (isRenaming){
-                                        "ui.checkpoint.rename.do"
-                                    } else "ui.checkpoint.toManage"
-                                }
-                        ]))
+                        newLore.add(
+                            TextUtil.tip(
+                                getter[
+                                        if (!isManaging)
+                                            "ui.checkpoint.click"
+                                        else {
+                                            if (isDeleting) {
+                                                if (tasks[info] == 'D')
+                                                    "ui.checkpoint.delete.undo"
+                                                else
+                                                    "ui.checkpoint.delete.do"
+                                            } else if (isRenaming) {
+                                                "ui.checkpoint.rename.do"
+                                            } else "ui.checkpoint.toManage"
+                                        }
+                                ]
+                            )
+                        )
 
                         lore = newLore
                     }
@@ -62,9 +70,14 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
             } else {
                 Widgets.confirm.apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.checkpoint.new.title"], TextUtil.TextColor.GREEN))
+                        setDisplayName(
+                            TextUtil.getColoredText(
+                                getter["ui.checkpoint.new.title"],
+                                TextUtil.TextColor.GREEN
+                            )
+                        )
                         lore = listOf(
-                                TextUtil.info(getter["ui.checkpoint.new.subtitle"])
+                            TextUtil.info(getter["ui.checkpoint.new.subtitle"])
                         )
                     }
                 }
@@ -72,9 +85,9 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
         }
 
         override fun getToolbarItem(index: Int): ItemStack {
-            return when (index){
+            return when (index) {
                 3 -> {
-                    if (isManaging && !isDeleting && !isRenaming){
+                    if (isManaging && !isDeleting && !isRenaming) {
                         Widgets.rename.apply {
                             itemMeta = itemMeta!!.apply {
                                 setDisplayName(TextUtil.tip(getter["ui.rename"]))
@@ -83,6 +96,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                     } else
                         super.getToolbarItem(index)
                 }
+
                 4 -> {
                     if (isManaging && !isDeleting && !isRenaming) {
                         Widgets.cancel.apply {
@@ -93,6 +107,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                     } else
                         super.getToolbarItem(index)
                 }
+
                 5 -> {
                     if (!isManaging)
                         Widgets.group.apply {
@@ -107,6 +122,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                             }
                         }
                 }
+
                 6 -> {
                     Widgets.back.apply {
                         itemMeta = itemMeta!!.apply {
@@ -114,6 +130,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                         }
                     }
                 }
+
                 else -> super.getToolbarItem(index)
             }
         }
@@ -123,41 +140,46 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
         setOnItemClickListener { index, _ ->
             if (index < adapter.checkopints.size) {
                 val point = adapter.checkopints[index]
-                if (!adapter.isManaging){
-                    PaymentDialog(info.player,
-                            SellingItemInfo(
-                                    ItemStack(Material.ENDER_PEARL)
-                                            .also { it.itemMeta = it.itemMeta!!.apply { setDisplayName(TextUtil.info(adapter.getter["ui.teleport"])) } },
-                                    3,
-                                    1)
-                            , TradeManager.getNewID(), plugin)
-                            .setOnPayListener { success ->
-                                if (success) {
-                                    val event = PlayerTeleportedEvent(info.player, info.player.location, point.location)
-                                    Bukkit.getPluginManager().callEvent(event)
-                                    if (!event.isCancelled) {
-                                        info.player.teleport(point.location)
-                                        info.player.info(adapter.getter["user.checkpoint.tpSucceed"])
-                                    }
-                                } else {
-                                    info.player.error(info.getter()["trade.error.poor"])
+                if (!adapter.isManaging) {
+                    PaymentDialog(
+                        info.player,
+                        SellingItemInfo(
+                            ItemStack(Material.ENDER_PEARL)
+                                .also {
+                                    it.itemMeta =
+                                        it.itemMeta!!.apply { setDisplayName(TextUtil.info(adapter.getter["ui.teleport"])) }
+                                },
+                            3,
+                            1
+                        ), TradeManager.getNewID(), plugin
+                    )
+                        .setOnPayListener { success ->
+                            if (success) {
+                                val event = PlayerTeleportedEvent(info.player, info.player.location, point.location)
+                                Bukkit.getPluginManager().callEvent(event)
+                                if (!event.isCancelled) {
+                                    info.player.teleport(point.location)
+                                    info.player.info(adapter.getter["user.checkpoint.tpSucceed"])
                                 }
-                                true
+                            } else {
+                                info.player.error(info.getter()["trade.error.poor"])
                             }
-                            .setOnCancelListener {
-                                info.player.info(adapter.getter["user.teleport.cancelled"])
-                                show(info.player)
-                            }
-                            .show()
+                            true
+                        }
+                        .setOnCancelListener {
+                            info.player.info(adapter.getter["user.teleport.cancelled"])
+                            show(info.player)
+                        }
+                        .show()
                 } else {
-                    if (adapter.isDeleting){
-                        if (tasks[point] == 'D'){
+                    if (adapter.isDeleting) {
+                        if (tasks[point] == 'D') {
                             tasks.remove(point)
                         } else {
                             tasks[point] = 'D'
                         }
                         refresh(index)
-                    } else if (adapter.isRenaming){
+                    } else if (adapter.isRenaming) {
                         PlayerUtil.selected[info.player] = info.checkpoints[index]
                         info.player.tip(adapter.getter["ui.checkpoint.rename.tip"])
                         close()
@@ -176,19 +198,19 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                 }
                 val name = prefix + (max + 1).toString()
                 info.player.apply {
-                    if (location.world == Base.lobby){
+                    if (location.world == Base.lobby) {
                         error(this@CheckpointUI.adapter.getter["command.error.world"])
                     } else {
                         info.checkpoints.add(CheckpointInfo(info.player.location, name))
                         success(
-                                adapter.getter[
-                                        "user.checkpoint.saved",
-                                        location.toPrettyString(),
-                                        name
-                                ]
+                            adapter.getter[
+                                    "user.checkpoint.saved",
+                                    location.toPrettyString(),
+                                    name
+                            ]
                         )
                         refresh(index)
-                        refresh(index+1)
+                        refresh(index + 1)
                     }
                 }
             }
@@ -197,38 +219,41 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
         setOnToolbarItemClickListener { index, _ ->
             when (index) {
                 3 -> {
-                    if (adapter.isManaging && !adapter.isRenaming){
+                    if (adapter.isManaging && !adapter.isRenaming) {
                         adapter.isRenaming = true
                         refresh()
                     }
                 }
+
                 4 -> {
-                    if (adapter.isManaging && !adapter.isDeleting){
+                    if (adapter.isManaging && !adapter.isDeleting) {
                         adapter.isDeleting = true
                         refresh()
                     }
                 }
+
                 5 -> {
-                    if (!adapter.isManaging){
+                    if (!adapter.isManaging) {
                         adapter.isManaging = true
                         refresh()
                     } else {
                         //Apply
 
                         tasks.forEach { t, u ->
-                            if (u == 'D'){
+                            if (u == 'D') {
                                 info.removeCheckpoint(t.name)
                             }
                         }
                         adapter.reset()
                         refresh()
                         if (tasks.isNotEmpty())
-                            info.player.success(adapter.getter["ui.checkpoint.delete.done",tasks.size])
+                            info.player.success(adapter.getter["ui.checkpoint.delete.done", tasks.size])
                         tasks.clear()
                     }
                 }
+
                 6 -> {
-                    if (!adapter.isManaging){
+                    if (!adapter.isManaging) {
                         back(info.player)
                     } else {
                         adapter.reset()

@@ -169,7 +169,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                 player = sender,
                                                 sellingItems = SellingItemInfo(
                                                     item = ItemStack(Material.CHEST).updateItemMeta<ItemMeta> {
-                                                        setDisplayName(getter["user.friend.sharingInventory"].toInfoMessage())
+                                                        displayName(getter["user.friend.sharingInventory"].toInfoMessage())
                                                     },
                                                     amount = 1,
                                                     unitPrise = 10

@@ -116,7 +116,7 @@ class Skinny : JavaPlugin(), Listener {
                         cache[sender.name] = skin
                     }
                 } catch (e: Exception) {
-                    sender.sendMessage(TextUtil.printException(e))
+                    sender.sendMessage(*TextUtil.printException(e))
                 }
             }
             return true

@@ -525,6 +525,9 @@ wand:
   name: 'The Fly Wand'
   title: 'A wand that allows you to fly.'
   subtitle: '%s second(s) remaining.'
+  duplicate:
+    title: "Sorry, you shouldn't own two wands"
+    tip: "To own a couple, chests may be a choice, but won't make the gaming experience any little better"
 portal:
   name: 'Portal'
   title: 'Allows you to teleport between two positions unlimitedly.'

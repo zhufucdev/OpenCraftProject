@@ -47,8 +47,6 @@ import kotlin.concurrent.fixedRateTimer
 import kotlin.math.roundToLong
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.functions
-import kotlin.reflect.jvm.javaMethod
-import kotlin.reflect.jvm.reflect
 
 class Core : JavaPlugin(), Listener {
     companion object {
@@ -122,12 +120,10 @@ class Core : JavaPlugin(), Listener {
             logger.warning("Citizens is not enabled.")
             logger.warning("Disabling NPC functionality.")
         } else {
-            Bukkit.getScheduler().runTaskLater(this, { _ ->
-                spawnNPC()
-            }, 40)
+            spawnNPC()
         }
 
-        fun startAward() {
+        fun scheduleAwards() {
             fun Pair<Int, Int>.smaller() = if (first < second) first else second
             val yesterday = SimpleDateFormat("MM/dd").format(Date())
 
@@ -163,14 +159,14 @@ class Core : JavaPlugin(), Listener {
                         currency += award
                     }
                 }
-                startAward()
+                scheduleAwards()
                 this.cancel()
             }
         }
-        startAward()
+        scheduleAwards()
     }
 
-    fun runInit(f: KFunction<*>, vararg args: Any?) {
+    private fun runInit(f: KFunction<*>, vararg args: Any?) {
         try {
             f.call(*args)
         } catch (e: Exception) {
@@ -225,7 +221,7 @@ class Core : JavaPlugin(), Listener {
                     } catch (e: Exception) {
                         logger.warning("Error while saving inventory for player ${it.player.name}")
                         e.printStackTrace()
-                        it.player.sendMessage(TextUtil.printException(e))
+                        it.player.sendMessage(*TextUtil.printException(e))
                         false
                     }
                     if (successful)
@@ -325,7 +321,7 @@ class Core : JavaPlugin(), Listener {
                 try {
                     npc.add(readNPCProfile(it))
                 } catch (e: Exception) {
-                    throw IllegalStateException("Error while loading ${it.name}", e.cause)
+                    throw IllegalStateException("Error while loading ${it.name}", e)
                 }
             }
         }
@@ -370,7 +366,7 @@ class Core : JavaPlugin(), Listener {
                     .setDirection(Vector(faceX, faceY, faceZ)),
                 SpawnReason.PLUGIN
             )
-            val trait = npc.getTrait(Equipment::class.java)
+            val trait = npc.getOrAddTrait(Equipment::class.java)
 
             Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
                 try {
@@ -394,7 +390,7 @@ class Core : JavaPlugin(), Listener {
 
             return npc
         } catch (e: Exception) {
-            throw IllegalStateException("Unable to load ${file.nameWithoutExtension}: ${e.message}", e.cause)
+            throw IllegalStateException("Unable to load ${file.nameWithoutExtension}: ${e.message}", e)
         }
     }
 
@@ -482,7 +478,7 @@ class Core : JavaPlugin(), Listener {
                                 .plus(ChatColor.RESET.char)
                         } else "ERROR: no shell command screenfetch."
                         sender.sendMessage(
-                            TextUtil.format(
+                            *TextUtil.format(
                                 title = "自述文件",
                                 content = screenfetch + readme.readText(charset)
                             )
@@ -672,7 +668,7 @@ class Core : JavaPlugin(), Listener {
                 }
                 args.first() == "notice" -> {
                     if (args.size <= 1 && sender is Player && sender.isOp) {
-                        Base.publicMsgPool.sendAllTo(sender.info() ?: return true)
+                        publicMsgPool.sendAllTo(sender.info() ?: return true)
                         return true
                     }
                     if (args.size < 3) {
@@ -686,13 +682,13 @@ class Core : JavaPlugin(), Listener {
                                     append(args[i] + ' ')
                                 deleteCharAt(lastIndex)
                             }
-                            Base.publicMsgPool.add(
+                            publicMsgPool.add(
                                 text = text,
                                 type = MessagePool.Type.Public,
                                 extra = YamlConfiguration()
                             )
                             sender.success("已在公共消息池中追加该内容")
-                            PlayerManager.forEachChatter { Base.publicMsgPool.sendUnreadTo(it) }
+                            PlayerManager.forEachChatter { publicMsgPool.sendUnreadTo(it) }
                         }
                         "remove" -> {
                             val id = args[2].toIntOrNull()
@@ -703,7 +699,7 @@ class Core : JavaPlugin(), Listener {
                             Base.publicMsgPool.remove(id)
                             sender.success("已移除索引为${id}的消息")
                         }
-                        "broadcast" -> PlayerManager.forEachChatter { Base.publicMsgPool.sendUnreadTo(it) }
+                        "broadcast" -> PlayerManager.forEachChatter { publicMsgPool.sendUnreadTo(it) }
                     }
                 }
                 args.first() == "script" -> {

@@ -2,6 +2,7 @@ package com.zhufu.opencraft.ui
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -24,20 +25,20 @@ class WorldUI(plugin: Plugin, info: Info, override val parentInventory: Clickabl
         override fun getItem(index: Int, currentPage: Int): ItemStack =
             ItemStack(Material.GRASS_BLOCK).updateItemMeta<ItemMeta> {
                 val world = worlds[index]
-                setDisplayName(world.world.name.toSuccessMessage())
-                val l = arrayListOf<String>()
+                displayName(world.world.name.toSuccessMessage())
+                val l = arrayListOf<Component>()
                 if (world.description.isNotEmpty())
                     TextUtil.formatLore(world.description).forEach {
                         l.add(it.toInfoMessage())
                     }
                 l.add(getter["ui.world.tip"].toTipMessage())
-                lore = l
+                lore(l)
             }
 
         override fun getToolbarItem(index: Int): ItemStack =
             if (index == 6) {
                 Widgets.back.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.back"].toInfoMessage())
+                    displayName(getter["ui.back"].toInfoMessage())
                 }
             } else {
                 super.getToolbarItem(index)

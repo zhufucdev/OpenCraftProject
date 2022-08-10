@@ -1,13 +1,15 @@
 package com.zhufu.opencraft.ui
 
 import com.zhufu.opencraft.*
-import com.zhufu.opencraft.TextUtil.TextColor.*
+import com.zhufu.opencraft.TextUtil.TextColor.AQUA
+import com.zhufu.opencraft.TextUtil.TextColor.GREEN
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
-import org.bukkit.material.MaterialData
 import org.bukkit.plugin.Plugin
 
 class BlockUI(
@@ -16,7 +18,7 @@ class BlockUI(
     private val root: BlockLockManager.GroupBlockInfo?,
     override val parentInventory: ClickableInventory
 ) : PageInventory<BlockUI.Adapter>(
-    TextUtil.info(Language[player, "ui.blockTitle"]),
+    Language[player, "ui.blockTitle"].toInfoMessage(),
     { Adapter(player, root?.children, root != null) },
     36, plugin
 ), Backable {
@@ -54,16 +56,16 @@ class BlockUI(
         }
 
         override fun getItem(index: Int, currentPage: Int): ItemStack {
-            return if (index < blocks.size){
+            return if (index < blocks.size) {
                 when (val info = blocks[index]) {
                     is BlockLockManager.BlockInfo -> ItemStack(Material.GRASS_BLOCK).apply {
                         itemMeta = itemMeta!!.apply {
                             val rename = TextUtil.formatLore(info.name)
-                            setDisplayName(TextUtil.getColoredText(rename.first(), GREEN))
-                            val newLore = ArrayList<String>()
+                            displayName(rename.first().toSuccessMessage())
+                            val newLore = ArrayList<Component>()
                             if (rename.size > 1) {
                                 for (i in 1 until rename.size) {
-                                    newLore.add(TextUtil.getColoredText(rename[i], GREEN))
+                                    newLore.add(rename[i].toSuccessMessage())
                                 }
                             }
 
@@ -71,25 +73,26 @@ class BlockUI(
                                 TextUtil.formatLore(getter["ui.block.located", "${info.location.world!!.name},(${info.location.blockX},${info.location.blockY},${info.location.blockZ})"])
                             newLore.addAll(
                                 listOf(
-                                    TextUtil.getColoredText(getter["block.block"], AQUA),
-                                    TextUtil.info(getter["ui.block.accessible", accessible(info)])
+                                    getter["block.block"].toComponent().color(NamedTextColor.DARK_AQUA),
+                                    getter["ui.block.accessible", accessible(info)].toInfoMessage()
                                 )
                             )
                             located.forEach {
-                                newLore.add(TextUtil.info(it))
+                                newLore.add(it.toInfoMessage())
                             }
-                            newLore.add(TextUtil.tip(getter["ui.block.click"]))
-                            lore = newLore
+                            newLore.add(getter["ui.block.click"].toTipMessage())
+                            lore(newLore)
                         }
                     }
+
                     is BlockLockManager.GroupBlockInfo -> ItemStack(Material.CHEST).apply {
                         itemMeta = itemMeta!!.apply {
                             val rename = TextUtil.formatLore(info.name)
-                            setDisplayName(TextUtil.getColoredText(rename.first(), GREEN))
-                            val newLore = ArrayList<String>()
+                            displayName(rename.first().toSuccessMessage())
+                            val newLore = ArrayList<Component>()
                             if (rename.size > 1) {
                                 for (i in 1 until rename.size) {
-                                    newLore.add(TextUtil.getColoredText(rename[i], GREEN))
+                                    newLore.add(rename[i].toSuccessMessage())
                                 }
                             }
 
@@ -112,26 +115,27 @@ class BlockUI(
 
                             newLore.addAll(
                                 listOf(
-                                    TextUtil.getColoredText(getter["block.group"], AQUA),
-                                    TextUtil.info(getter["ui.block.accessible", accessible(info)])
+                                    getter["block.group"].toComponent().color(NamedTextColor.DARK_AQUA),
+                                    getter["ui.block.accessible", accessible(info)].toInfoMessage()
                                 )
                             )
                             children.forEach {
-                                newLore.add(TextUtil.info(it))
+                                newLore.add(it.toInfoMessage())
                             }
-                            newLore.add(TextUtil.tip(getter["ui.block.click"]))
-                            lore = newLore
+                            newLore.add(getter["ui.block.click"].toTipMessage())
+                            lore(newLore)
                         }
                     }
+
                     else -> ItemStack(Material.BARRIER).apply {
                         itemMeta = itemMeta!!.apply {
-                            setDisplayName(TextUtil.error(getter["command.error.unknown"]))
+                            displayName(getter["command.error.unknown"].toErrorMessage())
                         }
                     }
                 }
             } else {
                 Widgets.confirm.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.block.new"].toSuccessMessage())
+                    displayName(getter["ui.block.new"].toSuccessMessage())
                 }
             }
         }
@@ -140,44 +144,33 @@ class BlockUI(
             return if (index == 0 && showDelete) {
                 Widgets.rename.apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.info(getter["ui.block.selecting.title"]))
-                        val newLore = ArrayList<String>()
-                        newLore.add(
-                            TextUtil.getColoredText(
-                                getter["ui.block.selecting.tip.1"],
-                                TextUtil.TextColor.AQUA
-                            )
+                        displayName(getter["ui.block.selecting.title"].toInfoMessage())
+                        lore(
+                            buildList {
+                                add(getter["ui.block.selecting.tip.1"].toComponent().color(NamedTextColor.DARK_AQUA))
+                                for (i in 2..6) {
+                                    add(getter["ui.block.selecting.tip.$i"].toTipMessage())
+                                }
+                            }
                         )
-                        for (i in 2..6) {
-                            newLore.add(TextUtil.tip(getter["ui.block.selecting.tip.$i"]))
-                        }
-                        lore = newLore
                     }
                 }
             } else if (index == 4 && !showDelete) ItemStack(Material.CHEST).apply {
                 itemMeta = itemMeta!!.apply {
-                    setDisplayName(TextUtil.getColoredText(getter["ui.block.grouping.title"], AQUA))
-                    val newLore = ArrayList<String>()
-                    TextUtil.formatLore(getter["ui.block.grouping.subtitle"]).forEach {
-                        newLore.add(TextUtil.info(it))
-                    }
-                    lore = newLore
+                    displayName(getter["ui.block.grouping.title"].toComponent().color(NamedTextColor.DARK_AQUA))
+                    lore(TextUtil.formatLore(getter["ui.block.grouping.subtitle"]).map { it.toInfoMessage() })
                 }
             }
             else if (index == 5 && showDelete)
                 Widgets.close.apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(TextUtil.getColoredText(getter["ui.delete"], TextUtil.TextColor.RED))
-                        val newLore = ArrayList<String>()
-                        TextUtil.formatLore(getter["ui.block.deleteAlert"]).forEach {
-                            newLore.add(TextUtil.warn(it))
-                        }
-                        lore = newLore
+                        displayName(getter["ui.delete"].toErrorMessage())
+                        lore(TextUtil.formatLore(getter["ui.block.deleteAlert"]).map { it.toWarnMessage() })
                     }
                 }
             else if (index == 6) ItemStack(Material.ARROW).apply {
                 itemMeta = itemMeta!!.apply {
-                    setDisplayName(TextUtil.info(getter["ui.back"]))
+                    displayName(getter["ui.back"].toInfoMessage())
                 }
             }
             else super.getToolbarItem(index)
@@ -205,9 +198,11 @@ class BlockUI(
                     player.info(getter["ui.block.selecting.done", root.name])
                     close()
                 }
+
                 4 -> {
                     BlockGroupingUI(player, plugin, this).show(player)
                 }
+
                 5 -> {
                     val info = root!!
                     BlockLockManager.remove(info)
@@ -215,6 +210,7 @@ class BlockUI(
                     if (parentInventory is PageInventory<*>) parentInventory.refresh()
                     back(player)
                 }
+
                 6 -> back(player)
             }
         }

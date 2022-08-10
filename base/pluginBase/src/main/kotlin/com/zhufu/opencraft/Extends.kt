@@ -53,25 +53,26 @@ fun CommandSender?.getter() = getLangGetter(if (this is HumanEntity) this.info()
 fun ChatInfo?.getter() = getLangGetter(this)
 
 fun CommandSender.success(msg: String) {
-    this.sendMessage(TextUtil.success(msg))
+    this.sendMessage(msg.toSuccessMessage())
 }
 
 fun CommandSender.info(msg: String) {
-    this.sendMessage(TextUtil.info(msg))
+    this.sendMessage(msg.toInfoMessage())
 }
 
 fun CommandSender.error(msg: String) {
-    this.sendMessage(TextUtil.error(msg))
+    this.sendMessage(msg.toErrorMessage())
 }
 
 fun CommandSender.tip(msg: String) {
-    this.sendMessage(TextUtil.tip(msg))
+    this.sendMessage(msg.toTipMessage())
 }
 
 fun CommandSender.warn(msg: String) {
-    this.sendMessage(TextUtil.warn(msg))
+    this.sendMessage(msg.toWarnMessage())
 }
 
+@Deprecated("Not safe", ReplaceWith("Player.sendActionBar"))
 fun Player.sendActionText(msg: String) {
     ActionBarTextUtil.sendActionText(this, msg)
 }

@@ -213,7 +213,7 @@ object SurveyManager : Listener {
     private val testMap = HashMap<Player, PlayerAnswerer>()
     fun init(surveySave: File, plugin: JavaPlugin?) {
         if (!surveySave.exists()) {
-            plugin?.logger?.warning("Survey file @$surveySave doesn't exist.")
+            plugin?.logger?.warning("Survey file $surveySave doesn't exist.")
             return
         }
         try {

@@ -8,7 +8,7 @@ import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.Base.Extend.appendToJson
 import com.zhufu.opencraft.Base.Extend.fromJsonToLocation
 import com.zhufu.opencraft.Base.TutorialUtil.tplock
-import com.zhufu.opencraft.Base.TutorialUtil.linearTo
+import com.zhufu.opencraft.Base.TutorialUtil.linearMotion
 import com.zhufu.opencraft.TutorialManager.Tutorial.TriggerMethod.*
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -52,7 +52,7 @@ object TutorialManager {
     }
 
     private val id
-        get() = mList.maxBy { it.id }?.id ?: 0
+        get() = mList.maxBy { it.id }.id
 
     fun getNewID(): Int {
         for (i in 0..id) {
@@ -189,7 +189,7 @@ object TutorialManager {
             val player = object : TutorialPlayer {
                 override var l: (() -> Unit)? = null
                 override fun play(entity: Entity) {
-                    Bukkit.getScheduler().runTaskAsynchronously(mPlugin!!) { t ->
+                    Bukkit.getScheduler().runTaskAsynchronously(mPlugin!!) { _ ->
                         steps.forEach {
                             it.showTo(to)
                         }
@@ -329,7 +329,7 @@ object TutorialManager {
                     entity.tplock(to, time)
                     playTitle(entity)
                 } else {
-                    entity.linearTo(to, time, 20)
+                    entity.linearMotion(to, time, 20)
                     playTitle(entity)
                 }
                 Thread.sleep(time + 100)

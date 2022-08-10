@@ -11,7 +11,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.player.AsyncPlayerChatEvent
+import io.papermc.paper.event.player.AsyncChatEvent
+import net.kyori.adventure.text.TextComponent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 
@@ -57,12 +58,8 @@ class TutorialListener : Listener {
         info.doNotTranslate = true
         originData[player] = step.clone()
         inRecording[player] = step
-        player.sendMessage(
-            arrayOf(
-                TextUtil.info("您已进入记录模式"),
-                TextUtil.tip("您的聊天栏已被替换为记录模式指令输入器，输入\"help\"查看帮助")
-            )
-        )
+        player.info("您已进入记录模式")
+        player.tip("您的聊天栏已被替换为记录模式指令输入器，输入\"help\"查看帮助")
     }
 
     fun removeRecorder(player: Player) {
@@ -137,11 +134,11 @@ class TutorialListener : Listener {
     }
 
     @EventHandler
-    fun onPlayerAsyncChat(event: AsyncPlayerChatEvent) {
+    fun onPlayerAsyncChat(event: AsyncChatEvent) {
         val step = inRecording[event.player]
         if (step != null) {
             event.isCancelled = true
-            val command = event.message
+            val command = (event.message() as TextComponent).content()
             CommandExecutor.onCommand(event.player, command, step)
         }
     }

@@ -13,7 +13,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class VisitorInventory(plugin: Plugin, val player: Player) : PageInventory<VisitorInventory.VisitorAdapter>(
-    TextUtil.getColoredText("浏览商家[uuid:$id]", TextUtil.TextColor.RED, false, false),
+    "浏览商家[uuid:$id]".toComponent(),
     VisitorAdapter(),
     54,
     plugin

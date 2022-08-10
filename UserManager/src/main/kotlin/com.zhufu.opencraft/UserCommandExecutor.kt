@@ -362,12 +362,8 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         info.tag.getSerializable("surviveSpawn", Location::class.java)
                             ?: throw IllegalArgumentException()
                     } catch (e: Exception) {
-                        sender.sendMessage(
-                            arrayOf(
-                                TextUtil.error(getter["user.error.spawnpointNotFound"]),
-                                getter["gameWarn"]
-                            )
-                        )
+                        sender.error(getter["user.error.spawnpointNotFound"])
+                        sender.warn(getter["gameWarn"])
                         return true
                     }
                     dest.chunk.load()
@@ -570,13 +566,9 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             sender.info(getter["user.error.noInvitations"])
                         }
                         info.gotoRequests.size > 1 -> {
-                            sender.sendMessage(
-                                arrayOf(
-                                    TextUtil.error(getter["user.error.moreThanOneInvitations.1"]),
-                                    TextUtil.tip(getter["user.error.moreThanOneInvitations.2"]),
-                                    TextUtil.info(getter["user.error.moreThanOneInvitations.3"])
-                                )
-                            )
+                            sender.error(getter["user.error.moreThanOneInvitations.1"])
+                            sender.tip(getter["user.error.moreThanOneInvitations.2"])
+                            sender.info(getter["user.error.moreThanOneInvitations.3"])
                             val sb = StringBuilder()
                             info.gotoRequests.forEach { sb.append("${it.requester.name}, ") }
                             sb.delete(sb.length - 2, sb.length)
@@ -639,7 +631,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             val location = info.tag.getSerializable("lastDeath.location", Location::class.java)
                             val reason = info.tag.getString("lastDeath.reason", "")
                             sender.sendMessage(
-                                arrayOf(
+                                *arrayOf(
                                     "${getter["user.lastDeath.time"]}: ${if (time == -1L) "null" else time.toString()}",
                                     "${getter["user.lastDeath.location"]}: ${location?.toPrettyString() ?: "null"}",
                                     "${getter["user.lastDeath.reason"]}: ${if (reason!!.isEmpty()) "null" else reason}"
@@ -661,12 +653,8 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             return true
                         }
                         val prise = Game.env.getInt("backToDeathPrise")
-                        sender.sendMessage(
-                            arrayOf(
-                                TextUtil.info(getter["user.lastDeath.last", t.toPrettyString()]),
-                                TextUtil.tip(getter["user.lastDeath.toGo", Bukkit.getPluginCommand("user bd")!!.usage, prise])
-                            )
-                        )
+                        sender.info(getter["user.lastDeath.last", t.toPrettyString()])
+                        sender.tip(getter["user.lastDeath.toGo", Bukkit.getPluginCommand("user bd")!!.usage, prise])
                     }
                 }
             }

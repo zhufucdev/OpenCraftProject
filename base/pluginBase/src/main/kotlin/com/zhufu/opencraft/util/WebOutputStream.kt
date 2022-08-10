@@ -7,6 +7,8 @@ import com.zhufu.opencraft.Language
 import com.zhufu.opencraft.WebInfo
 import com.zhufu.opencraft.getter
 import com.zhufu.opencraft.player_community.PlayerOutputStream
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import java.io.File
 
 class WebOutputStream(private val parent: WebInfo): PlayerOutputStream() {
@@ -39,6 +41,15 @@ class WebOutputStream(private val parent: WebInfo): PlayerOutputStream() {
         send("${sender.displayName}: $text")
     }
 
+    override fun send(component: Component) {
+        if (component is TextComponent) {
+            send(component.content())
+        } else {
+            throw NotImplementedError()
+        }
+    }
+
+    @Deprecated("Not safe", replaceWith = ReplaceWith("send(Component)"))
     override fun sendRaw(json: JsonElement) {
         send(parent.getter()["translator.withJson",json.toString()])
     }

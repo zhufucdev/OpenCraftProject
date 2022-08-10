@@ -40,28 +40,28 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
                 if (index < friendship.size) {
                     val friend = friendship[index]
                     friend.friend.skullItem.updateItemMeta<ItemMeta> {
-                        setDisplayName(friend.name)
-                        lore = arrayListOf<String>().apply {
+                        displayName(friend.name?.toComponent())
+                        lore(buildList {
                             if (friend.isFriend)
                                 friend.statics(getter).forEach {
                                     add(it.toInfoMessage())
                                 }
                             add(getter["ui.friend.click"].toTipMessage())
-                        }
+                        })
                     }
                 } else {
                     Widgets.confirm.updateItemMeta<ItemMeta> {
-                        setDisplayName(getter["ui.friend.add"].toInfoMessage())
+                        displayName(getter["ui.friend.add"].toInfoMessage())
                     }
                 }
             } else {
                 val player = strangers[index]
                 player.skullItem.updateItemMeta<ItemMeta> {
-                    setDisplayName(player.name)
-                    lore = listOf(
+                    displayName(player.name?.toComponent())
+                    lore(listOf(
                         getter["ui.friend.send"].toTipMessage(),
-                        getter["ui.friend.count", player.friendship.size]
-                    )
+                        getter["ui.friend.count", player.friendship.size].toComponent()
+                    ))
                 }
             }
         }
@@ -69,7 +69,7 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
         override fun getToolbarItem(index: Int): ItemStack {
             return if (index == 6) {
                 Widgets.back.updateItemMeta<ItemMeta> {
-                    setDisplayName(getter["ui.back"].toInfoMessage())
+                    displayName(getter["ui.back"].toInfoMessage())
                 }
             } else {
                 super.getToolbarItem(index)
@@ -87,7 +87,7 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
                 } else {
                     adapter.addMode = true
                     close()
-                    info.player.sendActionText(adapter.getter["ui.friend.booting"].toInfoMessage())
+                    info.player.sendActionBar(adapter.getter["ui.friend.booting"].toInfoMessage())
                     Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
                         Bukkit.getScheduler().callSyncMethod(plugin) {
                             show(info.player)

@@ -2,7 +2,10 @@ name: UserManager
 main: com.zhufu.opencraft.UserManager
 author: zhufucomcom
 version: '1.0'
-softdepend: [ServerCore,CurrencySystem]
+depend:
+  - ServerCore
+softdepend:
+  - CurrencySystem
 api-version: '1.14'
 commands:
   user:

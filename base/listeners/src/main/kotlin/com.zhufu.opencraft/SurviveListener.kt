@@ -10,6 +10,7 @@ import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.special_item.Insurance
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -84,11 +85,9 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                             it.inventory.addItem(ItemStack(Material.DIAMOND, 2))
                         }
                         .sendMessage(
-                            arrayOf(
-                                TextUtil.error(getter["survival.compe.1"]),
-                                TextUtil.info(getter["survival.compe.2"]),
-                                TextUtil.tip(getter["survival.compe.3"])
-                            )
+                            TextUtil.error(getter["survival.compe.1"]),
+                            TextUtil.info(getter["survival.compe.2"]),
+                            TextUtil.tip(getter["survival.compe.3"])
                         )
 
                     randomSpawn(info.inventory)
@@ -100,22 +99,20 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 val isSpawnCorrect = s?.world == surviveWorld
                 if (!isLocationCorrect && isSpawnCorrect) {
                     sendMessage(
-                        arrayOf(
-                            TextUtil.error(getter["survival.saveNotFound.1"]),
-                            TextUtil.info(getter["survival.saveNotFound.2"])
-                        )
+                        TextUtil.error(getter["survival.saveNotFound.1"]),
+                        TextUtil.info(getter["survival.saveNotFound.2"])
+
                     )
                     inventory.set("location", s!!)
                     teleport(s)
                 } else if (isLocationCorrect && !isSpawnCorrect) {
                     sendMessage(
-                        arrayOf(
-                            TextUtil.error(getter["survival.spawnNotFound.1"]),
-                            TextUtil.info(getter["survival.spawnNotFound.2"])
-                        )
+                        TextUtil.error(getter["survival.spawnNotFound.1"]),
+                        TextUtil.info(getter["survival.spawnNotFound.2"])
+
                     )
                     info.tag.set("surviveSpawn", l)
-                } else if (!isLocationCorrect && !isSpawnCorrect) {
+                } else if (!isLocationCorrect) {
                     reset()
                     return true
                 }
@@ -133,7 +130,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 } catch (e: Exception) {
                     Bukkit.getLogger().warning("Unable to solve $name's survival request.")
                     e.printStackTrace()
-                    sendMessage(TextUtil.printException(e))
+                    sendMessage(*TextUtil.printException(e))
                     info.apply {
                         this.inventory.create(RESET).load(false)
                         status = InLobby
@@ -156,7 +153,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             if (info != null) {
                 player.solveSurvivorRequest(info)
             } else {
-                player.error(getLangGetter(info)["player.error.unknown"])
+                player.error(getLangGetter(null)["player.error.unknown"])
             }
         }
     }
@@ -166,6 +163,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
     }
 
     private val coolDown = arrayListOf<Player>()
+
     @EventHandler
     fun onPlayerBootComputer(event: PlayerInteractEvent) {
         if (event.action == Action.RIGHT_CLICK_BLOCK) {
@@ -228,16 +226,20 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             InLobby -> {
                 info.inventory.create(RESET).load()
             }
+
             Surviving -> {
                 event.respawnLocation =
-                    info.tag.getSerializable("surviveSpawn", Location::class.java, null) ?: Base.lobby.spawnLocation
+                    info.tag.getSerializable("surviveSpawn", Location::class.java, null) ?: lobby.spawnLocation
             }
+
             InTutorial -> {
                 info.inventory.create(RESET).load()
             }
+
             Building -> {
                 event.respawnLocation = surviveWorld.spawnLocation
             }
+
             else -> {
                 event.respawnLocation = lobby.spawnLocation
             }
@@ -252,7 +254,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 info.tag
                     .apply {
                         set("lastDeath.location", event.entity.location)
-                        set("lastDeath.reason", event.deathMessage)
+                        set("lastDeath.reason", event.deathMessage())
                         set("lastDeath.time", System.currentTimeMillis())
                     }
 
@@ -332,7 +334,8 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 info.tag.set("surviveSpawn", player.location)
                 info.inventory.create("survivor").save()
                 player.isInvulnerable = false
-                player.sendTitle(TextUtil.info(getter["survival.loseProtect"]), getter["survival.setSpawn"], 7, 70, 7)
+                val title = Title.title(getter["survival.loseProtect"].toInfoMessage(), getter["survival.setSpawn"].toComponent())
+                player.showTitle(title)
             }, 3 * 20)
         }
         if (info.status == Surviving && !info.isSurveyPassed) {
@@ -358,12 +361,15 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 to.blockX < target.fromX -> {
                     event.player.teleport(to.clone().apply { x = target.fromX.toDouble() })
                 }
+
                 to.blockX > target.toX -> {
                     event.player.teleport(to.clone().apply { x = target.toX.toDouble() })
                 }
+
                 to.blockZ < target.fromZ -> {
                     event.player.teleport(to.clone().apply { z = target.fromZ.toDouble() })
                 }
+
                 to.blockZ > target.toZ -> {
                     event.player.teleport(to.clone().apply { z = target.toZ.toDouble() })
                 }
@@ -401,10 +407,9 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
     private fun sendPlayerOutOfSpawnMessage(player: HumanEntity) {
         val getter = getLangGetter(PlayerManager.findInfoByPlayer(player.uniqueId))
         player.sendMessage(
-            arrayOf(
-                TextUtil.error(getter["survey.outOfSpawn2"]),
-                TextUtil.tip(getter["survey.toPlaceBlock"])
-            )
+            TextUtil.error(getter["survey.outOfSpawn2"]),
+            TextUtil.tip(getter["survey.toPlaceBlock"])
+
         )
     }
 
@@ -422,9 +427,11 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             event.isCancelled = true
             sendPlayerOutOfSpawnMessage(event.player)
         } else if (info.status == InLobby && event.block.world == lobby) {
-            if (!PlayerLobbyManager.isInOwnLobby(info) && !event.player.isOp && PlayerLobbyManager.targetOf(event.player)?.canBuildBy(event.player) != true) {
+            if (!PlayerLobbyManager.isInOwnLobby(info) && !event.player.isOp && PlayerLobbyManager.targetOf(event.player)
+                    ?.canBuildBy(event.player) != true
+            ) {
                 event.isCancelled = true
-                event.player.sendActionText(info.getter()["lobby.error.breakNotPermitted"].toErrorMessage())
+                event.player.sendActionBar(info.getter()["lobby.error.breakNotPermitted"].toErrorMessage())
                 ServerCaller["SolveLobbyVisitor"]!!(listOf(info))
             }
         }
@@ -455,9 +462,11 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 ) {
                     event.isCancelled = true
                 }
-            } else if (!event.player.isOp && PlayerLobbyManager.targetOf(event.player)?.canBuildBy(event.player) != true) {
+            } else if (!event.player.isOp && PlayerLobbyManager.targetOf(event.player)
+                    ?.canBuildBy(event.player) != true
+            ) {
                 event.isCancelled = true
-                event.player.sendActionText(info.getter()["lobby.error.buildNotPermitted"].toErrorMessage())
+                event.player.sendActionBar(info.getter()["lobby.error.buildNotPermitted"].toErrorMessage())
                 ServerCaller["SolveLobbyVisitor"]!!(listOf(info))
             }
         }
@@ -494,6 +503,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                         }
                         ?.inventory?.create(RESET)?.load(savePresent = true)
             }
+
             surviveWorld -> {
                 val info = PlayerManager.findInfoByPlayer(event.player)
                 if (info == null) {
@@ -505,6 +515,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     event.player.error(getLang(info, "survival.teleport"))
                 }
             }
+
             else -> {
                 if (event.to?.world == endWorld || event.to?.world == surviveWorld) {
                     val info = PlayerManager.findInfoByPlayer(event.player)
@@ -516,10 +527,8 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     }
                     if (!info.tag.getBoolean("isSurvivor", false)) {
                         event.player.sendMessage(
-                            arrayOf(
-                                TextUtil.error(getLang(info, "survival.notRegistered.1")),
-                                TextUtil.tip(getLang(info, "survival.notRegistered.2"))
-                            )
+                            TextUtil.error(getLang(info, "survival.notRegistered.1")),
+                            TextUtil.tip(getLang(info, "survival.notRegistered.2"))
                         )
                     } else {
                         event.isCancelled = !event.player.solveSurvivorRequest(info)
@@ -559,11 +568,13 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     location = endWorld.spawnLocation
                 }
             }
+
             netherWorld -> {
                 location.x *= 8
                 location.z *= 8
                 location.world = surviveWorld
             }
+
             endWorld -> {
                 val info = PlayerManager.findInfoByPlayer(event.player)
                 if (info == null) {
@@ -572,6 +583,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 }
                 location = info.tag.getSerializable("surviveSpawn", Location::class.java)!!
             }
+
             lobby -> {
                 event.isCancelled = true
                 return

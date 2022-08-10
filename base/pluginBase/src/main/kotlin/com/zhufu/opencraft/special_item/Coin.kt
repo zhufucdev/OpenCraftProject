@@ -11,8 +11,8 @@ import org.bukkit.inventory.meta.ItemMeta
 class Coin : SpecialItem {
     constructor(amount: Int, getter: Language.LangGetter): super(Material.GOLD_INGOT, getter) {
         updateItemMeta<ItemMeta> {
-            setDisplayName(getter["coin.name"].toInfoMessage())
-            lore = listOf(getter["coin.title"].toTipMessage())
+            displayName(getter["coin.name"].toInfoMessage())
+            lore(listOf(getter["coin.title"].toTipMessage()))
             isUnbreakable = true
             addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ENCHANTS)
         }

@@ -342,7 +342,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
                 ?.getKeys(false)
                 ?.any {
                     val section = config.getConfigurationSection("inventory.$it")
-                    l(section ?: return@any false)
+                    section?.let { s -> l(s) } ?: false
                 }
                 ?: false
 

@@ -6,6 +6,8 @@ import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.Friend
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -17,6 +19,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
+import java.time.Duration
 
 class UserManager : JavaPlugin(), Listener {
     private lateinit var boardLocation: Location
@@ -94,21 +97,27 @@ class UserManager : JavaPlugin(), Listener {
         } else {
             val getter = getLangGetter(info)
             if (!info.isRegistered) {
-                player.sendTitle(
-                    TextUtil.info(getter["user.reg1"]),
-                    TextUtil.tip(getter["user.reg2", server.getPluginCommand("user reg")!!.usage]),
-                    10,
-                    16 * 1000,
-                    10
+                val title = Title.title(
+                    getter["user.reg1"].toInfoMessage(),
+                    getter["user.reg2", server.getPluginCommand("user reg")!!.usage].toTipMessage(),
+                    Title.Times.times(
+                        Duration.ofMillis(500),
+                        Duration.ofDays(2),
+                        Duration.ZERO
+                    )
                 )
+                player.showTitle(title)
             } else if (!info.isLogin) {
-                player.sendTitle(
-                    TextUtil.info(getter["user.login1"]),
-                    TextUtil.tip(getter["user.login2", server.getPluginCommand("user log")!!.usage]),
-                    10,
-                    16 * 1000,
-                    10
+                val title = Title.title(
+                    getter["user.login1"].toInfoMessage(),
+                    getter["user.login2", server.getPluginCommand("user log")!!.usage].toTipMessage(),
+                    Title.Times.times(
+                        Duration.ofMillis(500),
+                        Duration.ofDays(2),
+                        Duration.ZERO
+                    )
                 )
+                player.showTitle(title)
             }
 
             Bukkit.getScheduler().runTaskLater(
@@ -116,7 +125,7 @@ class UserManager : JavaPlugin(), Listener {
                 { _ ->
                     if (info.player.isOnline && !info.isLogin && info.player.world == spawnWorld) {
                         logger.info("${player.name} may be kicked because of timeout.")
-                        player.kickPlayer(TextUtil.error(getter["user.login.timeout"]))
+                        player.kick(getter["user.login.timeout"].toErrorMessage())
                     }
                 }, if (info.isRegistered) 30 * 25L else 60 * 25L
             )
@@ -143,7 +152,7 @@ class UserManager : JavaPlugin(), Listener {
                     if (it != null) {
                         getLang(it, "player.error.opNotLoginOnWeb").toErrorMessage()
                     } else {
-                        "管理员必须先在网页登录，再在游戏中登录"
+                        Language.getDefault("player.error.opNotLoginOnWeb").toErrorMessage()
                     }
                 }
             )
@@ -153,7 +162,7 @@ class UserManager : JavaPlugin(), Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val info = PlayerManager.findInfoByPlayer(event.player) ?: return
-        event.joinMessage = ""
+        event.joinMessage(Component.empty())
         if (!info.isUserLanguageSelected) {
             info.doNotTranslate = true
             info.logout(boardLocation)
@@ -171,7 +180,7 @@ class UserManager : JavaPlugin(), Listener {
 
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        event.quitMessage = ""
+        event.quitMessage(Component.empty())
         val info = PlayerManager.findInfoByPlayer(event.player) ?: return
         if (info.isLogin) {
             broadcast("player.left", TextUtil.TextColor.YELLOW, info.player.name)

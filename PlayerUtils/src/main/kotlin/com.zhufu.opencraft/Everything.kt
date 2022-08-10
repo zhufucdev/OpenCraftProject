@@ -185,7 +185,7 @@ object Everything : Listener {
     fun startDTWB(game: Cube) {
         print("Starting DTWB")
         val yPair = (game.from.blockY to game.to.blockY).toList()
-        for (y in yPair.min()!!..yPair.max()!!) {
+        for (y in yPair.min()..yPair.max()) {
             spawnDTWBat(y, game)
         }
         game.apply {
@@ -423,7 +423,7 @@ object Everything : Listener {
 
     @EventHandler
     fun onDropItem(event: PlayerDropItemEvent) {
-        if (event.itemDrop.itemStack.itemMeta!!.displayName == event.player.info().getter()["scripting.ui.new"].toInfoMessage()
+        if (event.itemDrop.itemStack.itemMeta!!.displayName() == event.player.info().getter()["scripting.ui.new"].toInfoMessage()
             && originItemMap.containsKey(event.player.uniqueId)
         ) {
             event.isCancelled = true
@@ -437,13 +437,4 @@ object Everything : Listener {
     }
 
     private val originItemMap = HashMap<UUID, Pair<ItemStack, (String?) -> Unit>>()
-    fun openBookEditFor(player: Player, origin: String = "", onFinish: (String?) -> Unit) {
-        originItemMap[player.uniqueId] = player.inventory.itemInMainHand.clone() to onFinish
-        player.inventory.setItemInMainHand(
-            ItemStack(Material.WRITABLE_BOOK).updateItemMeta<BookMeta> {
-                addPage(origin)
-                setDisplayName(player.info().getter()["scripting.ui.new"].toInfoMessage())
-            }
-        )
-    }
 }

@@ -23,7 +23,7 @@ object NPCExtend {
                 val content = ArrayList<String>()
                 for (i in 1 until separate.size)
                     content.add(TextUtil.tip("NPC -> 您: ") + separate[i])
-                player.sendMessage(content.toTypedArray())
+                player.sendMessage(*content.toTypedArray())
             }
             "teleport" -> {
                 if (separate.size < 2)

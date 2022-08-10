@@ -2,7 +2,8 @@ name: TenMinSur
 main: com.zhufu.opencraft.TenMinSur
 version: 1.0
 author: zhufucomcom
-softdepend: [ServerCore]
+depend:
+  - ServerCore
 api-version: 1.13
 commands:
   tms:

@@ -52,6 +52,7 @@ class ChunkWall : JavaPlugin() {
             GameManager.init(this)
         CW.originWorld = WorldCreator("game_cw_origin").createWorld()!!
 
+        GameManager.registerGameType(CW::class)
         GameManager.addNew("CW")
     }
 

@@ -4,7 +4,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.zhufu.opencraft.Base.TutorialUtil.gmd
 import com.zhufu.opencraft.Base.TutorialUtil.tplock
-import com.zhufu.opencraft.Base.TutorialUtil.linearTo
+import com.zhufu.opencraft.Base.TutorialUtil.linearMotion
 import com.zhufu.opencraft.Base.tradeWorld
 import com.zhufu.opencraft.Base.Extend.toPrettyString
 import com.zhufu.opencraft.inventory.TraderInventory
@@ -15,6 +15,10 @@ import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.trait.trait.Equipment
 import net.citizensnpcs.api.util.MemoryDataKey
+import net.citizensnpcs.trait.SkinTrait
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -30,6 +34,7 @@ import java.io.*
 import java.net.ServerSocket
 import java.net.Socket
 import java.nio.file.Paths
+import java.time.Duration
 import java.util.*
 import java.util.concurrent.*
 import kotlin.collections.ArrayList
@@ -88,11 +93,32 @@ class CurrencySystem : JavaPlugin() {
 
         lateinit var instance: CurrencySystem
 
+        private fun showTitle(
+            player: Player,
+            getter: Language.LangGetter,
+            titleCode: String,
+            subtitleCode: String,
+            showTime: Int
+        ) {
+            val title =
+                Title.title(
+                    getter[titleCode].toErrorMessage(),
+                    Component.text(getter[subtitleCode], NamedTextColor.DARK_AQUA),
+                    Title.Times.times(
+                        Duration.ofMillis(250),
+                        Duration.ofSeconds(5),
+                        Duration.ofMillis(250)
+                    )
+                )
+            player.showTitle(title)
+            Thread.sleep(showTime * 1000L + 50)
+        }
+
         fun showTutorial(player: Player) {
             Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore, Runnable {
                 val info = PlayerManager.findInfoByPlayer(player)
                 if (info == null) {
-                    player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+                    player.error(Language.getDefault("player.error.unknown"))
                     return@Runnable
                 }
                 info.status = Info.GameStatus.InTutorial
@@ -104,22 +130,24 @@ class CurrencySystem : JavaPlugin() {
                         .setDirection(Vector(0, -90, 0)),
                     5 * 1000L
                 )
-                player.sendTitle(
-                    TextUtil.error(getter["trade.tutorial.1.title"]),
-                    TextUtil.getColoredText(getter["trade.tutorial.1.subtitle"], TextUtil.TextColor.AQUA),
-                    7, 5 * 20, 7
+                showTitle(
+                    player,
+                    getter,
+                    "trade.tutorial.1.title",
+                    "trade.tutorial.1.subtitle",
+                    5
                 )
-                Thread.sleep(5 * 1000L + 50)
 
                 val l1 = Location(tradeWorld, 7.5, 62.0, 6.5)
                     .setDirection(Vector(0, 0, -90))
                 player.tplock(l1, 7 * 1000L)
-                player.sendTitle(
-                    TextUtil.tip(getter["trade.tutorial.2.title"]),
-                    TextUtil.getColoredText(getter["trade.tutorial.2.subtitle"], TextUtil.TextColor.AQUA),
-                    7, 7 * 20, 7
+                showTitle(
+                    player,
+                    getter,
+                    "trade.tutorial.2.title",
+                    "trade.tutorial.2.subtitle",
+                    7
                 )
-                Thread.sleep(7 * 1000L + 50)
 
 
                 val l2 = territoryMap.firstOrNull { it.player == player.uniqueId }
@@ -127,22 +155,24 @@ class CurrencySystem : JavaPlugin() {
                     player.sendMessage(TextUtil.error(getter["trade.error.chunkNotFound"]))
                 else {
                     val center = l2.center
-                    val L2 =
+                    val location2 =
                         Location(tradeWorld, center.x.toDouble(), tradeWorld.spawnLocation.y + 30, center.z.toDouble())
                             .setDirection(Vector(0, -90, 0))
-                    player.tplock(L2, 7 * 1000L)
-                    player.sendTitle(
-                        TextUtil.tip(getter["trade.tutorial.3.title"]),
-                        TextUtil.getColoredText(getter["trade.tutorial.3.subtitle"], TextUtil.TextColor.AQUA),
-                        7, 3 * 20, 0
+                    player.tplock(location2, 7 * 1000L)
+                    showTitle(
+                        player,
+                        getter,
+                        "trade.tutorial.3.title",
+                        "trade.tutorial.3.subtitle",
+                        3
                     )
-                    Thread.sleep(3 * 1000L)
-                    player.sendTitle(
-                        TextUtil.tip(getter["trade.tutorial.3.title"]),
-                        TextUtil.getColoredText(getter["trade.tutorial.4.subtitle"], TextUtil.TextColor.AQUA),
-                        0, 4 * 20, 7
+                    showTitle(
+                        player,
+                        getter,
+                        "trade.tutorial.3.title",
+                        "trade.tutorial.4.subtitle",
+                        4
                     )
-                    Thread.sleep(4 * 1000L + 50)
                 }
                 val l3Top = tradeWorld.spawnLocation.clone()
                     .add(Vector(0, 30, 0))
@@ -152,34 +182,46 @@ class CurrencySystem : JavaPlugin() {
                 scheduler.runTask(instance) { _ ->
                     player.teleport(l3Top)
                 }
-                player.sendTitle(
-                    TextUtil.tip(getter["trade.tutorial.5.title"]),
-                    TextUtil.getColoredText(getter["trade.tutorial.5.subtitle"], TextUtil.TextColor.AQUA), 7, 4 * 20, 0
+                player.linearMotion(l3Bottom, 13 * 1000L, 20)
+                showTitle(
+                    player,
+                    getter,
+                    "trade.tutorial.5.title",
+                    "trade.tutorial.5.subtitle",
+                    4
                 )
-                player.linearTo(l3Bottom, 13 * 1000L, 20)
-                Thread.sleep(4 * 1000L + 50)
-                player.sendTitle(
-                    TextUtil.tip(getter["trade.tutorial.5.title"]),
-                    TextUtil.getColoredText(getter["trade.tutorial.6.subtitle"], TextUtil.TextColor.AQUA), 0, 4 * 20, 0
-                )
-                Thread.sleep(4 * 1000L + 50)
-                player.sendTitle(
-                    TextUtil.tip(getter["trade.tutorial.5.title"]),
-                    TextUtil.getColoredText(getter["trade.tutorial.7.subtitle"], TextUtil.TextColor.AQUA), 0, 6 * 20, 7
-                )
-                Thread.sleep(6 * 1000L + 50)
 
-                player.linearTo(tradeWorld.spawnLocation, 1500L)
+                showTitle(
+                    player,
+                    getter,
+                    "trade.tutorial.5.title",
+                    "trade.tutorial.6.subtitle",
+                    4
+                )
+                showTitle(
+                    player,
+                    getter,
+                    "trade.tutorial.5.title",
+                    "trade.tutorial.7.subtitle",
+                    6
+                )
+
+                player.linearMotion(tradeWorld.spawnLocation, 1500L)
                 Thread.sleep(1500L)
 
                 player.gmd(GameMode.ADVENTURE)
-                player.sendTitle(
-                    TextUtil.getColoredText(getter["tutorial.begin"], TextUtil.TextColor.RED, true),
-                    "",
-                    7,
-                    60,
-                    7
+                player.showTitle(
+                    Title.title(
+                        getter["tutorial.begin"].toSuccessMessage(),
+                        Component.text(""),
+                        Title.Times.times(
+                            Duration.ofMillis(150),
+                            Duration.ofSeconds(2),
+                            Duration.ofSeconds(1)
+                        )
+                    )
                 )
+
 
                 PlayerManager.findInfoByPlayer(player)
                     ?.also { it.status = Info.GameStatus.Surviving }
@@ -228,6 +270,7 @@ class CurrencySystem : JavaPlugin() {
                         sender.teleport(dest)
                     }
                 }
+
                 "center" -> {
                     val player = sender as Player
                     if (!checkLogin(player)) return true
@@ -236,9 +279,11 @@ class CurrencySystem : JavaPlugin() {
                     if (!event.isCancelled)
                         player.teleport(tradeWorld.spawnLocation)
                 }
+
                 "help" -> {
-                    sender.sendMessage(TextUtil.format(showHelp(), getter["trade.help.title"]))
+                    sender.sendMessage(*TextUtil.format(showHelp(), getter["trade.help.title"]))
                 }
+
                 "give" -> {
                     if (!sender.isOp) {
                         sender.error(getter["command.error.permission"])
@@ -266,6 +311,7 @@ class CurrencySystem : JavaPlugin() {
                         }
                     }
                 }
+
                 "set" -> {
                     if (!sender.isOp) {
                         sender.error(getter["command.error.permission"])
@@ -293,6 +339,7 @@ class CurrencySystem : JavaPlugin() {
                     sender.info(getter["trade.giveCurrency.objective", player.name, plus])
                     player.info(getLang(info, "trade.giveCurrency.subjective", plus, info.currency))
                 }
+
                 "donation" -> {
                     if (sender !is Player) {
                         sender.error(getter["command.error.playerOnly"])
@@ -300,6 +347,7 @@ class CurrencySystem : JavaPlugin() {
                     }
                     QRUtil.sendToPlayer(File(tradeRoot, "donation.png"), sender)
                 }
+
                 "pwd" -> {
                     if (sender !is ConsoleCommandSender) {
                         sender.error(getter["command.error.perission"])
@@ -319,6 +367,7 @@ class CurrencySystem : JavaPlugin() {
                         sender.info(getter["trade.pwd.setTo", args[1]])
                     }
                 }
+
                 else -> sender.error(getter["command.error.usage"])
             }
         } else if (command.name == "bank") {
@@ -357,6 +406,7 @@ class CurrencySystem : JavaPlugin() {
                                 }
                             }
                         }
+
                         "remove" -> {
                             if (args.size < 2) {
                                 val success = BankManager.removeBanker(near = sender.location)
@@ -429,6 +479,7 @@ class CurrencySystem : JavaPlugin() {
     class TradeTerritoryInfo(val player: UUID, val id: Int) {
         val x: Int
         val z: Int
+
         /**
          * [fromX] is always smaller than [toX]
          */
@@ -530,36 +581,43 @@ class CurrencySystem : JavaPlugin() {
             val traderUUID = uuidFor("trader")
             val backUUID = uuidFor("back")
 
-            npc = CitizensAPI.getNPCRegistry()
-                .createNPC(EntityType.PLAYER, traderUUID, 0, EveryThing.traderInventoryName).apply {
-                    spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
-                    addTrait(Equipment().apply {
-                        equipment[0] = ItemStack(Material.EMERALD)
-                    })
-                    data()["trade"] = true
-                    data().saveTo(MemoryDataKey())
-                }
-            npcBack =
-                CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, backUUID, 1, EveryThing.backNPCName).apply {
-                    spawn(Location(tradeWorld, 8.5, TradeWorldGenerator.base + 2.0, 4.0))
-                    data()["trade"] = true
-                    data().saveTo(MemoryDataKey())
-                }
-
-            OfflineInfo.forEach {
-                try {
-                    it.territoryID.let { id -> territoryMap.add(TradeTerritoryInfo(it.uuid!!, id)) }
-                } catch (e: Exception) {
-                    logger.warning("Error while loading territory for ${it.name}")
-                    e.printStackTrace()
-                }
-            }
-
             try {
-                TradeManager.loadFromFile(File(tradeRoot, "tradeInfos.json"))
+                npc = CitizensAPI.getNPCRegistry()
+                    .createNPC(EntityType.PLAYER, traderUUID, 0, EveryThing.traderInventoryName).apply {
+                        getOrAddTrait(Equipment::class.java)
+                            .set(Equipment.EquipmentSlot.HAND, ItemStack(Material.EMERALD))
+                        getOrAddTrait(SkinTrait::class.java)
+                            .skinName = "hawkyiam"
+                        data()["trade"] = true
+                        data().saveTo(MemoryDataKey())
+                        spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
+                    }
+                npcBack =
+                    CitizensAPI.getNPCRegistry()
+                        .createNPC(EntityType.PLAYER, backUUID, 1, EveryThing.backNPCName.content())
+                        .apply {
+                            data()["trade"] = true
+                            data().saveTo(MemoryDataKey())
+                            spawn(Location(tradeWorld, 8.5, TradeWorldGenerator.base + 2.0, 4.0))
+                        }
             } catch (e: Exception) {
+                logger.warning("Failed to spawn trader NPCs: ${e.message}")
+            }
+        }
+
+        OfflineInfo.forEach {
+            try {
+                it.territoryID.let { id -> territoryMap.add(TradeTerritoryInfo(it.uuid!!, id)) }
+            } catch (e: Exception) {
+                logger.warning("Error while loading territory for ${it.name}")
                 e.printStackTrace()
             }
+        }
+
+        try {
+            TradeManager.loadFromFile(File(tradeRoot, "tradeInfos.json"))
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         server.pluginManager.registerEvents(EveryThing, this)
     }

@@ -33,7 +33,7 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 
 object NPCController : Listener {
-    val BOSS_BAR_NAMESPACE by lazy { NamespacedKey(mPlugin, "boss_bar") }
+    private val BOSS_BAR_NAMESPACE by lazy { NamespacedKey(mPlugin, "boss_bar") }
 
     lateinit var currentNPC: NPC
     lateinit var currentType: EntityType
@@ -86,7 +86,7 @@ object NPCController : Listener {
             }
             else -> EntityType.WITHER_SKELETON
         }
-        currentNPC = CitizensAPI.getNPCRegistry().createNPC(currentType, "Server Boss # $difficulty".toErrorMessage())
+        currentNPC = CitizensAPI.getNPCRegistry().createNPC(currentType,  TextUtil.error("Server Boss # $difficulty"))
         var spawnLocation =
             Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
 
@@ -143,7 +143,7 @@ object NPCController : Listener {
 
         currentBossBar = Bukkit.createBossBar(
             BOSS_BAR_NAMESPACE,
-            "ServerBoss # $difficulty".toErrorMessage(),
+            TextUtil.error("ServerBoss # $difficulty"),
             BarColor.RED,
             BarStyle.SEGMENTED_12
         )
@@ -310,7 +310,7 @@ object NPCController : Listener {
                 Equipments.values().forEach { equipment ->
                     if (Base.trueByPercentages(percentageToDropEqui()))
                         event.drops.add(
-                            event.npc.getTrait(Equipment::class.java)[equipment.index].also {
+                            event.npc.getOrAddTrait(Equipment::class.java)[equipment.index].also {
                                 (it.itemMeta as Damageable).damage =
                                     (Material.DIAMOND_CHESTPLATE.maxDurability * random.nextDouble(
                                         0.1,

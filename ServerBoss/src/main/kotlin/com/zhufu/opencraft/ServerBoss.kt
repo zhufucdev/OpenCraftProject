@@ -87,7 +87,7 @@ class ServerBoss : JavaPlugin() {
                                 player = sender,
                                 sellingItems = SellingItemInfo(
                                     item = ItemStack(Material.ENDER_PEARL).updateItemMeta<ItemMeta> {
-                                        setDisplayName(getLang(sender, "ui.teleport").toInfoMessage())
+                                        displayName(getLang(sender, "ui.teleport").toInfoMessage())
                                     },
                                     unitPrise = 3,
                                     amount = 1

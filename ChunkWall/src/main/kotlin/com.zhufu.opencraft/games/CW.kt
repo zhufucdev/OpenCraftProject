@@ -23,7 +23,7 @@ import java.io.File
 import java.util.ArrayList
 import javax.naming.OperationNotSupportedException
 
-class CW : GameBase() {
+class CW : MiniGame() {
     companion object {
         fun spawnBedrock(w: World) {
             (1..2).forEach { t ->
@@ -131,7 +131,7 @@ class CW : GameBase() {
             world = createNewGameWorld(id, plugin)
         } catch (e: WorldSpawnTimeOutException) {
             player?.sendMessage(TextUtil.error("创建超时"))
-            player?.sendMessage(TextUtil.printException(e))
+            player?.sendMessage(*TextUtil.printException(e))
         }
     }
 

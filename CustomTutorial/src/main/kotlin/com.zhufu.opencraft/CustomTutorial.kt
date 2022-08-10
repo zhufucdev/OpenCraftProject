@@ -87,17 +87,16 @@ class CustomTutorial : JavaPlugin() {
                             sender.error("${e::class.simpleName}: ${e.message}")
                         }
                     }
+
                     "save" -> {
                         if (pC == null) {
-                            sender.sendMessage(arrayOf(TextUtil.error("您不在编辑模式"), TextUtil.info("使用/ct 新建教程")))
+                            sender.sendMessage(TextUtil.error("您不在编辑模式"), TextUtil.info("使用/ct 新建教程"))
                             return true
                         }
                         if (pR != null) {
                             sender.sendMessage(
-                                arrayOf(
-                                    TextUtil.error("您的操作已被阻止, 因为: 您仍在编辑模式"),
-                                    TextUtil.tip("输入\"done\"以保存并退出")
-                                )
+                                TextUtil.error("您的操作已被阻止, 因为: 您仍在编辑模式"),
+                                TextUtil.tip("输入\"done\"以保存并退出")
                             )
                             return true
                         }
@@ -118,29 +117,29 @@ class CustomTutorial : JavaPlugin() {
                         } catch (e: Exception) {
                             logger.warning("Unable to save tutorial as ${pC.name}.")
                             e.printStackTrace()
-                            sender.sendMessage(TextUtil.printException(e))
+                            sender.sendMessage(*TextUtil.printException(e))
                             sender.sendMessage(TextUtil.error("失败"))
                             return true
                         }
                         TutorialListener.instance.removeCreator(sender)
                         sender.sendMessage(TextUtil.success("完成"))
                     }
+
                     "saveas" -> {
                         if (pC == null) {
-                            sender.sendMessage(arrayOf(TextUtil.error("您不在编辑模式"), TextUtil.info("使用/ct 新建教程")))
-                            return true
-                        }
-                        if (pR != null) {
                             sender.sendMessage(
-                                arrayOf(
-                                    TextUtil.tip("您的操作已被阻止, 因为: 您仍在编辑模式"),
-                                    TextUtil.tip("输入\"done\"以保存并退出")
-                                )
+                                TextUtil.error("您不在编辑模式"),
+                                TextUtil.info("使用/ct 新建教程")
                             )
                             return true
                         }
+                        if (pR != null) {
+                            sender.tip("您的操作已被阻止, 因为: 您仍在编辑模式")
+                            sender.tip("输入\"done\"以保存并退出")
+                            return true
+                        }
                         if (args.size < 2) {
-                            sender.sendMessage(TextUtil.error("用法错误"))
+                            sender.error("用法错误")
                             return true
                         }
                         pC.isDraft = false
@@ -151,17 +150,19 @@ class CustomTutorial : JavaPlugin() {
                         TutorialListener.instance.removeCreator(sender)
                         sender.sendMessage(TextUtil.success("已将教程另存为${args[1]}"))
                     }
+
                     "exit" -> {
                         if (pC == null) {
-                            sender.sendMessage(arrayOf(TextUtil.error("您不在编辑模式"), TextUtil.info("使用/ct 新建教程")))
+                            sender.sendMessage(
+                                TextUtil.error("您不在编辑模式"),
+                                TextUtil.info("使用/ct 新建教程")
+                            )
                             return true
                         }
                         if (pR != null) {
                             sender.sendMessage(
-                                arrayOf(
-                                    TextUtil.tip("您的操作已被阻止, 因为: 您仍在编辑模式"),
-                                    TextUtil.tip("输入\"done\"以保存并退出")
-                                )
+                                TextUtil.tip("您的操作已被阻止, 因为: 您仍在编辑模式"),
+                                TextUtil.tip("输入\"done\"以保存并退出")
                             )
                             return true
                         }
@@ -177,20 +178,22 @@ class CustomTutorial : JavaPlugin() {
 
                     "trigger" -> {
                         if (pC == null) {
-                            sender.sendMessage(arrayOf(TextUtil.error("您不在编辑模式"), TextUtil.info("使用/ct 新建教程")))
+                            sender.sendMessage(
+                                TextUtil.error("您不在编辑模式"),
+                                TextUtil.info("使用/ct 新建教程")
+                            )
                             return true
                         }
                         when (args[1]) {
                             "none" -> {
                                 pC.triggerMethod = TutorialManager.Tutorial.TriggerMethod.NONE
                             }
+
                             "block" -> {
                                 fun msg() {
                                     sender.sendMessage(
-                                        arrayOf(
-                                            TextUtil.error("用法错误"),
-                                            TextUtil.info(TriggerUI.helpDoc[1])
-                                        )
+                                        TextUtil.error("用法错误"),
+                                        TextUtil.info(TriggerUI.helpDoc[1])
                                     )
                                 }
                                 if (args.size < 5) {
@@ -216,9 +219,10 @@ class CustomTutorial : JavaPlugin() {
                                         it.addProperty("world", sender.world.uid.toString())
                                     }
                             }
+
                             "territory" -> {
                                 fun msg(t: String) {
-                                    sender.sendMessage(arrayOf(TextUtil.error(t), TriggerUI.helpDoc[2]))
+                                    sender.sendMessage(TextUtil.error(t), TriggerUI.helpDoc[2])
                                 }
                                 if (args.size < 3) {
                                     msg("用法错误")
@@ -238,24 +242,26 @@ class CustomTutorial : JavaPlugin() {
                                     return true
                                 }
                             }
+
                             "enter-world" -> {
                                 if (!sender.isOp) {
-                                    sender.sendMessage(TextUtil.error("您没有权限使用此方式"))
+                                    sender.error("您没有权限使用此方式")
                                     return true
                                 }
                                 if (args.size < 3) {
-                                    sender.sendMessage(arrayOf(TextUtil.error("用法错误"), TriggerUI.helpDoc[3]))
+                                    sender.sendMessage(TextUtil.error("用法错误"), TriggerUI.helpDoc[3])
                                     return true
                                 }
                                 val world = Bukkit.getWorld(args[2])
                                 if (world == null) {
-                                    sender.sendMessage(TextUtil.error("世界不存在"))
+                                    sender.error("世界不存在")
                                     return true
                                 }
                                 pC.rebuildArguments()
                                 pC.triggerMethod = TutorialManager.Tutorial.TriggerMethod.ENTER_WORLD
                                 pC.triggerArgument.addProperty("world", world.uid.toString())
                             }
+
                             "register" -> {
                                 if (!sender.isOp) {
                                     sender.sendMessage(TextUtil.error("您没有权限使用此方式"))
@@ -325,6 +331,7 @@ class CustomTutorial : JavaPlugin() {
                             else -> mutableListOf()
                         }
                     }
+
                     "territory" -> {
                         if (args.size == 3) {
                             val commands = ArrayList<String>()
@@ -341,6 +348,7 @@ class CustomTutorial : JavaPlugin() {
                             }
                         }
                     }
+
                     "enter-world" -> if (sender.isOp && args.size == 3) {
                         val worlds = ArrayList<String>()
                         Bukkit.getWorlds().forEach {

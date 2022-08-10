@@ -59,7 +59,7 @@ object Translate {
                 translations.append("(null)")
                 return
             }
-            val json = JsonParser().parse(jsonRaw).asJsonObject
+            val json = JsonParser.parseString(jsonRaw).asJsonObject
             val translation = try {
                 json["trans_result"].asJsonArray.first().asJsonObject["dst"].asString
             } catch (e: Exception) {

@@ -1,8 +1,17 @@
-server/plugins/ServerCore/survey.json
-server/plugins/*.jar
-server/paper.jar
 local.properties
 .idea
 .gradle
 build
 base/*/out
+base/*/build
+
+# Server related
+/server/plugins/ServerCore/survey.json
+/server/plugins/*.jar
+/server/paper.jar
+/server/cache/
+/server/config
+/server/game_*
+/server/libraries
+/server/versions/
+/server/logs/

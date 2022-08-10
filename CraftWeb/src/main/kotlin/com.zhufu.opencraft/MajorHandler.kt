@@ -9,6 +9,7 @@ import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.wiki.Search
 import com.zhufu.opencraft.wiki.Wiki
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.FileConfiguration
 import java.io.File
@@ -32,11 +33,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
     override fun handleWithExceptions(exchange: HttpExchange) {
         val require = exchange.requestURI.path.removePrefix("/")
 
-        val url = HttpUrl.get("https://" + conf.getString("hostName") + exchange.requestURI)
-        if (url == null) {
-            response(invalidFile.readBytes(), exchange, "text/html")
-            return
-        }
+        val url = ("https://" + conf.getString("hostName") + exchange.requestURI).toHttpUrl()
         val remoteAddress: InetAddress = url.queryParameter("hostName").let {
             if (it == null) {
                 exchange.remoteAddress.address.let { address ->

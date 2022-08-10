@@ -1,30 +1,39 @@
 inventory:
   '0':
     ==: org.bukkit.inventory.ItemStack
-    v: 2567
+    v: 3105
     type: COMPASS
     meta:
       ==: ItemMeta
       meta-type: COMPASS
-      display-name: §cTrade Explorer
+      display-name: '{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"red","text":"Trade
+        Explorer"}],"text":""}'
       LodestoneTracked: false
   '1':
     ==: org.bukkit.inventory.ItemStack
-    v: 2567
+    v: 3105
     type: CREEPER_SPAWN_EGG
     amount: 64
-gameMode: SURVIVAL
+gameMode: CREATIVE
 health: 20.0
-foodLevel: 20
-walkSpeed: 0.2
+foodLevel: 50
+walkSpeed: 0.0
 flySpeed: 0.1
 exp: 0
 location:
   ==: org.bukkit.Location
   world: world_spawn
   x: 8.0
-  y: 3.0
+  y: 2.0
   z: 8.0
-  pitch: 0.0
-  yaw: -8.549174
-potion: {}
+  pitch: -39.000004
+  yaw: 34.95001
+potion:
+  BLINDNESS:
+    ==: PotionEffect
+    effect: 15
+    duration: 2147482900
+    amplifier: 128
+    ambient: false
+    has-particles: false
+    has-icon: false

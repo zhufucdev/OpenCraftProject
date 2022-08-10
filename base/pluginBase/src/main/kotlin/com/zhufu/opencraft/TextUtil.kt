@@ -1,6 +1,10 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.Base.Extend.isDigit
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.Style
+import net.kyori.adventure.text.format.TextDecoration
 
 object TextUtil {
     const val KEY = '§'
@@ -13,11 +17,17 @@ object TextUtil {
         LIGHT_PURPLE("${KEY}d"), YELLOW("${KEY}e"), WHITE("${KEY}f"),
         BOLD("${KEY}l"), UNDERLINED("${KEY}n"), END("${KEY}r"), RANDOM("${KEY}k"), DEL("${KEY}m"),
         ITALIC("${KEY}o"),
-        INFO("$YELLOW"), ERROR("$BOLD$RED"), SUCCESS("$GREEN"), WARN("$UNDERLINED$RED"),
-        TIP("$UNDERLINED$GOLD");
+        INFO("$YELLOW"), ERROR("$BOLD$RED"), SUCCESS("$GREEN"), WARN("${BOLD}${GOLD}"),
+        TIP("$BOLD$GOLD");
 
         override fun toString(): String = code
     }
+
+    val INFO_STYLE get() = Style.style(NamedTextColor.YELLOW)
+    val SUCCESS_STYLE get() = Style.style(NamedTextColor.GREEN)
+    val ERROR_STYLE get() = Style.style(NamedTextColor.RED, TextDecoration.BOLD)
+    val WARN_STYLE get() = Style.style(NamedTextColor.GOLD, TextDecoration.UNDERLINED)
+    val TIP_STYLE get() = Style.style(NamedTextColor.GOLD, TextDecoration.BOLD)
 
     fun getColoredText(t: String, color: TextColor, bold: Boolean = false, underlined: Boolean = false): String {
         val sb = StringBuilder(color.code)
@@ -98,10 +108,10 @@ object TextUtil {
     }
 
     fun format(content: String, title: String): Array<String> {
-        val top = getColoredText(">>$title", TextUtil.TextColor.GOLD, true, false)
-        val end = getColoredText(">>END", TextUtil.TextColor.GOLD, true, false)
+        val top = getColoredText("-------$title-------", TextColor.GOLD, true, false)
+        val end = getColoredText(">>END", TextColor.GOLD, true, false)
 
-        return arrayOf(top.toString(), content, end)
+        return arrayOf(top, content, end)
     }
 
     fun format(milli: Long, lang: Language.LangGetter): String {
@@ -150,11 +160,12 @@ object TextUtil {
     }
 }
 
-fun String.toInfoMessage() = TextUtil.info(this)
-fun String.toTipMessage() = TextUtil.tip(this)
-fun String.toWarnMessage() = TextUtil.warn(this)
-fun String.toSuccessMessage() = TextUtil.success(this)
-fun String.toErrorMessage() = TextUtil.error(this)
+fun String.toInfoMessage() = Component.text(this, TextUtil.INFO_STYLE)
+fun String.toTipMessage() = Component.text(this, TextUtil.TIP_STYLE)
+fun String.toWarnMessage() = Component.text(this, TextUtil.WARN_STYLE)
+fun String.toSuccessMessage() = Component.text(this, TextUtil.SUCCESS_STYLE)
+fun String.toErrorMessage() = Component.text(this, TextUtil.ERROR_STYLE)
+fun String.toComponent() = Component.text(this)
 fun String.toCustomizedMessage(info: ChatInfo?) = TextUtil.getCustomizedText(this, info)
 fun String.toCustomizedMessage(getter: Language.LangGetter) = TextUtil.getCustomizedText(this, getter)
 fun Char.isEnglishLetter() = this in 'a'..'z' || this in 'A'..'Z'

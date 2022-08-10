@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 abstract class GameRuler : Listener {
-    var players: GameBase.Gaming? = null
+    var players: MiniGame.Gaming? = null
 
     open fun getAllowBlockBreaking(): Boolean = false
     open fun getAllowBlockPlacing(): Boolean = false
@@ -43,7 +43,7 @@ abstract class GameRuler : Listener {
     /**
      * @return The location should the players in this period spawn at.
      */
-    abstract fun getPlayerLocation(info: GameBase.Gaming.PlayerGamingInfo): Location
+    abstract fun getPlayerLocation(info: MiniGame.Gaming.PlayerGamingInfo): Location
 
     abstract fun getGameMode(): GameMode
 

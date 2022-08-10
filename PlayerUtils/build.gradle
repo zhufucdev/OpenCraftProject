@@ -2,13 +2,14 @@ group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    compile project(':playerManagment')
-    compile project(':blockManagment')
-    compile project(':inventoryBase')
-    compile project(':tradeBase')
-    compile project(':miniGameBase')
-    compile project(':scripting')
-    compile project(':worldBase')
-    compile group: 'io.netty', name: 'netty-all', version: '4.1.33.Final'
+    compileOnly project(':playerManagment')
+    compileOnly project(':blockManagment')
+    compileOnly project(':inventoryBase')
+    compileOnly project(':tradeBase')
+    compileOnly project(':miniGameBase')
+    compileOnly project(':scripting')
+    compileOnly project(':worldBase')
+    compileOnly 'net.citizensnpcs:citizens-main:' + rootProject.ext.citizens_version
+    implementation group: 'io.netty', name: 'netty-all', version: '4.1.33.Final'
     compileOnly fileTree(rootDir.path + '/libs/server_api.jar')
 }
