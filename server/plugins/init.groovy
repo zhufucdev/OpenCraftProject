@@ -1,5 +1,5 @@
 import bukkit.Server
-import com.zhufu.opencraft.TextUtil
+import com.zhufu.opencraft.util.TextUtil
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.event.server.ServerListPingEvent

@@ -8,6 +8,11 @@ import com.zhufu.opencraft.Base.Extend.isDigit
 import com.zhufu.opencraft.Base.lobby
 import com.zhufu.opencraft.events.UserLoginEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toComponent
+import com.zhufu.opencraft.util.toErrorMessage
+import com.zhufu.opencraft.util.toInfoMessage
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -17,6 +22,7 @@ import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.util.*
 
 class BookNoticer : JavaPlugin(), Listener {
@@ -63,7 +69,7 @@ class BookNoticer : JavaPlugin(), Listener {
     ): Boolean {
         if (command.name == "notice") {
             if (args.isEmpty()) {
-                sender.sendMessage(TextUtil.error("用法错误"))
+                sender.sendMessage("用法错误".toErrorMessage())
                 return false
             }
             when (args.first()) {
@@ -74,23 +80,23 @@ class BookNoticer : JavaPlugin(), Listener {
                         sb.append(args[i] + ' ')
                     }
                     bookEntries.add(0, BookContener(sb.toString(), System.currentTimeMillis()))
-                    sender.sendMessage(TextUtil.info("已在每日须知中追加该行"))
+                    sender.sendMessage("已在每日须知中追加该行".toInfoMessage())
                 }
                 "preview" -> {
                     if (sender !is Player) {
-                        sender.sendMessage(TextUtil.error("只有玩家才能使用此命令"))
+                        sender.sendMessage("只有玩家才能使用此命令".toErrorMessage())
                         return true
                     }
                     try {
                         getBook(null).show(sender)
                     } catch (e: Exception) {
-                        sender.sendMessage(TextUtil.error("${e::class.simpleName}: ${e.localizedMessage}"))
+                        sender.sendMessage("${e::class.simpleName}: ${e.localizedMessage}".toErrorMessage())
                         e.printStackTrace()
                     }
                 }
                 "remove" -> {
                     if (args.size < 2) {
-                        sender.sendMessage(TextUtil.error("用法错误"))
+                        sender.sendMessage("用法错误".toErrorMessage())
                         return true
                     }
                     if (!args[1].isDigit() || args[1].toInt() < 0) {
@@ -98,16 +104,16 @@ class BookNoticer : JavaPlugin(), Listener {
                         return true
                     }
                     bookEntries.removeAt(args[1].toInt())
-                    sender.sendMessage(TextUtil.info("已删除第${args[1]}行"))
+                    sender.sendMessage("已删除第${args[1]}行".toInfoMessage())
                 }
                 "clear" -> {
-                    sender.sendMessage(TextUtil.info("已删除${bookEntries.size}行"))
+                    sender.sendMessage("已删除${bookEntries.size}行".toInfoMessage())
                     bookEntries.clear()
                 }
 
                 "update" -> {
                     if (!sender.isOp) {
-                        sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
+                        sender.sendMessage("您没有权限使用此命令".toErrorMessage())
                         return true
                     }
                     val sb = StringBuilder()
@@ -117,7 +123,17 @@ class BookNoticer : JavaPlugin(), Listener {
                     sb.deleteCharAt(sb.lastIndex)
 
                     server.onlinePlayers.forEach {
-                        it.sendTitle(TextUtil.info("服务器正在更新"), "这可能需要几十秒", 7, 120, 7)
+                        it.showTitle(
+                            Title.title(
+                                "服务器正在更新".toInfoMessage(),
+                                "这可能需要几十秒".toComponent(),
+                                Title.Times.times(
+                                    Duration.ofMillis(500),
+                                    Duration.ofDays(2),
+                                    Duration.ZERO
+                                )
+                            )
+                        )
                     }
                     bookEntries.add(0, BookContener(sb.toString(), System.currentTimeMillis()))
                     server.reload()
@@ -234,7 +250,7 @@ class BookNoticer : JavaPlugin(), Listener {
             sb.append(TextUtil.tip(getter["book.empty"]))
         } else {
             val lineSeparator = System.lineSeparator()
-            dateMap.forEach { t, u ->
+            dateMap.forEach { (t, u) ->
                 sb.append(">>" + TextUtil.tip(t) + TextUtil.END + lineSeparator)
                 u.forEachIndexed { _, it ->
                     sb.append(

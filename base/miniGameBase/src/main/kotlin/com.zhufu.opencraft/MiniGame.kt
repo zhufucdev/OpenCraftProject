@@ -1,11 +1,19 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.DualInventory.Companion.NOTHING
-import com.zhufu.opencraft.DualInventory.Companion.RESET
+import com.zhufu.opencraft.data.DualInventory
+import com.zhufu.opencraft.data.DualInventory.Companion.NOTHING
+import com.zhufu.opencraft.data.DualInventory.Companion.RESET
+import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.events.PeriodEndEvent
 import com.zhufu.opencraft.events.PlayerJoinGameEvent
 import com.zhufu.opencraft.events.PlayerQuitGameEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toComponent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
@@ -16,8 +24,10 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Scoreboard
+import java.time.Duration
 import java.util.*
 import kotlin.NoSuchElementException
 import kotlin.collections.ArrayList
@@ -434,35 +444,19 @@ abstract class MiniGame : Listener {
     /**
      * Call this before EventHandler
      */
-    fun validatePlayer(player: Player) = gaming.contains(player)
+    private fun validatePlayer(player: Player) = gaming.contains(player)
 
-    enum class Team(i: Int) {
-        RED(0), BLUE(1), GREEN(2), YELLOW(3), PINK(4), PURPLE(5), NONE(-1);
-
-        fun getTextColor() = getTextColorByObject(this)
-        fun getColor() = getColorByObject(this)
+    enum class Team(val i: Int, val color: Color, val textColor: TextUtil.TextColor, val namedTextColor: NamedTextColor) {
+        RED(0, Color.RED, TextUtil.TextColor.RED, NamedTextColor.RED),
+        BLUE(1, Color.BLUE, TextUtil.TextColor.BLUE, NamedTextColor.BLUE),
+        GREEN(2, Color.GREEN, TextUtil.TextColor.GREEN, NamedTextColor.GREEN),
+        YELLOW(3, Color.YELLOW, TextUtil.TextColor.YELLOW, NamedTextColor.YELLOW),
+        PINK(4, Color.PURPLE, TextUtil.TextColor.LIGHT_PURPLE, NamedTextColor.LIGHT_PURPLE),
+        PURPLE(5, Color.PURPLE, TextUtil.TextColor.DARK_PURPLE, NamedTextColor.DARK_PURPLE),
+        NONE(-1, Color.WHITE, TextUtil.TextColor.WHITE, NamedTextColor.WHITE);
 
         companion object {
             fun getValueByOrdinal(i: Int): Team = values().first { it.ordinal == i }
-            fun getTextColorByObject(i: Team): TextUtil.TextColor = when (i) {
-                RED -> TextUtil.TextColor.RED
-                BLUE -> TextUtil.TextColor.BLUE
-                GREEN -> TextUtil.TextColor.GREEN
-                YELLOW -> TextUtil.TextColor.YELLOW
-                PINK -> TextUtil.TextColor.LIGHT_PURPLE
-                PURPLE -> TextUtil.TextColor.DARK_PURPLE
-                else -> TextUtil.TextColor.WHITE
-            }
-
-            fun getColorByObject(i: Team): Color = when (i) {
-                RED -> Color.RED
-                BLUE -> Color.BLUE
-                GREEN -> Color.GREEN
-                YELLOW -> Color.YELLOW
-                PINK -> Color.PURPLE
-                PURPLE -> Color.PURPLE
-                else -> Color.WHITE
-            }
         }
     }
 
@@ -584,8 +578,8 @@ abstract class MiniGame : Listener {
             limit: Long,
             what: String
         ): Scoreboard {
-            val scoreboard = Bukkit.getScoreboardManager()!!.newScoreboard
-            val scoreboardObjective = scoreboard.registerNewObjective(title, "dummy", title)
+            val scoreboard = Bukkit.getScoreboardManager().newScoreboard
+            val scoreboardObjective = scoreboard.registerNewObjective(title, Criteria.DUMMY, title.toComponent())
             scoreboardObjective.displaySlot = DisplaySlot.SIDEBAR
 
             scoreboardObjective.getScore(TextUtil.info(Language[player, "game.teamScore"])).score = 10000
@@ -593,7 +587,7 @@ abstract class MiniGame : Listener {
                 scoreboardObjective.getScore(
                     "  ${TextUtil.getColoredText(
                         team.team.name,
-                        team.team.getTextColor(),
+                        team.team.textColor,
                         true,
                         false
                     )}"
@@ -612,9 +606,30 @@ abstract class MiniGame : Listener {
         }
 
         fun Player.setGameName(team: Team) {
-            customName = team.getTextColor().code + player!!.name + TextUtil.END
-            setPlayerListName(player!!.customName)
-            setDisplayName(player!!.customName)
+            customName(Component.text(name).color(team.namedTextColor))
+            playerListName(customName())
+            displayName(customName())
         }
+
+        val titleDurationShort
+            get() = Title.Times.times(
+                Duration.ofMillis(300),
+                Duration.ofSeconds(2),
+                Duration.ofMillis(150)
+            )
+
+        val titleDurationMedium
+            get() = Title.Times.times(
+                Duration.ofMillis(300),
+                Duration.ofSeconds(3),
+                Duration.ofMillis(150)
+            )
+
+        val titleDurationLong
+            get() = Title.Times.times(
+                Duration.ofMillis(300),
+                Duration.ofSeconds(4),
+                Duration.ofMillis(150)
+            )
     }
 }

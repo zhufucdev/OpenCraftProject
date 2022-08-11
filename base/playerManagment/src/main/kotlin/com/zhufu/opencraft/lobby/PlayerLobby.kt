@@ -7,6 +7,8 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.data.OfflineInfo
+import com.zhufu.opencraft.data.ServerPlayer
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -157,7 +159,7 @@ class PlayerLobby(val owner: OfflineInfo) {
                 BlockVector3.at(last.blockX, highY, last.blockZ)
             )
             val to = BlockVector3.at(fromX, lowY, fromZ)
-            val session = WorldEdit.getInstance().editSessionFactory.getEditSession(from.world, -1)
+            val session = WorldEdit.getInstance().newEditSession(from.world)
             Operations.complete(
                 ForwardExtentCopy(session, from, BukkitWorld(Base.lobby), to).apply {
                     isCopyingBiomes = true

@@ -1,8 +1,8 @@
 package com.zhufu.opencraft.player_community
 
 import com.google.gson.JsonElement
-import com.zhufu.opencraft.ChatInfo
-import com.zhufu.opencraft.Language
+import com.zhufu.opencraft.api.ChatInfo
+import com.zhufu.opencraft.util.Language
 import net.kyori.adventure.text.Component
 import java.io.File
 import java.io.OutputStream

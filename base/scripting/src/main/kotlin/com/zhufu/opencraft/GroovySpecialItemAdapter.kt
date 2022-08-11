@@ -1,14 +1,13 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.special_item.SpecialItemAdapter
+import com.zhufu.opencraft.util.Language
 import groovy.lang.Closure
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scoreboard.Objective
-import org.codehaus.groovy.runtime.DefaultGroovyMethods
 
 class GroovySpecialItemAdapter(
     name: String,

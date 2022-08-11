@@ -2,10 +2,10 @@ package com.zhufu.opencraft.inventory
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.CurrencySystem.Companion.transMap
-import com.zhufu.opencraft.TextUtil
 import com.zhufu.opencraft.special_item.FlyWand
 import com.zhufu.opencraft.special_item.Insurance
 import com.zhufu.opencraft.special_item.Portal
+import com.zhufu.opencraft.util.*
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -17,8 +17,13 @@ import kotlin.math.roundToLong
 class TraderInventory(val player: Player) {
     private val getter = player.getter()
     private val donater: ItemStack = ItemStack(Material.GOLDEN_APPLE).updateItemMeta<ItemMeta> {
-        setDisplayName(TextUtil.success("捐赠"))
-        lore = listOf("为了表示感谢，我们会给予您一定数量的货币", TextUtil.info("货币数量=在线时长(分钟)*捐赠金额*3"))
+        displayName("捐赠".toSuccessMessage())
+        lore(
+            listOf(
+                "为了表示感谢，我们会给予您一定数量的货币".toComponent(),
+                "货币数量=在线时长(分钟)*捐赠金额*3".toInfoMessage()
+            )
+        )
     }
     val inventory = Bukkit.createInventory(null, 36, EveryThing.traderInventoryName)
         .apply {
@@ -50,12 +55,7 @@ class TraderInventory(val player: Player) {
 
     var selectedItem: ItemStack? = null
     private fun setMode() {
-        fun getText(num: Int): String = TextUtil.getColoredText(
-            "汇率为${if (mode == 0.toShort()) "1:$num" else "$num:1"}",
-            TextUtil.TextColor.GOLD,
-            false,
-            true
-        )
+        fun getText(num: Int) = "汇率为${if (mode == 0.toShort()) "1:$num" else "$num:1"}".toInfoMessage()
 
         var i = (9 - transMap.size) / 2f.roundToInt()
         transMap.entries.forEach {
@@ -65,7 +65,7 @@ class TraderInventory(val player: Player) {
                     ItemStack(it.key, if (it.value <= 64) it.value.toInt() else 1)
                         .also { item ->
                             val meta = item.itemMeta
-                            meta!!.lore = listOf(getText(it.value.toInt()))
+                            meta!!.lore(listOf(getText(it.value.toInt())))
                             item.itemMeta = meta
                         }
                 )
@@ -75,18 +75,14 @@ class TraderInventory(val player: Player) {
         inventory.setItem(
             inventory.size - 1,
             if (mode == 0.toShort()) {
-                ItemStack(Material.DROPPER).also {
-                    it.itemMeta = it.itemMeta!!.also { meta ->
-                        meta.setDisplayName(TextUtil.info("兑换模式"))
-                        meta.lore = listOf(TextUtil.info("从背包兑换矿石成货币"), TextUtil.tip("点击切换"))
-                    }
+                ItemStack(Material.DROPPER).updateItemMeta<ItemMeta> {
+                    displayName("兑换模式".toInfoMessage())
+                    lore(listOf("从背包兑换矿石成货币".toInfoMessage(), "点击切换".toTipMessage()))
                 }
             } else {
-                ItemStack(Material.CHEST).also {
-                    it.itemMeta = it.itemMeta!!.also { meta ->
-                        meta.setDisplayName(TextUtil.info("购买模式"))
-                        meta.lore = listOf(TextUtil.info("用货币购买矿石到背包"), TextUtil.tip("点击切换"))
-                    }
+                ItemStack(Material.CHEST).updateItemMeta<ItemMeta> {
+                    displayName("购买模式".toInfoMessage())
+                    lore(listOf("用货币购买矿石到背包".toInfoMessage(), "点击切换".toTipMessage()))
                 }
             }.also { modeSwitcher = it }
         )
@@ -97,28 +93,22 @@ class TraderInventory(val player: Player) {
         selectedItem = current.clone()
         inventory.setItem(getPositionForLine(2),
             ItemStack(Material.NETHER_STAR)
-                .also { itemStack ->
-                    itemStack.itemMeta =
-                        itemStack.itemMeta!!
-                            .also { it.setDisplayName("少${if (mode == 0.toShort()) "兑换" else "购买"}一个") }
+                .updateItemMeta<ItemMeta> {
+                    displayName("少${if (mode == 0.toShort()) "兑换" else "购买"}一个".toInfoMessage())
                 }
         )
         inventory.setItem(getPositionForLine(6),
             ItemStack(Material.NETHER_STAR)
-                .also { itemStack ->
-                    itemStack.itemMeta =
-                        itemStack.itemMeta!!
-                            .also { it.setDisplayName("多${if (mode == 0.toShort()) "兑换" else "购买"}一个") }
+                .updateItemMeta<ItemMeta> {
+                    displayName("多${if (mode == 0.toShort()) "兑换" else "购买"}一个".toInfoMessage())
                 }
         )
         inventory.setItem(
             getPositionForLine(4),
             selectedItem!!
-                .also {
-                    it.amount = 1
-                    val meta = it.itemMeta
-                    meta!!.setDisplayName(TextUtil.getColoredText("点击确认", TextUtil.TextColor.GOLD, true, false))
-                    it.itemMeta = meta
+                .updateItemMeta<ItemMeta> {
+                    amount = 1
+                    displayName("点击确认".toTipMessage())
                 }
         )
     }
@@ -211,6 +201,7 @@ class TraderInventory(val player: Player) {
                 mode = if (mode == 0.toShort()) 1.toShort() else 0.toShort()
                 setMode()
             }
+
             current == donater -> {
                 player.closeInventory()
                 Bukkit.getScheduler().runTaskLater(CurrencySystem.instance, { _ ->
@@ -221,6 +212,8 @@ class TraderInventory(val player: Player) {
     }
 
     var amount = 1
+        private set
+
     fun subtractOne() {
         inventory.setItem(
             getPositionForLine(4),
@@ -245,20 +238,26 @@ class TraderInventory(val player: Player) {
                     if (amount < 64) {
                         amount++
                         stack.amount = amount
-                        val t = stack.itemMeta!!.lore!!
-                        if (t.size == 2) {
-                            t.removeAt(1)
+                        val t = stack.itemMeta!!.lore()!!
+
+                        stack.updateItemMeta<ItemMeta> {
+                            lore(lore()!!.apply {
+                                if (size == 2) {
+                                    t.removeAt(1)
+                                }
+                            })
                         }
-                        stack.itemMeta = stack.itemMeta!!.also { it.lore = t }
                     } else {
                         amount++
                         stack.amount = 1
-                        val t = stack.itemMeta!!.lore!!
-                        val text = TextUtil.info("兑换${amount}个")
-                        if (t.isEmpty())
-                            t.add(text)
-                        else t[0] = text
-                        stack.itemMeta = stack.itemMeta!!.also { it.lore = t }
+                        stack.updateItemMeta<ItemMeta> {
+                            lore(lore()!!.apply {
+                                val text = "兑换${amount}个".toInfoMessage()
+                                if (isEmpty())
+                                    add(text)
+                                else this[0] = text
+                            })
+                        }
                     }
                 }
         )

@@ -1,9 +1,14 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.Base.Extend.toPrettyString
+import com.zhufu.opencraft.api.ServerCaller
+import com.zhufu.opencraft.data.*
 import com.zhufu.opencraft.events.*
 import com.zhufu.opencraft.inventory.PaymentDialog
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toInfoMessage
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -12,6 +17,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.memberProperties
@@ -64,6 +70,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         return mutableListOf("back")
                     }
                 }
+
                 "observe" -> {
                     val result = ArrayList<String>()
                     Bukkit.getOnlinePlayers().forEach {
@@ -80,6 +87,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         }
                     }
                 }
+
                 "goto" -> {
                     val info = PlayerManager.findInfoByPlayer(sender)
                     if (info == null) {
@@ -130,6 +138,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         }
                     }
                 }
+
                 "accept" -> {
                     val preResult = ArrayList<String>()
                     PlayerManager.findInfoByPlayer(sender)!!.gotoRequests.forEach {
@@ -147,6 +156,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         }
                     }
                 }
+
                 "death" -> {
                     val arg = arrayListOf("back", "check")
                     if (args.size == 2) {
@@ -158,6 +168,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         return arg.toMutableList()
                     }
                 }
+
                 "delsave" -> {
                     val info = PlayerManager.findInfoByPlayer(sender)
                     if (info == null) {
@@ -176,6 +187,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         }
                     }
                 }
+
                 "lang" -> {
                     if (args.size == 2) {
                         val langs = ArrayList<String>()
@@ -187,6 +199,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         }
                     }
                 }
+
                 "prefer" -> {
                     val info = sender.info()
                     if (args.size >= 2 && info != null) {
@@ -274,9 +287,11 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     sender.error(getter["command.error.usage"])
                     return false
                 }
+
                 info.isLogin -> {
                     sender.error(getter["user.error.alreadyLogin"])
                 }
+
                 else -> {
                     info.login(args[1])
                     if (info.isLogin) {
@@ -300,6 +315,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             sender.sendMessage(it)
                         }
                     }
+
                     args[1] != args[2] -> sender.error(getter["user.error.pwdDismatch"])
                     else -> {
                         val info = PlayerManager.findInfoByPlayer(sender) ?: return true
@@ -326,6 +342,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     !info.isLogin -> {
                         sender.error(getter["user.error.notLoginYet"])
                     }
+
                     args.size < 4 -> {
                         sender.error(getter["command.error.usage"])
                     }
@@ -339,6 +356,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     -> {
                         sender.error(getter["user.error.pwdDismatch"])
                     }
+
                     else -> {
                         info.password = args[2]
                         sender.info(getter["user.pwd.changed"])
@@ -371,10 +389,8 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         sender,
                         SellingItemInfo(
                             ItemStack(Material.ENDER_PEARL)
-                                .also { itemStack ->
-                                    itemStack.itemMeta = itemStack.itemMeta!!.also {
-                                        it.setDisplayName(TextUtil.info(getter["ui.tpToSpawn"]))
-                                    }
+                                .updateItemMeta<ItemMeta> {
+                                    displayName(getter["ui.tpToSpawn"].toInfoMessage())
                                 },
                             3, 1
                         ), TradeManager.getNewID(), plugin
@@ -387,7 +403,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                 Bukkit.getPluginManager().callEvent(event)
                                 if (!event.isCancelled) {
                                     sender.info(getter["user.tpToSpawn"])
-                                    sender.teleport(dest!!)
+                                    sender.teleport(dest)
                                 } else {
                                     return@setOnPayListener false
                                 }
@@ -418,6 +434,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
 
                 Bukkit.getPluginManager().callEvent(PlayerObserveEvent(sender, obPlayer))
             }
+
             "deobserve" -> {
                 if (PlayerManager.findInfoByPlayer(sender)?.status == Info.GameStatus.Observing)
                     Bukkit.getPluginManager().callEvent(PlayerDeobserveEvent(sender))
@@ -471,15 +488,12 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         sender,
                         SellingItemInfo(
                             ItemStack(Material.ENDER_PEARL)
-                                .also {
-                                    it.itemMeta = it.itemMeta!!.also { itemMeta ->
-                                        itemMeta.setDisplayName(TextUtil.info(getter["ui.teleport"]))
-                                    }
+                                .updateItemMeta<ItemMeta> {
+                                    displayName(getter["ui.teleport"].toInfoMessage())
                                 },
                             3,
                             1
-                        )
-                        , TradeManager.getNewID(), plugin
+                        ), TradeManager.getNewID(), plugin
                     )
                         .setOnPayListener { success ->
                             if (success) {
@@ -565,6 +579,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         info.gotoRequests.isEmpty() -> {
                             sender.info(getter["user.error.noInvitations"])
                         }
+
                         info.gotoRequests.size > 1 -> {
                             sender.error(getter["user.error.moreThanOneInvitations.1"])
                             sender.tip(getter["user.error.moreThanOneInvitations.2"])
@@ -574,6 +589,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             sb.delete(sb.length - 2, sb.length)
                             sender.sendMessage(sb.toString())
                         }
+
                         else -> {
                             info.gotoRequests.first()
                                 .also { it.isAccepted = true }
@@ -641,6 +657,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             sender.info(getter["user.lastDeath.noRecord"])
                         }
                     }
+
                     "back" -> {
                         val info = PlayerManager.findInfoByPlayer(sender)
                         if (info == null) {
@@ -658,6 +675,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     }
                 }
             }
+
             "bd" -> {
                 val info = PlayerManager.findInfoByPlayer(sender)
                 if (info == null) {
@@ -712,6 +730,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     sender.tip(getter["user.checkpoint.toGo", id])
                 }
             }
+
             "delsave" -> {
                 if (args.size < 2) {
                     sender.error(getter["command.error.usage"])
@@ -835,14 +854,15 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             args.size == 2 -> {
                                 sender.info(
                                     "$parName -> ${
-                                    if (member.returnType.classifier == Boolean::class) {
-                                        if (member.get(info.preference) as Boolean) "on" else "off"
-                                    } else {
-                                        member.get(info.preference)
-                                    }
+                                        if (member.returnType.classifier == Boolean::class) {
+                                            if (member.get(info.preference) as Boolean) "on" else "off"
+                                        } else {
+                                            member.get(info.preference)
+                                        }
                                     }"
                                 )
                             }
+
                             else -> {
                                 val section = args[2]
                                 fun <T> castTo() = member as KMutableProperty1<PlayerPreference, T>

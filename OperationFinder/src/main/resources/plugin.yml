@@ -2,7 +2,9 @@ name: OperationFinder
 author: zhufucomcom
 main: com.zhufu.opencraft.OperationFinder
 version: 1.0
-api-version: 1.13
+api-version: 1.19
+depend:
+  - ServerCore
 commands:
   of:
     usage: /of <玩家>

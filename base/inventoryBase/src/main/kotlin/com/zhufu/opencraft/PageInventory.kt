@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.util.toInfoMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -82,13 +83,13 @@ open class PageInventory<T : PageInventory.Adapter> : ClickableInventory {
         }
         inventory.setItem(itemsOnePage - 9,
             ItemStack(Material.NETHER_STAR).also {
-                it.itemMeta = it.itemMeta!!.apply { setDisplayName(TextUtil.info("<")) }
+                it.itemMeta = it.itemMeta!!.apply { displayName("<".toInfoMessage()) }
                 itemPeriodPage = it
             }
         )
         inventory.setItem(itemsOnePage - 1,
             ItemStack(Material.NETHER_STAR).also {
-                it.itemMeta = it.itemMeta!!.apply { setDisplayName(TextUtil.info(">")) }
+                it.itemMeta = it.itemMeta!!.apply { displayName(">".toInfoMessage()) }
                 itemNextPage = it
             }
         )

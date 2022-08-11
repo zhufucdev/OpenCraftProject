@@ -2,6 +2,8 @@ package com.zhufu.opencraft.inventory
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.special_item.FlyWand
+import com.zhufu.opencraft.util.toInfoMessage
+import com.zhufu.opencraft.util.toTipMessage
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -9,6 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
 class FlyWandInventory(val player: Player, plugin: Plugin) : ClickableInventory(plugin) {
@@ -18,7 +21,7 @@ class FlyWandInventory(val player: Player, plugin: Plugin) : ClickableInventory(
     }
 
     override val inventory: Inventory =
-        Bukkit.createInventory(null, InventoryType.CHEST, TextUtil.info("续费飞行法杖[uuid:${++id}}]"))
+        Bukkit.createInventory(null, InventoryType.CHEST, "续费飞行法杖[uuid:${++id}}]".toInfoMessage())
 
     private fun getLine(i: Int) = 9 + i
     lateinit var subItem: ItemStack
@@ -42,12 +45,10 @@ class FlyWandInventory(val player: Player, plugin: Plugin) : ClickableInventory(
 
     private fun setShowingItem() {
         inventory.setItem(getLine(4), ItemStack(Material.CLOCK, time)
-            .also {
-                it.itemMeta = it.itemMeta!!.apply {
-                    setDisplayName(TextUtil.info("续费${time}分钟"))
-                    lore = listOf(TextUtil.tip("这将消耗您${price}个货币"), TextUtil.tip("点击确认"))
-                }
-                confirmItem = it
+            .also { confirmItem = it }
+            .updateItemMeta<ItemMeta> {
+                displayName("续费${time}分钟".toInfoMessage())
+                lore(listOf("这将消耗您${price}个货币".toTipMessage(), "点击确认".toTipMessage()))
             }
         )
     }
@@ -56,24 +57,24 @@ class FlyWandInventory(val player: Player, plugin: Plugin) : ClickableInventory(
         if (wand != null) {
             inventory.setItem(getLine(2), ItemStack(Material.NETHER_STAR)
                 .also {
-                    it.itemMeta = it.itemMeta!!.apply {
-                        setDisplayName(TextUtil.tip("少续费一分钟"))
-                    }
                     subItem = it
+                }
+                .updateItemMeta<ItemMeta> {
+                    displayName("少续费一分钟".toInfoMessage())
                 }
             )
             setShowingItem()
             inventory.setItem(getLine(6), ItemStack(Material.NETHER_STAR)
                 .also {
-                    it.itemMeta = it.itemMeta!!.apply {
-                        setDisplayName(TextUtil.tip("多续费一分钟"))
-                    }
                     addItem = it
+                }
+                .updateItemMeta<ItemMeta> {
+                    displayName("多续费一分钟".toInfoMessage())
                 }
             )
             show(player)
         } else {
-            player.sendMessage(TextUtil.error("您必须将权杖拿在主手"))
+            player.error("您必须将权杖拿在主手")
         }
     }
 
@@ -94,15 +95,15 @@ class FlyWandInventory(val player: Player, plugin: Plugin) : ClickableInventory(
                             player.inventory.setItem(
                                 player.inventory.heldItemSlot,
                                 wand!!.also { meta -> meta.updateTime(wand.timeRemaining + time * 60) })
-                            player.sendMessage(TextUtil.success("以为您手中的权杖续费${time}分钟"))
+                            player.success("以为您手中的权杖续费${time}分钟")
                         } else {
-                            player.sendMessage(TextUtil.error("交易失败: 您没有足够的货币"))
+                            player.error("交易失败: 您没有足够的货币")
                             cancel()
                         }
                         true
                     }
                     .setOnCancelListener {
-                        player.sendMessage(TextUtil.info("交易已取消"))
+                        player.info("交易已取消")
                     }
                     .show()
             }

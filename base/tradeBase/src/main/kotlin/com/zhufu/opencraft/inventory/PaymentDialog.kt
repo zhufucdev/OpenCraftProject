@@ -1,6 +1,7 @@
 package com.zhufu.opencraft.inventory
 
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.util.*
 import org.bukkit.Bukkit
 import org.bukkit.entity.HumanEntity
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -13,7 +14,7 @@ import org.bukkit.plugin.Plugin
 class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingItemInfo, id: Int, plugin: Plugin) :
     ClickableInventory(plugin) {
     override val inventory: Inventory =
-        Bukkit.createInventory(null, InventoryType.CHEST, TextUtil.info("确认支付[uuid:$id]"))
+        Bukkit.createInventory(null, InventoryType.CHEST, "确认支付[uuid:$id]".toInfoMessage())
     lateinit var confirmItem: ItemStack
     lateinit var cancelItem: ItemStack
     private val getter = player.getter()
@@ -26,8 +27,9 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
                     itemStack.amount = sellingItems.amount
                 else {
                     itemStack.amount = 3 * 64
-                    itemStack.itemMeta =
-                        itemStack.itemMeta.also { it!!.lore = listOf(TextUtil.tip("数量为${targetAmount}个")) }
+                    itemStack.updateItemMeta<ItemMeta> {
+                        lore(listOf("数量为${targetAmount}个".toInfoMessage()))
+                    }
                 }
             })
         inventory.setItem(
@@ -35,15 +37,8 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
             Widgets.confirm.also { itemStack ->
                 itemStack.itemMeta = itemStack.itemMeta!!
                     .also {
-                        it.setDisplayName(
-                            TextUtil.getColoredText(
-                                getter["trade.pay.saving"],
-                                TextUtil.TextColor.GREEN,
-                                true,
-                                false
-                            )
-                        )
-                        it.lore = listOf(TextUtil.tip(getter["trade.pay.currencyConsume", sellingItems.prise]))
+                        it.displayName(getter["trade.pay.saving"].toSuccessMessage())
+                        it.lore(listOf(getter["trade.pay.currencyConsume", sellingItems.prise].toTipMessage()))
                     }
                 confirmItem = itemStack
             }
@@ -51,15 +46,15 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
         inventory.setItem(
             inventory.size - 2,
             Widgets.confirm.updateItemMeta<ItemMeta> {
-                setDisplayName(TextUtil.getColoredText(getter["trade.pay.cash"], TextUtil.TextColor.GREEN, true, false))
-                lore = listOf(TextUtil.tip(getter["trade.pay.currencyConsume", sellingItems.prise]))
+                displayName(getter["trade.pay.cash"].toSuccessMessage())
+                lore(listOf(getter["trade.pay.currencyConsume", sellingItems.prise].toInfoMessage()))
             }
         )
         inventory.setItem(
             inventory.size - 3,
             Widgets.cancel.also { itemStack ->
                 itemStack.itemMeta = itemStack.itemMeta!!
-                    .also { it.setDisplayName(TextUtil.getColoredText("取消", TextUtil.TextColor.RED, true, false)) }
+                    .also { it.displayName("取消".toErrorMessage()) }
                 cancelItem = itemStack
             }
         )

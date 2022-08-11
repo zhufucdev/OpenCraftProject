@@ -4,12 +4,16 @@ import com.zhufu.opencraft.Base.endWorld
 import com.zhufu.opencraft.Base.lobby
 import com.zhufu.opencraft.Base.netherWorld
 import com.zhufu.opencraft.Base.surviveWorld
-import com.zhufu.opencraft.DualInventory.Companion.RESET
-import com.zhufu.opencraft.Info.GameStatus.*
+import com.zhufu.opencraft.api.ServerCaller
+import com.zhufu.opencraft.data.DualInventory.Companion.RESET
+import com.zhufu.opencraft.data.DualInventory
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.data.Info.GameStatus.*
 import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.special_item.Insurance
+import com.zhufu.opencraft.util.*
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -80,15 +84,10 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                         }
 
                     info.tag.set("isSurvivor", false)
-                    this
-                        .also {
-                            it.inventory.addItem(ItemStack(Material.DIAMOND, 2))
-                        }
-                        .sendMessage(
-                            TextUtil.error(getter["survival.compe.1"]),
-                            TextUtil.info(getter["survival.compe.2"]),
-                            TextUtil.tip(getter["survival.compe.3"])
-                        )
+                    inventory.addItem(ItemStack(Material.DIAMOND, 2))
+                    error(getter["survival.compe.1"])
+                    info(getter["survival.compe.2"])
+                    tip(getter["survival.compe.3"])
 
                     randomSpawn(info.inventory)
                 }
@@ -98,19 +97,13 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 val isLocationCorrect = l?.world == surviveWorld || l?.world == netherWorld || l?.world == endWorld
                 val isSpawnCorrect = s?.world == surviveWorld
                 if (!isLocationCorrect && isSpawnCorrect) {
-                    sendMessage(
-                        TextUtil.error(getter["survival.saveNotFound.1"]),
-                        TextUtil.info(getter["survival.saveNotFound.2"])
-
-                    )
+                    error(getter["survival.saveNotFound.1"])
+                    info(getter["survival.saveNotFound.2"])
                     inventory.set("location", s!!)
                     teleport(s)
                 } else if (isLocationCorrect && !isSpawnCorrect) {
-                    sendMessage(
-                        TextUtil.error(getter["survival.spawnNotFound.1"]),
-                        TextUtil.info(getter["survival.spawnNotFound.2"])
-
-                    )
+                    error(getter["survival.spawnNotFound.1"])
+                    info(getter["survival.spawnNotFound.2"])
                     info.tag.set("surviveSpawn", l)
                 } else if (!isLocationCorrect) {
                     reset()
@@ -334,7 +327,10 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 info.tag.set("surviveSpawn", player.location)
                 info.inventory.create("survivor").save()
                 player.isInvulnerable = false
-                val title = Title.title(getter["survival.loseProtect"].toInfoMessage(), getter["survival.setSpawn"].toComponent())
+                val title = Title.title(
+                    getter["survival.loseProtect"].toInfoMessage(),
+                    getter["survival.setSpawn"].toComponent()
+                )
                 player.showTitle(title)
             }, 3 * 20)
         }
@@ -477,7 +473,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         val info = PlayerManager.findInfoByPlayer(event.player.uniqueId)
         if (info == null) {
             event.isCancelled = true
-            event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+            event.player.sendMessage(Language.getDefault("player.error.unknown").toErrorMessage())
             return
         }
         if (info.player.location.world == surviveWorld && !info.isSurveyPassed && info.tag.getBoolean(

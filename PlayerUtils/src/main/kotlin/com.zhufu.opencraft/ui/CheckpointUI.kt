@@ -4,9 +4,15 @@ import com.zhufu.opencraft.*
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.inventory.PaymentDialog
 import com.zhufu.opencraft.Base.Extend.toPrettyString
+import com.zhufu.opencraft.data.CheckpointInfo
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.util.*
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
 class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory: ClickableInventory) :
@@ -40,45 +46,40 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                 ItemStack(if (!selected) Material.ENDER_PEARL else Material.ENDER_EYE).apply {
                     itemMeta = itemMeta!!.apply {
                         val rename = TextUtil.formatLore(info.name)
-                        setDisplayName(TextUtil.getColoredText(rename.first(), TextUtil.TextColor.AQUA))
-                        val newLore = ArrayList<String>()
+                        displayName(rename.first().toComponent().color(NamedTextColor.AQUA))
+                        val newLore = ArrayList<Component>()
                         for (i in 1 until rename.size) {
-                            newLore.add(TextUtil.getColoredText(rename[i], TextUtil.TextColor.AQUA))
+                            newLore.add(rename[i].toComponent().color(NamedTextColor.AQUA))
                         }
                         newLore.add(
-                            TextUtil.tip(
-                                getter[
-                                        if (!isManaging)
-                                            "ui.checkpoint.click"
-                                        else {
-                                            if (isDeleting) {
-                                                if (tasks[info] == 'D')
-                                                    "ui.checkpoint.delete.undo"
-                                                else
-                                                    "ui.checkpoint.delete.do"
-                                            } else if (isRenaming) {
-                                                "ui.checkpoint.rename.do"
-                                            } else "ui.checkpoint.toManage"
-                                        }
-                                ]
-                            )
+                            getter[
+                                    if (!isManaging)
+                                        "ui.checkpoint.click"
+                                    else {
+                                        if (isDeleting) {
+                                            if (tasks[info] == 'D')
+                                                "ui.checkpoint.delete.undo"
+                                            else
+                                                "ui.checkpoint.delete.do"
+                                        } else if (isRenaming) {
+                                            "ui.checkpoint.rename.do"
+                                        } else "ui.checkpoint.toManage"
+                                    }
+                            ].toTipMessage()
                         )
 
-                        lore = newLore
+                        lore(newLore)
                     }
                 }
             } else {
                 Widgets.confirm.apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(
-                            TextUtil.getColoredText(
-                                getter["ui.checkpoint.new.title"],
-                                TextUtil.TextColor.GREEN
-                            )
+                        displayName(
+                            getter["ui.checkpoint.new.title"].toSuccessMessage()
                         )
-                        lore = listOf(
-                            TextUtil.info(getter["ui.checkpoint.new.subtitle"])
-                        )
+                        lore(listOf(
+                            getter["ui.checkpoint.new.subtitle"].toInfoMessage()
+                        ))
                     }
                 }
             }
@@ -90,7 +91,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                     if (isManaging && !isDeleting && !isRenaming) {
                         Widgets.rename.apply {
                             itemMeta = itemMeta!!.apply {
-                                setDisplayName(TextUtil.tip(getter["ui.rename"]))
+                                displayName(getter["ui.rename"].toTipMessage())
                             }
                         }
                     } else
@@ -101,7 +102,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                     if (isManaging && !isDeleting && !isRenaming) {
                         Widgets.cancel.apply {
                             itemMeta = itemMeta!!.apply {
-                                setDisplayName(TextUtil.error(getter["ui.delete"]))
+                                displayName(getter["ui.delete"].toErrorMessage())
                             }
                         }
                     } else
@@ -112,13 +113,13 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                     if (!isManaging)
                         Widgets.group.apply {
                             itemMeta = itemMeta!!.apply {
-                                setDisplayName(TextUtil.tip(getter["ui.manage"]))
+                                displayName(getter["ui.manage"].toTipMessage())
                             }
                         }
                     else
                         Widgets.confirm.apply {
                             itemMeta = itemMeta!!.apply {
-                                setDisplayName(TextUtil.success(getter["ui.confirm"]))
+                                displayName(getter["ui.confirm"].toSuccessMessage())
                             }
                         }
                 }
@@ -126,7 +127,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                 6 -> {
                     Widgets.back.apply {
                         itemMeta = itemMeta!!.apply {
-                            setDisplayName(TextUtil.tip(getter["ui.back"]))
+                            displayName(getter["ui.back"].toTipMessage())
                         }
                     }
                 }
@@ -145,9 +146,8 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                         info.player,
                         SellingItemInfo(
                             ItemStack(Material.ENDER_PEARL)
-                                .also {
-                                    it.itemMeta =
-                                        it.itemMeta!!.apply { setDisplayName(TextUtil.info(adapter.getter["ui.teleport"])) }
+                                .updateItemMeta<ItemMeta> {
+                                    displayName(adapter.getter["ui.teleport"].toInfoMessage())
                                 },
                             3,
                             1
@@ -239,7 +239,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                     } else {
                         //Apply
 
-                        tasks.forEach { t, u ->
+                        tasks.forEach { (t, u) ->
                             if (u == 'D') {
                                 info.removeCheckpoint(t.name)
                             }

@@ -4,6 +4,8 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 import com.sun.net.httpserver.HttpHandler
+import com.zhufu.opencraft.api.ServerCaller
+import com.zhufu.opencraft.util.Language
 import org.bukkit.configuration.ConfigurationSection
 import java.io.File
 import java.util.logging.Logger

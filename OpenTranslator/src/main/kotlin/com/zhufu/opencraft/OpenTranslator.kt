@@ -1,6 +1,11 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.Translate.DetectResult.*
+import com.zhufu.opencraft.api.ChatInfo
+import com.zhufu.opencraft.data.ServerPlayer
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toInfoMessage
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -36,7 +41,7 @@ class OpenTranslator : JavaPlugin(), Listener {
             sb.append(',')
         }
         sb.deleteCharAt(sb.lastIndex)
-        info.playerOutputStream.send(TextUtil.info(sb.toString()))
+        info.playerOutputStream.send(sb.toString().toInfoMessage())
         info.playerOutputStream.send(getter["translator.translating"])
 
         val translations = HashMap<String, String>()

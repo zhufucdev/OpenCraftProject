@@ -1,6 +1,8 @@
 package com.zhufu.opencraft.inventory
 
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.util.toInfoMessage
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 

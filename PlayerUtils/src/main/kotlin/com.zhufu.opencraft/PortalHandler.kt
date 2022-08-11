@@ -3,6 +3,7 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.Everything.mPlugin
 import com.zhufu.opencraft.Everything.near
 import com.zhufu.opencraft.special_item.Portal
+import com.zhufu.opencraft.util.toErrorMessage
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -68,17 +69,17 @@ object PortalHandler : Listener {
 
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent) {
-        Bukkit.getScheduler().runTaskAsynchronously(Everything.mPlugin!!) { _ ->
+        Bukkit.getScheduler().runTaskAsynchronously(mPlugin!!) { _ ->
             for (cube in Everything.cubes) {
                 if (cube.type != "TP")
                     continue
 
-                fun doTeleport(destation: Location) {
+                fun doTeleport(destination: Location) {
                     if (cube.data.getBoolean("isCoolDown", false)) {
-                        event.player.sendActionText(TextUtil.error("传送门正在冷却"))
+                        event.player.sendActionBar("传送门正在冷却".toErrorMessage())
                         return
                     }
-                    val dest = destation.clone().add(Vector(0.5, 1.0, 0.5))
+                    val dest = destination.clone().add(Vector(0.5, 1.0, 0.5))
                     cube.data.set("isCoolDown", true)
                     Bukkit.getScheduler().runTask(mPlugin!!) { _ ->
                         event.player.apply {

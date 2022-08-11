@@ -2,6 +2,7 @@ package com.zhufu.opencraft.ai
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.traits.Equipments
+import com.zhufu.opencraft.util.TextUtil
 import net.citizensnpcs.api.ai.tree.BehaviorGoalAdapter
 import net.citizensnpcs.api.ai.tree.BehaviorStatus
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent

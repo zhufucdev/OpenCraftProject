@@ -2,6 +2,7 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.inventory.PaymentDialog
+import com.zhufu.opencraft.util.toInfoMessage
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.Command

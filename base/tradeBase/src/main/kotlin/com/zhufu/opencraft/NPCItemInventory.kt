@@ -1,7 +1,7 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.util.toErrorMessage
 import net.citizensnpcs.api.CitizensAPI
-import net.citizensnpcs.api.ai.tree.Behavior
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.citizensnpcs.api.npc.NPC
 import org.bukkit.Bukkit
@@ -85,11 +85,11 @@ abstract class NPCItemInventory(
     fun onNPCClick(event: NPCRightClickEvent) {
         if (event.npc == clickableNPC) {
             if (event.clicker.info()?.isInBuilderMode == true) {
-                event.clicker.sendMessage(TextUtil.error("抱歉，但您不能在此时购买或更改物品"))
+                event.clicker.sendMessage("抱歉，你不能在此时购买或更改物品".toErrorMessage())
                 return
             }
             if (isOpened) {
-                event.clicker.sendMessage(TextUtil.error("该物品已经被其他玩家占用"))
+                event.clicker.sendMessage("该物品已经被其他玩家占用".toErrorMessage())
                 return
             }
             onInventoryOpen(event.clicker)

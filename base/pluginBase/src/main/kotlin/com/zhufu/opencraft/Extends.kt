@@ -1,8 +1,12 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.api.ChatInfo
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.data.OfflineInfo
+import com.zhufu.opencraft.data.ServerPlayer
 import com.zhufu.opencraft.special_item.Coin
 import com.zhufu.opencraft.special_item.SpecialItem
-import com.zhufu.opencraft.util.ActionBarTextUtil
+import com.zhufu.opencraft.util.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.OfflinePlayer
@@ -16,11 +20,7 @@ import org.bukkit.util.Vector
 import java.io.File
 import java.math.BigInteger
 import java.nio.channels.FileChannel
-import java.nio.charset.Charset
-import java.security.DigestInputStream
 import java.security.MessageDigest
-import kotlin.math.abs
-import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.reflect.full.isSuperclassOf
@@ -72,9 +72,9 @@ fun CommandSender.warn(msg: String) {
     this.sendMessage(msg.toWarnMessage())
 }
 
-@Deprecated("Not safe", ReplaceWith("Player.sendActionBar"))
+@Deprecated("Duplicated", ReplaceWith("Player.sendActionBar"))
 fun Player.sendActionText(msg: String) {
-    ActionBarTextUtil.sendActionText(this, msg)
+    sendActionBar(msg.toComponent())
 }
 
 fun runSync(l: () -> Unit) {

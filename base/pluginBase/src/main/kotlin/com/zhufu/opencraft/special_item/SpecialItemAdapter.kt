@@ -1,7 +1,8 @@
 package com.zhufu.opencraft.special_item
 
 import com.zhufu.opencraft.*
-import org.bukkit.Bukkit
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
@@ -9,7 +10,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.scoreboard.Objective
-import kotlin.concurrent.thread
 
 open class SpecialItemAdapter(
     val name: String,

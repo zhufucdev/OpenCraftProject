@@ -1,7 +1,12 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.data.DualInventory
+import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.events.PlayerDeobserveEvent
 import com.zhufu.opencraft.events.PlayerObserveEvent
+import com.zhufu.opencraft.util.*
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
@@ -9,6 +14,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
+import java.time.Duration
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
@@ -38,7 +44,7 @@ object PlayerObserverListener : Listener {
     fun playerObserver(event: PlayerObserveEvent){
         val info = PlayerManager.findInfoByPlayer(event.player)
         if (info == null){
-            event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+            event.player.sendMessage(Language.getDefault("player.error.unknown").toErrorMessage())
             return
         }
         if (info.status == Info.GameStatus.Observing){
@@ -50,9 +56,18 @@ object PlayerObserverListener : Listener {
             return
         }
         info.inventory.create(DualInventory.RESET).load(inventoryOnly = true)
-        event.player.sendTitle(TextUtil.getColoredText("推荐使用第三人称进行观战", TextUtil.TextColor.AQUA,true,false)
-                , TextUtil.getColoredText("同时，若需要退出，使用${TextUtil.tip(mPlugin.server.getPluginCommand("user deobserve")!!.usage)}", TextUtil.TextColor.GOLD,false,false),7,50,7)
-        event.onObserver.sendMessage(TextUtil.info("${event.player.name}正在对您进行观战"))
+        event.player.showTitle(
+            Title.title(
+                "推荐使用第三人称进行观战".toComponent().color(NamedTextColor.AQUA),
+                "同时，若需要退出，使用${Bukkit.getPluginCommand("user deobserve")!!.usage}".toTipMessage(),
+                Title.Times.times(
+                    Duration.ofMillis(300),
+                    Duration.ofSeconds(3),
+                    Duration.ofMillis(150)
+                )
+            )
+        )
+        event.onObserver.sendMessage("${event.player.name}正在对您进行观战".toInfoMessage())
 
         info.status = Info.GameStatus.Observing
 

@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.util.toErrorMessage
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -18,11 +19,7 @@ object Listener: Listener {
     fun onPlayerBreakBlock(event: BlockBreakEvent) {
         if (event.player.world != Base.surviveWorld)
             return
-        val player = findPlayer(event.player)
-        if (player == null) {
-            event.player.kickPlayer(TextUtil.error("抱歉，但您的游戏出现问题，这很重要，所以我们决定将您踢出。如果有必要，您可以尝试寻求管理员的帮助"))
-            return
-        }
+        val player = findPlayer(event.player) ?: return
         if (!event.block.type.isOre) {
             if (player.lastBlockBroken.world == event.player.world && player.lastOrePointed != null && player.lastOrePointed!!.world == player.lastBlockBroken.world) {
                 val closer = player.lastBlockBroken.distance(player.lastOrePointed!!) > event.block.location.distance(player.lastOrePointed!!) && event.block.location.distance(player.lastOrePointed!!) <= 5
@@ -47,11 +44,7 @@ object Listener: Listener {
 
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent){
-        val player = findPlayer(event.player)
-        if (player == null) {
-            event.player.kickPlayer(TextUtil.error("抱歉，但您的游戏出现问题，这很重要，所以我们决定将您踢出。如果有必要，您可以尝试寻求管理员的帮助"))
-            return
-        }
+        val player = findPlayer(event.player) ?: return
         val targetBlock = try{ event.player.getTargetBlock(setOf(Material.AIR, Material.DIRT, Material.GRASS, Material.STONE), 15) } catch (igor: Exception){ return }
         if (targetBlock.type.isOre && targetBlock.location != player.lastOrePointed) {
             player.lastOrePointed = targetBlock.location

@@ -3,15 +3,21 @@ package com.zhufu.opencraft.survey
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.util.*
+import io.papermc.paper.event.player.AsyncChatEvent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
+import java.time.Duration
 import java.util.concurrent.TimeoutException
 import kotlin.concurrent.timer
 
@@ -42,8 +48,8 @@ object SurveyManager : Listener {
                     QuestionType.SingleChoice -> {
                         return playerAnswer.length == 1 && playerAnswer.first().isLetter()
                     }
+
                     QuestionType.MultiChoice -> {
-                        var r = true
                         playerAnswer.forEach {
                             if (!it.isLetter() && it != ',') {
                                 return false
@@ -51,6 +57,7 @@ object SurveyManager : Listener {
                         }
                         return true
                     }
+
                     QuestionType.Text -> {
                         return playerAnswer.isNotEmpty()
                     }
@@ -68,16 +75,16 @@ object SurveyManager : Listener {
                     val selections = answer.split(',')
                     val split = this.playerAnswer.split(',')
                     val playerAnswerer = ArrayList<String>()
-                    split.forEach { playerAnswerer.add(it.toUpperCase()) }
+                    split.forEach { playerAnswerer.add(it.uppercase()) }
 
                     var r = true
                     for (it in selections)
-                        if (!playerAnswer.contains(it.toUpperCase())) {
+                        if (!playerAnswer.contains(it.uppercase())) {
                             r = false
                             break
                         }
                     r
-                } else playerAnswer.toUpperCase() == answer.toUpperCase()
+                } else playerAnswer.uppercase() == answer.uppercase()
 
         override fun equals(other: Any?): Boolean {
             return other is Question
@@ -138,22 +145,19 @@ object SurveyManager : Listener {
         private fun sendQuestion() {
             val question = question[index]
             player.sendMessage(
-                TextUtil.getColoredText(
-                    "${index + 1}.[${question.type.getChineseName()}] Q: ",
-                    TextUtil.TextColor.BLUE,
-                    bold = false,
-                    underlined = false
-                ) + question.content
+                Component.text("${index + 1}.[${question.type.getChineseName()}] Q: ")
+                    .color(NamedTextColor.AQUA)
+                    .append(Component.text(question.content))
             )
             fun sendSelections() {
                 player.sendMessage(formatLine(2, question.selections))
             }
             if (question.type == QuestionType.MultiChoice) {
                 sendSelections()
-                player.sendMessage(TextUtil.tip("提示: 多选题请使用 选项,选项... 的格式，例如: A,B,C,D，否则一律判为错误"))
+                player.tip("提示: 多选题请使用 选项,选项... 的格式，例如: A,B,C,D，否则一律判为错误")
             } else if (question.type == QuestionType.SingleChoice) {
                 sendSelections()
-                player.sendMessage(TextUtil.tip("提示: 单选题只能输入一个英文字母，大小写皆可，否则一律判为错误"))
+                player.tip("提示: 单选题只能输入一个英文字母，大小写皆可，否则一律判为错误")
             }
         }
 
@@ -166,22 +170,15 @@ object SurveyManager : Listener {
                     if (!it.isCorrect) {
                         r = false
                         player.sendMessage(
-                            TextUtil.error("您所答题目")
-                                    + "\"${it.content}\""
-                                    + TextUtil.error("的答案是错误的")
-                                    + TextUtil.tip("正确答案应为:${it.answer}")
+                            "你所答题目".toErrorMessage()
+                                .append("\"${it.content}\"".toComponent())
+                                .append("的答案是错误的".toErrorMessage())
+                                .append("正确答案应为:${it.answer}".toTipMessage())
                         )
                     }
                 }
                 if (r) {
-                    player.sendMessage(
-                        TextUtil.getColoredText(
-                            "恭喜，您的回答全部正确，您现在已经成为正式会员了",
-                            TextUtil.TextColor.GOLD,
-                            true,
-                            false
-                        )
-                    )
+                    player.success("恭喜，你的回答全部正确，你现在已经成为正式会员了")
                 }
                 return r
             }
@@ -218,25 +215,24 @@ object SurveyManager : Listener {
         }
         try {
             val reader = JsonReader(surveySave.reader())
-            val parser = JsonParser()
             reader.beginArray()
             while (reader.hasNext()) {
-                val obj = parser.parse(reader).asJsonObject
+                val obj = JsonParser.parseReader(reader).asJsonObject
 
-                if (!obj.has("Content")
-                    || !obj.has("Type")
-                    || !obj.has("Answer")
-                    || (obj["Type"].asString.contains("Choice") && !obj.has("Selections"))
+                if (!obj.has("content")
+                    || !obj.has("type")
+                    || !obj.has("answer")
+                    || (obj["type"].asString.contains("choice") && !obj.has("selections"))
                 ) {
                     Bukkit.getLogger().warning("[SurveyManager] No enough args for object ${reader.path}")
                     continue
                 }
-                val content = obj["Content"].asString
-                val type = QuestionType.valueOf(obj["Type"].asString)
-                val answer = obj["Answer"].asString
+                val content = obj["content"].asString
+                val type = QuestionType.valueOf(obj["type"].asString)
+                val answer = obj["answer"].asString
                 val selections = ArrayList<String>()
                 if (type == QuestionType.SingleChoice || type == QuestionType.MultiChoice)
-                    obj["Selections"].asJsonArray.forEach { selections.add(it.asString) }
+                    obj["selections"].asJsonArray.forEach { selections.add(it.asString) }
                 questionList.add(Question(content, type, answer, selections))
             }
             reader.endArray()
@@ -250,7 +246,7 @@ object SurveyManager : Listener {
 
     fun startSurvey(player: Player) {
         if (testMap.containsKey(player)) {
-            player.sendMessage(TextUtil.info("您已经开始答题了"))
+            player.info("你已经开始答题了")
             return
         }
         val info = PlayerManager.findInfoByPlayer(player)
@@ -259,7 +255,7 @@ object SurveyManager : Listener {
             return
         }
         if (info.isSurveyPassed) {
-            player.sendMessage(TextUtil.info("您已经成为正式会员，不需要再答题"))
+            player.info("你已经成为正式会员，不需要再答题")
             return
         }
         if (info.remainingSurveyChance > 0) {
@@ -274,52 +270,76 @@ object SurveyManager : Listener {
                 timer("surveyTimer", initialDelay = delay, period = delay) {
                     if (!testMap.containsKey(player))
                         this.cancel()
+                    fun title(t: Component) {
+                        player.showTitle(
+                            Title.title(
+                                t,
+                                Component.empty(),
+                                Title.Times.times(
+                                    Duration.ofMillis(150),
+                                    Duration.ofSeconds(2),
+                                    Duration.ofMillis(150)
+                                )
+                            )
+                        )
+                    }
                     if (iLimit > i) {
-                        player.sendTitle(TextUtil.info("您还剩${(iLimit - i) * 10}秒"), "", 7, 40, 7)
+                        title("你还剩${(iLimit - i) * 10}秒".toInfoMessage())
                     } else {
-                        player.sendTitle(TextUtil.tip("时间到!"), "", 7, 40, 7)
+                        title("时间到!".toTipMessage())
                         exit(player)
                         this.cancel()
                     }
                     i++
                 }
-                player.sendTitle(TextUtil.tip("您将开始答题"), TextUtil.info("同时，您的聊天已被禁用"), 7, 70, 7)
-                player.sendMessage(TextUtil.info("使用键盘在聊天框中答题"))
-                player.sendMessage(TextUtil.tip("您可以通过输入\"period\"来返回上一题，或是\"exit\"来退出答题(您的进度将不会被保存)"))
+                player.showTitle(
+                    Title.title(
+                        "你将开始答题".toTipMessage(),
+                        "同时，你的聊天已被禁用".toInfoMessage(),
+                        Title.Times.times(
+                            Duration.ofMillis(300),
+                            Duration.ofSeconds(4),
+                            Duration.ofMillis(150)
+                        )
+                    )
+                )
+                player.info("使用键盘在聊天框中答题")
+                player.tip("你可以通过输入\"period\"来返回上一题，或是\"exit\"来退出答题(你的进度将不会被保存)")
             } catch (e: TimeoutException) {
                 e.printStackTrace()
                 player.error("获取问卷超时")
             }
         } else {
-            player.sendMessage(TextUtil.error("抱歉，但您参加调查的机会已用尽，您可以尝试请求管理员的帮助"))
+            player.error("抱歉，但你参加调查的机会已用尽，你可以尝试请求管理员的帮助")
         }
     }
 
     private fun exit(player: Player) {
         testMap.remove(player)
-        player.sendMessage(TextUtil.info("您已退出答题"))
+        player.info("你已退出答题")
         val info = PlayerManager.findInfoByPlayer(player) ?: return
         info.doNotTranslate = true
 
         info.remainingSurveyChance--
-        player.sendMessage("您还剩${info.remainingSurveyChance}次机会")
+        player.sendMessage("你还剩${info.remainingSurveyChance}次机会")
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    fun onPlayerAsyncChat(event: AsyncPlayerChatEvent) {
+    fun onPlayerAsyncChat(event: AsyncChatEvent) {
         val answerer = testMap[event.player]
         if (answerer != null) {
             event.isCancelled = true
-            if (event.message == "period") {
+            val msg = (event.message() as TextComponent).content()
+            if (msg == "period") {
                 if (answerer.index > 0) {
                     answerer.periodQuestion()
                 } else {
-                    event.player.sendMessage(TextUtil.error("当前题目是第一题"))
+                    event.player.error("当前题目是第一题")
                 }
-            } else if (event.message == "exit") {
+            } else if (msg == "exit") {
                 exit(event.player)
             } else {
-                answerer.currentQuestion.playerAnswer = event.message
+                answerer.currentQuestion.playerAnswer = msg
                 if (answerer.hasNext)
                     answerer.nextQuestion()
                 else {
@@ -331,7 +351,7 @@ object SurveyManager : Listener {
                             .also {
                                 if (!it) {
                                     info.remainingSurveyChance--
-                                    event.player.sendMessage("您还剩${info.remainingSurveyChance}次机会")
+                                    event.player.sendMessage("你还剩${info.remainingSurveyChance}次机会")
                                 }
                             }
                         testMap.remove(event.player)

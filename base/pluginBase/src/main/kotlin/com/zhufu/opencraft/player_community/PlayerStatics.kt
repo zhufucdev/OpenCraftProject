@@ -3,7 +3,7 @@ package com.zhufu.opencraft.player_community
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.zhufu.opencraft.ServerPlayer
+import com.zhufu.opencraft.data.ServerPlayer
 import org.bukkit.Bukkit
 import java.io.File
 import java.nio.file.Paths

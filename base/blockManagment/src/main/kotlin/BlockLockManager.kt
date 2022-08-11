@@ -3,6 +3,7 @@ package com.zhufu.opencraft
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.zhufu.opencraft.api.Nameable
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player

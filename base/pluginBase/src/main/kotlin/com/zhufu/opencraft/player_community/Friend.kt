@@ -1,6 +1,7 @@
 package com.zhufu.opencraft.player_community
 
-import com.zhufu.opencraft.*
+import com.zhufu.opencraft.data.CheckpointInfo
+import com.zhufu.opencraft.data.ServerPlayer
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
@@ -10,7 +11,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Paths
 import java.util.*
-import kotlin.collections.HashMap
 
 class Friend(
     val a: ServerPlayer,
@@ -43,7 +43,8 @@ class Friend(
                         CheckpointInfo(
                         location = config.getSerializable(it, Location::class.java) ?: return@forEach,
                             name = it
-                    ))
+                    )
+                    )
                 }
             }
         }

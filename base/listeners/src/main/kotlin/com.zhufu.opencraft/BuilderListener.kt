@@ -1,5 +1,8 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.toErrorMessage
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -70,7 +73,7 @@ object BuilderListener : Listener {
             val lvl = event.player.info()?.builderLevel
             if (lvl != null && lvl > 2 && isBlockLimit(event.block.type)) {
                 event.isCancelled = true
-                event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.block"]))
+                event.player.sendMessage(Language[event.player, "builder.error.block"].toErrorMessage())
             } else if (!blocks.contains(event.block.location)) {
                 blocks.add(event.block.location)
             }
@@ -84,7 +87,7 @@ object BuilderListener : Listener {
                 blocks.remove(event.block.location)
             } else if (!event.player.isOp) {
                 event.isCancelled = true
-                event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.breakBlock"]))
+                event.player.sendMessage(Language[event.player, "builder.error.breakBlock"].toErrorMessage())
             }
         }
     }
@@ -101,7 +104,7 @@ object BuilderListener : Listener {
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
         if (event.player.info()?.isInBuilderMode == true && event.player.info()?.builderLevel!! > 1) {
             event.isCancelled = true
-            event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.dropItem"]))
+            event.player.sendMessage(Language[event.player, "builder.error.dropItem"].toErrorMessage())
         }
     }
 
@@ -109,7 +112,7 @@ object BuilderListener : Listener {
     fun onPlayerOpenInventory(event: InventoryOpenEvent) {
         if (event.player.info()?.isInBuilderMode == true && event.inventory.type != InventoryType.CREATIVE && event.player.info()?.builderLevel!! > 1) {
             event.isCancelled = true
-            event.player.sendMessage(TextUtil.error(Language[event.player, "builder.error.inventory"]))
+            event.player.sendMessage(Language[event.player, "builder.error.inventory"].toErrorMessage())
         }
     }
 

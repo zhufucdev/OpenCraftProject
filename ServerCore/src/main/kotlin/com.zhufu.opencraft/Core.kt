@@ -10,7 +10,10 @@ import com.zhufu.opencraft.Base.surviveWorld
 import com.zhufu.opencraft.Game.env
 import com.zhufu.opencraft.Game.varNames
 import com.zhufu.opencraft.PlayerManager.showPlayerOutOfDemoTitle
+import com.zhufu.opencraft.api.ServerCaller
 import com.zhufu.opencraft.chunkgenerator.VoidGenerator
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.events.PlayerInventorySaveEvent
 import com.zhufu.opencraft.events.PlayerJoinGameEvent
 import com.zhufu.opencraft.listener.NPCListener
@@ -19,10 +22,13 @@ import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
 import com.zhufu.opencraft.survey.SurveyManager
+import com.zhufu.opencraft.util.*
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.SpawnReason
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.trait.trait.Equipment
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -41,6 +47,7 @@ import java.io.File
 import java.nio.charset.Charset
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
@@ -335,7 +342,7 @@ class Core : JavaPlugin(), Listener {
             val registry = CitizensAPI.getNPCRegistry()
 
             val name = TextUtil.getCustomizedText(conf.getString("name", "Unknown")!!)
-            val type = EntityType.valueOf(conf.getString("type", "PLAYER")!!.toUpperCase())
+            val type = EntityType.valueOf(conf.getString("type", "PLAYER")!!.uppercase())
             val world = Bukkit.getWorld(conf.getString("world", "world")!!)
             val x = conf.getString("location.x")!!.toDouble()
             val y = conf.getString("location.y")!!.toDouble()
@@ -408,7 +415,7 @@ class Core : JavaPlugin(), Listener {
                 }
                 args.first() == "feedback" -> {
                     if (args.size < 2) {
-                        sender.sendMessage(TextUtil.error("您没有输入文本"))
+                        sender.error("您没有输入文本")
                         return false
                     }
                     val sb = StringBuilder()
@@ -417,7 +424,7 @@ class Core : JavaPlugin(), Listener {
                     sb.deleteCharAt(sb.length - 1)
 
                     if (sb.length > 300) {
-                        sender.sendMessage(TextUtil.error("字数超过上限(300字)"))
+                        sender.error("字数超过上限(300字)")
                         return true
                     }
 
@@ -439,18 +446,18 @@ class Core : JavaPlugin(), Listener {
                         }
                     }
 
-                    sender.sendMessage(TextUtil.info("您的反馈已提交，${TextUtil.error("感谢支持")}"))
+                    sender.info("您的反馈已提交，${TextUtil.error("感谢支持")}")
                 }
                 args.first() == "about" -> {
                     val readme = File(dataFolder, "readme.txt")
                     if (!readme.exists()) {
-                        sender.sendMessage(TextUtil.info("未找到自述文件"))
+                        sender.info("未找到自述文件")
                         return true
                     }
                     val charset = if (args.size >= 2) try {
                         Charset.forName(args[1])
                     } catch (e: Exception) {
-                        sender.sendMessage(TextUtil.error("未找到编码格式: ${args[1]}"))
+                        sender.error("未找到编码格式: ${args[1]}")
                         return false
                     } else Charsets.UTF_8
                     Bukkit.getScheduler().runTaskAsynchronously(this, Runnable {
@@ -487,27 +494,36 @@ class Core : JavaPlugin(), Listener {
                 }
                 args.first() == "stop" -> {
                     if (sender !is ConsoleCommandSender && !sender.isOp) {
-                        sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
+                        sender.error("您没有权限使用此命令")
                         return true
                     }
                     if (args.size < 2) {
-                        sender.sendMessage(TextUtil.error("请给出原因"))
+                        sender.error("请给出原因")
                         return false
                     }
-                    val message = TextUtil.info(args[1])
+                    val message = args[1].toInfoMessage()
+                    val title = Title.title(
+                        message,
+                        Component.empty(),
+                        Title.Times.times(
+                            Duration.ofMillis(500),
+                            Duration.ofDays(2),
+                            Duration.ZERO
+                        )
+                    )
                     server.onlinePlayers.forEach {
-                        it.sendTitle(TextUtil.error("服务器即将关闭"), message, 7, 1000, 7)
+                        it.showTitle(title)
                     }
                     Bukkit.getScheduler().runTaskLater(this, Runnable {
                         Bukkit.getOnlinePlayers().forEach {
-                            it.kickPlayer(message)
+                            it.kick(message)
                         }
                         server.shutdown()
                     }, (args[1].length * 0.2 * 20).roundToLong())
                 }
                 args.first() == "reload" -> {
                     if (sender !is ConsoleCommandSender && !sender.isOp) {
-                        sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
+                        sender.error("您没有权限使用此命令")
                         return true
                     }
                     if (args.size < 2) {
@@ -521,7 +537,7 @@ class Core : JavaPlugin(), Listener {
                         var result = false
                         when (args[it]) {
                             "game" -> {
-                                sender.sendMessage(TextUtil.info("正在重载游戏"))
+                                sender.info("正在重载游戏")
                                 result = true
                                 GameManager.forEach { game ->
                                     val id = game.gameID
@@ -529,24 +545,24 @@ class Core : JavaPlugin(), Listener {
                                         game.initGameEnder()
                                     } catch (e: Exception) {
                                         result = false
-                                        sender.sendMessage(TextUtil.error("gameID: $id ${e.javaClass.simpleName}: ${e.message}"))
+                                        sender.error("gameID: $id ${e.javaClass.simpleName}: ${e.message}")
                                         e.printStackTrace()
                                     }
                                 }
                             }
                             "npc" -> {
-                                sender.sendMessage(TextUtil.info("正在重载NPC"))
+                                sender.info("正在重载NPC")
                                 result = try {
                                     spawnNPC()
                                     true
                                 } catch (e: Exception) {
-                                    sender.sendMessage(TextUtil.error("${e.javaClass.simpleName}: ${e.message}"))
+                                    sender.error("${e.javaClass.simpleName}: ${e.message}")
                                     e.printStackTrace()
                                     false
                                 }
                             }
                             "survey" -> {
-                                sender.sendMessage(TextUtil.info("正在重载服务器调查"))
+                                sender.info("正在重载服务器调查")
                                 SurveyManager.init(File(dataFolder, "survey.json"), null)
                                 result = true
                             }
@@ -556,7 +572,7 @@ class Core : JavaPlugin(), Listener {
                                     Language.init()
                                     true
                                 } catch (e: Exception) {
-                                    sender.sendMessage(TextUtil.error("${e.javaClass.simpleName}: ${e.message}"))
+                                    sender.error("${e.javaClass.simpleName}: ${e.message}")
                                     e.printStackTrace()
                                     false
                                 }
@@ -589,7 +605,7 @@ class Core : JavaPlugin(), Listener {
                                 }
                             }
                             else -> {
-                                sender.sendMessage(TextUtil.error("无效模块: ${args[1]}"))
+                                sender.error("无效模块: ${args[1]}")
                             }
                         }
                         if (!result)
@@ -597,23 +613,19 @@ class Core : JavaPlugin(), Listener {
                     }
                     sender.sendMessage(
                         if (failure.isEmpty())
-                            TextUtil.info("成功重载指定模块")
+                            "成功重载指定模块".toSuccessMessage()
                         else {
-                            buildString {
-                                append("${ChatColor.RED}无法重载")
-                                failure.forEach { append("$it,") }
-                                deleteCharAt(lastIndex)
-                            }
+                            "无法重载${failure.joinToString()}".toErrorMessage()
                         }
                     )
                 }
                 args.first() == "set" -> {
                     if (!sender.isOp) {
-                        sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
+                        sender.error("您没有权限使用此命令")
                         return true
                     }
                     if (args.size < 3) {
-                        sender.sendMessage(TextUtil.error("用法错误"))
+                        sender.error("用法错误")
                         return true
                     }
                     if (args[1] == "url") {
@@ -642,22 +654,22 @@ class Core : JavaPlugin(), Listener {
                     } else {
                         fun checkIntOverZero(): Boolean {
                             if (!args[2].isDigit()) {
-                                sender.sendMessage(TextUtil.error("此变量只允许数字"))
+                                sender.error("此变量只允许数字")
                                 return false
                             }
                             if (args[2].contains('.') || args[2].contains('-')) {
-                                sender.sendMessage(TextUtil.error("此变量只允许正整数"))
+                                sender.error("此变量只允许正整数")
                                 return false
                             }
                             return true
                         }
                         if (!varNames.contains(args[1])) {
-                            sender.sendMessage(TextUtil.error("变量不存在"))
+                            sender.error("变量不存在")
                             return true
                         }
                         if (checkIntOverZero()) {
                             env.set(args[1], args[2].toIntOrNull())
-                            sender.sendMessage(TextUtil.success("已将服务器环境变量${args[1]}设置为${args[2]}"))
+                            sender.success("已将服务器环境变量${args[1]}设置为${args[2]}")
 
                             reloadTask?.cancel()
                             saveTask?.cancel()
@@ -696,7 +708,7 @@ class Core : JavaPlugin(), Listener {
                                 sender.error("参数必须是自然数")
                                 return true
                             }
-                            Base.publicMsgPool.remove(id)
+                            publicMsgPool.remove(id)
                             sender.success("已移除索引为${id}的消息")
                         }
                         "broadcast" -> PlayerManager.forEachChatter { publicMsgPool.sendUnreadTo(it) }
@@ -741,56 +753,76 @@ class Core : JavaPlugin(), Listener {
         } else if (command.name == "survey") {
             if (args.isNotEmpty()) {
                 if (!sender.isOp) {
-                    sender.sendMessage(TextUtil.error("您没有权限使用该命令"))
+                    sender.error("您没有权限使用该命令")
                     return true
                 }
                 if (args.size < 2) {
-                    sender.sendMessage(TextUtil.error("用法错误"))
+                    sender.error("用法错误")
                     return true
                 }
                 when (args.first()) {
                     "pass" -> {
                         val it = PlayerManager.findOfflineInfoByPlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
                         if (it == null) {
-                            sender.sendMessage(TextUtil.error("找不到玩家"))
+                            sender.error("找不到玩家")
                             return true
                         }
                         if (it.isOnline) {
-                            it.onlinePlayerInfo!!.player.sendTitle("", TextUtil.info("您已被管理员给予正式会员的身份"), 7, 60, 7)
+                            it.onlinePlayerInfo!!.player.showTitle(
+                                Title.title(
+                                    Component.empty(),
+                                    "您已被管理员给予正式会员的身份".toInfoMessage(),
+                                    Title.Times.times(
+                                        Duration.ofMillis(150),
+                                        Duration.ofSeconds(3),
+                                        Duration.ofMillis(150)
+                                    )
+                                )
+                            )
                         }
                         it.isSurveyPassed = true
                     }
                     "rollback" -> {
                         val it = PlayerManager.findOfflineInfoByPlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
                         if (it == null) {
-                            sender.sendMessage(TextUtil.error("找不到玩家"))
+                            sender.error("找不到玩家")
                             return true
                         }
                         if (it.isOnline) {
-                            it.onlinePlayerInfo!!.player.sendTitle("", TextUtil.info("您已被管理员剥夺正式会员的身份"), 7, 60, 7)
+                            it.onlinePlayerInfo!!.player.showTitle(
+                                Title.title(
+                                    Component.empty(),
+                                    "您已被管理员剥夺正式会员的身份".toInfoMessage(),
+                                    Title.Times.times(
+                                        Duration.ofMillis(150),
+                                        Duration.ofSeconds(3),
+                                        Duration.ofMillis(150)
+                                    )
+                                )
+                            )
                         }
                         it.isSurveyPassed = false
                     }
                     "giveChance" -> {
                         val it = PlayerManager.findOfflineInfoByPlayer(Bukkit.getOfflinePlayer(args[1]).uniqueId)
                         if (it == null) {
-                            sender.sendMessage(TextUtil.error("找不到玩家"))
+                            sender.error("找不到玩家")
                             return true
                         }
                         val num = args[2].toIntOrNull()
                         if (num == null) {
-                            sender.sendMessage(TextUtil.error("非法参数 ${args[2]}: 参数不是整数"))
+                            sender.error("非法参数 ${args[2]}: 参数不是整数")
                             return true
                         }
                         it.remainingSurveyChance += num
                         if (it.isOnline) {
-                            it.onlinePlayerInfo!!.player.sendMessage(TextUtil.info("您被给予${num}次参与服务器调查的机会，您现在有${it.remainingSurveyChance}次机会"))
+                            it.onlinePlayerInfo!!.player.info("您被给予${num}次参与服务器调查的机会，您现在有${it.remainingSurveyChance}次机会")
                         }
                     }
                 }
             } else {
                 if (sender !is Player) {
-                    sender.sendMessage(TextUtil.error("只有玩家才能使用此命令"))
+                    sender.error("只有玩家才能使用此命令")
                     return true
                 }
                 SurveyManager.startSurvey(sender)
@@ -798,7 +830,7 @@ class Core : JavaPlugin(), Listener {
         } else if (command.name == "builder") {
             if (args.isEmpty()) {
                 if (sender !is Player) {
-                    sender.sendMessage(TextUtil.error("只有玩家才能使用此命令"))
+                    sender.error("只有玩家才能使用此命令")
                     return true
                 }
                 val info = PlayerManager.findInfoByPlayer(sender)
@@ -807,53 +839,66 @@ class Core : JavaPlugin(), Listener {
                     return true
                 }
                 if (sender.info()?.isBuilder != true) {
-                    sender.sendMessage(TextUtil.error("只有建筑者才能使用此命令"))
+                    sender.error("只有建筑者才能使用此命令")
                     return true
                 }
 
                 if (info.status != Info.GameStatus.MiniGaming && info.status != Info.GameStatus.InTutorial && info.status != Info.GameStatus.Observing) {
                     BuilderListener.switch(sender)
                 } else {
-                    sender.sendMessage(TextUtil.error("抱歉，但您不能在此时使用此命令"))
+                    sender.error("抱歉，但您不能在此时使用此命令")
                     return true
                 }
             } else if (args.size >= 2) {
                 if (!sender.isOp) {
-                    sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
+                    sender.error("您没有权限使用此命令")
                     return true
                 }
                 val player = Bukkit.getOfflinePlayer(args[1])
+                fun notify(c: Component) {
+                    player.player?.showTitle(
+                        Title.title(
+                            Component.empty(),
+                            c,
+                            Title.Times.times(
+                                Duration.ofMillis(150),
+                                Duration.ofSeconds(3),
+                                Duration.ofMillis(150)
+                            )
+                        )
+                    )
+                }
                 when (args.first()) {
                     "pass" -> {
                         if (player.offlineInfo()?.isBuilder != true) {
                             BuilderListener.updatePlayerLevel(player, 3)
-                            sender.sendMessage(TextUtil.success("以给予${args.last()}建筑者的身份"))
-                            player.player?.sendTitle("", TextUtil.info("您已被管理员给予建筑者的身份"), 7, 60, 7)
+                            sender.success("以给予${args.last()}建筑者的身份")
+                            notify("您已被管理员给予建筑者的身份".toInfoMessage())
                         }
                     }
                     "rollback" -> {
                         if (player.offlineInfo()?.isBuilder == true) {
                             BuilderListener.updatePlayerLevel(player, 0)
-                            sender.sendMessage(TextUtil.success("以夺去${args.last()}建筑者的身份"))
-                            player.player?.sendTitle("", TextUtil.info("您已被管理员夺去建筑者的身份"), 7, 60, 7)
+                            sender.success("以夺去${args.last()}建筑者的身份")
+                            notify("您已被管理员夺去建筑者的身份".toInfoMessage())
                         }
                     }
                     "set" -> {
                         val num = args[2].toIntOrNull()
                         if (num == null || num < 1) {
-                            sender.sendMessage(TextUtil.error("无效参数: ${args[2]}: 参数不是自然数"))
+                            sender.error("无效参数: ${args[2]}: 参数不是自然数")
                             return true
                         }
                         BuilderListener.updatePlayerLevel(player, num)
-                        sender.sendMessage(TextUtil.success("已将${player.name}的建筑者等级设置为$num"))
-                        player.player?.sendMessage(TextUtil.info("您的建筑者等级已更新为$num"))
+                        sender.success("已将${player.name}的建筑者等级设置为$num")
+                        notify("您的建筑者等级已更新为$num".toInfoMessage())
                     }
                     else -> {
-                        sender.sendMessage(TextUtil.error("用法错误"))
+                        sender.error("用法错误")
                     }
                 }
             } else {
-                sender.sendMessage(TextUtil.error("用法错误"))
+                sender.error("用法错误")
             }
         }
         return true

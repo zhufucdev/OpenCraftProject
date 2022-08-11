@@ -1,6 +1,6 @@
 package opencraft
 
-import com.zhufu.opencraft.Language
+import com.zhufu.opencraft.util.Language
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.HumanEntity
 

@@ -3,6 +3,7 @@ package com.zhufu.opencraft
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import com.zhufu.opencraft.util.toComponent
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player

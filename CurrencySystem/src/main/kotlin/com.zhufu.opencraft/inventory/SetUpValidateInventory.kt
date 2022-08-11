@@ -1,6 +1,11 @@
 package com.zhufu.opencraft.inventory
 
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toInfoMessage
+import com.zhufu.opencraft.util.toSuccessMessage
+import com.zhufu.opencraft.util.toTipMessage
+import net.kyori.adventure.text.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -11,6 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 
 class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, private val player: Player) :
     NPCItemInventory(baseLocation, null, itemSell, CurrencySystem.instance) {
@@ -31,13 +37,8 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
             Widgets.confirm
                 .also { itemStack ->
                     itemStack.itemMeta = itemStack.itemMeta!!.also {
-                        it.setDisplayName(
-                            TextUtil.getColoredText(
-                                "确认",
-                                TextUtil.TextColor.GREEN,
-                                true,
-                                false
-                            )
+                        it.displayName(
+                            "确认".toSuccessMessage()
                         )
                     }
                     confirmItem = itemStack
@@ -46,20 +47,20 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
         inventory.setItem(inventory.size - 2,
             ItemStack(Material.BLUE_DYE)
                 .also { itemStack ->
-                    itemStack.itemMeta = itemStack.itemMeta!!.also {
-                        it.setDisplayName(TextUtil.getColoredText("获取告示牌", TextUtil.TextColor.RED, true, false))
-                        it.lore = listOf(TextUtil.tip("请在白色玻璃周围放置告示牌并在首行写入单价"))
-                    }
                     giveSignItem = itemStack
+                }
+                .updateItemMeta<ItemMeta> {
+                    displayName("获取告示牌".toInfoMessage())
+                    lore(listOf("请在白色玻璃周围放置告示牌并在首行写入单价".toTipMessage()))
                 }
         )
         inventory.setItem(inventory.size - 3,
             Widgets.cancel
                 .also { itemStack ->
-                    itemStack.itemMeta = itemStack.itemMeta!!.also {
-                        it.setDisplayName(TextUtil.getColoredText("取消", TextUtil.TextColor.RED, true, false))
-                    }
                     cancelItem = itemStack
+                }
+                .updateItemMeta<ItemMeta> {
+                    displayName("取消".toInfoMessage())
                 }
         )
         baseLocation.block.type = Material.BLACK_STAINED_GLASS
@@ -111,15 +112,15 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
         val block = signPossible.firstOrNull { it.block.type.name.contains("wall_sign", true) }?.block
         if (block == null) {
             player.closeInventory()
-            player.sendMessage(TextUtil.error("未在白色玻璃周围发现告示牌，请放置告示牌并在首行写入单价(整数)"))
+            player.error("未在白色玻璃周围发现告示牌，请放置告示牌并在首行写入单价(整数)")
             return false
         }
         val sign = block.state as Sign
 
-        val line = sign.getLine(0)
+        val line = (sign.line(0) as TextComponent).content()
         val unitPrise = line.toLongOrNull()
         if (unitPrise == null) {
-            player.sendMessage(TextUtil.error("无效数据: $line"))
+            player.error("无效数据: $line")
             return false
         }
         items.unitPrise = unitPrise
@@ -138,7 +139,7 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
             destroy(player)
             return true
         } else {
-            player.sendMessage(TextUtil.error("总价超过上限，尝试减少销售数量或是降低单价"))
+            player.error("总价超过上限，尝试减少销售数量或是降低单价")
             return false
         }
     }

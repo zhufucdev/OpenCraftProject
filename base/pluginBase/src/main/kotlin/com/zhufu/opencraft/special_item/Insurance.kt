@@ -1,6 +1,9 @@
 package com.zhufu.opencraft.special_item
 
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toComponent
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.enchantments.Enchantment

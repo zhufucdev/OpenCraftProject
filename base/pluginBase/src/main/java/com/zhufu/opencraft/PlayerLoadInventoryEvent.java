@@ -1,6 +1,6 @@
 package com.zhufu.opencraft;
 
-import com.zhufu.opencraft.DualInventory.InventoryInfo;
+import com.zhufu.opencraft.data.DualInventory.InventoryInfo;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;

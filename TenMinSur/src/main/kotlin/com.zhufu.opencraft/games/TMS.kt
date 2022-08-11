@@ -2,6 +2,12 @@ package com.zhufu.opencraft.games
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.events.PlayerQuitGameEvent
+import com.zhufu.opencraft.util.toErrorMessage
+import com.zhufu.opencraft.util.toInfoMessage
+import com.zhufu.opencraft.util.toTipMessage
+import com.zhufu.opencraft.util.toWarnMessage
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.block.Biome
 import org.bukkit.entity.Player
@@ -21,7 +27,7 @@ class TMS : MiniGame() {
 
     override fun initGame(id: Int, player: Player?, plugin: JavaPlugin) {
         super.initGame(id, player, plugin)
-        player?.sendMessage(TextUtil.info("正在创建新的房间，请稍后"))
+        player?.sendMessage("正在创建新的房间，请稍后".toInfoMessage())
         world = Bukkit.createWorld(WorldCreator("game_tms_$id"))!!
     }
 
@@ -47,7 +53,7 @@ class TMS : MiniGame() {
 
         override fun onEnable() {
             world.time = Random().nextInt(10000).toLong()
-            world.setGameRuleValue("doDaylightCycle", "true")
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true)
 
             locations = Array(getTeams().size) {
                 var r = Base.getRandomLocation(world, 1000, y = 128)
@@ -59,8 +65,14 @@ class TMS : MiniGame() {
                 r
             }
 
-            players!!.forEach {
-                it.player.sendTitle(TextUtil.error("游戏开始"), TextUtil.tip("您有十分钟的时间生存"), 7, 20, 7)
+            players.forEach {
+                it.player.showTitle(
+                    Title.title(
+                        "游戏开始".toWarnMessage(),
+                        "您有十分钟的时间生存".toTipMessage(),
+                        titleDurationShort
+                    )
+                )
                 it.player.isInvulnerable = true
             }
         }
@@ -69,8 +81,8 @@ class TMS : MiniGame() {
         fun onPlayerMove(event: PlayerMoveEvent) {
             if (!validatePlayer(event.player))
                 return
-            val tag = players!!.findInfoByPlayer(event.player)?.tag ?: return
-            if (!tag.getBoolean("isUnprotected", false) && event.to!!.clone().add(
+            val tag = players.findInfoByPlayer(event.player)?.tag ?: return
+            if (!tag.getBoolean("isUnprotected", false) && event.to.clone().add(
                     Vector(
                         0,
                         -1,
@@ -80,9 +92,15 @@ class TMS : MiniGame() {
             ) {
                 tag.set("isUnprotected", true)
                 if (validatePlayer(event.player)) {
-                    timer(name = "unprotectTimer", period = 10 * 1000L) {
+                    timer(name = "unprotectionTimer", period = 10 * 1000L) {
                         plugin.logger.info("${event.player.name} lands.")
-                        event.player.sendTitle(TextUtil.info("您已失去出生保护"), "", 7, 20, 7)
+                        event.player.showTitle(
+                            Title.title(
+                                "您已失去出生保护".toInfoMessage(),
+                                Component.empty(),
+                                titleDurationShort
+                            )
+                        )
                         event.player.isInvulnerable = false
                         this.cancel()
                     }
@@ -97,8 +115,14 @@ class TMS : MiniGame() {
             if (!validatePlayer(player))
                 return
             player.gameMode = GameMode.SPECTATOR
-            player.sendTitle(TextUtil.error("您输了"), TextUtil.info("现在处于旁观者"), 7, 30, 7)
-            players?.findInfoByPlayer(event.player)?.gameOver = true
+            player.showTitle(
+                Title.title(
+                    "您输了".toErrorMessage(),
+                    "现在处于旁观者".toInfoMessage(),
+                    titleDurationMedium
+                )
+            )
+            players.findInfoByPlayer(event.player)?.gameOver = true
             event.respawnLocation = world.spawnLocation
 
             //When all the team members are dead
@@ -111,7 +135,7 @@ class TMS : MiniGame() {
         fun playerDeath(event: PlayerDeathEvent) {
             if (!validatePlayer(event.entity.player))
                 return
-            teamScores!!.set((players!!.findInfoByPlayer(event.entity.player!!) ?: return).team)
+            teamScores!!.set((players.findInfoByPlayer(event.entity.player!!) ?: return).team)
             { it - 1 }
             event.keepInventory = true
         }
@@ -137,7 +161,7 @@ class TMS : MiniGame() {
                 return
 
             val block = event.block
-            teamScores!!.set((players?.findInfoByPlayer(player) ?: return).team) {
+            teamScores!!.set((players.findInfoByPlayer(player) ?: return).team) {
                 when (block.type) {
                     Material.IRON_ORE -> it + 4
                     Material.COAL -> it + 1
@@ -149,7 +173,7 @@ class TMS : MiniGame() {
         }
 
         override fun onTimeChanged(i: Long, limit: Long) {
-            players!!.forEach {
+            players.forEach {
                 val scoreboard = getScoreboard(it.player, "十分钟生存挑战", teamScores!!, i, limit, "生存")
                 it.player.scoreboard = scoreboard
             }
@@ -164,10 +188,16 @@ class TMS : MiniGame() {
 
         override fun onEnable() {
             detectTeams()
-            players!!.forEach {
+            players.forEach {
                 val player = it.player
                 player.teleport(world.spawnLocation)
-                player.sendTitle(TextUtil.error("PVP时间到！"), "", 7, 90, 7)
+                player.showTitle(
+                    Title.title(
+                        "PVP时间到！".toWarnMessage(),
+                        Component.empty(),
+                        titleDurationShort
+                    )
+                )
                 if (player.isInvulnerable) {
                     player.isInvulnerable = false
                 }
@@ -195,9 +225,15 @@ class TMS : MiniGame() {
 
             event.respawnLocation = world.spawnLocation
             player.gameMode = GameMode.SPECTATOR
-            player.sendTitle(TextUtil.error("您输了"), TextUtil.info("现在处于傍观者"), 7, 80, 7)
-            players?.findInfoByPlayer(event.player)?.gameOver = true
-            Bukkit.getScheduler().runTask(plugin) { t ->
+            player.showTitle(
+                Title.title(
+                    "你输了".toErrorMessage(),
+                    "现在处于傍观者".toInfoMessage(),
+                    titleDurationLong
+                )
+            )
+            players.findInfoByPlayer(event.player)?.gameOver = true
+            Bukkit.getScheduler().runTask(plugin) { _ ->
                 player.teleport(world.spawnLocation)
             }
             detectTeams()
@@ -207,7 +243,7 @@ class TMS : MiniGame() {
         fun onPlayerDeath(event: PlayerDeathEvent) {
             if (!validatePlayer(event.entity.player))
                 return
-            teamScores!!.set((players!!.findInfoByPlayer(event.entity.player!!) ?: return).team)
+            teamScores!!.set((players.findInfoByPlayer(event.entity.player!!) ?: return).team)
             { it - 2 }
             event.keepInventory = true
         }
@@ -220,7 +256,7 @@ class TMS : MiniGame() {
         }
 
         override fun onTimeChanged(i: Long, limit: Long) {
-            players!!.forEach {
+            players.forEach {
                 val scoreboard = getScoreboard(it.player, "十分钟生存挑战", teamScores!!, i, limit, "PVP")
                 it.player.scoreboard = scoreboard
             }
@@ -230,7 +266,7 @@ class TMS : MiniGame() {
 
         override fun getWorld(): World = world
 
-        override fun getPlayerLocation(info: MiniGame.Gaming.PlayerGamingInfo): Location = world.spawnLocation
+        override fun getPlayerLocation(info: Gaming.PlayerGamingInfo): Location = world.spawnLocation
 
         override fun getGameMode(): GameMode = GameMode.SURVIVAL
     }
@@ -244,7 +280,7 @@ class TMS : MiniGame() {
             get() = this@TMS.isGameStarted
 
         override fun onEnable() {
-            players!!.forEach {
+            players.forEach {
                 it.player.teleport(it.player.location.add(0.toDouble(), 10.toDouble(), 0.toDouble()))
                 it.player.isInvulnerable = true
             }

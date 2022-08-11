@@ -1,9 +1,15 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.data.ServerPlayer
 import com.zhufu.opencraft.inventory.PaymentDialog
 import com.zhufu.opencraft.player_community.FriendWrap
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.special_item.Coin
+import com.zhufu.opencraft.util.toComponent
+import com.zhufu.opencraft.util.toInfoMessage
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -41,28 +47,32 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             if (info.friendship.isNotEmpty())
                                 info.friendship.forEach {
                                     sender.sendMessage(
-                                        buildString {
-                                            append(it.friend.name)
-                                            if (it.sharedInventory != null)
-                                                append(
-                                                    ';' + TextUtil.getColoredText(
-                                                        getter["user.friend.sharingInventory"],
-                                                        TextUtil.TextColor.GREEN, true
+                                        Component.text(it.friend.name ?: getter["command.error.unknown"]).toBuilder()
+                                            .apply { b ->
+                                                if (it.sharedInventory != null)
+                                                    b.append(
+                                                        Component.text(';')
+                                                            .append(
+                                                                getter["user.friend.sharingInventory"].toComponent()
+                                                                    .color(NamedTextColor.GREEN)
+                                                                    .decorate(TextDecoration.BOLD)
+                                                            )
                                                     )
-                                                )
-                                            if (it.sharedCheckpoints.isNotEmpty())
-                                                append(
-                                                    ';' + TextUtil.getColoredText(
-                                                        getter["user.friend.sharingCheckpoints", it.sharedCheckpoints.size],
-                                                        TextUtil.TextColor.GREEN, true
+                                                if (it.sharedCheckpoints.isNotEmpty())
+                                                    b.append(
+                                                        Component.text(';')
+                                                            .append(getter["user.friend.sharingCheckpoints", it.sharedCheckpoints.size]
+                                                                .toComponent()
+                                                                .color(NamedTextColor.GREEN)
+                                                                .decorate(TextDecoration.BOLD))
                                                     )
-                                                )
-                                        }
+                                            }
                                     )
                                 }
                             else
                                 sender.info(getter["user.friend.empty"])
                         }
+
                         1 -> {
                             val friend = info.friendship[args.first()]
                             if (friend != null) {
@@ -74,6 +84,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                 sender.error(getter["user.friend.error.noSuchFriend", args.first()])
                             }
                         }
+
                         2 -> {
                             val name = args.first()
                             val target = try {
@@ -142,6 +153,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                         }
                                     }
                                 }
+
                                 "del" -> {
                                     if (info.friendship.contains(target)) {
                                         if (info.friendship.remove(target)) {
@@ -161,6 +173,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                         sender.error(getter["user.friend.error.noSuchFriend", name])
                                     }
                                 }
+
                                 "inventory" -> {
                                     val friendInfo = checkIsFriend(target)
                                     if (friendInfo != null) {
@@ -203,6 +216,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                 }
                             }
                         }
+
                         else -> {
                             val name = args.first()
                             val target = try {
@@ -218,59 +232,56 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             if (friendInfo != null) {
                                 when (args[1]) {
                                     "transfer" -> {
-                                        if (args.size < 3) {
-                                            sender.error(getter["command.error.usage"])
+                                        val t = args[2].toBigIntegerOrNull()
+                                        if (t == null) {
+                                            sender.error(getter["command.error.argNonDigit"])
                                         } else {
-                                            val t = args[2].toBigIntegerOrNull()
-                                            if (t == null) {
-                                                sender.error(getter["command.error.argNonDigit"])
-                                            } else {
-                                                if (t + target.currency.toBigInteger() > Long.MAX_VALUE.toBigInteger()) {
-                                                    sender.error(getter["user.friend.transfer.error.outOfBound", args[2]])
-                                                    return true
-                                                }
-                                                val amount = t.toLong()
-                                                if (amount < 0) {
-                                                    sender.error(getter["user.friend.transfer.error.minus"])
-                                                    return true
-                                                }
-
-                                                PaymentDialog(
-                                                    player = sender,
-                                                    sellingItems = SellingItemInfo(
-                                                        item = Coin(1, getter),
-                                                        amount = 1,
-                                                        unitPrise = amount
-                                                    ),
-                                                    id = TradeManager.getNewID(),
-                                                    plugin = plugin
-                                                )
-                                                    .setOnPayListener { success ->
-                                                        if (success) {
-                                                            target.currency += amount
-                                                            friendInfo.transferred += amount
-
-                                                            sender.success(getter["user.friend.transfer.out", amount, name])
-                                                            target.messagePool.add(
-                                                                text = "\$success\${user.friend.transfer.in,${sender.name},$amount}",
-                                                                type = MessagePool.Type.System
-                                                            ).let {
-                                                                it.recordTime()
-                                                                if (target.isOnline)
-                                                                    it.sendTo(target.onlinePlayerInfo!!)
-                                                            }
-                                                        } else {
-                                                            sender.error(getter["trade.error.poor"])
-                                                        }
-                                                        true
-                                                    }
-                                                    .setOnCancelListener {
-                                                        sender.info(getter["user.friend.transfer.cancelle"])
-                                                    }
-                                                    .show()
+                                            if (t + target.currency.toBigInteger() > Long.MAX_VALUE.toBigInteger()) {
+                                                sender.error(getter["user.friend.transfer.error.outOfBound", args[2]])
+                                                return true
                                             }
+                                            val amount = t.toLong()
+                                            if (amount < 0) {
+                                                sender.error(getter["user.friend.transfer.error.minus"])
+                                                return true
+                                            }
+
+                                            PaymentDialog(
+                                                player = sender,
+                                                sellingItems = SellingItemInfo(
+                                                    item = Coin(1, getter),
+                                                    amount = 1,
+                                                    unitPrise = amount
+                                                ),
+                                                id = TradeManager.getNewID(),
+                                                plugin = plugin
+                                            )
+                                                .setOnPayListener { success ->
+                                                    if (success) {
+                                                        target.currency += amount
+                                                        friendInfo.transferred += amount
+
+                                                        sender.success(getter["user.friend.transfer.out", amount, name])
+                                                        target.messagePool.add(
+                                                            text = "\$success\${user.friend.transfer.in,${sender.name},$amount}",
+                                                            type = MessagePool.Type.System
+                                                        ).let {
+                                                            it.recordTime()
+                                                            if (target.isOnline)
+                                                                it.sendTo(target.onlinePlayerInfo!!)
+                                                        }
+                                                    } else {
+                                                        sender.error(getter["trade.error.poor"])
+                                                    }
+                                                    true
+                                                }
+                                                .setOnCancelListener {
+                                                    sender.info(getter["user.friend.transfer.cancelle"])
+                                                }
+                                                .show()
                                         }
                                     }
+
                                     "msg" -> {
                                         val message = buildString {
                                             for (i in 2 until args.size) {
@@ -294,6 +305,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                             sender.success(getter["user.friend.messaged", name])
                                         }
                                     }
+
                                     "share" -> {
                                         val path = args[2]
                                         val share = if (args.size < 4) true else args[3] != "off"
@@ -303,6 +315,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                 if (share) sender.success(getter["user.friend.location.start", name])
                                                 else sender.info(getter["user.friend.location.stop", name])
                                             }
+
                                             path.startsWith("checkpoint/") -> {
                                                 val n = path.substring(11)
                                                 val point = info.checkpoints.firstOrNull { it.name == n }
@@ -322,6 +335,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                     sender.error(getter["user.checkpoint.notFound"])
                                                 }
                                             }
+
                                             else -> sender.error(getter["user.friend.error.object", path])
                                         }
                                     }

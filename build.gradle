@@ -21,7 +21,7 @@ java {
 }
 
 project.ext {
-    mcVersion = '1.19'
+    mcVersion = '1.19.2'
     serverPath = project.projectDir.path + '/server'
     citizens_version = '2.0.30-SNAPSHOT'
     we_version = '7.1.0-SNAPSHOT'

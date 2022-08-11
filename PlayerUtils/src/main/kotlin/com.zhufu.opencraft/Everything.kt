@@ -6,7 +6,11 @@ import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.Base.Extend.appendToJson
+import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.ui.MenuInterface
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toInfoMessage
+import net.kyori.adventure.text.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -21,13 +25,11 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerEditBookEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import java.io.File
 import java.io.StringReader
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -237,7 +239,7 @@ object Everything : Listener {
         if (location.block.type != Material.BLACK_CONCRETE || location.blockY != base.blockY) {
             game.fill(location.world!!, Material.RED_CONCRETE)
             game.data.set("isStarted", false)
-            player.sendMessage(TextUtil.error("游戏结束!"))
+            player.error("游戏结束!")
         } else if (
             speed != -1L &&
             System.currentTimeMillis() - game.data.getLong("lastClick", System.currentTimeMillis())
@@ -245,7 +247,7 @@ object Everything : Listener {
         ) {
             game.fill(location.world!!, Material.RED_CONCRETE)
             game.data.set("isStarted", false)
-            player.sendMessage(TextUtil.error("游戏结束: 操作已超时"))
+            player.error("游戏结束: 操作已超时")
         } else {
             val maxXZ: Int
             val maxY = abs(game.from.blockY - game.to.blockY)
@@ -276,7 +278,7 @@ object Everything : Listener {
             val newSpeed = game.data.getLong("speed", 2000) - (30.0 / maxXZ).roundToLong()
             if (newSpeed >= maxXZ * 1.5)
                 game.data.set("speed", newSpeed)
-            player.sendActionText(TextUtil.info("最大等待: $newSpeed"))
+            player.sendActionBar("最大等待: $newSpeed".toInfoMessage())
         }
     }
 
@@ -401,11 +403,11 @@ object Everything : Listener {
             pair.second(
                 buildString {
                     for (i in 0 until event.newBookMeta.pageCount) {
-                        val text = event.newBookMeta.pages[i]
+                        val text = (event.newBookMeta.page(i) as TextComponent).content()
                         var index = 0
                         while (index < text.length) {
                             val c = text[index]
-                            if (c != TextUtil.KEY || (index < text.length && !text[index + 1].isDigit())) {
+                            if (c != TextUtil.KEY || !text[index + 1].isDigit()) {
                                 append(c)
                             } else {
                                 index++

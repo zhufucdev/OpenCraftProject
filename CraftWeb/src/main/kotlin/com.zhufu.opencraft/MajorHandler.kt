@@ -4,19 +4,22 @@ import com.google.gson.*
 import com.sun.net.httpserver.HttpExchange
 import com.zhufu.opencraft.CraftWeb.Companion.logger
 import com.zhufu.opencraft.Game.env
-import com.zhufu.opencraft.WebInfo.Companion.users
+import com.zhufu.opencraft.data.OfflineInfo
+import com.zhufu.opencraft.data.WebInfo.Companion.users
+import com.zhufu.opencraft.data.PreregisteredInfo
+import com.zhufu.opencraft.data.RegisteredInfo
+import com.zhufu.opencraft.data.WebInfo
 import com.zhufu.opencraft.player_community.MessagePool
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.wiki.Search
 import com.zhufu.opencraft.wiki.Wiki
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.FileConfiguration
 import java.io.File
 import java.io.InputStream
 import java.net.InetAddress
-import java.net.InetSocketAddress
-import java.net.URI
 import java.nio.file.Paths
 import java.util.*
 import kotlin.collections.ArrayList
@@ -122,7 +125,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                         val obj = JsonObject()
                         obj.apply {
                             if (containsUser(remoteAddress)) {
-                                users[remoteAddress]!!.saveTag()
+                                users[remoteAddress]!!.save()
                                 val removed = users.remove(remoteAddress)!!
                                 removed.lastExchange?.apply {
                                     try {
@@ -173,7 +176,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                     addProperty("r", 1)
                                                 }
                                             }
-                                            saveTag()
+                                            save()
                                         }
                                         if (!excepted)
                                             addProperty("r", 0)
@@ -348,7 +351,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                             what.length > 20 -> addProperty("r", 2)
                                             else -> {
                                                 info.nickname = what
-                                                info.saveTag()
+                                                info.save()
                                                 addProperty("r", 0)
                                             }
                                         }

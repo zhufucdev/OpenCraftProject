@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.util.TextUtil
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -22,7 +23,7 @@ object NPCExtend {
                     throw IllegalArgumentException("There must be at least two args for Command Say!")
                 val content = ArrayList<String>()
                 for (i in 1 until separate.size)
-                    content.add(TextUtil.tip("NPC -> 您: ") + separate[i])
+                    content.add(TextUtil.tip("NPC -> 你: ") + separate[i])
                 player.sendMessage(*content.toTypedArray())
             }
             "teleport" -> {

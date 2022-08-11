@@ -1,5 +1,9 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.util.toComponent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Firework
@@ -7,6 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.FireworkMeta
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
+import java.time.Duration
 import java.util.ArrayList
 
 abstract class ResultRuler : GameRuler() {
@@ -20,17 +25,28 @@ abstract class ResultRuler : GameRuler() {
     abstract val isGameStarted: Boolean
     val winners = ArrayList<Player>()
     override fun onEnable() {
+        val titleTimes = Title.Times.times(
+            Duration.ofMillis(300),
+            Duration.ofSeconds(4),
+            Duration.ofMillis(150)
+        )
         if (winner != MiniGame.Team.NONE){
             players!!.forEach {
                 it.player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
-                it.player.sendTitle(TextUtil.getColoredText("${winner.name}获得了胜利",winner.getTextColor(),true,false),"",7,80,7)
+                it.player.showTitle(
+                    Title.title(
+                        "${winner.name}获得了胜利".toComponent().color(winner.namedTextColor),
+                        Component.empty(),
+                        titleTimes
+                    )
+                )
                 if (it.team == winner){
                     winners.add(it.player)
                 }
             }
             fun setFirework(location: Location){
                 val effect = FireworkEffect.builder()
-                        .withColor(winner.getColor())
+                        .withColor(winner.color)
                         .withTrail()
                         .withFade(Color.YELLOW)
                         .with(FireworkEffect.Type.BALL)
@@ -61,7 +77,13 @@ abstract class ResultRuler : GameRuler() {
         }
         else{
             players!!.forEach {
-                it.player.sendTitle(TextUtil.getColoredText("平局！", TextUtil.TextColor.GOLD,true,false),"",7,80,7)
+                it.player.showTitle(
+                    Title.title(
+                        "平局！".toComponent().color(NamedTextColor.GOLD),
+                        Component.empty(),
+                        titleTimes
+                    )
+                )
             }
         }
     }

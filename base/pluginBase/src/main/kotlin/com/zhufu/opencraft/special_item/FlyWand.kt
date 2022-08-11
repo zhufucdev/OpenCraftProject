@@ -1,8 +1,11 @@
 package com.zhufu.opencraft.special_item
 
-import com.zhufu.opencraft.Language
 import com.zhufu.opencraft.PlayerModifier
-import com.zhufu.opencraft.TextUtil
+import com.zhufu.opencraft.updateItemMeta
+import com.zhufu.opencraft.util.*
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.TranslatableComponent
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -10,13 +13,14 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.scoreboard.Objective
 import kotlin.math.round
 
 class FlyWand : SpecialItem {
     constructor(getter: Language.LangGetter, initializeTime: Boolean) : super(Material.STICK, getter) {
-        itemMeta = itemMeta!!.apply {
-            setDisplayName(TextUtil.getColoredText(getter["wand.name"], TextUtil.TextColor.RED))
+        updateItemMeta<ItemMeta> {
+            displayName(getter["wand.name"].toComponent().color(NamedTextColor.RED))
             isUnbreakable = true
             addItemFlags(ItemFlag.HIDE_ENCHANTS)
             addEnchant(Enchantment.DURABILITY, 1, true)
@@ -26,7 +30,7 @@ class FlyWand : SpecialItem {
     }
 
     constructor(itemStack: ItemStack, getter: Language.LangGetter) : this(getter, false) {
-        val lore = itemStack.itemMeta!!.lore!![1]
+        val lore = (itemStack.itemMeta!!.lore()!![1] as TextComponent).content()
         val first = lore.indexOfFirst { it.isDigit() || it == '-' }
         val last = lore.indexOfLast { it.isDigit() }
         if (first == -1 || last == -1) {
@@ -71,16 +75,10 @@ class FlyWand : SpecialItem {
     companion object : SISerializable {
         const val MAX_TIME_REMAINING = 30 * 60.0
         const val PRICE_PER_MIN = 100
-        var displayNames: List<String> private set
-
-        init {
-            val r = ArrayList<String>()
-            Language.languages.forEach {
-                r.add(
-                    TextUtil.getColoredText(it.getString("wand.name")!!, TextUtil.TextColor.RED)
-                )
+        private val displayNames: List<String> by lazy {
+            Language.languages.map {
+                it.getString("wand.name")!!
             }
-            displayNames = r
         }
 
         override fun deserialize(itemStack: ItemStack, getter: Language.LangGetter): SpecialItem =
@@ -99,13 +97,11 @@ class FlyWand : SpecialItem {
         }
 
         override fun isThis(itemStack: ItemStack?): Boolean {
-            val r =
-                itemStack != null && itemStack.hasItemMeta() && displayNames.contains(itemStack.itemMeta!!.displayName) && itemStack.itemMeta!!.isUnbreakable
-            if (r && !itemStack!!.containsEnchantment(Enchantment.DURABILITY)) {
-                itemStack.itemMeta!!.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-                itemStack.itemMeta!!.addEnchant(Enchantment.DURABILITY, 1, true)
-            }
-            return r
+            return (itemStack != null
+                    && itemStack.hasItemMeta()
+                    && itemStack.itemMeta.displayName()
+                ?.let { it is TextComponent && displayNames.contains(it.content()) } == true
+                    && itemStack.itemMeta!!.isUnbreakable)
         }
 
         override fun isThis(config: ConfigurationSection): Boolean {
@@ -119,9 +115,11 @@ class FlyWand : SpecialItem {
     fun updateTime(timeRemaining: Double) {
         this.timeRemaining = timeRemaining
         itemMeta = itemMeta!!.apply {
-            lore = listOf(
-                TextUtil.tip(getter["wand.title"]),
-                TextUtil.info(getter["wand.subtitle", timeRemaining])
+            lore(
+                listOf(
+                    getter["wand.title"].toTipMessage(),
+                    getter["wand.subtitle", timeRemaining].toInfoMessage()
+                )
             )
         }
     }

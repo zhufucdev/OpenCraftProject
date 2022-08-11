@@ -10,6 +10,11 @@ import com.zhufu.opencraft.Base.Extend.fromJsonToLocation
 import com.zhufu.opencraft.Base.TutorialUtil.tplock
 import com.zhufu.opencraft.Base.TutorialUtil.linearMotion
 import com.zhufu.opencraft.TutorialManager.Tutorial.TriggerMethod.*
+import com.zhufu.opencraft.data.DualInventory
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toComponent
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -18,6 +23,7 @@ import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import java.io.StringReader
+import java.time.Duration
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -125,13 +131,13 @@ object TutorialManager {
                     }
                     TERRITORY -> {
                         if (triggerArgument.has("name")) {
-                            BlockLockManager[player.location]?.name ?: false == triggerArgument["name"].asString
+                            BlockLockManager[player.location]?.name == triggerArgument["name"].asString
                         } else false
                     }
                     ENTER_WORLD -> {
                         if (triggerArgument.has("world")) {
                             val world = Bukkit.getWorld(UUID.fromString(triggerArgument["world"].asString))
-                            player.world == world ?: false
+                            player.world == world
                         } else false
                     }
                     else -> false
@@ -198,7 +204,7 @@ object TutorialManager {
                 }
             }
             player.setPastPlayingListener {
-                Bukkit.getScheduler().runTask(TutorialManager.mPlugin!!) { t ->
+                Bukkit.getScheduler().runTask(mPlugin!!) { _ ->
                     info?.inventory?.last
                         ?.also {
                             info.status = lastStatus!!
@@ -207,7 +213,7 @@ object TutorialManager {
                 }
             }
 
-            Bukkit.getScheduler().runTaskLater(TutorialManager.mPlugin!!, { _ ->
+            Bukkit.getScheduler().runTaskLater(mPlugin!!, { _ ->
                 //Start playing
                 info?.inventory?.create(DualInventory.RESET)?.load(inventoryOnly = true)
                 if (to is HumanEntity) {
@@ -257,7 +263,7 @@ object TutorialManager {
                 var isDraft = false
                 val played = ArrayList<String>()
 
-                val json = JsonParser().parse(reader).asJsonObject
+                val json = JsonParser.parseReader(reader).asJsonObject
                 if (json.has("name"))
                     name = json["name"].asString
                 if (json.has("creator"))
@@ -311,12 +317,16 @@ object TutorialManager {
                 if (title.isEmpty() && subTitle.isEmpty())
                     return true
                 if (entity is Player) {
-                    entity.sendTitle(
-                        TextUtil.getCustomizedText(title, entity.info()),
-                        TextUtil.getCustomizedText(subTitle, entity.info()),
-                        7,
-                        (time / 1000.0 * 20).toInt(),
-                        7
+                    entity.showTitle(
+                        Title.title(
+                            TextUtil.getCustomizedText(title, entity.info()).toComponent(),
+                            TextUtil.getCustomizedText(subTitle, entity.info()).toComponent(),
+                            Title.Times.times(
+                                Duration.ofMillis(150),
+                                Duration.ofSeconds(time),
+                                Duration.ofMillis(150)
+                            )
+                        ),
                     )
                     return true
                 }

@@ -1,8 +1,12 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.api.ServerCaller
+import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.ui.EditorUI
 import com.zhufu.opencraft.ui.TriggerUI
 import com.zhufu.opencraft.ui.TutorialExp
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -49,7 +53,7 @@ class CustomTutorial : JavaPlugin() {
                 return
             }
             if (info.status != Info.GameStatus.Surviving && !player.isOp) {
-                player.sendMessage(TextUtil.error("您只有在生存模式下才能使用此命令"))
+                player.error("您只有在生存模式下才能使用此命令")
                 return
             }
 
@@ -65,7 +69,7 @@ class CustomTutorial : JavaPlugin() {
     ): Boolean {
         if (command.name == "ct") {
             if (sender !is Player) {
-                sender.sendMessage(TextUtil.error("只有玩家才能使用此命令"))
+                sender.error("只有玩家才能使用此命令")
                 return true
             }
 
@@ -90,27 +94,26 @@ class CustomTutorial : JavaPlugin() {
 
                     "save" -> {
                         if (pC == null) {
-                            sender.sendMessage(TextUtil.error("您不在编辑模式"), TextUtil.info("使用/ct 新建教程"))
+                            sender.error("您不在编辑模式")
+                            sender.tip("使用/ct 新建教程")
                             return true
                         }
                         if (pR != null) {
-                            sender.sendMessage(
-                                TextUtil.error("您的操作已被阻止, 因为: 您仍在编辑模式"),
-                                TextUtil.tip("输入\"done\"以保存并退出")
-                            )
+                            sender.error("您的操作已被阻止, 因为: 您仍在编辑模式")
+                            sender.tip("输入\"done\"以保存并退出")
                             return true
                         }
                         if (args.size < 2) {
                             if (pC.isDraft) {
-                                sender.sendMessage(TextUtil.error("用法错误"))
+                                sender.error("用法错误")
                                 return true
                             } else {
-                                sender.sendMessage(TextUtil.success("正在保存"))
+                                sender.tip("正在保存")
                             }
                         } else {
                             pC.isDraft = false
                             pC.name = args[1]
-                            sender.sendMessage(TextUtil.success("正在将教程保存为${args[1]}"))
+                            sender.success("正在将教程保存为${args[1]}")
                         }
                         try {
                             TutorialManager.saveToFile(pC)
@@ -118,19 +121,17 @@ class CustomTutorial : JavaPlugin() {
                             logger.warning("Unable to save tutorial as ${pC.name}.")
                             e.printStackTrace()
                             sender.sendMessage(*TextUtil.printException(e))
-                            sender.sendMessage(TextUtil.error("失败"))
+                            sender.error("失败")
                             return true
                         }
                         TutorialListener.instance.removeCreator(sender)
-                        sender.sendMessage(TextUtil.success("完成"))
+                        sender.success("完成")
                     }
 
                     "saveas" -> {
                         if (pC == null) {
-                            sender.sendMessage(
-                                TextUtil.error("您不在编辑模式"),
-                                TextUtil.info("使用/ct 新建教程")
-                            )
+                            sender.error("您不在编辑模式")
+                            sender.tip("使用/ct 新建教程")
                             return true
                         }
                         if (pR != null) {
@@ -148,40 +149,34 @@ class CustomTutorial : JavaPlugin() {
                         TutorialManager.add(TutorialListener.instance.originProjectData[sender]!!)
 
                         TutorialListener.instance.removeCreator(sender)
-                        sender.sendMessage(TextUtil.success("已将教程另存为${args[1]}"))
+                        sender.success("已将教程另存为${args[1]}")
                     }
 
                     "exit" -> {
                         if (pC == null) {
-                            sender.sendMessage(
-                                TextUtil.error("您不在编辑模式"),
-                                TextUtil.info("使用/ct 新建教程")
-                            )
+                            sender.error("您不在编辑模式")
+                            sender.tip("使用/ct 新建教程")
                             return true
                         }
                         if (pR != null) {
-                            sender.sendMessage(
-                                TextUtil.tip("您的操作已被阻止, 因为: 您仍在编辑模式"),
-                                TextUtil.tip("输入\"done\"以保存并退出")
-                            )
+                            sender.error("您的操作已被阻止, 因为: 您仍在编辑模式")
+                            sender.tip("输入\"done\"以保存并退出")
                             return true
                         }
                         if (!pC.isDraft) {
                             TutorialManager[pC.id] = TutorialListener.instance.originProjectData[sender]!!
                                 .also { it.isDraft = false }
-                            sender.sendMessage(TextUtil.info("不保存并退出"))
+                            sender.info("不保存并退出")
                         } else {
-                            sender.sendMessage(TextUtil.info("教程已保存为草稿"))
+                            sender.info("教程已保存为草稿")
                         }
                         TutorialListener.instance.removeCreator(sender)
                     }
 
                     "trigger" -> {
                         if (pC == null) {
-                            sender.sendMessage(
-                                TextUtil.error("您不在编辑模式"),
-                                TextUtil.info("使用/ct 新建教程")
-                            )
+                            sender.error("您不在编辑模式")
+                            sender.tip("使用/ct 新建教程")
                             return true
                         }
                         when (args[1]) {
@@ -191,10 +186,8 @@ class CustomTutorial : JavaPlugin() {
 
                             "block" -> {
                                 fun msg() {
-                                    sender.sendMessage(
-                                        TextUtil.error("用法错误"),
-                                        TextUtil.info(TriggerUI.helpDoc[1])
-                                    )
+                                    sender.error("用法错误")
+                                    sender.tip(TriggerUI.helpDoc[1])
                                 }
                                 if (args.size < 5) {
                                     msg()
@@ -222,7 +215,8 @@ class CustomTutorial : JavaPlugin() {
 
                             "territory" -> {
                                 fun msg(t: String) {
-                                    sender.sendMessage(TextUtil.error(t), TriggerUI.helpDoc[2])
+                                    sender.error(t)
+                                    sender.tip(TriggerUI.helpDoc[2])
                                 }
                                 if (args.size < 3) {
                                     msg("用法错误")
@@ -264,18 +258,18 @@ class CustomTutorial : JavaPlugin() {
 
                             "register" -> {
                                 if (!sender.isOp) {
-                                    sender.sendMessage(TextUtil.error("您没有权限使用此方式"))
+                                    sender.error("您没有权限使用此方式")
                                     return true
                                 }
                                 pC.rebuildArguments()
                                 pC.triggerMethod = TutorialManager.Tutorial.TriggerMethod.REGISTER
                             }
                         }
-                        sender.sendMessage(TextUtil.success("已将触发方式设置为${args[1]} ${pC.triggerArgument}"))
+                        sender.success("已将触发方式设置为${args[1]} ${pC.triggerArgument}")
                     }
 
                     else -> {
-                        sender.sendMessage(TextUtil.error("用法错误"))
+                        sender.error("用法错误")
                     }
                 }
             }

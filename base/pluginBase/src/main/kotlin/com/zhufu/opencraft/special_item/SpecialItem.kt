@@ -1,6 +1,6 @@
 package com.zhufu.opencraft.special_item
 
-import com.zhufu.opencraft.Language
+import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.PlayerModifier
 import com.zhufu.opencraft.getter
 import com.zhufu.opencraft.info
@@ -8,6 +8,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scoreboard.Objective
@@ -129,7 +130,6 @@ abstract class SpecialItem(m: Material, val getter: Language.LangGetter) : ItemS
     var inventoryPosition: Int = -1
     open fun getSerialized(): ConfigurationSection {
         return YamlConfiguration().apply {
-            set("isSpecialItem", true)
             set("type", this@SpecialItem::class.simpleName)
         }
     }

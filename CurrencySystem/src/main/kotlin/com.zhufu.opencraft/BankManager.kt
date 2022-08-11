@@ -2,6 +2,8 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.inventory.BankInventory
 import com.zhufu.opencraft.special_item.Coin
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.citizensnpcs.api.npc.NPC

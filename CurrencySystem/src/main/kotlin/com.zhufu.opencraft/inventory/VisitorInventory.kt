@@ -2,6 +2,9 @@ package com.zhufu.opencraft.inventory
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.Base.tradeWorld
+import com.zhufu.opencraft.data.OfflineInfo
+import com.zhufu.opencraft.util.toComponent
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -41,28 +44,19 @@ class VisitorInventory(plugin: Plugin, val player: Player) : PageInventory<Visit
             get() = tradeMap.size
 
         override fun getItem(index: Int, currentPage: Int): ItemStack {
-
             val element = tradeMap[index]
-            val player = Bukkit.getOfflinePlayer(UUID.fromString(element.first().getSeller()))
-            return ItemStack(Material.PLAYER_HEAD)
-                .also {
-                    it.itemMeta = (it.itemMeta as SkullMeta).also { meta ->
-                        meta.owningPlayer = player
-                        meta.setDisplayName(player.name)
-
-                        val lore = ArrayList<String>()
-                        element.forEach { info ->
-                            lore.add(
-                                TextUtil.getColoredText(
-                                    info.items!!.item.i18NDisplayName
-                                            + "×" + info.items!!.amount
-                                            + "->" + info.items!!.prise,
-                                    TextUtil.TextColor.GOLD, false, false
+            return OfflineInfo.findByUUID(UUID.fromString(element.first().getSeller()))!!
+                .skullItem
+                .updateItemMeta<ItemMeta> {
+                    lore(element.map {
+                        it.items!!.item.displayName()
+                            .append(
+                                Component.text(
+                                    "×" + it.items!!.amount
+                                            + "->" + it.items!!.prise
                                 )
                             )
-                        }
-                        meta.lore = lore
-                    }
+                    })
                 }
         }
     }
@@ -74,7 +68,7 @@ class VisitorInventory(plugin: Plugin, val player: Player) : PageInventory<Visit
                 it.player.toString() == adapter.tradeMap[index].first().getSeller()
             }
             if (t == null) {
-                player.sendMessage(TextUtil.error("抱歉，但我们无法找到该玩家的领地"))
+                player.error("抱歉，但我们无法找到该玩家的领地")
                 return@setOnItemClickListener
             }
             player.teleport(t.center)

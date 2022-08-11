@@ -2,7 +2,9 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.Base.random
 import com.zhufu.opencraft.ai.TargetAI
+import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.traits.Equipments
+import com.zhufu.opencraft.util.TextUtil
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent
 import net.citizensnpcs.api.event.NPCDeathEvent
@@ -86,7 +88,7 @@ object NPCController : Listener {
             }
             else -> EntityType.WITHER_SKELETON
         }
-        currentNPC = CitizensAPI.getNPCRegistry().createNPC(currentType,  TextUtil.error("Server Boss # $difficulty"))
+        currentNPC = CitizensAPI.getNPCRegistry().createNPC(currentType, TextUtil.error("Server Boss # $difficulty"))
         var spawnLocation =
             Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
 

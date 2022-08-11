@@ -1,6 +1,8 @@
 package com.zhufu.opencraft.lobby
 
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.data.OfflineInfo
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration

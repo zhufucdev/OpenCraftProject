@@ -1,7 +1,11 @@
 package com.zhufu.opencraft.ui
 
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.player_community.FriendWrap
+import com.zhufu.opencraft.util.toComponent
+import com.zhufu.opencraft.util.toInfoMessage
+import com.zhufu.opencraft.util.toTipMessage
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag

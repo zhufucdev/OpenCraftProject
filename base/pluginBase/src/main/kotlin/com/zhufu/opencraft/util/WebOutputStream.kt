@@ -2,9 +2,8 @@ package com.zhufu.opencraft.util
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.zhufu.opencraft.ChatInfo
-import com.zhufu.opencraft.Language
-import com.zhufu.opencraft.WebInfo
+import com.zhufu.opencraft.api.ChatInfo
+import com.zhufu.opencraft.data.WebInfo
 import com.zhufu.opencraft.getter
 import com.zhufu.opencraft.player_community.PlayerOutputStream
 import net.kyori.adventure.text.Component

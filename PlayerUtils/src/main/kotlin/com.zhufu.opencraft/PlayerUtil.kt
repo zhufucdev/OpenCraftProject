@@ -1,10 +1,15 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.api.Nameable
+import com.zhufu.opencraft.api.ServerCaller
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.lobby.PlayerLobby
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.special_item.*
 import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
+import com.zhufu.opencraft.util.toInfoMessage
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.Command
@@ -68,7 +73,7 @@ class PlayerUtil : JavaPlugin() {
                 val y2 = args[5].toIntOrNull()
                 val z2 = args[6].toIntOrNull()
                 if (x1 == null || y1 == null || z1 == null || x2 == null || y2 == null || z2 == null) {
-                    sender.sendMessage(TextUtil.error("坐标值必须为整数"))
+                    sender.error("坐标值必须为整数")
                     return true
                 }
                 val from = Location(sender.world, x1.toDouble(), y1.toDouble(), z1.toDouble())

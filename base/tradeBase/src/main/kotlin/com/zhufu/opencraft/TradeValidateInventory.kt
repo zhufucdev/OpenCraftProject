@@ -1,6 +1,11 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.data.DualInventory
 import com.zhufu.opencraft.inventory.PaymentDialog
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.toInfoMessage
+import com.zhufu.opencraft.util.toSuccessMessage
+import com.zhufu.opencraft.util.toTipMessage
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
@@ -56,10 +61,10 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
             tradeInfo.items!!.item.clone().also {
                 it.amount = if (amount <= 64) amount else 1
                 it.itemMeta = it.itemMeta!!.apply {
-                    lore = listOf(
-                        TextUtil.info("交换${amount}个，共${tradeInfo.items!!.amount}个"),
-                        TextUtil.tip("这将消耗您${tradeInfo.items!!.unitPrise * amount}个货币")
-                    )
+                    lore(listOf(
+                        "交换${amount}个，共${tradeInfo.items!!.amount}个".toInfoMessage(),
+                        "这将消耗您${tradeInfo.items!!.unitPrise * amount}个货币".toTipMessage()
+                    ))
                 }
             }
         )
@@ -81,12 +86,7 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
             ItemStack(Material.NETHER_STAR)
                 .apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(
-                            TextUtil.getColoredText(
-                                "少交换一个", TextUtil.TextColor.GOLD, false,
-                                underlined = false
-                            )
-                        )
+                        displayName("少交换一个".toInfoMessage())
                     }
                     subtractItem = this
                 }
@@ -95,12 +95,7 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
             ItemStack(Material.NETHER_STAR)
                 .apply {
                     itemMeta = itemMeta!!.apply {
-                        setDisplayName(
-                            TextUtil.getColoredText(
-                                "多交换一个", TextUtil.TextColor.GOLD, false,
-                                underlined = false
-                            )
-                        )
+                        displayName("多交换一个".toInfoMessage())
                     }
                     plusItem = this
                 }
@@ -108,12 +103,7 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
         inventory.setItem(inventory.size - 1,
             Widgets.confirm.apply {
                 itemMeta = itemMeta!!.apply {
-                    setDisplayName(
-                        TextUtil.getColoredText(
-                            "确认", TextUtil.TextColor.GREEN, true,
-                            underlined = false
-                        )
-                    )
+                    displayName("确认".toSuccessMessage())
                 }
                 confirmItem = this
             }
@@ -123,7 +113,7 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
     override fun onItemClick(event: InventoryClickEvent): Boolean {
         if (inventoryName.startsWith("修改")) {
             if (event.currentItem!!.type != Material.AIR && event.currentItem!!.type != tradeInfo.items!!.item.type) {
-                event.whoClicked.sendMessage(TextUtil.error("抱歉，但您不能同时出售两种不同的物品"))
+                event.whoClicked.error("抱歉，但您不能同时出售两种不同的物品")
                 return true
             }
             return false
@@ -146,7 +136,7 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
 
         info.inventory.create("survivor").load(inventoryOnly = true)
 
-        if (player.uniqueId.toString() == tradeInfo.getSeller() ?: return) {
+        if (player.uniqueId.toString() == (tradeInfo.getSeller() ?: return)) {
             inventoryName = "修改$id"
             inventory = Bukkit.createInventory(null, InventoryType.CHEST, inventoryName)
             inventory.addItem(tradeInfo.items!!.item.clone().also { it.amount = tradeInfo.items!!.amount })
@@ -159,7 +149,7 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
     override fun onInventoryClose(player: HumanEntity) {
         val info = PlayerManager.findInfoByPlayer(player.uniqueId)
         if (info == null) {
-            player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+            player.error(Language.getDefault("player.error.unknown"))
             return
         }
         if (inventoryName.startsWith("修改")) {
@@ -175,22 +165,22 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
                 }
             }
             if (diff) {
-                player.sendMessage(TextUtil.error("抱歉，但您不能同时出售两种不同的物品"))
+                player.error("抱歉，但您不能同时出售两种不同的物品")
             }
             if (amount != 0) {
                 if (TradeManager.checkLimit(tradeInfo.items!!.unitPrise, amount)) {
                     player.inventory.addItem(tradeInfo.items!!.item.also {
                         it.amount = amount - tradeInfo.items!!.amount
                     })
-                    player.sendMessage(TextUtil.error("总价超过上限，尝试减少销售数量"))
-                    player.sendMessage(TextUtil.info("您的修改未保存"))
+                    player.error("总价超过上限，尝试减少销售数量")
+                    player.info("修改未保存")
                 } else {
                     tradeInfo.items!!.amount = amount
-                    player.sendMessage(TextUtil.success("您的修改已保存"))
+                    player.success("修改已保存")
                 }
             } else {
                 TradeManager.destroy(tradeInfo)
-                player.sendMessage(TextUtil.info("已取消物品销售"))
+                player.info("已取消物品销售")
             }
             inventory.clear()
         } else if (!isPaying) {
@@ -240,7 +230,7 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
                 true
             }
             .setOnCancelListener {
-                player.sendMessage(TextUtil.info("交易已取消"))
+                player.info("交易已取消")
                 isPaying = false
             }
             .show()

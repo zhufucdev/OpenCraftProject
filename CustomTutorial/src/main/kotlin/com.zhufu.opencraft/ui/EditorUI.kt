@@ -1,9 +1,12 @@
 package com.zhufu.opencraft.ui
 
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.util.*
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import java.util.*
 
 class EditorUI(val project: TutorialManager.Tutorial)
@@ -37,36 +40,29 @@ class EditorUI(val project: TutorialManager.Tutorial)
             return when (index){
                 0 -> {
                     val add = Widgets.confirm
-                    add.itemMeta = add.itemMeta!!.also {
-                        it.setDisplayName(TextUtil.getColoredText("添加步骤",TextUtil.TextColor.GREEN,true,false))
-                        it.lore = listOf(
-                                TextUtil.tip("这将会使您进入记录模式"),
-                                TextUtil.tip("您的聊天栏会被替换为记录模式指令输入器，输入\"help\"查看帮助")
-                        )
+                    add.updateItemMeta<ItemMeta> {
+                        displayName("添加步骤".toComponent().color(NamedTextColor.GREEN))
+                        lore(listOf(
+                            "这将会使您进入记录模式".toTipMessage(),
+                            "您的聊天栏会被替换为记录模式指令输入器，输入\"help\"查看帮助".toTipMessage()
+                        ))
                     }
-                    add
                 }
                 1 -> {
-                    val r = ItemStack(Material.SNOWBALL)
-                    r.itemMeta = r.itemMeta!!.also {
-                        it.setDisplayName(TextUtil.success("预览"))
+                    ItemStack(Material.SNOWBALL).updateItemMeta<ItemMeta> {
+                        displayName("预览".toSuccessMessage())
                     }
-                    r
                 }
                 2 -> {
-                    val r = ItemStack(Material.LEVER)
-                    r.itemMeta = r.itemMeta!!.also {
-                        it.setDisplayName(TextUtil.success("触发方式"))
-                        it.lore = listOf(TextUtil.tip("点击查看"))
+                    ItemStack(Material.LEVER).updateItemMeta<ItemMeta> {
+                        displayName("触发方式".toSuccessMessage())
+                        lore(listOf("点击查看".toTipMessage()))
                     }
-                    r
                 }
                 6 -> {
-                    val r = Widgets.cancel
-                    r.itemMeta = r.itemMeta!!.also {
-                        it.setDisplayName(TextUtil.error("删除"))
+                    Widgets.cancel.updateItemMeta<ItemMeta> {
+                        displayName("删除".toErrorMessage())
                     }
-                    r
                 }
                 else -> super.getToolbarItem(index)
             }
@@ -96,7 +92,7 @@ class EditorUI(val project: TutorialManager.Tutorial)
                     close()
                     TutorialListener.instance.removeCreator(Bukkit.getPlayer(showingTo!!.uniqueId)!!)
                     TutorialManager.del(project.id)
-                    showingTo!!.sendMessage(TextUtil.info("已删除该教程"))
+                    showingTo!!.sendMessage("已删除该教程".toInfoMessage())
                 }
             }
         }

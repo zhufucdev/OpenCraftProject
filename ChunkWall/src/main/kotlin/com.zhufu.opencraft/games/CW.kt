@@ -3,6 +3,9 @@ package com.zhufu.opencraft.games
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.chunkgenerator.VoidGenerator
 import com.zhufu.opencraft.events.PlayerQuitGameEvent
+import com.zhufu.opencraft.util.*
+import net.kyori.adventure.title.Title.Times
+import net.kyori.adventure.title.Title.title
 import org.bukkit.*
 import org.bukkit.block.Biome
 import org.bukkit.block.Block
@@ -20,6 +23,7 @@ import org.bukkit.util.Vector
 import parsii.eval.Parser
 import parsii.eval.Scope
 import java.io.File
+import java.time.Duration
 import java.util.ArrayList
 import javax.naming.OperationNotSupportedException
 
@@ -67,7 +71,7 @@ class CW : MiniGame() {
                 println("Spawning blocks for chunk ${cnk.x} ${cnk.z}")
                 //Calculations
                 var r = Base.getRandomLocation(originWorld, 100000)
-                var b = originWorld.getBiome(r.blockX, r.blockZ)
+                var b = originWorld.getBiome(r.blockX, r.toHighestLocation().blockY, r.blockZ)
                 var times = 0
                 while (true) {
                     if (!biomeAlreadyUsed.contains(b) && (b.name.contains("MOUNTAIN") || b.name.contains("FOREST"))) {
@@ -75,7 +79,7 @@ class CW : MiniGame() {
                         break
                     }
                     r = Base.getRandomLocation(originWorld, 10000)
-                    b = originWorld.getBiome(r.blockX, r.blockZ)
+                    b = originWorld.getBiome(r.blockX, r.toHighestLocation().blockY, r.blockZ)
                     if (times >= 4000) {
                         throw WorldSpawnTimeOutException(
                             w,
@@ -126,11 +130,11 @@ class CW : MiniGame() {
     override fun initGame(id: Int, player: Player?, plugin: JavaPlugin) {
         super.initGame(id, player, plugin)
 
-        player?.sendMessage(TextUtil.info("正在创建新的房间，请稍后"))
+        player?.sendMessage("正在创建新的房间，请稍后".toInfoMessage())
         try {
             world = createNewGameWorld(id, plugin)
         } catch (e: WorldSpawnTimeOutException) {
-            player?.sendMessage(TextUtil.error("创建超时"))
+            player?.sendMessage("创建超时".toErrorMessage())
             player?.sendMessage(*TextUtil.printException(e))
         }
     }
@@ -205,11 +209,16 @@ class CW : MiniGame() {
         override fun getAllowPVP(): Boolean = false
 
         override fun onEnable() {
-            players!!.forEach {
+            players.forEach {
                 it.player.isInvulnerable = true
-                it.player.sendTitle(TextUtil.error("游戏开始"), TextUtil.tip("您有十五分钟时间"), 7, 60, 7)
+                it.player.showTitle(
+                    title(
+                        "游戏开始".toWarnMessage(),
+                        "你有十五分钟时间".toTipMessage(),
+                        titleDurationLong
+                    )
+                )
 
-                val playerChunk = it.player.location.chunk
                 it.player.inventory.addItem(ItemStack(Material.OAK_LOG, 12))
             }
             Bukkit.getScheduler().runTask(plugin) { _ ->
@@ -224,7 +233,7 @@ class CW : MiniGame() {
         }
 
         override fun onTimeChanged(i: Long, limit: Long) {
-            players!!.forEach {
+            players.forEach {
                 val scoreboard = getScoreboard(it.player, "区块战墙", teamScores!!, i, limit, "生存")
                 it.player.scoreboard = scoreboard
             }
@@ -243,13 +252,19 @@ class CW : MiniGame() {
         fun onPlayerMove(event: PlayerMoveEvent) {
             if (!validatePlayer(event.player))
                 return
-            val to = event.to!!.clone().add(Vector(0, -1, 0))
-            val info = players!!.findInfoByPlayer(event.player) ?: return
+            val to = event.to.clone().add(Vector(0, -1, 0))
+            val info = players.findInfoByPlayer(event.player) ?: return
             if (to.world!!.getBlockAt(to).type != Material.AIR && !info.tag.getBoolean("unprotected", false)) {
                 info.tag.set("unprotected", true)
                 Bukkit.getScheduler().runTaskLater(plugin, { t ->
                     val player = event.player
-                    player.sendTitle("您已失去出生保护", "同时，您的重生点已设置为(${to.x},${to.y},${to.z})", 7, 80, 7)
+                    player.showTitle(
+                        title(
+                            "您已失去出生保护".toInfoMessage(),
+                            "同时，您的重生点已设置为(${to.x},${to.y},${to.z})".toComponent(),
+                            titleDurationShort
+                        )
+                    )
                     player.isInvulnerable = false
                     info.tag.set("respawn", to)
                 }, 80L)
@@ -267,10 +282,11 @@ class CW : MiniGame() {
         fun onPlayerRespawn(event: PlayerRespawnEvent) {
             if (!validatePlayer(event.player))
                 return
-            event.respawnLocation = ((players!!.findInfoByPlayer(event.player) ?: return).tag["respawn"] as Location)
+            event.respawnLocation = ((players.findInfoByPlayer(event.player) ?: return).tag["respawn"] as Location)
         }
 
         val stoneExcepted = ArrayList<Location>()
+
         @EventHandler
         fun onBlockPlaced(event: BlockPlaceEvent) {
             if (!validatePlayer(event.player))
@@ -346,8 +362,14 @@ class CW : MiniGame() {
         override fun getAllowPVP(): Boolean = true
 
         override fun onEnable() {
-            players!!.forEach {
-                it.player.sendTitle(TextUtil.error("PVP时间到！"), TextUtil.tip("您有五分钟时间"), 7, 60, 7)
+            players.forEach {
+                it.player.showTitle(
+                    title(
+                        "PVP时间到！".toWarnMessage(),
+                        "您有五分钟时间".toTipMessage(),
+                        titleDurationShort
+                    )
+                )
             }
             (1..2).forEach { t ->
                 for (i in 0..1) {
@@ -373,7 +395,7 @@ class CW : MiniGame() {
         }
 
         override fun onTimeChanged(i: Long, limit: Long) {
-            players!!.forEach {
+            players.forEach {
                 val scoreboard = getScoreboard(it.player, "区块战墙", teamScores!!, i, limit, "PVP")
                 it.player.scoreboard = scoreboard
             }
@@ -394,6 +416,7 @@ class CW : MiniGame() {
                     winner = livingTeam.first()
                     endPeriod(gameID, "只有一个队伍存活")
                 }
+
                 0 -> {
                     winner = Team.NONE
                     endPeriod(gameID, "所有队伍被消灭")
@@ -411,8 +434,14 @@ class CW : MiniGame() {
         fun onPlayerRespawn(event: PlayerRespawnEvent) {
             if (!validatePlayer(event.player))
                 return
-            event.player.sendTitle(TextUtil.error("您输了"), TextUtil.tip("请等待其它玩家完成PVP"), 7, 80, 7)
-            (players!!.findInfoByPlayer(event.player) ?: return).gameOver = true
+            event.player.showTitle(
+                title(
+                    "你输了".toErrorMessage(),
+                    "请等待其它玩家完成PVP".toTipMessage(),
+                    titleDurationMedium
+                )
+            )
+            (players.findInfoByPlayer(event.player) ?: return).gameOver = true
             event.player.gameMode = GameMode.SPECTATOR
             event.respawnLocation = Location(world, 0.toDouble(), 129.toDouble(), 0.toDouble())
 

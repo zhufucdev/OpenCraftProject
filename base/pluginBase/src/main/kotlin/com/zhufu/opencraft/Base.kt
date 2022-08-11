@@ -147,12 +147,9 @@ object Base {
     object TutorialUtil {
         fun Entity.tplock(location: Location, time: Long) {
             var i = 0L
-            val scheduler = Bukkit.getScheduler()
             fixedRateTimer("lockTask", period = 100L) {
                 if (this@tplock.location != location) {
-                    scheduler.runTask(pluginCore) { _ ->
-                        teleport(location)
-                    }
+                    teleportAsync(location)
                 }
                 if (i * 100L >= time) {
                     this.cancel()

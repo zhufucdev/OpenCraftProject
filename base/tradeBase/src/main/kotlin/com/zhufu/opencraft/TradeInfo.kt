@@ -3,6 +3,13 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.TradeManager.printTradeError
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toComponent
+import com.zhufu.opencraft.util.toInfoMessage
+import com.zhufu.opencraft.util.toTipMessage
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.event.HoverEvent.ShowItem
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.util.*
@@ -48,8 +55,9 @@ class TradeInfo : Cloneable, Destroyable {
         }
     }
 
-    private var buyer: String? = null
-    fun getBuyer() = buyer
+    var buyer: String? = null
+        private set
+
     fun setBuyer(buyer: String?, howMany: Int = items!!.amount, cost: Boolean = false): Boolean {
         this.buyer = buyer
         if (buyer == null)
@@ -85,12 +93,23 @@ class TradeInfo : Cloneable, Destroyable {
             val seller = PlayerManager.findOfflineInfoByPlayer(UUID.fromString(seller!!)) ?: return false
             seller.currency += prise
             if (seller.isOnline) {
-                seller.onlinePlayerInfo!!.player.sendMessage(TextUtil.info("${it.name}购买了您的${items!!.item.type}×$howMany，从而使您获得了${prise}个货币"))
+                seller.onlinePlayerInfo!!.player.info("${it.name}购买了您的${items!!.item.type}×$howMany，从而使您获得了${prise}个货币")
             }
         }
         val sellerName: String = if (seller == "server") seller!!
         else Bukkit.getOfflinePlayer(UUID.fromString(seller)).name ?: "unknown"
-        it.sendMessage("您向${TextUtil.tip(sellerName)}以${TextUtil.tip(prise.toString())}个货币购买了${TextUtil.tip("${what.type}×$howMany")}")
+        it.sendMessage(
+            Component.text("您向")
+                .append(sellerName.toTipMessage())
+                .append("以".toComponent())
+                .append(prise.toString().toInfoMessage())
+                .append("个货币购买了".toComponent())
+                .append(
+                    what.displayName().style(TextUtil.TIP_STYLE)
+                        .append("×$howMany".toTipMessage()
+                            .hoverEvent { HoverEvent.showItem(what.type.key, what.amount) as HoverEvent<Any> })
+                )
+        )
         return true
     }
 
@@ -162,6 +181,7 @@ class TradeInfo : Cloneable, Destroyable {
                         reader.endObject()
                         r.location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
                     }
+
                     "face" -> {
                         var x = 0.0
                         var y = 0.0

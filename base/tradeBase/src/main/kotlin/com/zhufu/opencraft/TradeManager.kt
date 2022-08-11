@@ -2,12 +2,22 @@ package com.zhufu.opencraft
 
 import com.google.gson.GsonBuilder
 import com.google.gson.stream.JsonReader
+import com.zhufu.opencraft.data.DualInventory
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toComponent
+import net.kyori.adventure.nbt.api.BinaryTagHolder
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.util.*
@@ -29,8 +39,8 @@ object TradeManager {
 
     @Deprecated("Outdated.")
     fun HumanEntity.printTradeError(msg: String, tradeID: Int, isSerous: Boolean = true) {
-        sendMessage(TextUtil.error("ID为${tradeID}的交易失败: $msg"))
-        if (isSerous) sendMessage(TextUtil.tip("我们对此表示抱歉，如果影响您的游戏进展，请联系服务器管理员"))
+        this.error("ID为${tradeID}的交易失败: $msg")
+        if (isSerous) tip("我们对此表示抱歉，如果影响您的游戏进展，请联系服务器管理员")
     }
 
     fun loadTradeCompass(player: Info) {
@@ -38,17 +48,12 @@ object TradeManager {
             player.inventory.create(DualInventory.RESET).load(inventoryOnly = true)
             player.player.inventory.addItem(
                 ItemStack(Material.COMPASS)
-                    .also {
-                        it.itemMeta = it.itemMeta!!.apply {
-                            setDisplayName(
-                                TextUtil.getColoredText(
-                                    Language[player, "trade.explorer"],
-                                    TextUtil.TextColor.RED,
-                                    false,
-                                    underlined = false
-                                )
-                            )
-                        }
+                    .updateItemMeta<ItemMeta> {
+                        displayName(
+                            Language[player, "trade.explorer"]
+                                .toComponent()
+                                .color(NamedTextColor.RED)
+                        )
                     }
             )
         }
@@ -84,9 +89,19 @@ object TradeManager {
         val id = getNewID()
         if (seller != "server") {
             val sellerPlayer = Bukkit.getPlayer(UUID.fromString(seller))
-            sellerPlayer!!.sendMessage(TextUtil.info("您正在以${unitPrise}出售${if (what.itemMeta?.hasLocalizedName() == true) what.itemMeta!!.localizedName else what.i18NDisplayName}×$amount"))
-            Bukkit.getOnlinePlayers().filter { it.uniqueId.toString() != seller }.forEach {
-                it.sendMessage(TextUtil.info("${sellerPlayer.name}正在以${unitPrise}出售${what.type.name}×$amount"))
+            if (sellerPlayer != null) {
+                sellerPlayer.sendMessage(
+                    Component.text("您正在以${unitPrise}出售")
+                        .append(
+                            what.displayName()
+                                .append(Component.text("×$amount"))
+                                .hoverEvent { HoverEvent.showItem(what.type.key, what.amount) as HoverEvent<Any> }
+                        )
+                        .style(TextUtil.INFO_STYLE)
+                )
+                Bukkit.getOnlinePlayers().filter { it.uniqueId.toString() != seller }.forEach {
+                    it.sendMessage(TextUtil.info("${sellerPlayer.name}正在以${unitPrise}出售${what.type.name}×$amount"))
+                }
             }
         }
         add(
@@ -167,7 +182,7 @@ object TradeManager {
         reader.endArray()
         reader.close()
 
-        presentID = (mList.maxBy { it.id }?.id ?: -1) + 1
+        presentID = mList.maxBy { it.id }.id + 1
     }
 
     var presentID = 0

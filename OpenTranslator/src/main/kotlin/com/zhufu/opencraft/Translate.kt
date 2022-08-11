@@ -3,7 +3,8 @@ package com.zhufu.opencraft
 import com.baidu.translate.LangDetect
 import com.baidu.translate.TransApi
 import com.google.gson.JsonParser
-import org.bukkit.entity.HumanEntity
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
 import parsii.eval.Parser
 
 object Translate {

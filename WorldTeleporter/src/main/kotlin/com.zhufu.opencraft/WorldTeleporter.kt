@@ -2,6 +2,7 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.WorldManager.WorldPermissions
+import com.zhufu.opencraft.util.TextUtil
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.WorldCreator

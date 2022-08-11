@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 abstract class GameRuler : Listener {
-    var players: MiniGame.Gaming? = null
+    lateinit var players: MiniGame.Gaming
 
     open fun getAllowBlockBreaking(): Boolean = false
     open fun getAllowBlockPlacing(): Boolean = false
@@ -50,5 +50,5 @@ abstract class GameRuler : Listener {
     /**
      * Call this before EventHandler
      */
-    fun validatePlayer(player: Player?) = player != null && players?.contains(player) ?:false
+    fun validatePlayer(player: Player?) = player != null && ::players.isInitialized && players.contains(player)
 }

@@ -1,25 +1,33 @@
-gameMode: CREATIVE
+gameMode: SURVIVAL
 health: 20.0
-foodLevel: 20
+foodLevel: 50
 walkSpeed: 0.2
 flySpeed: 0.1
 exp: 0
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: -144.74101159334813
-  y: 71.0
-  z: -134.2074130792427
-  pitch: 16.950197
-  yaw: -167.54993
+  x: -6845.957465841557
+  y: 110.0
+  z: 411.9149125346334
+  pitch: 14.699989
+  yaw: -131.85002
 potion: {}
 inventory:
   '0':
     ==: org.bukkit.inventory.ItemStack
-    v: 2567
+    v: 3120
     type: CREEPER_SPAWN_EGG
     amount: 64
   '1':
     ==: org.bukkit.inventory.ItemStack
-    v: 2567
+    v: 3120
     type: FLINT_AND_STEEL
+  '2':
+    type: Insurance
+    player: zhufucdev
+    number: 1660238122348
+  '3':
+    ==: org.bukkit.inventory.ItemStack
+    v: 3120
+    type: WOODEN_AXE

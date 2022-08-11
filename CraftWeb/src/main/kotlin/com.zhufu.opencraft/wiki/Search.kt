@@ -1,7 +1,7 @@
 package com.zhufu.opencraft.wiki
 
 import com.google.gson.JsonObject
-import com.zhufu.opencraft.isEnglishLetter
+import com.zhufu.opencraft.util.isEnglishLetter
 import kotlin.math.abs
 
 class Search {

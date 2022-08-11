@@ -1,7 +1,11 @@
 package com.zhufu.opencraft.inventory
 
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.special_item.Coin
+import com.zhufu.opencraft.util.toComponent
+import com.zhufu.opencraft.util.toInfoMessage
+import com.zhufu.opencraft.util.toTipMessage
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Item

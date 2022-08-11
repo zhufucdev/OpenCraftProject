@@ -1,8 +1,7 @@
 package bukkit
 
 import com.zhufu.opencraft.GroovySpecialItemAdapter
-import com.zhufu.opencraft.Language
-import com.zhufu.opencraft.Language.LangGetter
+import com.zhufu.opencraft.util.Language.LangGetter
 import com.zhufu.opencraft.PlayerModifier
 import com.zhufu.opencraft.special_item.SpecialItemAdapter
 import groovy.transform.stc.ClosureParams

@@ -1,12 +1,20 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.Base.spawnWorld
+import com.zhufu.opencraft.api.ServerCaller
+import com.zhufu.opencraft.data.DualInventory
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.data.OfflineInfo
+import com.zhufu.opencraft.data.WebInfo
 import com.zhufu.opencraft.events.UserLoginEvent
 import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.Friend
+import com.zhufu.opencraft.util.*
+import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -14,7 +22,6 @@ import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -190,7 +197,7 @@ class UserManager : JavaPlugin(), Listener {
 
     @EventHandler
     fun onPlayerLogout(event: PlayerLogoutEvent) {
-        if (event.showMesage()) broadcast("player.left", TextUtil.TextColor.YELLOW, event.info.player.name)
+        if (event.showMessage()) broadcast("player.left", TextUtil.TextColor.YELLOW, event.info.player.name)
     }
 
     @EventHandler
@@ -210,13 +217,14 @@ class UserManager : JavaPlugin(), Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    fun onPlayerChat(event: AsyncPlayerChatEvent) {
+    fun onPlayerChat(event: AsyncChatEvent) {
         val info = PlayerManager.findInfoByPlayer(event.player) ?: return
         if (!info.isUserLanguageSelected) {
             event.isCancelled = true
-            val code = Language.getCodeByName(event.message)
-                ?: if (TextUtil.detectString(event.message) == TextUtil.StringDetectResult.Int) Language.getCodeByOrder(
-                    event.message.toInt()
+            val msg = (event.message() as TextComponent).content()
+            val code = Language.getCodeByName(msg)
+                ?: if (TextUtil.detectString(msg) == TextUtil.StringDetectResult.Int) Language.getCodeByOrder(
+                    msg.toInt()
                 ) else null
             if (code != null) {
                 info.userLanguage = code

@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.data.ServerPlayer
 import org.bukkit.configuration.file.YamlConfiguration
 import kotlin.math.sqrt
 

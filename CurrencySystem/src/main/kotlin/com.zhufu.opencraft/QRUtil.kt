@@ -1,5 +1,7 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.toSuccessMessage
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -31,12 +33,12 @@ object QRUtil : Listener {
         fun treat(amount: Float){
             val info = PlayerManager.findInfoByPlayer(player)
             if (info == null){
-                player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+                player.error(Language.getDefault("player.error.unknown"))
                 return
             }
             val add = (info.gameTime/1200*3*amount).roundToLong()
             info.currency += add
-            player.sendMessage(TextUtil.success("感谢您对我们的支持，已给予您${add}货币作为奖励"))
+            player.success("感谢您对我们的支持，已给予您${add}货币作为奖励")
             remove()
         }
 
@@ -79,14 +81,14 @@ object QRUtil : Listener {
     fun sendToPlayer(image: File,player: Player){
         Bukkit.getScheduler().runTaskAsynchronously(CurrencySystem.instance, Runnable{
             if (!CurrencySystem.isServerReady){
-                player.sendMessage(TextUtil.error("抱歉，但您不能在此时进行捐赠，因为主机与服务器还没有建立连接"))
-                player.sendMessage(TextUtil.tip("如有需要，请联系服务器管理员"))
+                player.error("抱歉，但您不能在此时进行捐赠，因为主机与服务器还没有建立连接")
+                player.tip("如有需要，请联系服务器管理员")
                 return@Runnable
             }
 
             if (qrViewer != null){
                 qrViewer!!.remove()
-                qrViewer!!.player.sendMessage(TextUtil.error("抱歉，但您的操作已超时，这取决于其他玩家是否在进行捐赠"))
+                qrViewer!!.player.error("抱歉，但您的操作已超时，这取决于其他玩家是否在进行捐赠")
             }
             val mapView = getImageMap(image)
             val map = ItemStack(Material.MAP)
@@ -96,7 +98,7 @@ object QRUtil : Listener {
 
             qrViewer = PlayerDonationInfo(player,player.inventory.itemInMainHand,System.currentTimeMillis())
             player.inventory.setItemInMainHand(map)
-            player.sendActionText(TextUtil.success("右键以关闭"))
+            player.sendActionBar("右键以关闭".toSuccessMessage())
         })
     }
 }

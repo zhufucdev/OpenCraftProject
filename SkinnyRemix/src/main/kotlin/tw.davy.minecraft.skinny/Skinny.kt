@@ -5,6 +5,10 @@ import com.destroystokyo.paper.profile.ProfileProperty
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.zhufu.opencraft.*
+import com.zhufu.opencraft.api.ServerCaller
+import com.zhufu.opencraft.data.OfflineInfo
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toErrorMessage
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -81,7 +85,7 @@ class Skinny : JavaPlugin(), Listener {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         if (command.name == "sc") {
             if (sender !is Player) {
-                sender.sendMessage(TextUtil.error("只有玩家才能使用此命令"))
+                sender.sendMessage("只有玩家才能使用此命令".toErrorMessage())
                 return true
             }
             val getter = getLangGetter(sender.info())

@@ -2,8 +2,13 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.TutorialManager.Tutorial
 import com.zhufu.opencraft.TutorialManager.Tutorial.TutorialStep
+import com.zhufu.opencraft.data.DualInventory
+import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.ui.EditorUI
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.toInfoMessage
+import com.zhufu.opencraft.util.toTipMessage
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -13,8 +18,10 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.title.Title
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import java.time.Duration
 
 class TutorialListener : Listener {
     companion object {
@@ -34,7 +41,7 @@ class TutorialListener : Listener {
             return
         val info = PlayerManager.findInfoByPlayer(player)
         if (info == null) {
-            player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+            player.error(Language.getDefault("player.error.unknown"))
             return
         }
         info.status = Info.GameStatus.InTutorial
@@ -43,7 +50,17 @@ class TutorialListener : Listener {
         inCreation[player] = project
         player.gameMode = GameMode.SPECTATOR
         player.closeInventory()
-        player.sendTitle(TextUtil.info("您已进入编辑模式"), TextUtil.tip("输入/ct 或使用鼠标点击以调出编辑模式菜单"), 7, 80, 7)
+        player.showTitle(
+            Title.title(
+                "您已进入编辑模式".toInfoMessage(),
+                "输入/ct 或使用鼠标点击以调出编辑模式菜单".toTipMessage(),
+                Title.Times.times(
+                    Duration.ofMillis(300),
+                    Duration.ofSeconds(4),
+                    Duration.ofMillis(150)
+                )
+            )
+        )
     }
 
     fun recorder(player: Player, step: TutorialStep) {
@@ -52,7 +69,7 @@ class TutorialListener : Listener {
             return
         val info = PlayerManager.findInfoByPlayer(player)
         if (info == null) {
-            player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+            player.error(Language.getDefault("player.error.unknown"))
             return
         }
         info.doNotTranslate = true
@@ -70,7 +87,7 @@ class TutorialListener : Listener {
     fun removeCreator(player: Player) {
         val info = PlayerManager.findInfoByPlayer(player)
         if (info == null) {
-            player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+            player.error(Language.getDefault("player.error.unknown"))
             return
         }
         val lastInventory = info.inventory.last
@@ -128,7 +145,7 @@ class TutorialListener : Listener {
                     it.isDraft = true
                     it.id = TutorialManager.getNewID()
                 }
-            event.player.sendMessage(TextUtil.info("您的修改已保存为草稿"))
+            event.player.info("修改已保存为草稿")
             inCreation.remove(event.player)
         }
     }

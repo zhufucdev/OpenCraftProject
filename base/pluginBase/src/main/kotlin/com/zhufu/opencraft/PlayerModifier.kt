@@ -1,5 +1,6 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.data.Info
 import org.bukkit.GameMode
 
 class PlayerModifier(val info: Info) {

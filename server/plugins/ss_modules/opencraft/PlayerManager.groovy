@@ -1,7 +1,7 @@
 package opencraft
 
-import com.zhufu.opencraft.Info
-import com.zhufu.opencraft.OfflineInfo
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.data.OfflineInfo
 import org.bukkit.entity.Player
 
 class PlayerManager {

@@ -1,6 +1,6 @@
 package com.zhufu.opencraft.events;
 
-import com.zhufu.opencraft.Info;
+import com.zhufu.opencraft.data.Info;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 

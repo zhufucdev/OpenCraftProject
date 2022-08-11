@@ -1,6 +1,8 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.api.ServerCaller
 import com.zhufu.opencraft.inventory.PaymentDialog
+import com.zhufu.opencraft.util.Language
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.Command
@@ -265,14 +267,7 @@ class BlockLocker : JavaPlugin(), Listener {
                             if (map.isEmpty()) {
                                 sender.error(getter["block.statics.empty"])
                             } else {
-                                sender.sendMessage(
-                                    TextUtil.getColoredText(
-                                        getter["block.statics.title", info.name],
-                                        TextUtil.TextColor.GOLD,
-                                        false,
-                                        underlined = false
-                                    )
-                                )
+                                sender.info(getter["block.statics.title", info.name])
                                 val playerMap = HashMap<String, Int>()
                                 val format = SimpleDateFormat("yyyy/MM/dd/hh:mm:ss aa")
                                 val groupOrNot = groupOrBlock(info)
@@ -282,7 +277,7 @@ class BlockLocker : JavaPlugin(), Listener {
                                     playerMap[player] = playerMap.getOrDefault(player, 0) + 1
                                 }
                                 val conclusionBuilder = StringBuilder(getter["block.statics.among"])
-                                playerMap.forEach { t, u ->
+                                playerMap.forEach { (t, u) ->
                                     conclusionBuilder.append(getter["block.statics.conclusion", t, u])
                                 }
                                 conclusionBuilder.deleteCharAt(conclusionBuilder.lastIndex)
@@ -321,14 +316,13 @@ class BlockLocker : JavaPlugin(), Listener {
                                 var group: BlockLockManager.GroupBlockInfo? = null
                                 var groupName = ""
                                 var mode = 'U'
-                                for (i in 0 until args.size) {
-                                    val name = args[i]
+                                for (element in args) {
                                     if (mode == 'U') {
-                                        when (name) {
+                                        when (element) {
                                             "->" -> mode = 'G'
                                             "<-" -> mode = 'D'
                                             else -> {
-                                                val info = BlockLockManager[name]
+                                                val info = BlockLockManager[element]
                                                 if (info is BlockLockManager.BlockInfo)
                                                     blocks.add(info)
                                                 else {
@@ -336,7 +330,7 @@ class BlockLocker : JavaPlugin(), Listener {
                                                         getter["block.grouping.reason", BlockLockManager.BlockInfo::class.simpleName, if (info == null) "null" else info::class.simpleName]
                                                     warn.add(
                                                         IllegalArgumentException(
-                                                            getter["block.grouping.giveUp", name],
+                                                            getter["block.grouping.giveUp", element],
                                                             Throwable(cause)
                                                         )
                                                     )
@@ -344,8 +338,8 @@ class BlockLocker : JavaPlugin(), Listener {
                                             }
                                         }
                                     } else {
-                                        groupName = name
-                                        val info = BlockLockManager[name]
+                                        groupName = element
+                                        val info = BlockLockManager[element]
                                         if (info is BlockLockManager.GroupBlockInfo) {
                                             group = info
                                         }
@@ -372,8 +366,8 @@ class BlockLocker : JavaPlugin(), Listener {
                                         group = new
                                         BlockLockManager.add(new)
                                     } else {
+                                        sender.error(getter["block.grouping.nameUnknown"])
                                         sender.sendMessage(
-                                            TextUtil.error(getter["block.grouping.nameUnknown"]),
                                             Bukkit.getPluginCommand("bl ${if (mode == 'G') "->" else "<-"}")!!.usage
                                         )
                                         return true

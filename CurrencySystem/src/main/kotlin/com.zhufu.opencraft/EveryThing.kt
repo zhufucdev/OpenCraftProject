@@ -5,16 +5,19 @@ import com.zhufu.opencraft.Base.tradeWorld
 import com.zhufu.opencraft.CurrencySystem.Companion.inventoryMap
 import com.zhufu.opencraft.CurrencySystem.Companion.territoryMap
 import com.zhufu.opencraft.CurrencySystem.Companion.transMap
-import com.zhufu.opencraft.DualInventory.Companion.RESET
+import com.zhufu.opencraft.data.DualInventory.Companion.RESET
 import com.zhufu.opencraft.inventory.TraderInventory.Companion.getPositionForLine
 import com.zhufu.opencraft.inventory.FlyWandInventory
 import com.zhufu.opencraft.inventory.TraderInventory
 import com.zhufu.opencraft.inventory.SetUpValidateInventory
 import com.zhufu.opencraft.inventory.VisitorInventory
 import com.zhufu.opencraft.TradeManager.printTradeError
+import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.special_item.FlyWand
-import com.zhufu.opencraft.special_item.SpecialItem
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toInfoMessage
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -54,13 +57,13 @@ object EveryThing : Listener {
         if (event.block.world == tradeWorld) {
             if (!getPlayerTerritory(event.player).contains(event.block.location)) {
                 event.isCancelled = true
-                event.player.sendMessage(TextUtil.error("您不能在此破坏方块"))
+                event.player.error("您不能在此破坏方块")
             } else {
                 if (event.block.type != Material.CHEST)
                     return
                 val t = SetUpValidateInventory.inventories.firstOrNull { it.baseLocation == event.block.location }
                 if (t != null) {
-                    event.player.sendTitle(TextUtil.info("已取消物品销售"), "", 7, 30, 7)
+                    event.player.info("已取消物品销售")
                 }
             }
         }
@@ -70,7 +73,7 @@ object EveryThing : Listener {
     fun onBlockPlace(event: BlockPlaceEvent) {
         if (event.block.world == tradeWorld && !getPlayerTerritory(event.player).contains(event.blockPlaced.location)) {
             event.isCancelled = true
-            event.player.sendMessage(TextUtil.error("您不能在此放置方块"))
+            event.player.error("您不能在此放置方块")
         }
     }
 
@@ -114,12 +117,12 @@ object EveryThing : Listener {
                     if (!tag.getBoolean("isTradeTutorialShown", false)) {
                         CurrencySystem.showTutorial(event.player)
                     }
-                    saveTag()
+                    save()
                     tag.set("isTerritoryInMessageShown", false)
                     tag.set("isTerritoryOutMessageShown", false)
                 }
-                ?: event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
-            event.player.sendMessage(TextUtil.info("您的领地(ID:${t.id})位于区块(${t.x},${t.z})"))
+                ?: event.player.error(Language.getDefault("player.error.unknown"))
+            event.player.info("您的领地(ID:${t.id})位于区块(${t.x},${t.z})")
 
         }
     }
@@ -129,7 +132,7 @@ object EveryThing : Listener {
         if (event.to.world == tradeWorld) {
             val info = PlayerManager.findInfoByPlayer(event.player)
             if (info == null) {
-                event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+                event.player.error(Language.getDefault("player.error.unknown"))
                 return
             }
             if (info.status == Info.GameStatus.InTutorial) {
@@ -140,7 +143,7 @@ object EveryThing : Listener {
             val inTerritory =
                 getPlayerTerritory(event.player).contains(event.player.location)
             if (!inMsgShown && inTerritory) {
-                event.player.sendActionText(TextUtil.info("您已进入自己的领地"))
+                event.player.sendActionBar("您已进入自己的领地".toInfoMessage())
                 info.status = Info.GameStatus.Surviving
                 info.inventory.create("survivor").load(inventoryOnly = true)
                 info.tag.set("isTerritoryInMessageShown", true)
@@ -148,7 +151,7 @@ object EveryThing : Listener {
                 if (!event.player.isOp)
                     event.player.gameMode = GameMode.SURVIVAL
             } else if (!outMsgShown && !inTerritory) {
-                event.player.sendActionText(TextUtil.info("您已退出自己的领地"))
+                event.player.sendActionBar("您已退出自己的领地".toInfoMessage())
                 info.status = Info.GameStatus.InLobby
                 loadTradeCompass(info)
                 info.tag.set("isTerritoryOutMessageShown", true)
@@ -175,18 +178,18 @@ object EveryThing : Listener {
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
         val playerInfo = PlayerManager.findInfoByPlayer(event.player)
         if (playerInfo == null) {
-            event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+            event.player.error(Language.getDefault("player.error.unknown"))
             return
         }
         if (playerInfo.status != Info.GameStatus.Surviving)
             return
         if (event.itemDrop.itemStack.type == Material.WOODEN_AXE) {
             if (!getPlayerTerritory(event.player).contains(event.itemDrop.location)) {
-                event.player.sendMessage(TextUtil.error("抱歉，但您不能在此处创建商店"))
+                event.player.error("抱歉，但您不能在此处创建商店")
                 return
             }
             if (event.player.info()?.isInBuilderMode == true) {
-                event.player.sendMessage(TextUtil.error("抱歉，但您不能在此时创建商店"))
+                event.player.error("抱歉，但您不能在此时创建商店")
                 return
             }
             val l = event.itemDrop.location
@@ -208,20 +211,20 @@ object EveryThing : Listener {
             }
             if (itemsAround.isNotEmpty()) {
                 if (!isTypeTheSame) {
-                    event.player.sendMessage(TextUtil.error("抱歉，但你不能同时出售不同种类的物品"))
+                    event.player.error("抱歉，但你不能同时出售不同种类的物品")
                     return
                 }
                 val itemSell = itemsAround.first().itemStack
                 if (transMap.containsKey(itemSell.type)) {
-                    event.player.sendMessage(TextUtil.error("抱歉，但您不能出售服务器已有的物品"))
+                    event.player.error("抱歉，但您不能出售服务器已有的物品")
                     return
                 }
-                val amount = itemsAround.sumBy { it.itemStack.amount }
+                val amount = itemsAround.sumOf { it.itemStack.amount }
                 itemSell.amount = amount
                 println("${event.player.name} tries to sell ${itemsAround.first().itemStack.type.name}*$amount")
                 val location = itemsAround.first().location
                 if (location.block.type != Material.AIR) {
-                    event.player.sendMessage(TextUtil.error("抱歉，但您的商店不能覆盖已有方块"))
+                    event.player.error("抱歉，但您的商店不能覆盖已有方块")
                     return
                 }
                 SetUpValidateInventory(location.apply { yaw = event.player.location.yaw - 180 }, itemSell, event.player)
@@ -261,7 +264,7 @@ object EveryThing : Listener {
         if (inventoryMap.any { it.player == event.player }) {
             val info = PlayerManager.findInfoByPlayer(event.player.uniqueId)
             if (info == null) {
-                event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+                event.player.error(Language.getDefault("player.error.unknown"))
                 return
             }
             loadTradeCompass(info)

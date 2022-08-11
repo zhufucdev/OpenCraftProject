@@ -1,8 +1,8 @@
 package com.zhufu.opencraft.ui
 
 import com.zhufu.opencraft.*
-import com.zhufu.opencraft.TextUtil.TextColor.AQUA
-import com.zhufu.opencraft.TextUtil.TextColor.GREEN
+import com.zhufu.opencraft.api.ServerCaller
+import com.zhufu.opencraft.util.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit

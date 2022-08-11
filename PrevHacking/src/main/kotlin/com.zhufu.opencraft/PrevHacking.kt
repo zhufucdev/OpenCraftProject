@@ -1,5 +1,7 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.util.toErrorMessage
+import com.zhufu.opencraft.util.toInfoMessage
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -34,7 +36,7 @@ class PrevHacking : JavaPlugin(), org.bukkit.event.Listener {
             if (isHacking > threshold){
                 player.teleport(blockToBeFilled.first().location.add(Vector(0,1,0)))
                 blockToBeFilled.forEach { it.type = Material.STONE }
-                player.kickPlayer(TextUtil.error("服务器不允许作弊!"))
+                player.kick("服务器不允许作弊!".toErrorMessage())
             }
             else {
                 lastHackTime = System.currentTimeMillis()
@@ -73,16 +75,16 @@ class PrevHacking : JavaPlugin(), org.bukkit.event.Listener {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (command.name == "ph"){
             if (!sender.isOp){
-                sender.sendMessage(TextUtil.error("您没有权限使用此命令"))
+                sender.sendMessage("您没有权限使用此命令".toErrorMessage())
                 return true
             }
             if (args.size < 3 || args.first() != "set"){
-                sender.sendMessage(TextUtil.error("用法错误"))
+                sender.sendMessage("用法错误".toErrorMessage())
                 return false
             }
             val num = args[2].toIntOrNull()
             if (num == null){
-                sender.sendMessage(TextUtil.error("无效参数: ${args[2]}: 参数不是自然数"))
+                sender.sendMessage("无效参数: ${args[2]}: 参数不是自然数".toErrorMessage())
                 return true
             }
 
@@ -91,11 +93,11 @@ class PrevHacking : JavaPlugin(), org.bukkit.event.Listener {
                 "showPlayerOrePointingInfo" -> showPlayerOrePointInfo = num == 1
                 "showPlayerHackingAlert" -> showPlayerHackingAlert = num == 1
                 else -> {
-                    sender.sendMessage(TextUtil.error("未知参数: ${args[1]}"))
+                    sender.sendMessage("未知参数: ${args[1]}".toErrorMessage())
                     return true
                 }
             }
-            sender.sendMessage(TextUtil.info("${args[1]}已被更新为${args[2]}"))
+            sender.sendMessage("${args[1]}已被更新为${args[2]}".toInfoMessage())
         }
         return true
     }

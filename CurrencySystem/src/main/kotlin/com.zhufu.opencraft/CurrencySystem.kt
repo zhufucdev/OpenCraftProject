@@ -10,7 +10,10 @@ import com.zhufu.opencraft.Base.Extend.toPrettyString
 import com.zhufu.opencraft.inventory.TraderInventory
 import com.zhufu.opencraft.Base.Extend.isDigit
 import com.zhufu.opencraft.Game.env
+import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
+import com.zhufu.opencraft.util.*
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.trait.trait.Equipment
@@ -103,7 +106,7 @@ class CurrencySystem : JavaPlugin() {
             val title =
                 Title.title(
                     getter[titleCode].toErrorMessage(),
-                    Component.text(getter[subtitleCode], NamedTextColor.DARK_AQUA),
+                    Component.text(getter[subtitleCode], NamedTextColor.AQUA),
                     Title.Times.times(
                         Duration.ofMillis(250),
                         Duration.ofSeconds(5),
@@ -152,7 +155,7 @@ class CurrencySystem : JavaPlugin() {
 
                 val l2 = territoryMap.firstOrNull { it.player == player.uniqueId }
                 if (l2 == null)
-                    player.sendMessage(TextUtil.error(getter["trade.error.chunkNotFound"]))
+                    player.sendMessage(getter["trade.error.chunkNotFound"].toErrorMessage())
                 else {
                     val center = l2.center
                     val location2 =
@@ -226,7 +229,7 @@ class CurrencySystem : JavaPlugin() {
                 PlayerManager.findInfoByPlayer(player)
                     ?.also { it.status = Info.GameStatus.Surviving }
                     ?.tag?.set("isTradeTutorialShown", true)
-                    ?: player.sendMessage(TextUtil.warn(Language.getDefault("player.error.unknown")))
+                    ?: player.sendMessage(Language.getDefault("player.error.unknown").toWarnMessage())
             })
         }
     }
@@ -238,11 +241,11 @@ class CurrencySystem : JavaPlugin() {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (command.name == "trade") {
             if (sender !is Player && args.size < 3 && args.first() != "pwd") {
-                sender.sendMessage(TextUtil.error(getLang(sender, "command.error.playerOnly")))
+                sender.sendMessage(getLang(sender, "command.error.playerOnly").toErrorMessage())
                 return true
             }
             if (args.isEmpty()) {
-                sender.sendMessage(TextUtil.error(getLang(sender, "command.error.usage")))
+                sender.sendMessage(getLang(sender, "command.error.usage").toErrorMessage())
                 return true
             }
 
@@ -260,7 +263,7 @@ class CurrencySystem : JavaPlugin() {
                     if (!checkLogin(player)) return true
                     val t = territoryMap.firstOrNull { it.player == player.uniqueId }
                     if (t == null) {
-                        sender.sendMessage(TextUtil.error(getter["trade.error.chunkNotFound"]))
+                        sender.sendMessage(getter["trade.error.chunkNotFound"].toErrorMessage())
                         return true
                     }
                     val dest = t.center

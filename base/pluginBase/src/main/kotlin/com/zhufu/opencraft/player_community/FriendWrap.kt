@@ -1,8 +1,8 @@
 package com.zhufu.opencraft.player_community
 
-import com.zhufu.opencraft.Language
-import com.zhufu.opencraft.ServerPlayer
+import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.contentSize
+import com.zhufu.opencraft.data.ServerPlayer
 import com.zhufu.opencraft.info
 import org.bukkit.command.CommandSender
 import org.bukkit.inventory.Inventory

@@ -2,7 +2,10 @@ name: CurrencySystem
 author: zhufucomcom
 main: com.zhufu.opencraft.CurrencySystem
 version: '1.0'
-softdepend: [ServerCore, Citizens]
+softdepend:
+  - Citizens
+depend:
+  - ServerCore
 api-version: '1.14'
 commands:
   trade:

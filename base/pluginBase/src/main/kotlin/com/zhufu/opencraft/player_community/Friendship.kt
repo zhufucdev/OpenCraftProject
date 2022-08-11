@@ -1,11 +1,9 @@
 package com.zhufu.opencraft.player_community
 
-import com.zhufu.opencraft.ServerPlayer
+import com.zhufu.opencraft.data.ServerPlayer
 import org.bukkit.Bukkit
 import java.util.*
-import java.util.function.Predicate
 import javax.security.auth.Destroyable
-import kotlin.collections.HashMap
 
 class Friendship private constructor(list: List<String>?, val parent: ServerPlayer) :
     ArrayList<FriendWrap>(), Destroyable {

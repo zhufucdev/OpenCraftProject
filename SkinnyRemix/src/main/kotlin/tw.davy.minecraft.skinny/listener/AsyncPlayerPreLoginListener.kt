@@ -2,8 +2,8 @@ package tw.davy.minecraft.skinny.listener
 
 import com.destroystokyo.paper.profile.ProfileProperty
 import com.zhufu.opencraft.PlayerManager
-import com.zhufu.opencraft.TextUtil
 import com.zhufu.opencraft.getLang
+import com.zhufu.opencraft.util.TextUtil
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
