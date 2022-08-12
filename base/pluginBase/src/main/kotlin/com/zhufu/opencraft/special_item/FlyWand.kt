@@ -53,7 +53,7 @@ class FlyWand(getter: Language.LangGetter, timeRemaining: Double = MAX_TIME_REMA
             return FlyWand(
                 getter,
                 nbt.getDouble(
-                    "timeRemaining"
+                    "remaining"
                 ),
                 specialItemID
             )
