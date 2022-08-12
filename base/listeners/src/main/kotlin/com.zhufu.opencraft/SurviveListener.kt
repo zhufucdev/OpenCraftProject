@@ -4,6 +4,7 @@ import com.zhufu.opencraft.Base.endWorld
 import com.zhufu.opencraft.Base.lobby
 import com.zhufu.opencraft.Base.netherWorld
 import com.zhufu.opencraft.Base.surviveWorld
+import com.zhufu.opencraft.Base.tradeWorld
 import com.zhufu.opencraft.api.ServerCaller
 import com.zhufu.opencraft.data.DualInventory.Companion.RESET
 import com.zhufu.opencraft.data.DualInventory
@@ -518,8 +519,13 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 }
             }
         }
+        // invulnerable cooldown
         if (!event.isCancelled) {
             event.player.isInvulnerable = true
+
+            if (event.to?.world == tradeWorld) {
+                return
+            }
             Bukkit.getScheduler().runTaskLater(plugin, { _ ->
                 event.player.isInvulnerable = false
             }, 20)
