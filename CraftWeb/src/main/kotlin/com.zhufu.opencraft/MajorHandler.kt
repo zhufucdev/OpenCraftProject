@@ -60,7 +60,8 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                 response(file.inputStream(), file.size(), exchange, file.mimeType.toString())
                 return
             }
-            require == "ui" && url.queryParameter("request") != null -> {
+
+            require == "ui" -> {
                 val request = url.queryParameter("request")
                 if (request == "main") {
                     buildString {
@@ -81,11 +82,12 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                     }.readBytes()
                 } to MimeType.HTML
             }
+
             require == "user" -> {
                 when (url.queryParameter("request")) {
                     "login" -> {
                         val obj = JsonObject()
-                        val json = JsonParser().parse(exchange.requestBody.bufferedReader()).asJsonObject
+                        val json = JsonParser.parseReader(exchange.requestBody.bufferedReader()).asJsonObject
                         if (json == null) {
                             obj.addProperty("r", -2)
                         } else {
@@ -101,10 +103,13 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                 when {
                                     containsUser(remoteAddress) ->
                                         addProperty("r", 2)
+
                                     info == null -> //When no such user
                                         addProperty("r", -1)
+
                                     info.password != pwd -> //When wrong password
                                         addProperty("r", 1)
+
                                     else -> {
                                         //When success
                                         addProperty("r", 0)
@@ -121,6 +126,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                         }
                         obj.toString().toByteArray() to MimeType.JSON
                     }
+
                     "logout" -> {
                         val obj = JsonObject()
                         obj.apply {
@@ -145,13 +151,14 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                             }
                         }.toString().toByteArray() to MimeType.JSON
                     }
+
                     "sign-up" -> {
                         val obj = JsonObject()
                         obj.apply {
                             if (containsUser(remoteAddress)) {
                                 addProperty("r", 2)
                             } else {
-                                val json = JsonParser().parse(exchange.requestBody.bufferedReader()).asJsonObject
+                                val json = JsonParser.parseReader(exchange.requestBody.bufferedReader()).asJsonObject
                                 if (json == null)
                                     addProperty("r", -2)
                                 else {
@@ -160,7 +167,8 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                     val nick = json["nickname"]?.asString
                                     if (id == null || pwd == null) {
                                         addProperty("r", -1)
-                                    } else if (PreregisteredInfo.exists(id) || OfflineInfo.listPlayers { it.name == id }.isNotEmpty()) {
+                                    } else if (PreregisteredInfo.exists(id) || OfflineInfo.listPlayers { it.name == id }
+                                            .isNotEmpty()) {
                                         addProperty("r", 2)
                                     } else {
                                         val register = register(id, remoteAddress)
@@ -187,6 +195,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
 
                         obj.toString().toByteArray() to MimeType.JSON
                     }
+
                     "destroy" -> {
                         val find = users[remoteAddress]
                         JsonObject().apply {
@@ -268,7 +277,10 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                         else {
                                             val value = JsonObject()
                                             statics.entrySet().forEach { (time, v) ->
-                                                value.addProperty(time, if (v.isJsonObject) v.asJsonObject["time"].asLong else v.asLong)
+                                                value.addProperty(
+                                                    time,
+                                                    if (v.isJsonObject) v.asJsonObject["time"].asLong else v.asLong
+                                                )
                                             }
                                             add("statics", value)
                                         }
@@ -281,7 +293,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                     addProperty("id", it.id)
                                                     addProperty("text", it.text)
                                                     addProperty("read", it.read)
-                                                    addProperty("type", it.type.name.toLowerCase())
+                                                    addProperty("type", it.type.name.lowercase())
                                                     if (it.type == MessagePool.Type.Friend && it.extra != null) {
                                                         addProperty("sender", it.extra!!.getString("sender"))
                                                     }
@@ -308,6 +320,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                             }
                         }.toString().toByteArray() to MimeType.JSON
                     }
+
                     "change" -> {
                         val info = users[remoteAddress]
                         val which = url.queryParameter("which")
@@ -356,15 +369,18 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                             }
                                         }
                                     }
+
                                     "empty" -> {
                                         when (url.queryParameter("what")) {
                                             "face" -> {
                                                 val r = info.face.delete()
                                                 addProperty("r", if (r) 0 else 1)
                                             }
+
                                             else -> addProperty("r", 503)
                                         }
                                     }
+
                                     "read" -> {
                                         val what = url.queryParameter("what")
                                         if (what != null) {
@@ -385,6 +401,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                             }
                                         }
                                     }
+
                                     "unread" -> {
                                         val what = url.queryParameter("what")
                                         if (what != null) {
@@ -406,6 +423,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                             }
                                         }
                                     }
+
                                     else -> addProperty("r", 503)
                                 }
                             }.toString().toByteArray() to MimeType.JSON
@@ -445,7 +463,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                 }
 
                                 if (operation == "del") {
-                                    val json = JsonParser().parse(exchange.requestBody.bufferedReader())
+                                    val json = JsonParser.parseReader(exchange.requestBody.bufferedReader())
                                     val failure = JsonArray()
                                     json.asJsonArray.forEach {
                                         val file = File(find.playerDir, it.asString)
@@ -472,6 +490,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                 add("r", serialize(file))
                                             }
                                         }
+
                                         "read" -> {
                                             if (file.isFile) {
                                                 response(file.readBytes(), exchange)
@@ -480,6 +499,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                 addProperty("r", 1)
                                             }
                                         }
+
                                         "write" -> {
                                             /**
                                              * [response].r == 0 when success
@@ -523,6 +543,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                 addProperty("r", 1)
                                             }
                                         }
+
                                         "rename" -> {
                                             if (!file.exists()) {
                                                 addProperty("r", 1)
@@ -539,6 +560,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                     addProperty("r", 1)
                                             }
                                         }
+
                                         "mkdir" -> {
                                             if (file.isDirectory) {
                                                 addProperty("r", 1)
@@ -556,15 +578,18 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                             }
                         }
                     }.toString().toByteArray() to MimeType.JSON
+
                     else -> invalidFile.readBytes() to MimeType.HTML
                 }
             }
+
             require == "env" -> {
                 val get = url.queryParameter("get")
                 if (get != null) {
                     env.get(get, "").toString().toByteArray() to MimeType.PlainText
                 } else invalidFile.readBytes() to MimeType.HTML
             }
+
             require == "lang" -> {
                 val get = url.queryParameter("get")
                 if (get != null) {
@@ -576,12 +601,14 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                     }.toByteArray() to MimeType.PlainText
                 } else invalidFile.readBytes() to MimeType.HTML
             }
+
             require == "license" -> {
                 File(root, "LICENSE").let {
                     if (it.exists()) it.readBytes()
                     else "Failed to fetch content.".toByteArray()
                 } to MimeType.PlainText
             }
+
             require == "ping" -> {
                 val which = url.queryParameter("which")
                 if (which == null)
@@ -612,16 +639,19 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                     addProperty("r", 504)
                                 }
                             }
+
                             "player" -> {
                                 addProperty("online", Bukkit.getOnlinePlayers().size)
                                 addProperty("maxOnline", Bukkit.getMaxPlayers())
                                 addProperty("totalPlayers", ServerStatics.playerNumber)
                             }
+
                             else -> addProperty("r", 404)
                         }
                     }.toString().toByteArray() to MimeType.JSON
                 }
             }
+
             require == "header" -> File(root, "header.html").readBytes() to MimeType.HTML
             require == "chat" -> {
                 val find = users[remoteAddress]
@@ -635,6 +665,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                     return
                 }
             }
+
             require == "wiki" -> {
                 val operation = url.queryParameter("operation") ?: "read"
                 val title = url.queryParameter("title") ?: "frontPage"
@@ -647,7 +678,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                             if (article.exists()) {
                                 val info = File(wikiRoot, "$title.json").let {
                                     if (it.exists())
-                                        JsonParser().parse(it.reader())
+                                        JsonParser.parseReader(it.reader())
                                     else {
                                         logger.warning("Wiki info for $title doesn't exist. Generated automatically at ${it.path}.")
                                         if (!it.parentFile.exists())
@@ -667,10 +698,12 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                     }
                                 }
                                 if (url.queryParameter("withScript") == "true") {
-                                    "<script>${File(wikiRoot, "script.js").readText().replace(
-                                        "\$title",
-                                        title
-                                    )}</script>".toByteArray() to MimeType.HTML
+                                    "<script>${
+                                        File(wikiRoot, "script.js").readText().replace(
+                                            "\$title",
+                                            title
+                                        )
+                                    }</script>".toByteArray() to MimeType.HTML
                                 } else {
                                     JsonObject().apply {
                                         addProperty("content", article.readText())
@@ -683,12 +716,14 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                 }.toString().toByteArray() to MimeType.JSON
                             }
                         }
+
                         "write" -> {
                             JsonObject().apply {
                                 when {
                                     !users.containsKey(remoteAddress) -> {
                                         addProperty("r", 503)
                                     }
+
                                     url.queryParameter("img") == "true" -> {
                                         val knownMD5 = url.queryParameter("md5")
                                         if (knownMD5 != null) {
@@ -710,7 +745,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                 } else {
                                                     addProperty("r", 2)
                                                     toValidate = true
-                                                    createTempFile(it.nameWithoutExtension)
+                                                    kotlin.io.path.createTempFile(it.nameWithoutExtension).toFile()
                                                 }
                                             }
 
@@ -753,6 +788,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                             }
                                         }
                                     }
+
                                     else -> {
                                         val article = File(wikiRoot, "$title.html").also {
                                             if (!it.parentFile.exists()) it.parentFile.mkdirs()
@@ -767,7 +803,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                         Wiki.backup(title)
                                         // Read
                                         val input = try {
-                                            JsonParser().parse(exchange.requestBody.bufferedReader()).asJsonObject
+                                            JsonParser.parseReader(exchange.requestBody.bufferedReader()).asJsonObject
                                         } catch (e: Exception) {
                                             addProperty("r", -1)
                                             return@apply
@@ -884,6 +920,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                 }
                             }.toString().toByteArray() to MimeType.JSON
                         }
+
                         "rename" -> {
                             JsonObject().apply {
                                 if (!users.containsKey(remoteAddress)) {
@@ -937,6 +974,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                 }
                             }.toString().toByteArray() to MimeType.JSON
                         }
+
                         "search" -> {
                             JsonObject().apply {
                                 if (url.queryParameter("advanced") != "true") {
@@ -952,7 +990,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                             addCondition(Search.Condition(keywords, tag, type))
                                             doSearch()
                                         }
-                                            .results.sortedWith(Comparator { o1, o2 -> ((o2.confidence - o1.confidence) * 10).toInt() })
+                                            .results.sortedWith { o1, o2 -> ((o2.confidence - o1.confidence) * 10).toInt() }
                                         add("r", JsonArray().apply {
                                             results.forEach {
                                                 if (it.confidence < 0.3F) return@forEach
@@ -979,6 +1017,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                 }
                             }.toString().toByteArray() to MimeType.JSON
                         }
+
                         "lock" -> {
                             JsonObject().apply {
                                 if (!Wiki.getResourceConfig(title).has("backup"))
@@ -987,16 +1026,19 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                     addProperty("r", 2)
                             }.toString().toByteArray() to MimeType.JSON
                         }
+
                         "renewLock" -> {
                             JsonObject().apply {
                                 addProperty("r", if (Wiki.renewLock(title, remoteAddress)) 0 else 1)
                             }.toString().toByteArray() to MimeType.JSON
                         }
+
                         "unlock" -> {
                             JsonObject().apply {
                                 addProperty("r", if (Wiki.unlock(title, remoteAddress)) 0 else 1)
                             }.toString().toByteArray() to MimeType.JSON
                         }
+
                         "list" -> {
                             JsonArray().apply {
                                 when (url.queryParameter("what")) {
@@ -1013,6 +1055,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                             }
                                         }
                                     }
+
                                     "article" -> {
                                         Wiki.forEachArticle { _, title ->
                                             add(title)
@@ -1021,6 +1064,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                 }
                             }.toString().toByteArray() to MimeType.JSON
                         }
+
                         else -> {
                             JsonObject().apply {
                                 addProperty("r", -1)
@@ -1029,6 +1073,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                     }
                 }
             }
+
             require.startsWith("wiki/images") -> {
                 val index = require.indexOf('/', 9)
                 val noSuchImage = File(wikiRoot, "no-such-image.png")
@@ -1040,6 +1085,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                     file.let { if (it.exists()) it else noSuchImage }.readBytes()
                 } to MimeType.PNG
             }
+
             require == "favicon.ico" -> File("favicon.ico").let {
                 if (it.exists())
                     it to MimeType.ICO
@@ -1048,6 +1094,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
             }.let {
                 it.first.readBytes() to it.second
             }
+
             else -> {
                 if (require.isNotEmpty()) {
                     logger.info(require)
@@ -1058,7 +1105,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                         } else {
                             var invalid = false
                             val paths = navigation.path.split('/').drop(2)
-                            val navigator: String? = when {
+                            val navigator: String = when {
                                 paths.first() == "wiki" -> {
                                     if (paths.size > 1)
                                         "wiki?title=${paths.drop(1).joinToString(separator = "/")}&withScript=true"
@@ -1066,6 +1113,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                         "wiki?withScript=true"
                                     }
                                 }
+
                                 else -> "ui?request=${paths.first()}"
                             }
                             if (!invalid) {

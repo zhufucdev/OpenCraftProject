@@ -181,7 +181,7 @@ class PlayerUtil : JavaPlugin() {
                         }
                         i
                     }
-                    val item = SpecialItem.make(args[3], amount, player)
+                    val item = StatefulSpecialItem.make(args[3], amount, player)
                     if (item == null) {
                         sender.error(getter["command.error.noSuchItem", args[3]])
                         return true
@@ -383,9 +383,9 @@ class PlayerUtil : JavaPlugin() {
                 4 -> {
                     val r = mutableListOf<String>()
                     if (args[3].isEmpty()) {
-                        SpecialItem.types.forEach { r.add(it) }
+                        StatefulSpecialItem.types.forEach { r.add(it) }
                     } else {
-                        SpecialItem.types.forEach {
+                        StatefulSpecialItem.types.forEach {
                             if (it.startsWith(args[3], true))
                                 r.add(it)
                         }

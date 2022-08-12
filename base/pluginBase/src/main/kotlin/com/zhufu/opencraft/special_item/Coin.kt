@@ -5,14 +5,15 @@ import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.util.toInfoMessage
 import com.zhufu.opencraft.util.toTipMessage
 import org.bukkit.Material
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import java.util.UUID
 
-class Coin : SpecialItem {
-    constructor(amount: Int, getter: Language.LangGetter): super(Material.GOLD_INGOT, getter) {
+class Coin : StatelessSpecialItem {
+    constructor(getter: Language.LangGetter) : super(Material.GOLD_INGOT, SIID) {
         updateItemMeta<ItemMeta> {
             displayName(getter["coin.name"].toInfoMessage())
             lore(listOf(getter["coin.title"].toTipMessage()))
@@ -20,35 +21,16 @@ class Coin : SpecialItem {
             addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ENCHANTS)
         }
         addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)
-        setAmount(amount)
     }
 
-    constructor(getter: Language.LangGetter): this(1, getter)
-
-    override fun getSerialized(): ConfigurationSection {
-        val r = super.getSerialized()
-        if (amount > 1)
-            r["amount"] = amount
-        return r
+    constructor(from: ItemStack) : super(Material.GOLD_INGOT, SIID) {
+        this.amount = from.amount
+        this.itemMeta = from.itemMeta
     }
 
-    companion object : SISerializable {
-        override fun deserialize(itemStack: ItemStack, getter: Language.LangGetter) = Coin(itemStack.amount, getter)
-
-        override fun deserialize(config: ConfigurationSection, getter: Language.LangGetter): SpecialItem =
-            Coin(config.getInt("amount", 1), getter)
-
-        override fun isThis(itemStack: ItemStack?): Boolean =
-            itemStack != null
-                    && with(itemStack) {
-                type == Material.GOLD_INGOT
-                        && hasItemMeta()
-                        && itemMeta!!.hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)
-                        && itemMeta!!.hasItemFlag(ItemFlag.HIDE_ENCHANTS)
-                        && itemMeta!!.isUnbreakable
-            }
-
-        override fun isThis(config: ConfigurationSection): Boolean =
-            config.getString("type") == Coin::class.simpleName
+    companion object : StatelessSICompanion {
+        override val SIID: UUID get() = UUID.fromString("DD6F0169-0665-45E7-8343-0751669058DB")
+        override fun newInstance(getter: Language.LangGetter, madeFor: Player) = Coin(getter)
+        override fun fromItemStack(item: ItemStack) = Coin(item)
     }
 }

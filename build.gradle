@@ -24,7 +24,8 @@ project.ext {
     mcVersion = '1.19.2'
     serverPath = project.projectDir.path + '/server'
     citizens_version = '2.0.30-SNAPSHOT'
-    we_version = '7.1.0-SNAPSHOT'
+    we_version = '7.2.12-SNAPSHOT'
+    okhttp_version = '4.10.0'
 }
 
 task download(type: Download) {
@@ -77,6 +78,7 @@ subprojects {
         maven { url 'https://repo.citizensnpcs.co/' }
         maven { url 'https://repo.codemc.org/repository/maven-public/' }
         maven { url 'https://maven.enginehub.org/repo/' }
+        maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     }
 
 

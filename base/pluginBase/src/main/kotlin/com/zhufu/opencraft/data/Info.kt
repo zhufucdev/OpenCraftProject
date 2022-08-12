@@ -58,7 +58,12 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
         MiniGaming, InLobby, Surviving, Observing, InTutorial, Building, Offline
     }
 
+    /* Runtime Factors */
     var status: GameStatus = GameStatus.InLobby
+    var outOfSpawn = false
+    var isTerritoryInMessageShown = false
+    var isTerritoryOutMessageShown = false
+
     override var doNotTranslate = false
     override val displayName: String
         get() = player.name + if (nickname != null) ", $nickname" else ""

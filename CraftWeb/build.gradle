@@ -2,7 +2,7 @@ group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    compileOnly "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttp_version}"
     compileOnly project(':playerManagment')
     compileOnly project(':webBase')
 }

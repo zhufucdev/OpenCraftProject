@@ -30,7 +30,7 @@ object ServerStatics {
             JsonObject()
         } else {
             try {
-                JsonParser().parse(save.reader()).asJsonObject
+                JsonParser.parseReader(save.reader()).asJsonObject
             }catch (e: Exception){
                 Bukkit.getLogger().warning("Server statics save could not be loaded. Use an empty file.")
                 JsonObject()

@@ -249,7 +249,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                             PaymentDialog(
                                                 player = sender,
                                                 sellingItems = SellingItemInfo(
-                                                    item = Coin(1, getter),
+                                                    item = Coin(getter),
                                                     amount = 1,
                                                     unitPrise = amount
                                                 ),

@@ -166,6 +166,7 @@ class PlayerLobby(val owner: OfflineInfo) {
                     isCopyingEntities = true
                 }
             )
+            session.close()
             spawnPoint = PlayerLobbyManager.bedLocation.clone().subtract(last).add(Vector(fromX, last.blockY, fromZ)).toLocation(Base.lobby)
             tag.set("initialized", true)
             save()

@@ -6,9 +6,10 @@ import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.api.ChatInfo
 import com.zhufu.opencraft.data.ServerPlayer
-import com.zhufu.opencraft.util.Language
-import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.*
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
@@ -109,28 +110,34 @@ open class MessagePool private constructor() {
             }
 
         fun toComponent(player: ChatInfo): Component {
-            return MiniMessage.miniMessage().deserialize(buildString {
+            return Component.empty().toBuilder().apply {
                 // time & date prefix
                 if (time >= 0) {
                     val simple = SimpleDateFormat("MM/dd HH:mm").format(Date(time))
                     val detailed = SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Date(time))
-                    append("<hover:show_text:$detailed>($simple)</hover> ")
+                    it.append(
+                        Component.text(simple)
+                            .hoverEvent {
+                                HoverEvent.showText(Component.text(detailed))
+                                        as HoverEvent<Any>
+                            }
+                    )
                 }
                 if (sender != null) {
-                    append("$sender ")
+                    it.append(Component.text("$sender "))
                 }
                 // main content
-                append(TextUtil.getCustomizedText(text, player) + ' ')
+                it.append(Component.text(TextUtil.getCustomizedText(text, player) + ' '))
                 // [Read] label
-                val tip = TextUtil.tip(Language[player.targetLang, "msg.clickToRead"])
+                val tip = Language[player.targetLang, "msg.clickToRead"].toTipMessage()
                 val command = "/pu server:markMessageRead ${id}${if (type == Type.Public) " public" else ""}"
-                val readLabel = TextUtil.getColoredText(
-                    "[${Language.byChat(player, "msg.read")}]",
-                    TextUtil.TextColor.GREEN,
-                    true
+                val readLabel = "[${Language.byChat(player, "msg.read")}]".toSuccessMessage()
+                it.append(
+                    readLabel
+                        .clickEvent(ClickEvent.runCommand(command))
+                        .hoverEvent { HoverEvent.showText(tip) as HoverEvent<Any> }
                 )
-                append("<hover:show_text:$tip><click:run_command:$command>$readLabel</click></hover>")
-            })
+            }.build()
         }
 
         override fun equals(other: Any?): Boolean =

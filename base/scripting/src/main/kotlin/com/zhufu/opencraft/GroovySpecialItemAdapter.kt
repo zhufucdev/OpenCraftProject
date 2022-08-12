@@ -16,8 +16,6 @@ class GroovySpecialItemAdapter(
     make: Closure<*>?,
     deserialize: Closure<*>?,
     serialize: Closure<*>?,
-    judgeFromItem: Closure<Boolean>?,
-    judgeFromConfig: Closure<Boolean>?,
     tick: Closure<*>?
 ) : SpecialItemAdapter(
     name,
@@ -28,10 +26,6 @@ class GroovySpecialItemAdapter(
         .takeIf { deserialize != null },
     serialize = { i: ItemStack, c: ConfigurationSection -> serialize!!.call(i, c); Unit }
         .takeIf { serialize != null },
-    judgeFromItem = { i: ItemStack -> judgeFromItem!!.call(i) }
-        .takeIf { judgeFromItem != null },
-    judgeFromConfig = { c: ConfigurationSection -> judgeFromConfig!!.call(c) }
-        .takeIf { judgeFromConfig != null },
-    tick = { i: AdapterItem, m: PlayerModifier, d: YamlConfiguration, s: Objective, o: Int -> tick!!.call(i, m, d, s, o); Unit }
+    tick = { i: AdaptedItem, m: PlayerModifier, d: YamlConfiguration, s: Objective, o: Int -> tick!!.call(i, m, d, s, o); Unit }
         .takeIf { tick != null }
 )

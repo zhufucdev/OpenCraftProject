@@ -16,4 +16,5 @@ dependencies {
 
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     api "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
+    api "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttp_version}"
 }

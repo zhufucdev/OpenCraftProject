@@ -43,7 +43,7 @@ class BankInventory(plugin: Plugin, private val info: Info) :
 
     override fun onConfirm() {
         if (deposit) {
-            if (player.setInventory(Coin(1, getter), -amount)) {
+            if (player.setInventory(Coin(getter), -amount)) {
                 info.currency += amount
                 player.success(getter["bank.mode.deposit.done", amount])
             } else {
@@ -51,7 +51,7 @@ class BankInventory(plugin: Plugin, private val info: Info) :
             }
         } else {
             if (info.currency >= amount) {
-                player.setInventory(Coin(1, getter), amount)
+                player.setInventory(Coin(getter), amount)
                 info.currency -= amount
                 player.success(getter["bank.mode.withdraw.done", amount])
             } else {

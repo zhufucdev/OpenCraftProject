@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-class FlyWandInventory(val player: Player, plugin: Plugin) : ClickableInventory(plugin) {
+class FlyWandInventory(val player: Player, val wand: FlyWand, plugin: Plugin) : ClickableInventory(plugin) {
     companion object {
         var id: Int = 0
         const val limit = FlyWand.MAX_TIME_REMAINING.toInt() / 60
@@ -27,15 +27,12 @@ class FlyWandInventory(val player: Player, plugin: Plugin) : ClickableInventory(
     lateinit var subItem: ItemStack
     lateinit var addItem: ItemStack
     lateinit var confirmItem: ItemStack
-    val wand = if (FlyWand.isThis(player.inventory.itemInMainHand)) FlyWand(
-        player.inventory.itemInMainHand, player.getter()
-    ) else null
     var time = 1
     private val price: Int
         get() = time * FlyWand.PRICE_PER_MIN
 
     private fun preventReachingLimit() {
-        if (time + wand!!.timeRemaining.toInt() / limit > limit) {
+        if (time + wand.timeRemaining.toInt() / limit > limit) {
             time = 1
         } else if (time <= 0) {
             time = limit - wand.timeRemaining.toInt() / limit
@@ -54,28 +51,24 @@ class FlyWandInventory(val player: Player, plugin: Plugin) : ClickableInventory(
     }
 
     init {
-        if (wand != null) {
-            inventory.setItem(getLine(2), ItemStack(Material.NETHER_STAR)
-                .also {
-                    subItem = it
-                }
-                .updateItemMeta<ItemMeta> {
-                    displayName("少续费一分钟".toInfoMessage())
-                }
-            )
-            setShowingItem()
-            inventory.setItem(getLine(6), ItemStack(Material.NETHER_STAR)
-                .also {
-                    addItem = it
-                }
-                .updateItemMeta<ItemMeta> {
-                    displayName("多续费一分钟".toInfoMessage())
-                }
-            )
-            show(player)
-        } else {
-            player.error("您必须将权杖拿在主手")
-        }
+        inventory.setItem(getLine(2), ItemStack(Material.NETHER_STAR)
+            .also {
+                subItem = it
+            }
+            .updateItemMeta<ItemMeta> {
+                displayName("少续费一分钟".toInfoMessage())
+            }
+        )
+        setShowingItem()
+        inventory.setItem(getLine(6), ItemStack(Material.NETHER_STAR)
+            .also {
+                addItem = it
+            }
+            .updateItemMeta<ItemMeta> {
+                displayName("多续费一分钟".toInfoMessage())
+            }
+        )
+        show(player)
     }
 
     override fun onClick(event: InventoryClickEvent) {
@@ -92,9 +85,7 @@ class FlyWandInventory(val player: Player, plugin: Plugin) : ClickableInventory(
                 PaymentDialog(player, SellingItemInfo(confirmItem.clone(), 100, time), TradeManager.getNewID(), plugin)
                     .setOnPayListener { success ->
                         if (success) {
-                            player.inventory.setItem(
-                                player.inventory.heldItemSlot,
-                                wand!!.also { meta -> meta.updateTime(wand.timeRemaining + time * 60) })
+                            wand.updateTime(wand.timeRemaining + time * 60)
                             player.success("以为您手中的权杖续费${time}分钟")
                         } else {
                             player.error("交易失败: 您没有足够的货币")

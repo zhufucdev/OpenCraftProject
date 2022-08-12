@@ -1,33 +1,64 @@
 gameMode: SURVIVAL
 health: 20.0
-foodLevel: 50
+foodLevel: 20
 walkSpeed: 0.2
 flySpeed: 0.1
 exp: 0
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: -6845.957465841557
-  y: 110.0
-  z: 411.9149125346334
-  pitch: 14.699989
-  yaw: -131.85002
+  x: -6609.8882183796595
+  y: 103.0
+  z: 413.9721336129691
+  pitch: 26.250114
+  yaw: 112.5
 potion: {}
 inventory:
   '0':
     ==: org.bukkit.inventory.ItemStack
     v: 3120
-    type: CREEPER_SPAWN_EGG
-    amount: 64
+    type: GOLD_INGOT
+    amount: 10
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      display-name: '{"color":"yellow","text":"硬币"}'
+      lore:
+      - '{"bold":true,"color":"gold","text":"OpenCraft实体货币"}'
+      enchants:
+        PROTECTION_ENVIRONMENTAL: 1
+      ItemFlags:
+      - HIDE_ENCHANTS
+      - HIDE_UNBREAKABLE
+      Unbreakable: true
+      internal: H4sIAAAAAAAA/+NiYOBmYC3OjM9MYWBgYLmbz5jJlur6vNmZPTBtQsRtBgBTbPGZIAAAAA==
   '1':
     ==: org.bukkit.inventory.ItemStack
     v: 3120
-    type: FLINT_AND_STEEL
+    type: STICK
+    meta:
+      ==: ItemMeta
+      meta-type: UNSPECIFIC
+      lore:
+      - '{"bold":true,"color":"gold","text":"一支让你飞行的权杖"}'
+      - '{"color":"yellow","text":"剩余1800秒"}'
+      internal: H4sIAAAAAAAA/+NiYOBmYC3OjM9MYWBgYLkXqLtVU8m3rm/p7sg/81LcuBh4igtSkzMTc+IzS1Jz2Rg4i1JzEzPzMvPSHeYoMIABNwMfSH9ecUliXnIqDoMYAHmFMTRpAAAA
   '2':
-    type: Insurance
-    player: zhufucdev
-    number: 1660238122348
-  '3':
     ==: org.bukkit.inventory.ItemStack
     v: 3120
-    type: WOODEN_AXE
+    type: WRITTEN_BOOK
+    meta:
+      ==: ItemMeta
+      meta-type: BOOK_SIGNED
+      lore:
+      - '{"text":"zhufucdev"}'
+      - '{"text":"1660302178423"}'
+      ItemFlags:
+      - HIDE_ENCHANTS
+      - HIDE_UNBREAKABLE
+      Unbreakable: true
+      internal: H4sIAAAAAAAA/+NiYOBmYC3OjM9MYWBgYIlbJzv592y/4vapM06yndykycXAU1yQmpyZmBOfWZKay8LAlleam5RaxMDA2DRxx45yDga2gpzESqAAZ1VGaVppckpqGdBAPpCBecUliXnJqThMZgAAXUivjXoAAAA=
+      title: §e保险
+      author: '保证人: OpenCraft 团队'
+      pages:
+      - '{"text":"承保人: zhufucdev\n保证人: OpenCraft 团队\n此保险担保，在你死亡后，将有80%的物品被保留。\n"}'

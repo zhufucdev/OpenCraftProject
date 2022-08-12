@@ -18,3 +18,8 @@ base/*/build
 /server/world_survive/
 /server/world/
 /server/plugins/Skinny/
+/server/plugins/inventories/
+/server/plugins/lobbies/
+/server/plugins/lang/
+/server/plugins/tag/
+/server/plugins/specialItems/

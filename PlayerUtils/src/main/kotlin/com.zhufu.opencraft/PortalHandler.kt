@@ -3,6 +3,8 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.Everything.mPlugin
 import com.zhufu.opencraft.Everything.near
 import com.zhufu.opencraft.special_item.Portal
+import com.zhufu.opencraft.special_item.StatefulSpecialItem
+import com.zhufu.opencraft.special_item.StatelessSpecialItem
 import com.zhufu.opencraft.util.toErrorMessage
 import org.bukkit.*
 import org.bukkit.entity.Player
@@ -173,7 +175,7 @@ object PortalHandler : Listener {
 
     @EventHandler
     fun onSecondaryDrop(event: PlayerDropItemEvent) {
-        if (Portal.isThis(event.itemDrop.itemStack) && portalMap.containsKey(event.player)) {
+        if (StatelessSpecialItem[event.itemDrop.itemStack] is Portal && portalMap.containsKey(event.player)) {
             event.isCancelled = true
             event.player.error(getLang(event.player, "portal.dropSecondary"))
         }
@@ -183,7 +185,7 @@ object PortalHandler : Listener {
     fun onBlockPlace(event: BlockPlaceEvent) {
         if (!event.canBuild())
             return
-        if (Portal.isThis(event.itemInHand)) {
+        if (StatelessSpecialItem[event.itemInHand] is Portal) {
             val getter = event.player.getter()
             if (!portalMap.containsKey(event.player)) {
                 portalMap[event.player] =
@@ -217,7 +219,8 @@ object PortalHandler : Listener {
 
     @EventHandler
     fun onSecondaryPortalClick(event: InventoryClickEvent) {
-        if (Portal.isThis(event.currentItem) && portalMap.containsKey(Bukkit.getPlayer(event.whoClicked.uniqueId))) {
+        val item = event.currentItem ?: return
+        if (StatelessSpecialItem[item] is Portal && portalMap.containsKey(Bukkit.getPlayer(event.whoClicked.uniqueId))) {
             event.whoClicked.error(getLang(event.whoClicked, "portal.mustPlaceFirst"))
             event.isCancelled = true
         }

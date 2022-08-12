@@ -1,7 +1,7 @@
 package bukkit
 
 import com.zhufu.opencraft.events.SSReloadEvent
-import com.zhufu.opencraft.special_item.SpecialItem
+import com.zhufu.opencraft.special_item.StatefulSpecialItem
 import groovyjarjarantlr4.v4.runtime.misc.Nullable
 
 class Content {
@@ -37,7 +37,7 @@ class Content {
             existing.merge(c)
             existing.apply()
         } else {
-            SpecialItem.registerAdapter(c.getAdapter())
+            StatefulSpecialItem.registerAdapter(c.getAdapter())
             definedItems.add(c)
             c.apply()
         }
@@ -67,7 +67,7 @@ class Content {
     static {
         // Unregister listeners when reloading
         Server.listenEvent(SSReloadEvent.class) {
-            SpecialItem.unregisterAll()
+            StatefulSpecialItem.unregisterAll()
             // => ExtendedItem
             definedItems.forEach {
                 it.unapply()

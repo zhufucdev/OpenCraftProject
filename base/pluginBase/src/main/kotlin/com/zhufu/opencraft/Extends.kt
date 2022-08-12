@@ -5,7 +5,8 @@ import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.data.ServerPlayer
 import com.zhufu.opencraft.special_item.Coin
-import com.zhufu.opencraft.special_item.SpecialItem
+import com.zhufu.opencraft.special_item.StatefulSpecialItem
+import com.zhufu.opencraft.special_item.StatelessSpecialItem
 import com.zhufu.opencraft.util.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -23,7 +24,6 @@ import java.nio.channels.FileChannel
 import java.security.MessageDigest
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.reflect.full.isSuperclassOf
 
 fun getLang(lang: String, value: String, vararg replaceWith: Any?): String = Language.got(lang, value, replaceWith)
 fun getLang(player: ServerPlayer, value: String, vararg replaceWith: Any?): String =
@@ -121,9 +121,11 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
         var aAmount = 0
         fun isSimilar(a: ItemStack): Boolean {
             return a.type == type.type
-                    && ((type is SpecialItem && SpecialItem.getByItem(a, type.getter)
-                ?.let { it::class.isSuperclassOf(a::class) } == true)
-                    || type !is SpecialItem)
+                    && ((type is StatefulSpecialItem && StatefulSpecialItem[a]
+                ?.let { it::class == type::class } == true)
+                    || (type is StatelessSpecialItem && StatelessSpecialItem[a]
+                ?.let { it::class == type::class } == true)
+                    || type !is StatelessSpecialItem)
         }
         this.inventory.forEach {
             if (it != null && isSimilar(it))
@@ -163,17 +165,16 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
     return true
 }
 
-fun HumanEntity.addCash(amount: Int) = setInventory(Coin(1, getter()), amount)
+fun HumanEntity.addCash(amount: Int) = setInventory(Coin(getter()), amount)
 
 val Inventory.containsSpecialItem: Boolean
-    get() = this.any { if (it != null) SpecialItem.isSpecial(it) else false }
-val Inventory.specialItems: List<SpecialItem>
+    get() = this.any { if (it != null) StatefulSpecialItem.isSpecial(it) else false }
+val Inventory.specialItems: List<StatefulSpecialItem>
     get() {
-        val r = ArrayList<SpecialItem>()
+        val r = ArrayList<StatefulSpecialItem>()
         for (i in 0 until this.size) {
             val it = this.getItem(i) ?: continue
-            val getter = (if (holder is HumanEntity) holder as HumanEntity else viewers.firstOrNull() ?: return emptyList()).getter()
-            SpecialItem.getByItem(it, getter)?.apply {
+            StatefulSpecialItem[it]?.apply {
                 inventoryPosition = i
                 r.add(this)
             }

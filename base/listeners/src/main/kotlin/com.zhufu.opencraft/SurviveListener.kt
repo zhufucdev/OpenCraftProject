@@ -14,6 +14,7 @@ import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.special_item.Insurance
 import com.zhufu.opencraft.util.*
+import net.kyori.adventure.text.TranslatableComponent
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -247,7 +248,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 info.tag
                     .apply {
                         set("lastDeath.location", event.entity.location)
-                        set("lastDeath.reason", event.deathMessage())
+                        set("lastDeath.reason", event.deathMessage)
                         set("lastDeath.time", System.currentTimeMillis())
                     }
 
@@ -339,13 +340,13 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 return
             val distance = event.to.distance(info.tag.getSerializable("surviveSpawn", Location::class.java) ?: return)
             if (distance >= 100) {
-                if (!info.tag.getBoolean("isOutOfSpawn", false)) {
-                    info.tag.set("isOutOfSpawn", true)
+                if (!info.outOfSpawn) {
+                    info.outOfSpawn = true
                     event.player.info(getLang(info, "survey.outOfSpawn"))
                 }
             } else {
-                if (info.tag.getBoolean("isOutOfSpawn", false)) {
-                    info.tag.set("isOutOfSpawn", false)
+                if (info.outOfSpawn) {
+                    info.outOfSpawn = false
                     event.player.info(getLang(info, "survey.intoSpawn"))
                 }
             }
@@ -383,7 +384,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             return
         }
         if (info.status == Surviving) {
-            if (info.isSurveyPassed || !info.tag.getBoolean("isOutOfSpawn", false)) {
+            if (info.isSurveyPassed || !info.outOfSpawn) {
                 event.player.success(getter["user.spawnpoint.saved"])
                 info.tag.set("surviveSpawn", event.bed.location)
                 event.player.bedSpawnLocation = event.bed.location
@@ -402,11 +403,8 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
 
     private fun sendPlayerOutOfSpawnMessage(player: HumanEntity) {
         val getter = getLangGetter(PlayerManager.findInfoByPlayer(player.uniqueId))
-        player.sendMessage(
-            TextUtil.error(getter["survey.outOfSpawn2"]),
-            TextUtil.tip(getter["survey.toPlaceBlock"])
-
-        )
+        player.error(getter["survey.outOfSpawn2"])
+        player.tip(getter["survey.toPlaceBlock"])
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -415,11 +413,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         if (!validateInfo(info)) {
             return
         }
-        if (info!!.player.location.world == surviveWorld && !info.isSurveyPassed && info.tag.getBoolean(
-                "isOutOfSpawn",
-                false
-            )
-        ) {
+        if (info!!.player.location.world == surviveWorld && !info.isSurveyPassed && info.outOfSpawn) {
             event.isCancelled = true
             sendPlayerOutOfSpawnMessage(event.player)
         } else if (info.status == InLobby && event.block.world == lobby) {
@@ -438,13 +432,10 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         val info = PlayerManager.findInfoByPlayer(event.player)
         if (info == null) {
             event.isCancelled = true
-            event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+            event.player.error(Language.getDefault("player.error.unknown"))
             return
         }
-        if (info.player.location.world == surviveWorld && !info.isSurveyPassed && info.tag.getBoolean(
-                "isOutOfSpawn",
-                false
-            )
+        if (info.player.location.world == surviveWorld && !info.isSurveyPassed && info.outOfSpawn
         ) {
             event.isCancelled = true
             sendPlayerOutOfSpawnMessage(event.player)
@@ -476,10 +467,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             event.player.sendMessage(Language.getDefault("player.error.unknown").toErrorMessage())
             return
         }
-        if (info.player.location.world == surviveWorld && !info.isSurveyPassed && info.tag.getBoolean(
-                "isOutOfSpawn",
-                false
-            )
+        if (info.player.location.world == surviveWorld && !info.isSurveyPassed && info.outOfSpawn
         ) {
             event.isCancelled = true
             sendPlayerOutOfSpawnMessage(event.player)
@@ -503,7 +491,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             surviveWorld -> {
                 val info = PlayerManager.findInfoByPlayer(event.player)
                 if (info == null) {
-                    event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+                    event.player.error(Language.getDefault("player.error.unknown"))
                     return
                 }
                 if (info.status != Surviving) {
@@ -517,15 +505,13 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     val info = PlayerManager.findInfoByPlayer(event.player)
                     if (info == null) {
                         event.isCancelled = true
-                        event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+                        event.player.error(Language.getDefault("player.error.unknown"))
                         event.player.sendMessage(Game.gameWarn)
                         return
                     }
                     if (!info.tag.getBoolean("isSurvivor", false)) {
-                        event.player.sendMessage(
-                            TextUtil.error(getLang(info, "survival.notRegistered.1")),
-                            TextUtil.tip(getLang(info, "survival.notRegistered.2"))
-                        )
+                        event.player.error(getLang(info, "survival.notRegistered.1"))
+                        event.player.tip(getLang(info, "survival.notRegistered.2"))
                     } else {
                         event.isCancelled = !event.player.solveSurvivorRequest(info)
                     }
@@ -574,7 +560,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             endWorld -> {
                 val info = PlayerManager.findInfoByPlayer(event.player)
                 if (info == null) {
-                    event.player.sendMessage(TextUtil.error(Language.getDefault("player.error.unknown")))
+                    event.player.error(Language.getDefault("player.error.unknown"))
                     return
                 }
                 location = info.tag.getSerializable("surviveSpawn", Location::class.java)!!

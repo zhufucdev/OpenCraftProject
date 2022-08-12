@@ -84,6 +84,10 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
                 }
             }
 
+    var isTradeTutorialShown: Boolean
+        get() = tag.getBoolean("isTTShown", false)
+        set(value) = tag.set("isTTShown", value)
+
     override fun destroy() {
         cacheList.removeAll { it.uuid == uuid }
         super.destroy()

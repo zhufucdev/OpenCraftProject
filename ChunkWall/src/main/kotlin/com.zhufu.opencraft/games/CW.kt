@@ -1,5 +1,15 @@
 package com.zhufu.opencraft.games
 
+import com.sk89q.worldedit.WorldEdit
+import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldedit.bukkit.BukkitWorld
+import com.sk89q.worldedit.function.operation.ForwardExtentCopy
+import com.sk89q.worldedit.function.operation.Operations
+import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.regions.CuboidRegion
+import com.sk89q.worldedit.regions.FlatRegion
+import com.sk89q.worldedit.regions.Region
+import com.sk89q.worldedit.world.block.BaseBlock
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.chunkgenerator.VoidGenerator
 import com.zhufu.opencraft.events.PlayerQuitGameEvent
@@ -26,24 +36,11 @@ import java.io.File
 import java.time.Duration
 import java.util.ArrayList
 import javax.naming.OperationNotSupportedException
+import kotlin.concurrent.thread
+import kotlin.system.measureTimeMillis
 
 class CW : MiniGame() {
     companion object {
-        fun spawnBedrock(w: World) {
-            (1..2).forEach { t ->
-                for (i in 0..1) {
-                    for (j in -16..15) {
-                        for (y in 0..127) {
-                            if (t == 1) {
-                                w.getBlockAt(i, y, j).type = Material.BEDROCK
-                            } else if (t == 2) {
-                                w.getBlockAt(j, y, i).type = Material.BEDROCK
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         fun getLocationByTeam(team: Team, world: World) = when (team) {
             Team.RED -> Location(world, (-8).toDouble(), 129.toDouble(), (-8).toDouble())
@@ -67,48 +64,79 @@ class CW : MiniGame() {
 
             val chunks = listOf(w.getChunkAt(0, 0), w.getChunkAt(-1, -1), w.getChunkAt(0, -1), w.getChunkAt(-1, 0))
             val biomeAlreadyUsed = ArrayList<Biome>()
-            chunks.forEach { cnk ->
-                println("Spawning blocks for chunk ${cnk.x} ${cnk.z}")
+            val editSession = WorldEdit.getInstance().newEditSession(BukkitWorld(w))
+            chunks.map { cnk ->
+                println("Preparing blocks for chunk ${cnk.x} ${cnk.z}")
                 //Calculations
                 var r = Base.getRandomLocation(originWorld, 100000)
                 var b = originWorld.getBiome(r.blockX, r.toHighestLocation().blockY, r.blockZ)
                 var times = 0
-                while (true) {
-                    if (!biomeAlreadyUsed.contains(b) && (b.name.contains("MOUNTAIN") || b.name.contains("FOREST"))) {
-                        biomeAlreadyUsed.add(b)
-                        break
+                measureTimeMillis {
+                    while (true) {
+                        if (!biomeAlreadyUsed.contains(b) && b != Biome.OCEAN) {
+                            biomeAlreadyUsed.add(b)
+                            break
+                        }
+                        r = Base.getRandomLocation(originWorld, 10000)
+                        b = originWorld.getBiome(r.blockX, r.toHighestLocation().blockY, r.blockZ)
+                        if (times >= 4000) {
+                            throw WorldSpawnTimeOutException(
+                                w,
+                                "Unable to find suitable biome."
+                            )
+                        }
+                        times++
                     }
-                    r = Base.getRandomLocation(originWorld, 10000)
-                    b = originWorld.getBiome(r.blockX, r.toHighestLocation().blockY, r.blockZ)
-                    if (times >= 4000) {
-                        throw WorldSpawnTimeOutException(
-                            w,
-                            "Unable to find suitable biome."
-                        )
-                    }
-                    times++
+                }.let {
+                    Bukkit.getLogger().info("Biome looking-up took ${it}ms")
                 }
                 val chunk = r.chunk
-                chunk.load(true)
+                measureTimeMillis {
+                    chunk.load(true)
+                    cnk.load()
+                }.let {
+                    Bukkit.getLogger().info("Chunk loader took ${it}ms")
+                }
 
-                cnk.load()
-                cnk.entities.forEach { it.remove() }
-
-                for (x in 0 until 16)
-                    for (z in 0 until 16) {
-                        for (y in 0 until 255)
-                            cnk.getBlock(x, y, z).apply {
-                                val copyFrom = chunk.getBlock(x, y, z)
-                                type = copyFrom.type
-                                biome = copyFrom.biome
-                                blockData = copyFrom.blockData
-                            }
-                        cnk.getBlock(x, 255, z).type = Material.BARRIER
-                        cnk.getBlock(x, 129, z).type = Material.BARRIER
-                    }
+                val origin = chunk.getBlock(0, originWorld.minHeight, 0).location
+                val farthest = chunk.getBlock(15, 128, 15).location
+                val copyFrom = CuboidRegion(
+                    BukkitWorld(originWorld),
+                    BlockVector3.at(origin.blockX, origin.blockY, origin.blockZ),
+                    BlockVector3.at(farthest.blockX, farthest.blockY, farthest.blockZ)
+                )
+                val targetOrigin = cnk.getBlock(0, w.minHeight, 0).location
+                val copyTo = BlockVector3.at(targetOrigin.blockX, targetOrigin.blockY, targetOrigin.blockZ)
+                measureTimeMillis {
+                    Operations.complete(
+                        ForwardExtentCopy(editSession, copyFrom, BukkitWorld(w), copyTo).apply {
+                            isCopyingBiomes = true
+                            isCopyingEntities = false
+                        }
+                    )
+                }.let {
+                    Bukkit.getLogger().info("Chunk copying took ${it}ms")
+                }
             }
-            println("Using Biome $biomeAlreadyUsed")
-            spawnBedrock(w)
+
+            Bukkit.getLogger().info("Using biomes: ${biomeAlreadyUsed.joinToString()}")
+
+            Bukkit.getLogger().info("Filling barriers")
+            val barrierRegions = listOf(
+                CuboidRegion(
+                    BlockVector3.at(-16, 128, 16),
+                    BlockVector3.at(16, 128, -16)
+                ),
+                CuboidRegion(
+                    BlockVector3.at(-16, w.maxHeight, 16),
+                    BlockVector3.at(16, w.maxHeight, -16)
+                )
+            )
+            val barrierPattern = BukkitAdapter.adapt(Material.BARRIER.createBlockData())
+            barrierRegions.forEach {
+                editSession.setBlocks(it, barrierPattern)
+            }
+            editSession.close()
 
             /**
              * Change TIME & DIFFICULTY, ETC...
@@ -220,15 +248,6 @@ class CW : MiniGame() {
                 )
 
                 it.player.inventory.addItem(ItemStack(Material.OAK_LOG, 12))
-            }
-            Bukkit.getScheduler().runTask(plugin) { _ ->
-                for (x in 15 downTo -15) {
-                    for (z in 15 downTo -15) {
-                        world.getBlockAt(x, 128, z).type = Material.AIR
-                        world.getBlockAt(x, 256, z).type = Material.BARRIER
-                    }
-                }
-                spawnBedrock(world)
             }
         }
 

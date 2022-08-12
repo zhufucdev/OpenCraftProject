@@ -5,6 +5,7 @@ import com.zhufu.opencraft.CurrencySystem.Companion.transMap
 import com.zhufu.opencraft.special_item.FlyWand
 import com.zhufu.opencraft.special_item.Insurance
 import com.zhufu.opencraft.special_item.Portal
+import com.zhufu.opencraft.special_item.StatefulSpecialItem
 import com.zhufu.opencraft.util.*
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -16,7 +17,7 @@ import kotlin.math.roundToLong
 
 class TraderInventory(val player: Player) {
     private val getter = player.getter()
-    private val donater: ItemStack = ItemStack(Material.GOLDEN_APPLE).updateItemMeta<ItemMeta> {
+    private val donate: ItemStack = ItemStack(Material.GOLDEN_APPLE).updateItemMeta<ItemMeta> {
         displayName("捐赠".toSuccessMessage())
         lore(
             listOf(
@@ -25,12 +26,15 @@ class TraderInventory(val player: Player) {
             )
         )
     }
-    val inventory = Bukkit.createInventory(null, 36, EveryThing.traderInventoryName)
+    private val flyWandIcon = FlyWand(getter).froze()
+    private val portalIcon = Portal(getter).froze()
+    private val insuranceIcon = Insurance(getter, player.name).froze()
+    private val inventory = Bukkit.createInventory(null, 36, EveryThing.traderInventoryName)
         .apply {
-            setItem(size - 9, FlyWand(getter))
-            setItem(size - 8, Portal(getter))
-            setItem(size - 7, Insurance(getter, player.name))
-            setItem(size - 6, donater)
+            setItem(size - 9, flyWandIcon)
+            setItem(size - 8, portalIcon)
+            setItem(size - 7, insuranceIcon)
+            setItem(size - 6, donate)
         }
     lateinit var modeSwitcher: ItemStack
     var mode: Short = 0
@@ -114,12 +118,12 @@ class TraderInventory(val player: Player) {
     }
 
     fun selectSpecialItem(current: ItemStack) {
-        when {
-            FlyWand.isThis(current) -> {
+        when (current.displayName()) {
+            flyWandIcon.displayName() -> {
                 val price = FlyWand.MAX_TIME_REMAINING * FlyWand.PRICE_PER_MIN / 60
                 PaymentDialog(
                     player,
-                    SellingItemInfo(FlyWand(getter), price.roundToLong(), 1),
+                    SellingItemInfo(FlyWand(getter).froze(), price.roundToLong(), 1),
                     TradeManager.getNewID(),
                     CurrencySystem.instance
                 ).setOnPayListener { success ->
@@ -127,7 +131,7 @@ class TraderInventory(val player: Player) {
                         val info = player.info()!!
 
                         val survivor = info.inventory.create("survivor")
-                        if (survivor.any { item -> FlyWand.isThis(item) }) {
+                        if (survivor.any { item -> StatefulSpecialItem[item] is FlyWand }) {
                             player.error(getter["wand.duplicate.title"])
                             player.tip(getter["wand.duplicate.tip"])
                         } else if (!survivor.addItem(FlyWand(getter))) {
@@ -146,7 +150,7 @@ class TraderInventory(val player: Player) {
                     .show()
             }
 
-            Portal.isThis(current) -> {
+            portalIcon.displayName() -> {
                 PaymentDialog(
                     player,
                     SellingItemInfo(Portal(getter), Portal.PRICE.toLong(), 1),
@@ -171,7 +175,7 @@ class TraderInventory(val player: Player) {
                     .show()
             }
 
-            Insurance.isThis(current) -> {
+            insuranceIcon.displayName() -> {
                 val insurance = Insurance(getter, player.name)
                 PaymentDialog(
                     player,
@@ -197,12 +201,12 @@ class TraderInventory(val player: Player) {
                     .show()
             }
 
-            current == modeSwitcher -> {
+            modeSwitcher.displayName() -> {
                 mode = if (mode == 0.toShort()) 1.toShort() else 0.toShort()
                 setMode()
             }
 
-            current == donater -> {
+            donate.displayName() -> {
                 player.closeInventory()
                 Bukkit.getScheduler().runTaskLater(CurrencySystem.instance, { _ ->
                     QRUtil.sendToPlayer(CurrencySystem.donation, player)

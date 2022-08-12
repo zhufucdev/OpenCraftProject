@@ -1,6 +1,7 @@
 package bukkit
 
 import com.zhufu.opencraft.GroovySpecialItemAdapter
+import com.zhufu.opencraft.special_item.StatefulSpecialItem
 import com.zhufu.opencraft.util.Language.LangGetter
 import com.zhufu.opencraft.PlayerModifier
 import com.zhufu.opencraft.special_item.SpecialItemAdapter
@@ -41,7 +42,7 @@ import java.util.function.BiConsumer
 class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
     private String name, langName, blockName
     private Material material
-    private Closure make, deserialize, serialize, tick, isItem, isConfig,
+    private Closure make, deserialize, serialize, tick,
                     onRightClicked, onLeftClicked, onInventoryTouch
     private ArrayList<PatternedCondition> recipes = new ArrayList<>()
 
@@ -99,7 +100,7 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
     }
 
     /**
-     * [ ]Store data as YAML. Called each time its inventory is saved.
+     * [ ]Store data as YAML. Called each sever reload.
      * @param closure
      * @see ExtendedItemConstructor
      */
@@ -113,30 +114,9 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
      * @see ExtendedItemConstructor
      */
     void tick(@NotNull TickConsumer closure) {
-        this.tick = { SpecialItemAdapter.AdapterItem i, PlayerModifier m, ConfigurationSection s, Objective o, int sort ->
+        this.tick = { SpecialItemAdapter.AdaptedItem i, PlayerModifier m, ConfigurationSection s, Objective o, int sort ->
             closure.tick(i, m, s, o, sort)
         }
-    }
-
-    /**
-     * [B]Determines whether an ItemStack is of this type of adapter.
-     * @param closure Return true if the item satisfies all the conditions.
-     * @see ExtendedItemConstructor
-     */
-    void isItem(@NotNull
-                @ClosureParams(value = FromString.class, options = "org.bukkit.inventory.ItemStack")
-                        Closure<Boolean> closure) {
-        this.isItem = closure
-    }
-
-    /**
-     * [ ]Determines whether an YAML configuration is of this type of adapter.
-     * @see ExtendedItemConstructor* @param closure Return true if the configuration satisfies all the conditions.
-     */
-    void isConfig(@NotNull
-                  @ClosureParams(value = FromString.class, options = "org.bukkit.configuration.ConfigurationSection")
-                          Closure<Boolean> closure) {
-        this.isConfig = closure
     }
 
     void recipe(@NotNull
@@ -205,13 +185,13 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
                 if (item == null) return
                 if (getAdapter().isThis(item)
                         && actions.contains(action)) {
-                    final adapted = getAdapter().getAdaptItem(item, player)
+                    final adapted = StatefulSpecialItem.byItemStack(item) as SpecialItemAdapter.AdaptedItem
                     adapted.inventoryPosition = player.inventory.getHeldItemSlot()
                     final old = adapted.itemMeta.clone()
                     e.call(adapted, player)
                     updateForPlayer(adapted, old, player)
                 }
-            }
+            } as Closure<PlayerInteractEvent>
         }
 
         if (onLeftClicked != null) {
@@ -244,8 +224,7 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
         if (mAdapter != null)
             return mAdapter
         assert name != null
-        assert langName != null || isItem != null
-        mAdapter = new GroovySpecialItemAdapter(name, langName, material, make, deserialize, serialize, isItem, isConfig, tick)
+        mAdapter = new GroovySpecialItemAdapter(name, langName, material, make, deserialize, serialize, tick)
         return mAdapter
     }
 
@@ -253,8 +232,8 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
      * Gets an {@link ItemStack} of the item.
      * @param amount How many items are there in the stack.
      */
-    SpecialItemAdapter.AdapterItem newItemStack(int amount = 1) {
-        return new SpecialItemAdapter.AdapterItem(adapter, new LangGetter(Lang.defaultLangCode))
+    SpecialItemAdapter.AdaptedItem newItemStack(int amount = 1) {
+        return new SpecialItemAdapter.AdaptedItem(adapter, new LangGetter(Lang.defaultLangCode))
     }
 
     @Override
@@ -275,7 +254,7 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
      * @param oldMeta
      * @param player
      */
-    private static void updateForPlayer(SpecialItemAdapter.AdapterItem item, ItemMeta oldMeta, Player player) {
+    private static void updateForPlayer(SpecialItemAdapter.AdaptedItem item, ItemMeta oldMeta, Player player) {
         if (!item.hasItemMeta() || item.itemMeta != oldMeta)
             player.inventory.setItem(item.inventoryPosition, item)
     }
@@ -417,7 +396,7 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
                     }
 
                     if (satisfies) {
-                        inventory.result = new SpecialItemAdapter.AdapterItem(item.adapter, Lang.getter(view.player))
+                        inventory.result = new SpecialItemAdapter.AdaptedItem(item.adapter, Lang.getter(view.player))
                     }
                 }
             }
@@ -478,7 +457,7 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
                     }
                 }
                 if (counted == pattern.considerations) {
-                    inventory.result = new SpecialItemAdapter.AdapterItem(adapter, Lang.getter(view.player))
+                    inventory.result = new SpecialItemAdapter.AdaptedItem(adapter, Lang.getter(view.player))
                 }
             }
         }
@@ -491,6 +470,6 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
 
     @FunctionalInterface
     interface TickConsumer {
-        void tick(SpecialItemAdapter.AdapterItem item, PlayerModifier modifier, ConfigurationSection shared, Objective objective, int sort)
+        void tick(SpecialItemAdapter.AdaptedItem item, PlayerModifier modifier, ConfigurationSection shared, Objective objective, int sort)
     }
 }

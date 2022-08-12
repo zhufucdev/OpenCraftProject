@@ -5,4 +5,5 @@ dependencies {
     compileOnly fileTree(rootDir.path + '/libs')
     implementation 'com.mojang:brigadier:1.0.15'
     implementation 'org.reflections:reflections:0.10.2'
+    compileOnly 'de.tr7zw:item-nbt-api-plugin:2.10.0'
 }

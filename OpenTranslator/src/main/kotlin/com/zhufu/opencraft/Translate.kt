@@ -125,7 +125,7 @@ object Translate {
         if (raw == LangDetect.langUnknown) {
             return LangDetect.langUnknown
         }
-        val json = JsonParser().parse(raw).asJsonObject
+        val json = JsonParser.parseString(raw).asJsonObject
         if (json["error"].asInt != 0)
             return LangDetect.langUnknown
         return json["lan"].asString

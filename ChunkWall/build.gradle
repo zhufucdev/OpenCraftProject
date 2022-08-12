@@ -5,4 +5,5 @@ dependencies {
     compileOnly project(':miniGameBase')
     compileOnly project(':utils')
     implementation 'com.scireum:parsii:4.0'
+    compileOnly "com.sk89q.worldedit:worldedit-bukkit:${rootProject.ext.we_version}"
 }

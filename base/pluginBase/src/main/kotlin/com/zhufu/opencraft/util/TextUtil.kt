@@ -141,9 +141,10 @@ object TextUtil {
 
     fun formatLore(s: String): List<String> {
         val r = ArrayList<String>()
-        if (s.length > 29) {
-            r.add(s.substring(0, 29) + if (s[28].isEnglishLetter()) "-" else "")
-            r.addAll(formatLore(s.substring(29)))
+        val border = 15
+        if (s.length > border) {
+            r.add(s.substring(0, border) + if (s[border - 1].isEnglishLetter()) "-" else "")
+            r.addAll(formatLore(s.substring(border)))
         } else r.add(s)
         return r
     }

@@ -1,24 +1,26 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.TradeManager.loadTradeCompass
 import com.zhufu.opencraft.Base.tradeWorld
 import com.zhufu.opencraft.CurrencySystem.Companion.inventoryMap
 import com.zhufu.opencraft.CurrencySystem.Companion.territoryMap
 import com.zhufu.opencraft.CurrencySystem.Companion.transMap
-import com.zhufu.opencraft.data.DualInventory.Companion.RESET
-import com.zhufu.opencraft.inventory.TraderInventory.Companion.getPositionForLine
-import com.zhufu.opencraft.inventory.FlyWandInventory
-import com.zhufu.opencraft.inventory.TraderInventory
-import com.zhufu.opencraft.inventory.SetUpValidateInventory
-import com.zhufu.opencraft.inventory.VisitorInventory
+import com.zhufu.opencraft.TradeManager.loadTradeCompass
 import com.zhufu.opencraft.TradeManager.printTradeError
+import com.zhufu.opencraft.data.DualInventory.Companion.RESET
 import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
+import com.zhufu.opencraft.inventory.FlyWandInventory
+import com.zhufu.opencraft.inventory.SetUpValidateInventory
+import com.zhufu.opencraft.inventory.TraderInventory
+import com.zhufu.opencraft.inventory.TraderInventory.Companion.getPositionForLine
+import com.zhufu.opencraft.inventory.VisitorInventory
 import com.zhufu.opencraft.special_item.FlyWand
+import com.zhufu.opencraft.special_item.StatefulSpecialItem
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.util.toInfoMessage
-import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.citizensnpcs.api.event.NPCClickEvent
+import net.citizensnpcs.api.event.NPCLeftClickEvent
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Item
@@ -28,13 +30,13 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.inventory.*
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
 import java.io.File
-import java.util.*
 
 @Suppress("unused")
 object EveryThing : Listener {
@@ -114,12 +116,12 @@ object EveryThing : Listener {
                     }
                     status = Info.GameStatus.InLobby
                     inventory.create(RESET).load(inventoryOnly = true)
-                    if (!tag.getBoolean("isTradeTutorialShown", false)) {
+                    if (!isTradeTutorialShown) {
                         CurrencySystem.showTutorial(event.player)
                     }
                     save()
-                    tag.set("isTerritoryInMessageShown", false)
-                    tag.set("isTerritoryOutMessageShown", false)
+                    isTerritoryInMessageShown = false
+                    isTerritoryOutMessageShown = false
                 }
                 ?: event.player.error(Language.getDefault("player.error.unknown"))
             event.player.info("您的领地(ID:${t.id})位于区块(${t.x},${t.z})")
@@ -138,24 +140,24 @@ object EveryThing : Listener {
             if (info.status == Info.GameStatus.InTutorial) {
                 return
             }
-            val inMsgShown = info.tag.getBoolean("isTerritoryInMessageShown", false)
-            val outMsgShown = info.tag.getBoolean("isTerritoryOutMessageShown", false)
+            val inMsgShown = info.isTerritoryInMessageShown
+            val outMsgShown = info.isTerritoryOutMessageShown
             val inTerritory =
                 getPlayerTerritory(event.player).contains(event.player.location)
             if (!inMsgShown && inTerritory) {
                 event.player.sendActionBar("您已进入自己的领地".toInfoMessage())
                 info.status = Info.GameStatus.Surviving
                 info.inventory.create("survivor").load(inventoryOnly = true)
-                info.tag.set("isTerritoryInMessageShown", true)
-                info.tag.set("isTerritoryOutMessageShown", false)
+                info.isTerritoryInMessageShown = true
+                info.isTerritoryOutMessageShown = false
                 if (!event.player.isOp)
                     event.player.gameMode = GameMode.SURVIVAL
             } else if (!outMsgShown && !inTerritory) {
                 event.player.sendActionBar("您已退出自己的领地".toInfoMessage())
                 info.status = Info.GameStatus.InLobby
                 loadTradeCompass(info)
-                info.tag.set("isTerritoryOutMessageShown", true)
-                info.tag.set("isTerritoryInMessageShown", false)
+                info.isTerritoryOutMessageShown = true
+                info.isTerritoryInMessageShown = false
                 if (!event.player.isOp)
                     event.player.gameMode = GameMode.ADVENTURE
             }
@@ -168,8 +170,11 @@ object EveryThing : Listener {
             val itemInHand = event.player.inventory.itemInMainHand
             if (event.player.world == tradeWorld && itemInHand.type == Material.COMPASS)
                 VisitorInventory(CurrencySystem.instance, event.player)
-            else if (FlyWand.isThis(itemInHand)) {
-                FlyWandInventory(event.player, CurrencySystem.instance)
+            else {
+                val si = StatefulSpecialItem[itemInHand]
+                if (si is FlyWand) {
+                    FlyWandInventory(event.player, si, CurrencySystem.instance)
+                }
             }
         }
     }
@@ -240,15 +245,15 @@ object EveryThing : Listener {
      * NPC Events
      */
     @EventHandler
-    fun onNPCClick(event: NPCRightClickEvent) {
-        if (event.npc == CurrencySystem.npc) {
+    fun onNPCClick(event: NPCLeftClickEvent) {
+        if (event.npc.name == CurrencySystem.npc?.name) {
             val info = PlayerManager.findInfoByPlayer(event.clicker)
             if (info != null && !info.isSurveyPassed && info.tag.getInt("npcTrade", 0) > 10) {
                 PlayerManager.onPlayerOutOfDemo(info)
                 return
             }
             inventoryMap.add(TraderInventory(event.clicker).apply { show() })
-        } else if (event.npc == CurrencySystem.npcBack) {
+        } else if (event.npc.name == CurrencySystem.npcBack?.name) {
             val info = event.clicker.info()
             if (info == null) {
                 event.clicker.error(Language.getDefault("player.error.unknown"))

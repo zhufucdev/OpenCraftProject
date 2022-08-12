@@ -1,23 +1,24 @@
 package com.zhufu.opencraft
 
 import com.zhufu.opencraft.inventory.BankInventory
-import com.zhufu.opencraft.special_item.Coin
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.util.TextUtil
 import net.citizensnpcs.api.CitizensAPI
-import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.citizensnpcs.api.event.NPCLeftClickEvent
+import net.citizensnpcs.api.npc.MemoryNPCDataStore
 import net.citizensnpcs.api.npc.NPC
-import net.citizensnpcs.trait.SkinTrait
+import net.citizensnpcs.api.trait.Trait
+import net.citizensnpcs.trait.VillagerProfession
+import net.citizensnpcs.trait.versioned.VillagerTrait
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.plugin.Plugin
 import java.io.File
-import java.util.*
 
 object BankManager : Listener {
     private val bankers = arrayListOf<NPC>()
@@ -68,8 +69,9 @@ object BankManager : Listener {
     fun createBanker(location: Location) {
         bankers.add(
             with(CitizensAPI.getNPCRegistry()) {
-                createNPC(EntityType.PLAYER, TextUtil.info(Language.getDefault("bank.bankerName"))).apply {
-                    getOrAddTrait(SkinTrait::class.java).skinName = "Bankder"
+                createNPC(EntityType.VILLAGER, TextUtil.info(Language.getDefault("bank.bankerName"))).apply {
+                    getOrAddTrait(VillagerProfession::class.java)
+                        .profession = Villager.Profession.NONE
                     spawn(location)
                 }
             }
@@ -118,7 +120,7 @@ object BankManager : Listener {
     }
 
     @EventHandler
-    fun onNPCClick(event: NPCRightClickEvent) {
+    fun onNPCClick(event: NPCLeftClickEvent) {
         if (bankers.contains(event.npc)) {
             val info = event.clicker.info()
             if (info == null) {
@@ -126,15 +128,6 @@ object BankManager : Listener {
             } else {
                 BankInventory(mPlugin, info).show()
             }
-        }
-    }
-
-    @EventHandler
-    fun onCoinCraft(event: CraftItemEvent) {
-        val inventory = event.inventory
-        if (inventory.matrix.any { Coin.isThis(it) }) {
-            inventory.result = null
-            event.whoClicked.error(getLang(event.whoClicked, "bank.error.coinCraft"))
         }
     }
 }

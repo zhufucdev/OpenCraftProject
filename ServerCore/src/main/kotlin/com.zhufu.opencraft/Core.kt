@@ -171,6 +171,8 @@ class Core : JavaPlugin(), Listener {
             }
         }
         scheduleAwards()
+
+        Bukkit.getPluginManager().callEvent(CoreInitializedEvent(this))
     }
 
     private fun runInit(f: KFunction<*>, vararg args: Any?) {
@@ -288,7 +290,7 @@ class Core : JavaPlugin(), Listener {
                     if (info.player.inventory.containsSpecialItem) {
                         val data = YamlConfiguration()
                         info.player.inventory.specialItems.forEach { item ->
-                            item.doPerTick(modifier, data, obj, --sort)
+                            item.tick(modifier, data, obj, --sort)
                         }
                     }
                     modifier.apply()

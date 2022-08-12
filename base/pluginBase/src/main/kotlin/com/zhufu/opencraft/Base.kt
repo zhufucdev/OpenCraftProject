@@ -11,6 +11,7 @@ import org.bukkit.util.Vector
 import java.io.File
 import java.nio.file.Paths
 import java.util.UUID
+import java.util.function.Consumer
 import kotlin.concurrent.fixedRateTimer
 import kotlin.random.Random
 
@@ -22,6 +23,7 @@ object Base {
     lateinit var endWorld: World
     lateinit var lobby: World
     lateinit var tradeWorld: World
+
     /* Extended Functions */
     fun getRandomLocation(world: World, bound: Int, x: Int? = null, y: Int? = null, z: Int? = null): Location =
         Location(world, x?.toDouble() ?: random(bound), y?.toDouble() ?: random(bound), z?.toDouble() ?: random(bound))
@@ -50,6 +52,7 @@ object Base {
         var x = 0
         var z = 0
         var dir = 0
+
         /**
          * 0 => UP
          * 1 => LEFT
@@ -147,15 +150,13 @@ object Base {
     object TutorialUtil {
         fun Entity.tplock(location: Location, time: Long) {
             var i = 0L
-            fixedRateTimer("lockTask", period = 100L) {
-                if (this@tplock.location != location) {
-                    teleportAsync(location)
-                }
-                if (i * 100L >= time) {
-                    this.cancel()
-                }
+            Bukkit.getScheduler().runTaskTimer(pluginCore, Consumer {
+                teleport(location)
                 i++
-            }
+                if (i >= time) {
+                    it.cancel()
+                }
+            }, 0, 1)
         }
 
         fun Player.gmd(mode: GameMode) {
@@ -166,16 +167,14 @@ object Base {
 
         fun Entity.linearMotion(
             location: Location,
-            delay: Long,
-            period: Long = 50,
+            ticks: Long,
             done: (() -> Unit)? = null,
             ignoreYaw: Boolean = false
         ) {
             val old = this.location.clone()
-            val times = delay / period
             val locationOnce =
-                Vector((location.x - old.x) / times, (location.y - old.y) / times, (location.z - old.z) / times)
-            val pitchOnce = (location.pitch - old.pitch) / times
+                Vector((location.x - old.x) / ticks, (location.y - old.y) / ticks, (location.z - old.z) / ticks)
+            val pitchOnce = (location.pitch - old.pitch) / ticks
             var yawOnce = if (!ignoreYaw) location.yaw - old.yaw else 0f
             if (!ignoreYaw) {
                 if (yawOnce > 180) {
@@ -183,39 +182,25 @@ object Base {
                 } else if (yawOnce < -180) {
                     yawOnce += 360
                 }
-                yawOnce = yawOnce / times * 2.557.toFloat()
+                yawOnce = yawOnce / ticks * 2.557.toFloat()
             }
 
-            fun yawAdd(raw: Float, add: Float): Float {
-                var r = raw
-                r += add
-                if (r >= 180) {
-                    r = -180 + (r - 180)
-                } else if (r <= -180) {
-                    r += 360
-                }
-                return r
-            }
-
-            var i = 1L
-            val scheduler = Bukkit.getScheduler()
-            fixedRateTimer("linearMotionTask", period = period) {
-                teleportAsync(
-                    this@linearMotion.location.clone().add(locationOnce).apply {
+            var i = 0L
+            Bukkit.getScheduler().runTaskTimer(pluginCore, Consumer {
+                teleport(
+                    this.location.clone().add(locationOnce).apply {
                         pitch += pitchOnce
                         if (!ignoreYaw)
-                            yaw = yawAdd(yaw, yawOnce)
+                            yaw += yawOnce
                     }
                 )
-                if (i >= times) {
-                    scheduler.runTask(pluginCore) { _ ->
-                        teleport(location)
-                        done?.invoke()
-                    }
-                    this.cancel()
-                }
                 i++
-            }
+                if (i >= ticks) {
+                    it.cancel()
+                    teleport(location)
+                    done?.invoke()
+                }
+            }, 0, 1)
         }
     }
 }

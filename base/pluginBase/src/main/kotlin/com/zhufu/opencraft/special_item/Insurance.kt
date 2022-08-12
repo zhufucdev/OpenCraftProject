@@ -4,17 +4,25 @@ import com.zhufu.opencraft.*
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.util.toComponent
+import de.tr7zw.nbtapi.NBTCompound
 import org.bukkit.Material
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
-import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
+import java.util.UUID
 
-class Insurance(getter: Language.LangGetter, val player: String, val number: Long = System.currentTimeMillis()) :
-    SpecialItem(Material.WRITTEN_BOOK, getter) {
+class Insurance(
+    getter: Language.LangGetter,
+    val player: String,
+    val number: Long = System.currentTimeMillis(),
+    id: UUID = UUID.randomUUID()
+) :
+    StatefulSpecialItem(Material.WRITTEN_BOOK, getter, id) {
 
     init {
+        nbt.setString("player", player)
+        nbt.setLong("number", number)
         updateItemMeta<BookMeta> {
             title = TextUtil.info(getter["insurance.name"])
             author = getter["insurance.content.2"]
@@ -31,42 +39,25 @@ class Insurance(getter: Language.LangGetter, val player: String, val number: Lon
         }
     }
 
-    companion object : SISerializable {
-        override fun deserialize(itemStack: ItemStack, getter: Language.LangGetter): SpecialItem =
+    companion object : StatefulSICompanion {
+        override fun deserialize(
+            specialItemID: UUID,
+            nbt: NBTCompound,
+            getter: Language.LangGetter
+        ): StatefulSpecialItem =
             Insurance(
                 getter,
-                itemStack.itemMeta?.lore?.firstOrNull() ?: "unknown",
-                itemStack.itemMeta?.lore?.get(1)?.toLongOrNull() ?: System.currentTimeMillis()
+                nbt.getString("player"),
+                nbt.getLong("number"),
+                specialItemID
             )
 
-        override fun deserialize(config: ConfigurationSection, getter: Language.LangGetter): SpecialItem =
-            Insurance(
-                getter,
-                config.getString("player") ?: "unknown",
-                config.getLong("number", System.currentTimeMillis())
-            )
+        override fun newInstance(getter: Language.LangGetter, madeFor: Player): StatefulSpecialItem = Insurance(getter, madeFor.name)
 
-        override fun isThis(itemStack: ItemStack?): Boolean =
-            itemStack != null
-                    && itemStack.type == Material.WRITTEN_BOOK
-                    && itemStack.hasItemMeta()
-                    &&
-                    with(itemStack.itemMeta!!) {
-                        hasItemFlag(ItemFlag.HIDE_ENCHANTS)
-                                && hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)
-                                && hasLore()
-                    }
-
-        override fun isThis(config: ConfigurationSection): Boolean =
-            config.getString("type") == Insurance::class.simpleName
+        override val SIID: UUID
+            get() = UUID.fromString("10DABED2-51AD-4F8D-9CD4-7C09A4E2DECC")
 
         const val PRICE = 100
     }
 
-    override fun getSerialized(): ConfigurationSection {
-        val r = super.getSerialized()
-        r["player"] = player
-        r["number"] = number
-        return r
-    }
 }

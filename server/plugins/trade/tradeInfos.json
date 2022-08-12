@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "uuid": 1,
+    "buyer": "9e602dba-2131-3b74-95fa-699098d5889d",
+    "seller": "server",
+    "item": {
+      "item": "YAML:\n  ==: org.bukkit.inventory.ItemStack\n  v: 3120\n  type: GOLD_INGOT\n",
+      "prise": 35,
+      "amount": 1
+    }
+  },
+  {
+    "uuid": 2,
+    "buyer": "9e602dba-2131-3b74-95fa-699098d5889d",
+    "seller": "server",
+    "item": {
+      "item": "YAML:\n  ==: org.bukkit.inventory.ItemStack\n  v: 3120\n  type: GOLD_INGOT\n",
+      "prise": 35,
+      "amount": -5
+    }
+  },
+  {
+    "uuid": 6,
+    "buyer": "9e602dba-2131-3b74-95fa-699098d5889d",
+    "seller": "server",
+    "item": {
+      "item": "YAML:\n  ==: org.bukkit.inventory.ItemStack\n  v: 3120\n  type: GOLD_INGOT\n",
+      "prise": 35,
+      "amount": -1
+    }
+  }
+]

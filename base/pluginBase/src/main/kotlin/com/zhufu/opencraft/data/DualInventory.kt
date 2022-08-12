@@ -3,13 +3,10 @@ package com.zhufu.opencraft.data
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.api.ServerCaller
 import com.zhufu.opencraft.data.Info.Companion.plugin
-import com.zhufu.opencraft.special_item.SpecialItem
-import com.zhufu.opencraft.util.TextUtil
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -156,14 +153,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
                 if (itemStack == null)
                     return@forEachIndexed
 
-                config.set(
-                    path,
-                    if (SpecialItem.isSpecial(itemStack)) {
-                        SpecialItem.getSerialized(itemStack, player.getter())
-                    } else {
-                        itemStack
-                    }
-                )
+                config.set(path, itemStack)
             }
 
             if (!inventoryOnly) {
@@ -232,13 +222,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
             if (config.isSet("inventory")) {
                 for (i in 0 until player.inventory.size) {
                     val path = "inventory.$i"
-                    val getter = player.getter()
-                    val item =
-                        if (config.isConfigurationSection(path)) {
-                            if (config.isSet("item")) config.getItemStack("item")
-                            else SpecialItem.getByConfig(config.getConfigurationSection(path)!!, getter)
-                        } else
-                            config.getItemStack(path, ItemStack(Material.AIR))
+                    val item = config.getItemStack(path, ItemStack(Material.AIR))
                     player.inventory.setItem(i, item)
                 }
             }
@@ -320,20 +304,19 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
         fun set(path: String, value: Any) = config.set(path, value)
         fun addItem(item: ItemStack): Boolean {
             val inventory = config.getConfigurationSection("inventory") ?: YamlConfiguration()
-            val itemStack: Any = if (item is SpecialItem) item.getSerialized() else item
-            val max = inventory.getKeys(false).maxBy { key -> key.toInt() }?.toIntOrNull()
+            val max = inventory.getKeys(false).maxOfOrNull { key -> key.toInt() }
             fun msg(i: Int) {
                 config.set("inventory", inventory)
-                this.player?.sendMessage(TextUtil.success("物品已添加至您的${name}物品栏第${i + 1}格"))
+                this.player?.success("物品已添加至您的${name}物品栏第${i + 1}格")
             }
             if (max == null) {
-                inventory.set("0", itemStack)
+                inventory.set("0", item)
                 msg(0)
                 return true
             } else {
                 for (i in 0..if (max < 35) max + 1 else 35) {
                     if (!inventory.isSet(i.toString())) {
-                        inventory.set(i.toString(), itemStack)
+                        inventory.set(i.toString(), item)
                         msg(i)
                         return true
                     }
@@ -344,11 +327,11 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
 
         fun setItem(index: Int, item: ItemStack?) = config.set("inventory.$index", item)
 
-        fun any(l: (ConfigurationSection) -> Boolean): Boolean =
+        fun any(l: (ItemStack) -> Boolean): Boolean =
             config.getConfigurationSection("inventory")
                 ?.getKeys(false)
                 ?.any {
-                    val section = config.getConfigurationSection("inventory.$it")
+                    val section = config.getItemStack("inventory.$it")
                     section?.let { s -> l(s) } ?: false
                 }
                 ?: false

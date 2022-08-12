@@ -2,22 +2,24 @@ package com.zhufu.opencraft;
 
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.server.ServerEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * By default, this sync event is called every two minutes.
  */
 public class ServerReloadEvent extends ServerEvent {
-    private static HandlerList handlerList = new HandlerList();
-    public ServerReloadEvent(){
+    private final static HandlerList handlerList = new HandlerList();
+
+    public ServerReloadEvent() {
 
     }
 
     @Override
-    public HandlerList getHandlers() {
+    public @NotNull HandlerList getHandlers() {
         return handlerList;
     }
 
-    public static HandlerList getHandlerList(){
+    public static HandlerList getHandlerList() {
         return handlerList;
     }
 }

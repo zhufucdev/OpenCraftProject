@@ -182,9 +182,12 @@ object TradeManager {
         reader.endArray()
         reader.close()
 
-        presentID = mList.maxBy { it.id }.id + 1
+        if (mList.isNotEmpty()) {
+            mList.maxOf { it.id } + 1
+        }
     }
 
     var presentID = 0
+        private set
     fun getNewID(): Int = ++presentID
 }

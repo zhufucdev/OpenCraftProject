@@ -1,0 +1,9 @@
+bankers:
+  '0':
+    ==: org.bukkit.Location
+    world: world_survive
+    x: -6553.019121200769
+    y: 117.0
+    z: 436.0871790096734
+    pitch: 0.0
+    yaw: 49.49942

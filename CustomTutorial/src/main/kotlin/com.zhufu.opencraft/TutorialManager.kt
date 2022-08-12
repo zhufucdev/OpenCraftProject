@@ -26,6 +26,7 @@ import java.io.StringReader
 import java.time.Duration
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.roundToLong
 
 object TutorialManager {
     private val mList = ArrayList<Tutorial>()
@@ -309,7 +310,7 @@ object TutorialManager {
         class TutorialStep(val project: Tutorial) {
             var to: Location? = null
             var type: TutorialSwitchType = TutorialSwitchType.Teleport
-            var time: Long = 2 * 1000L
+            var time: Long = 2 * 20
             var title = ""
             var subTitle = ""
 
@@ -323,7 +324,7 @@ object TutorialManager {
                             TextUtil.getCustomizedText(subTitle, entity.info()).toComponent(),
                             Title.Times.times(
                                 Duration.ofMillis(150),
-                                Duration.ofSeconds(time),
+                                Duration.ofMillis((time / 20.0 * 1000).roundToLong()),
                                 Duration.ofMillis(150)
                             )
                         ),
@@ -339,7 +340,7 @@ object TutorialManager {
                     entity.tplock(to, time)
                     playTitle(entity)
                 } else {
-                    entity.linearMotion(to, time, 20)
+                    entity.linearMotion(to, time)
                     playTitle(entity)
                 }
                 Thread.sleep(time + 100)

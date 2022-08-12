@@ -192,7 +192,7 @@
     "currency": 0
   },
   "2720": {
-    "currency": 0
+    "currency": 75
   },
   "2736": {
     "currency": 0
@@ -315,7 +315,7 @@
     "currency": 256
   },
   "1978": {
-    "currency": 256
+    "currency": 175
   },
   "2036": {
     "currency": 256
@@ -555,7 +555,7 @@
     "time": 92
   },
   "1660233600000": {
-    "time": 634
+    "time": 4406
   },
   "70": {
     "currency": 0
@@ -568,5 +568,125 @@
   },
   "158": {
     "currency": 0
+  },
+  "634": {
+    "currency": 0
+  },
+  "818": {
+    "currency": 0
+  },
+  "924": {
+    "currency": 0
+  },
+  "980": {
+    "currency": 0
+  },
+  "1088": {
+    "currency": 0
+  },
+  "1152": {
+    "currency": 0
+  },
+  "1224": {
+    "currency": 0
+  },
+  "1256": {
+    "currency": 0
+  },
+  "1310": {
+    "currency": 0
+  },
+  "1422": {
+    "currency": 0
+  },
+  "1524": {
+    "currency": 0
+  },
+  "1652": {
+    "currency": 10
+  },
+  "1654": {
+    "currency": 7
+  },
+  "1784": {
+    "currency": 0
+  },
+  "1992": {
+    "currency": 175
+  },
+  "2220": {
+    "currency": 175
+  },
+  "2278": {
+    "currency": 175
+  },
+  "2380": {
+    "currency": 175
+  },
+  "2458": {
+    "currency": 175
+  },
+  "2476": {
+    "currency": 175
+  },
+  "2602": {
+    "currency": 175
+  },
+  "2700": {
+    "currency": 175
+  },
+  "2738": {
+    "currency": 75
+  },
+  "3100": {
+    "currency": 75
+  },
+  "3206": {
+    "currency": 75
+  },
+  "3274": {
+    "currency": 10075
+  },
+  "3446": {
+    "currency": 75
+  },
+  "3480": {
+    "currency": 1075
+  },
+  "3494": {
+    "currency": 3075
+  },
+  "3498": {
+    "currency": 75
+  },
+  "3566": {
+    "currency": 110
+  },
+  "3588": {
+    "currency": 110
+  },
+  "3740": {
+    "currency": 110
+  },
+  "3858": {
+    "currency": 107
+  },
+  "3896": {
+    "currency": 107
+  },
+  "3942": {
+    "currency": 107
+  },
+  "4120": {
+    "currency": 107
+  },
+  "4160": {
+    "currency": 107
+  },
+  "4178": {
+    "currency": 207
+  },
+  "4296": {
+    "currency": 107
   }
 }

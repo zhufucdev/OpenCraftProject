@@ -26,9 +26,6 @@ Content.defineItem {
             displayName = ChatColor.BLUE.toString() + "Real Clock"
         }
     }
-    isItem { item ->
-        item.hasItemMeta() && item.itemMeta.displayName == ChatColor.BLUE.toString() + "Real Clock"
-    }
     material Material.CLOCK
     recipe {
         pattern {

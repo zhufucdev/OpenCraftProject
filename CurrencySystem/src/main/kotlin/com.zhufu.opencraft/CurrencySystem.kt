@@ -101,17 +101,25 @@ class CurrencySystem : JavaPlugin() {
             getter: Language.LangGetter,
             titleCode: String,
             subtitleCode: String,
-            showTime: Int
+            showTime: Int,
+            instant: Boolean = false
         ) {
             val title =
                 Title.title(
                     getter[titleCode].toErrorMessage(),
                     Component.text(getter[subtitleCode], NamedTextColor.AQUA),
-                    Title.Times.times(
-                        Duration.ofMillis(250),
-                        Duration.ofSeconds(5),
-                        Duration.ofMillis(250)
-                    )
+                    if (!instant)
+                        Title.Times.times(
+                            Duration.ofMillis(250),
+                            Duration.ofSeconds(5),
+                            Duration.ofMillis(250)
+                        )
+                    else
+                        Title.Times.times(
+                            Duration.ZERO,
+                            Duration.ofSeconds(5),
+                            Duration.ZERO
+                        )
                 )
             player.showTitle(title)
             Thread.sleep(showTime * 1000L + 50)
@@ -131,7 +139,7 @@ class CurrencySystem : JavaPlugin() {
                     tradeWorld.spawnLocation
                         .add(Vector(0, 30, 0))
                         .setDirection(Vector(0, -90, 0)),
-                    5 * 1000L
+                    5 * 20
                 )
                 showTitle(
                     player,
@@ -143,7 +151,7 @@ class CurrencySystem : JavaPlugin() {
 
                 val l1 = Location(tradeWorld, 7.5, 62.0, 6.5)
                     .setDirection(Vector(0, 0, -90))
-                player.tplock(l1, 7 * 1000L)
+                player.tplock(l1, 7 * 20)
                 showTitle(
                     player,
                     getter,
@@ -161,7 +169,7 @@ class CurrencySystem : JavaPlugin() {
                     val location2 =
                         Location(tradeWorld, center.x.toDouble(), tradeWorld.spawnLocation.y + 30, center.z.toDouble())
                             .setDirection(Vector(0, -90, 0))
-                    player.tplock(location2, 7 * 1000L)
+                    player.tplock(location2, 7 * 20)
                     showTitle(
                         player,
                         getter,
@@ -174,7 +182,8 @@ class CurrencySystem : JavaPlugin() {
                         getter,
                         "trade.tutorial.3.title",
                         "trade.tutorial.4.subtitle",
-                        4
+                        4,
+                        true
                     )
                 }
                 val l3Top = tradeWorld.spawnLocation.clone()
@@ -185,7 +194,7 @@ class CurrencySystem : JavaPlugin() {
                 scheduler.runTask(instance) { _ ->
                     player.teleport(l3Top)
                 }
-                player.linearMotion(l3Bottom, 13 * 1000L, 20)
+                player.linearMotion(l3Bottom, 13 * 20)
                 showTitle(
                     player,
                     getter,
@@ -199,18 +208,20 @@ class CurrencySystem : JavaPlugin() {
                     getter,
                     "trade.tutorial.5.title",
                     "trade.tutorial.6.subtitle",
-                    4
+                    4,
+                    true
                 )
                 showTitle(
                     player,
                     getter,
                     "trade.tutorial.5.title",
                     "trade.tutorial.7.subtitle",
-                    6
+                    6,
+                    true
                 )
 
-                player.linearMotion(tradeWorld.spawnLocation, 1500L)
-                Thread.sleep(1500L)
+                player.linearMotion(tradeWorld.spawnLocation.setDirection(Vector(1, 0, 0)), 75)
+                Thread.sleep(4000L)
 
                 player.gmd(GameMode.ADVENTURE)
                 player.showTitle(
@@ -227,8 +238,10 @@ class CurrencySystem : JavaPlugin() {
 
 
                 PlayerManager.findInfoByPlayer(player)
-                    ?.also { it.status = Info.GameStatus.Surviving }
-                    ?.tag?.set("isTradeTutorialShown", true)
+                    ?.also {
+                        it.status = Info.GameStatus.Surviving
+                        it.isTradeTutorialShown = true
+                    }
                     ?: player.sendMessage(Language.getDefault("player.error.unknown").toWarnMessage())
             })
         }
@@ -586,18 +599,14 @@ class CurrencySystem : JavaPlugin() {
 
             try {
                 npc = CitizensAPI.getNPCRegistry()
-                    .createNPC(EntityType.PLAYER, traderUUID, 0, EveryThing.traderInventoryName).apply {
-                        getOrAddTrait(Equipment::class.java)
-                            .set(Equipment.EquipmentSlot.HAND, ItemStack(Material.EMERALD))
-                        getOrAddTrait(SkinTrait::class.java)
-                            .skinName = "hawkyiam"
+                    .createNPC(EntityType.WANDERING_TRADER, traderUUID, 0, EveryThing.traderInventoryName).apply {
                         data()["trade"] = true
                         data().saveTo(MemoryDataKey())
                         spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
                     }
                 npcBack =
                     CitizensAPI.getNPCRegistry()
-                        .createNPC(EntityType.PLAYER, backUUID, 1, EveryThing.backNPCName.content())
+                        .createNPC(EntityType.ARMOR_STAND, backUUID, 1, EveryThing.backNPCName.content())
                         .apply {
                             data()["trade"] = true
                             data().saveTo(MemoryDataKey())

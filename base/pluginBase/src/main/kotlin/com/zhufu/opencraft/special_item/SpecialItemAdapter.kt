@@ -2,14 +2,15 @@ package com.zhufu.opencraft.special_item
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.util.Language
-import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toComponent
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.scoreboard.Objective
+import java.util.UUID
 
 open class SpecialItemAdapter(
     val name: String,
@@ -18,30 +19,39 @@ open class SpecialItemAdapter(
     val make: ((ItemStack, Language.LangGetter) -> Unit)? = null,
     val deserialize: ((ItemStack, ConfigurationSection, Language.LangGetter) -> Unit)? = null,
     val serialize: ((ItemStack, ConfigurationSection) -> Unit)? = null,
-    val judgeFromItem: ((ItemStack) -> Boolean)? = null,
-    val judgeFromConfig: ((ConfigurationSection) -> Boolean)? = null,
-    val tick: ((AdapterItem, PlayerModifier, YamlConfiguration, Objective, Int) -> Unit)? = null
+    val tick: ((AdaptedItem, PlayerModifier, YamlConfiguration, Objective, Int) -> Unit)? = null
 ) {
-    class AdapterItem : SpecialItem {
+    class AdaptedItem : StatefulSpecialItem {
         val adapter: SpecialItemAdapter
 
-        constructor(adapter: SpecialItemAdapter, getter: Language.LangGetter) : super(adapter.material, getter) {
+        constructor(adapter: SpecialItemAdapter, getter: Language.LangGetter)
+                : super(adapter.material, getter, UUID.randomUUID()) {
             this.adapter = adapter
             adapter.make?.invoke(this, getter)
             if (adapter.langName != null && (!hasItemMeta() || !itemMeta.hasDisplayName())) {
                 updateItemMeta<ItemMeta> {
-                    setDisplayName(TextUtil.getColoredText(getter[adapter.langName], TextUtil.TextColor.AQUA))
+                    displayName(getter[adapter.langName].toComponent().color(NamedTextColor.AQUA))
                 }
             }
         }
 
-        constructor(adapter: SpecialItemAdapter, item: ItemStack, getter: Language.LangGetter)
-                : super(adapter.material, getter) {
+        constructor(
+            config: ConfigurationSection,
+            adapter: SpecialItemAdapter,
+            getter: Language.LangGetter,
+            id: UUID = UUID.randomUUID()
+        ) : super(adapter.material, getter, id) {
             this.adapter = adapter
-            itemMeta = item.itemMeta
+            adapter.make?.invoke(this, getter)
+            if (adapter.langName != null && (!hasItemMeta() || !itemMeta.hasDisplayName())) {
+                updateItemMeta<ItemMeta> {
+                    displayName(getter[adapter.langName].toComponent().color(NamedTextColor.AQUA))
+                }
+            }
+            adapter.deserialize?.invoke(this, config, getter)
         }
 
-        override fun doPerTick(
+        override fun tick(
             mod: PlayerModifier,
             data: YamlConfiguration,
             score: Objective,
@@ -53,28 +63,7 @@ open class SpecialItemAdapter(
                 mod.player.inventory.setItem(inventoryPosition, this)
             }
         }
-
-        override fun getSerialized(): ConfigurationSection = YamlConfiguration().apply {
-            set("isSpecialItem", true)
-            set("type", adapter.name)
-            adapter.serialize?.invoke(this@AdapterItem, this)
-        }
     }
 
-    fun isThis(item: ItemStack): Boolean = judgeFromItem?.invoke(item)
-        ?: (item.type == material && langName != null
-                && item.hasItemMeta() && item.itemMeta.hasDisplayName()
-                && Language.languages.any {
-            TextUtil.getColoredText(
-                it.getString(langName)!!,
-                TextUtil.TextColor.AQUA
-            ) == item.itemMeta.displayName
-        })
-
-    fun isThis(config: ConfigurationSection) = judgeFromConfig?.invoke(config)
-            ?: config.getString("type") == name
-
-    fun getAdaptItem(from: ItemStack, holder: Player) =
-        if (isThis(from)) AdapterItem(this, from, holder.getter())
-        else throw IllegalArgumentException("[from] must be a $name")
+    fun isThis(itemStack: ItemStack) = StatefulSpecialItem[itemStack].let { it is AdaptedItem && it.adapter.name == this.name }
 }

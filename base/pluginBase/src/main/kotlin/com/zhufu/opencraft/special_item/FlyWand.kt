@@ -3,51 +3,24 @@ package com.zhufu.opencraft.special_item
 import com.zhufu.opencraft.PlayerModifier
 import com.zhufu.opencraft.updateItemMeta
 import com.zhufu.opencraft.util.*
-import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.TranslatableComponent
+import de.tr7zw.nbtapi.NBTCompound
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
-import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.scoreboard.Objective
+import java.util.UUID
 import kotlin.math.round
+import kotlin.math.roundToInt
 
-class FlyWand : SpecialItem {
-    constructor(getter: Language.LangGetter, initializeTime: Boolean) : super(Material.STICK, getter) {
-        updateItemMeta<ItemMeta> {
-            displayName(getter["wand.name"].toComponent().color(NamedTextColor.RED))
-            isUnbreakable = true
-            addItemFlags(ItemFlag.HIDE_ENCHANTS)
-            addEnchant(Enchantment.DURABILITY, 1, true)
-        }
-        if (initializeTime)
-            updateTime(MAX_TIME_REMAINING)
-    }
+class FlyWand(getter: Language.LangGetter, timeRemaining: Double = MAX_TIME_REMAINING, id: UUID = UUID.randomUUID()) :
+    StatefulSpecialItem(Material.STICK, getter, id) {
 
-    constructor(itemStack: ItemStack, getter: Language.LangGetter) : this(getter, false) {
-        val lore = (itemStack.itemMeta!!.lore()!![1] as TextComponent).content()
-        val first = lore.indexOfFirst { it.isDigit() || it == '-' }
-        val last = lore.indexOfLast { it.isDigit() }
-        if (first == -1 || last == -1) {
-            this.timeRemaining = 0.0
-        } else {
-            val num = lore.substring(first, last + 1)
-            this.timeRemaining = num.toDoubleOrNull() ?: 0.0
-        }
-    }
-
-    constructor(timeRemaining: Double, getter: Language.LangGetter) : this(getter, false) {
-        updateTime(timeRemaining)
-    }
-
-    constructor(getter: Language.LangGetter) : this(getter, true)
-
-    override fun doPerTick(mod: PlayerModifier, data: YamlConfiguration, score: Objective, scoreboardSorter: Int) {
+    override fun tick(mod: PlayerModifier, data: YamlConfiguration, score: Objective, scoreboardSorter: Int) {
         if (!data.isSet("hasFlyWand")) {
             var allowFlight =
                 mod.player.gameMode == GameMode.CREATIVE || mod.player.gameMode == GameMode.SPECTATOR
@@ -72,53 +45,39 @@ class FlyWand : SpecialItem {
         }
     }
 
-    companion object : SISerializable {
+    companion object : StatefulSICompanion {
         const val MAX_TIME_REMAINING = 30 * 60.0
         const val PRICE_PER_MIN = 100
-        private val displayNames: List<String> by lazy {
-            Language.languages.map {
-                it.getString("wand.name")!!
-            }
+
+        override fun deserialize(specialItemID: UUID, nbt: NBTCompound, getter: Language.LangGetter): FlyWand {
+            return FlyWand(
+                getter,
+                nbt.getDouble(
+                    "timeRemaining"
+                ),
+                specialItemID
+            )
         }
 
-        override fun deserialize(itemStack: ItemStack, getter: Language.LangGetter): SpecialItem =
-            FlyWand(itemStack, getter)
+        override fun newInstance(getter: Language.LangGetter, madeFor: Player): StatefulSpecialItem = FlyWand(getter)
 
-        override fun deserialize(config: ConfigurationSection, getter: Language.LangGetter): FlyWand {
-            if (config.isSet("timeRemaining")) {
-                return FlyWand(
-                    config.getDouble(
-                        "timeRemaining"
-                    ),
-                    getter
-                )
-            }
-            return FlyWand(MAX_TIME_REMAINING, getter)
-        }
-
-        override fun isThis(itemStack: ItemStack?): Boolean {
-            return (itemStack != null
-                    && itemStack.hasItemMeta()
-                    && itemStack.itemMeta.displayName()
-                ?.let { it is TextComponent && displayNames.contains(it.content()) } == true
-                    && itemStack.itemMeta!!.isUnbreakable)
-        }
-
-        override fun isThis(config: ConfigurationSection): Boolean {
-            return config["type"] == FlyWand::class.simpleName
-        }
+        override val SIID: UUID
+            get() = UUID.fromString("7EEC1DBD-86CE-45A4-9FE3-697CEFB5CDCB")
     }
 
-    var timeRemaining = MAX_TIME_REMAINING
-        private set
+    var timeRemaining: Double
+        get() = nbt.getDouble("remaining")
+        private set(value) {
+            nbt.setDouble("remaining", value)
+        }
 
     fun updateTime(timeRemaining: Double) {
         this.timeRemaining = timeRemaining
-        itemMeta = itemMeta!!.apply {
+        updateItemMeta<ItemMeta> {
             lore(
                 listOf(
                     getter["wand.title"].toTipMessage(),
-                    getter["wand.subtitle", timeRemaining].toInfoMessage()
+                    getter["wand.subtitle", timeRemaining.roundToInt()].toInfoMessage()
                 )
             )
         }
@@ -127,14 +86,13 @@ class FlyWand : SpecialItem {
     val isUpToTime: Boolean
         get() = timeRemaining <= 0
 
-    override fun getSerialized(): ConfigurationSection {
-        val config = super.getSerialized()
-        if (timeRemaining != MAX_TIME_REMAINING)
-            config["timeRemaining"] = timeRemaining
-        return config
-    }
-
-    override fun clone(): FlyWand {
-        return FlyWand(this.timeRemaining, getter)
+    init {
+        updateItemMeta<ItemMeta> {
+            displayName(getter["wand.name"].toComponent().color(NamedTextColor.RED))
+            isUnbreakable = true
+            addItemFlags(ItemFlag.HIDE_ENCHANTS)
+            addEnchant(Enchantment.DURABILITY, 1, true)
+        }
+        updateTime(timeRemaining)
     }
 }
