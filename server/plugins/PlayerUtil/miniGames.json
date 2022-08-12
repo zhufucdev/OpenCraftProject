@@ -18,5 +18,45 @@
     },
     "type": "TP",
     "data": {"owner":"zhufucdev"}
+  },
+  {
+    "from": {
+      "world": "9a5320c8-cd47-48b9-855c-4365ed9f0ef6",
+      "x": 63122.0,
+      "y": 112.0,
+      "z": 65341.0,
+      "pitch": 0.0,
+      "yaw": 0.0
+    },
+    "to": {
+      "world": "9a5320c8-cd47-48b9-855c-4365ed9f0ef6",
+      "x": 63070.0,
+      "y": 39.0,
+      "z": 65315.0,
+      "pitch": 0.0,
+      "yaw": 0.0
+    },
+    "type": "TP",
+    "data": {"owner":"zhufucdev"}
+  },
+  {
+    "from": {
+      "world": "dd4ad224-5d61-4464-94c3-c6a04651e0d1",
+      "x": -53.0,
+      "y": 62.0,
+      "z": -7.0,
+      "pitch": 0.0,
+      "yaw": 0.0
+    },
+    "to": {
+      "world": "dd4ad224-5d61-4464-94c3-c6a04651e0d1",
+      "x": -62.0,
+      "y": 62.0,
+      "z": -22.0,
+      "pitch": 0.0,
+      "yaw": 0.0
+    },
+    "type": "TP",
+    "data": {"owner":"zhufucdev"}
   }
 ]

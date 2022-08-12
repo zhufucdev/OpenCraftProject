@@ -7,14 +7,18 @@ exp: 0
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: 63095.36971365006
-  y: 127.0
-  z: 65344.133415020675
-  pitch: 24.247732
-  yaw: -89.699524
+  x: 63092.47549100639
+  y: 128.11650136792812
+  z: 65338.48312082826
+  pitch: 34.297737
+  yaw: 164.25058
 potion: {}
 inventory:
   '0':
+    ==: org.bukkit.inventory.ItemStack
+    v: 3120
+    type: WOODEN_PICKAXE
+  '1':
     ==: org.bukkit.inventory.ItemStack
     v: 3120
     type: STICK
@@ -31,3 +35,7 @@ inventory:
       - HIDE_ENCHANTS
       Unbreakable: true
       internal: H4sIAAAAAAAA/+NiYOBmYC3OjM9MYWBgYKl7I7u37ZzrkvmPM2vebz17mouBp7ggNTkzMSc+syQ1l42Bsyg1NzEzLzMv3WGOAgMIcDCw5CTmpTMwVWUAjeIDGZVXXJKYl5wKNbNa7ilfp6zHiklxfUfePPrxgAEAXWkcu3QAAAA=
+  '2':
+    ==: org.bukkit.inventory.ItemStack
+    v: 3120
+    type: WOODEN_AXE

@@ -200,12 +200,21 @@ trade:
   help.title: '经济系统 帮助文档'
   giveCurrency.objective: '已给予%s %s货币'
   giveCurrency.subjective: '你已被给予%s货币，你现在有%s个货币'
+  territory:
+    enter: '你已进入自己的领地'
+    leave: '你已退出自己的领地'
   error:
     pwdUnset: '密码未设定'
     chunkNotFound: '抱歉，但我们无法找到你的领地'
     inventoryFull: '交易失败: 你的物品栏没有足够的剩余空间'
     poor: '交易失败: 你没有足够的货币'
     lackOfItem: '交易失败: 你没有足够的物品'
+    notFound: '找不到所选交易'
+    store:
+      wrongPlace: '抱歉，你不能在此处创建商店'
+      mixed: '抱歉，你不能同时出售不同种类的物品'
+      duplicated: '抱歉，你不能出售服务器已有的物品'
+      replacing: '抱歉，你的商店不能覆盖已有方块'
   pwd.setTo: '已将服务器密码设置为%s'
   explorer: '交易浏览器'
   cancelled: '交易已取消'

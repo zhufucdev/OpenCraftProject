@@ -1,12 +1,4 @@
-inventory:
-  '0':
-    ==: org.bukkit.inventory.ItemStack
-    v: 3120
-    type: COMPASS
-    meta:
-      ==: ItemMeta
-      meta-type: COMPASS
-      display-name: '{"color":"red","text":"交易浏览器"}'
+inventory: {}
 gameMode: SURVIVAL
 health: 20.0
 foodLevel: 20
@@ -16,9 +8,9 @@ exp: 0
 location:
   ==: org.bukkit.Location
   world: world
-  x: -80.58557145160762
-  y: 169.0
-  z: -35.0
-  pitch: 16.50001
-  yaw: 150.74998
+  x: -80.4150528362935
+  y: 170.0
+  z: -36.83172611079833
+  pitch: 54.600025
+  yaw: 78.30004
 potion: {}

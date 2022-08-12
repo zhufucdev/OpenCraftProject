@@ -1,7 +1,7 @@
 group 'com.zhufu.opencraft'
 
 def langRoot = rootDir.path + '/server/plugins/lang'
-copy {
+task applyTranslation(type: Copy) {
     from projectDir.path + '/src'
     into langRoot
     include '*.yml'

@@ -192,7 +192,7 @@ command:
     typeError: 'Type error, expecting %s.'
   done: "Done."
   unnamed: "Unnamed"
-  
+
 pu:
   error:
     unselected: "You haven't selected any items that can be renamed."
@@ -385,19 +385,28 @@ trade:
       subtitle: "Check out /trade help for more information!"
   help.title: "Guide to trading system"
   error:
-    chunkNotFound: "Sorry，But we can’t found your territory "
+    chunkNotFound: "Your territory couldn't be found"
     pwdUnset: "There's no password on this server"
     inventoryFull: "Trade Failed: Your inventory is full."
     error: "Trade Failed: You don't have enough coins."
     lackOfItem: "Trade Failed: You don't have enough items."
+    notFound: "Couldn't find this trade"
+    store:
+      wrongPlace: "Sorry, you're not permitted to sell here."
+      mixed: "Mixed items aren't permitted."
+      duplicated: "Items duplicated with the server trader aren't permitted."
+      replacing: "Your store is replacing some block."
   giveCurrency.objective: "Given %s coin(s) to %s !"
   giveCurrency.subjective: "A player gave you %s coin(s)，You've got %s coin(s) now!"
+  territory:
+    enter: "You've entered your territory"
+    leave: "You've left your territory"
   pwd.setTo: "The password of this server has set to %s"
   explorer: "Trade Explorer"
   cancelled: "Trade cancelled."
   pay:
     title: 'Payment Review'
-    amout: 'Amount is %s.'
+    amount: 'Amount is %s.'
     currencyConsume: 'This will consume %s from you.'
     saving: 'Use Savings'
     cash: 'Use Cashes'

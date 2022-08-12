@@ -5,6 +5,7 @@ import com.zhufu.opencraft.CurrencySystem.Companion.inventoryMap
 import com.zhufu.opencraft.CurrencySystem.Companion.territoryMap
 import com.zhufu.opencraft.CurrencySystem.Companion.transMap
 import com.zhufu.opencraft.TradeManager.loadTradeCompass
+import com.zhufu.opencraft.TradeManager.plugin
 import com.zhufu.opencraft.TradeManager.printTradeError
 import com.zhufu.opencraft.data.DualInventory.Companion.RESET
 import com.zhufu.opencraft.data.Info
@@ -21,6 +22,7 @@ import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.util.toInfoMessage
 import net.citizensnpcs.api.event.NPCClickEvent
 import net.citizensnpcs.api.event.NPCLeftClickEvent
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Item
@@ -145,7 +147,7 @@ object EveryThing : Listener {
             val inTerritory =
                 getPlayerTerritory(event.player).contains(event.player.location)
             if (!inMsgShown && inTerritory) {
-                event.player.sendActionBar("您已进入自己的领地".toInfoMessage())
+                event.player.sendActionBar(info.getter()["trade.territory.enter"].toInfoMessage())
                 info.status = Info.GameStatus.Surviving
                 info.inventory.create("survivor").load(inventoryOnly = true)
                 info.isTerritoryInMessageShown = true
@@ -153,7 +155,7 @@ object EveryThing : Listener {
                 if (!event.player.isOp)
                     event.player.gameMode = GameMode.SURVIVAL
             } else if (!outMsgShown && !inTerritory) {
-                event.player.sendActionBar("您已退出自己的领地".toInfoMessage())
+                event.player.sendActionBar(info.getter()["trade.territory.leave"].toInfoMessage())
                 info.status = Info.GameStatus.InLobby
                 loadTradeCompass(info)
                 info.isTerritoryOutMessageShown = true
@@ -181,7 +183,7 @@ object EveryThing : Listener {
 
     @EventHandler
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
-        val playerInfo = PlayerManager.findInfoByPlayer(event.player)
+        val playerInfo = event.player.info()
         if (playerInfo == null) {
             event.player.error(Language.getDefault("player.error.unknown"))
             return
@@ -189,19 +191,18 @@ object EveryThing : Listener {
         if (playerInfo.status != Info.GameStatus.Surviving)
             return
         if (event.itemDrop.itemStack.type == Material.WOODEN_AXE) {
+            val getter = playerInfo.getter()
             if (!getPlayerTerritory(event.player).contains(event.itemDrop.location)) {
-                event.player.error("抱歉，但您不能在此处创建商店")
-                return
-            }
-            if (event.player.info()?.isInBuilderMode == true) {
-                event.player.error("抱歉，但您不能在此时创建商店")
+                event.player.error(getter["trade.error.store.wrongPlace"])
                 return
             }
             val l = event.itemDrop.location
             val itemsAround = ArrayList<Item>()
             l.world!!.entities.forEach {
-                if (it is Item && it.location.distance(l) <= 2) {
-                    itemsAround.add(it)
+                if (it is Item) {
+                    val distance = it.location.distance(l)
+                    if (distance <= 5)
+                        itemsAround.add(it)
                 }
             }
             var isTypeTheSame = true
@@ -216,20 +217,20 @@ object EveryThing : Listener {
             }
             if (itemsAround.isNotEmpty()) {
                 if (!isTypeTheSame) {
-                    event.player.error("抱歉，但你不能同时出售不同种类的物品")
+                    event.player.error(getter["trade.error.store.mixed"])
                     return
                 }
                 val itemSell = itemsAround.first().itemStack
                 if (transMap.containsKey(itemSell.type)) {
-                    event.player.error("抱歉，但您不能出售服务器已有的物品")
+                    event.player.error(getter["trade.error.store.duplicated"])
                     return
                 }
                 val amount = itemsAround.sumOf { it.itemStack.amount }
                 itemSell.amount = amount
-                println("${event.player.name} tries to sell ${itemsAround.first().itemStack.type.name}*$amount")
+                plugin?.logger?.info("${event.player.name} tries to sell ${itemsAround.first().itemStack.type.name}*$amount")
                 val location = itemsAround.first().location
                 if (location.block.type != Material.AIR) {
-                    event.player.error("抱歉，但您的商店不能覆盖已有方块")
+                    event.player.error(getter["trade.error.store.replacing"])
                     return
                 }
                 SetUpValidateInventory(location.apply { yaw = event.player.location.yaw - 180 }, itemSell, event.player)
@@ -291,16 +292,22 @@ object EveryThing : Listener {
                 getPositionForLine(2) -> {
                     inventory.subtractOne()
                 }
+
                 getPositionForLine(6) -> {
                     inventory.plusOne()
                 }
+
                 getPositionForLine(4) -> {
                     if (inventory.selectedItem == null) {
-                        event.whoClicked.printTradeError("找不到所选物品", TradeManager.getNewID())
+                        event.whoClicked.printTradeError(
+                            event.whoClicked.getter()["trade.error.notFound"],
+                            TradeManager.getNewID()
+                        )
                         return
                     }
                     inventory.confirm()
                 }
+
                 else -> inventory.selectSpecialItem(event.currentItem!!)
             }
         }

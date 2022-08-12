@@ -14881,3 +14881,10 @@
 {"time":1660308350121,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
 {"time":1660308350129,"player":"zhufucdev","type":"MOVE","data":{"x":7.450417758293522,"y":62.0,"z":5.3013073309214205,"world":"world_trade"}}
 {"time":1660308372812,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
+{"time":1660309614802,"player":"zhufucdev","type":"MOVE","data":{"x":-66.78501022640808,"y":62.0,"z":-12.563937191586895,"world":"world_trade"}}
+{"time":1660309894070,"player":"zhufucdev","type":"MOVE","data":{"x":-67.25008294647043,"y":64.15814676123664,"z":-20.006132631681982,"world":"world_trade"}}
+{"time":1660310351142,"player":"zhufucdev","type":"MOVE","data":{"x":-62.619454368380815,"y":62.0,"z":-14.112339754581015,"world":"world_trade"}}
+{"time":1660310411150,"player":"zhufucdev","type":"MOVE","data":{"x":-62.619454368380815,"y":62.0,"z":-14.112339754581015,"world":"world_trade"}}
+{"time":1660310426298,"player":"zhufucdev","type":"OPEN_INVENTORY","data":{}}
+{"time":1660310471137,"player":"zhufucdev","type":"MOVE","data":{"x":-56.94977338011456,"y":62.0,"z":-11.456771486329586,"world":"world_trade"}}
+{"time":1660310531155,"player":"zhufucdev","type":"MOVE","data":{"x":-56.94977338011456,"y":62.0,"z":-11.456771486329586,"world":"world_trade"}}
