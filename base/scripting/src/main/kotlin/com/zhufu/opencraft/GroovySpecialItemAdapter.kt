@@ -8,10 +8,12 @@ import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scoreboard.Objective
+import java.util.UUID
 
 class GroovySpecialItemAdapter(
     name: String,
     langName: String? = null,
+    id: UUID,
     material: Material,
     make: Closure<*>?,
     deserialize: Closure<*>?,
@@ -20,6 +22,7 @@ class GroovySpecialItemAdapter(
 ) : SpecialItemAdapter(
     name,
     langName,
+    id,
     material,
     make = { i: ItemStack, g: Language.LangGetter -> make!!.call(i, g); Unit }.takeIf { make != null },
     deserialize = { i: ItemStack, c: ConfigurationSection, g: Language.LangGetter -> deserialize!!.call(i, c, g); Unit }

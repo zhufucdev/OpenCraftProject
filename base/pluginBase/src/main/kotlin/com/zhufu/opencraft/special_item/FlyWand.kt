@@ -18,7 +18,7 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 
 class FlyWand(getter: Language.LangGetter, timeRemaining: Double = MAX_TIME_REMAINING, id: UUID = UUID.randomUUID()) :
-    StatefulSpecialItem(Material.STICK, getter, id) {
+    StatefulSpecialItem(Material.STICK, getter, id, SIID) {
 
     override fun tick(mod: PlayerModifier, data: YamlConfiguration, score: Objective, scoreboardSorter: Int) {
         if (!data.isSet("hasFlyWand")) {
@@ -74,6 +74,10 @@ class FlyWand(getter: Language.LangGetter, timeRemaining: Double = MAX_TIME_REMA
     fun updateTime(timeRemaining: Double) {
         this.timeRemaining = timeRemaining
         updateItemMeta<ItemMeta> {
+            displayName(getter["wand.name"].toComponent().color(NamedTextColor.RED))
+            isUnbreakable = true
+            addItemFlags(ItemFlag.HIDE_ENCHANTS)
+            addEnchant(Enchantment.DURABILITY, 1, true)
             lore(
                 listOf(
                     getter["wand.title"].toTipMessage(),
@@ -87,12 +91,6 @@ class FlyWand(getter: Language.LangGetter, timeRemaining: Double = MAX_TIME_REMA
         get() = timeRemaining <= 0
 
     init {
-        updateItemMeta<ItemMeta> {
-            displayName(getter["wand.name"].toComponent().color(NamedTextColor.RED))
-            isUnbreakable = true
-            addItemFlags(ItemFlag.HIDE_ENCHANTS)
-            addEnchant(Enchantment.DURABILITY, 1, true)
-        }
         updateTime(timeRemaining)
     }
 }

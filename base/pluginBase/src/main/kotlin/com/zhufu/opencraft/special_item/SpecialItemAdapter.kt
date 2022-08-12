@@ -15,6 +15,7 @@ import java.util.UUID
 open class SpecialItemAdapter(
     val name: String,
     val langName: String? = null,
+    val id: UUID,
     val material: Material,
     val make: ((ItemStack, Language.LangGetter) -> Unit)? = null,
     val deserialize: ((ItemStack, ConfigurationSection, Language.LangGetter) -> Unit)? = null,
@@ -25,7 +26,7 @@ open class SpecialItemAdapter(
         val adapter: SpecialItemAdapter
 
         constructor(adapter: SpecialItemAdapter, getter: Language.LangGetter)
-                : super(adapter.material, getter, UUID.randomUUID()) {
+                : super(adapter.material, getter, UUID.randomUUID(), adapter.id) {
             this.adapter = adapter
             adapter.make?.invoke(this, getter)
             if (adapter.langName != null && (!hasItemMeta() || !itemMeta.hasDisplayName())) {
@@ -40,7 +41,7 @@ open class SpecialItemAdapter(
             adapter: SpecialItemAdapter,
             getter: Language.LangGetter,
             id: UUID = UUID.randomUUID()
-        ) : super(adapter.material, getter, id) {
+        ) : super(adapter.material, getter, id, adapter.id) {
             this.adapter = adapter
             adapter.make?.invoke(this, getter)
             if (adapter.langName != null && (!hasItemMeta() || !itemMeta.hasDisplayName())) {

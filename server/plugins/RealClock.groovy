@@ -21,6 +21,7 @@ def updateDate = { ItemStack item ->
 
 Content.defineItem {
     name 'RealClock'
+    id UUID.fromString('E49BB519-670F-4A41-B4C3-EEAA35DD6320')
     make { item, getter ->
         updateMeta(item) {
             displayName = ChatColor.BLUE.toString() + "Real Clock"
