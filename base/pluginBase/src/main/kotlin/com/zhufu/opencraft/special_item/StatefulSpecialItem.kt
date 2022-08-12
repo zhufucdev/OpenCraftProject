@@ -4,6 +4,7 @@ import com.zhufu.opencraft.*
 import com.zhufu.opencraft.util.Language
 import de.tr7zw.nbtapi.NBTCompound
 import de.tr7zw.nbtapi.NBTItem
+import de.tr7zw.nbtapi.NbtApiException
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
@@ -18,8 +19,8 @@ import kotlin.reflect.full.companionObjectInstance
  *
  * @param id Identity of the item. If null, this item is [frozen].
  */
-abstract class StatefulSpecialItem(m: Material, val getter: Language.LangGetter, id: UUID) :
-    StatelessSpecialItem(m, id) {
+abstract class StatefulSpecialItem(m: Material, val getter: Language.LangGetter, id: UUID, typeID: UUID) :
+    StatelessSpecialItem(m, typeID) {
     companion object {
         const val KEY_INSTANCE_ID = "si_instance_id"
         const val KEY_COMPOUND = "special_item"
@@ -43,13 +44,14 @@ abstract class StatefulSpecialItem(m: Material, val getter: Language.LangGetter,
             try {
                 val nbt = NBTItem(item)
                 val id = nbt.getUUID(KEY_INSTANCE_ID)
-                val cached = cache.firstOrNull { it.specialItemID == id }
+                val cached = cache.firstOrNull { it.instantID == id }
                 if (cached != null) {
                     return cached
                 } else {
                     val typeID = nbt.getUUID(KEY_SIID)
                     // construct from nbt
-                    val c = prebuilt.firstOrNull { (it.kotlin.companionObjectInstance as StatefulSICompanion).SIID == typeID }
+                    val c =
+                        prebuilt.firstOrNull { (it.kotlin.companionObjectInstance as StatefulSICompanion?)?.SIID == typeID }
                     if (c != null) {
                         val compound = nbt.getCompound(KEY_COMPOUND)
                         val getter = Language.LangGetter(compound.getString("lang"))
@@ -57,7 +59,10 @@ abstract class StatefulSpecialItem(m: Material, val getter: Language.LangGetter,
                             .deserialize(id, compound, getter)
                     }
                 }
-            } catch (_: Exception) {
+            } catch (_: NbtApiException) {
+
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
             return null
         }
@@ -109,14 +114,15 @@ abstract class StatefulSpecialItem(m: Material, val getter: Language.LangGetter,
             get() = (prebuilt + StatelessSpecialItem.prebuilt).map { it.simpleName } + adapters.map { it.name }
     }
 
-    val specialItemID: UUID = id
+    val instantID: UUID = id
     protected val nbt: NBTCompound
     open fun tick(mod: PlayerModifier, data: YamlConfiguration, score: Objective, scoreboardSorter: Int) {}
 
     init {
         val nbt = NBTItem(this, true)
-        nbt.setUUID(KEY_INSTANCE_ID, specialItemID)
+        nbt.setUUID(KEY_INSTANCE_ID, instantID)
         this.nbt = nbt.getOrCreateCompound(KEY_COMPOUND)
+        this.nbt.setString("lang", getter.lang)
         cache.add(this)
     }
 
@@ -126,13 +132,13 @@ abstract class StatefulSpecialItem(m: Material, val getter: Language.LangGetter,
     }
 
     override fun equals(other: Any?): Boolean {
-        return other is StatefulSpecialItem && this.specialItemID == other.specialItemID
+        return other is StatefulSpecialItem && this.instantID == other.instantID
     }
 
     override fun hashCode(): Int {
         var result = super.hashCode()
         if (!frozen)
-            result = 31 * result + specialItemID.hashCode()
+            result = 31 * result + instantID.hashCode()
         return result
     }
 }

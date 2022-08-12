@@ -134,6 +134,7 @@ class TraderInventory(val player: Player) {
                         if (survivor.any { item -> StatefulSpecialItem[item] is FlyWand }) {
                             player.error(getter["wand.duplicate.title"])
                             player.tip(getter["wand.duplicate.tip"])
+                            return@setOnPayListener false
                         } else if (!survivor.addItem(FlyWand(getter))) {
                             player.error(getter["trade.error.inventoryFull"])
                             return@setOnPayListener false

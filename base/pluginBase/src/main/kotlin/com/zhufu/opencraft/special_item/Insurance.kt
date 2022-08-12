@@ -18,7 +18,7 @@ class Insurance(
     val number: Long = System.currentTimeMillis(),
     id: UUID = UUID.randomUUID()
 ) :
-    StatefulSpecialItem(Material.WRITTEN_BOOK, getter, id) {
+    StatefulSpecialItem(Material.WRITTEN_BOOK, getter, id, SIID) {
 
     init {
         nbt.setString("player", player)

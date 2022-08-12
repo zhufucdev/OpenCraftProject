@@ -42,6 +42,7 @@ import java.util.function.BiConsumer
 class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
     private String name, langName, blockName
     private Material material
+    private UUID id
     private Closure make, deserialize, serialize, tick,
                     onRightClicked, onLeftClicked, onInventoryTouch
     private ArrayList<PatternedCondition> recipes = new ArrayList<>()
@@ -56,6 +57,14 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
 
     String getName() {
         return name
+    }
+
+    /**
+     * (*)Unique ID of this type of item.
+     * @param id The Unique ID
+     */
+    void id(@NotNull UUID id) {
+        this.id = id
     }
 
     /**
@@ -224,7 +233,8 @@ class ExtendedItemConstructor implements Constructor<ExtendedItemConstructor> {
         if (mAdapter != null)
             return mAdapter
         assert name != null
-        mAdapter = new GroovySpecialItemAdapter(name, langName, material, make, deserialize, serialize, tick)
+        assert id != null
+        mAdapter = new GroovySpecialItemAdapter(name, langName, id, material, make, deserialize, serialize, tick)
         return mAdapter
     }
 

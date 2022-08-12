@@ -1,4 +1,4 @@
-gameMode: SURVIVAL
+gameMode: CREATIVE
 health: 20.0
 foodLevel: 20
 walkSpeed: 0.2
@@ -7,58 +7,27 @@ exp: 0
 location:
   ==: org.bukkit.Location
   world: world_survive
-  x: -6609.8882183796595
-  y: 103.0
-  z: 413.9721336129691
-  pitch: 26.250114
-  yaw: 112.5
+  x: 63095.36971365006
+  y: 127.0
+  z: 65344.133415020675
+  pitch: 24.247732
+  yaw: -89.699524
 potion: {}
 inventory:
   '0':
-    ==: org.bukkit.inventory.ItemStack
-    v: 3120
-    type: GOLD_INGOT
-    amount: 10
-    meta:
-      ==: ItemMeta
-      meta-type: UNSPECIFIC
-      display-name: '{"color":"yellow","text":"硬币"}'
-      lore:
-      - '{"bold":true,"color":"gold","text":"OpenCraft实体货币"}'
-      enchants:
-        PROTECTION_ENVIRONMENTAL: 1
-      ItemFlags:
-      - HIDE_ENCHANTS
-      - HIDE_UNBREAKABLE
-      Unbreakable: true
-      internal: H4sIAAAAAAAA/+NiYOBmYC3OjM9MYWBgYLmbz5jJlur6vNmZPTBtQsRtBgBTbPGZIAAAAA==
-  '1':
     ==: org.bukkit.inventory.ItemStack
     v: 3120
     type: STICK
     meta:
       ==: ItemMeta
       meta-type: UNSPECIFIC
+      display-name: '{"color":"red","text":"飞行权杖"}'
       lore:
       - '{"bold":true,"color":"gold","text":"一支让你飞行的权杖"}'
       - '{"color":"yellow","text":"剩余1800秒"}'
-      internal: H4sIAAAAAAAA/+NiYOBmYC3OjM9MYWBgYLkXqLtVU8m3rm/p7sg/81LcuBh4igtSkzMTc+IzS1Jz2Rg4i1JzEzPzMvPSHeYoMIABNwMfSH9ecUliXnIqDoMYAHmFMTRpAAAA
-  '2':
-    ==: org.bukkit.inventory.ItemStack
-    v: 3120
-    type: WRITTEN_BOOK
-    meta:
-      ==: ItemMeta
-      meta-type: BOOK_SIGNED
-      lore:
-      - '{"text":"zhufucdev"}'
-      - '{"text":"1660302178423"}'
+      enchants:
+        DURABILITY: 1
       ItemFlags:
       - HIDE_ENCHANTS
-      - HIDE_UNBREAKABLE
       Unbreakable: true
-      internal: H4sIAAAAAAAA/+NiYOBmYC3OjM9MYWBgYIlbJzv592y/4vapM06yndykycXAU1yQmpyZmBOfWZKay8LAlleam5RaxMDA2DRxx45yDga2gpzESqAAZ1VGaVppckpqGdBAPpCBecUliXnJqThMZgAAXUivjXoAAAA=
-      title: §e保险
-      author: '保证人: OpenCraft 团队'
-      pages:
-      - '{"text":"承保人: zhufucdev\n保证人: OpenCraft 团队\n此保险担保，在你死亡后，将有80%的物品被保留。\n"}'
+      internal: H4sIAAAAAAAA/+NiYOBmYC3OjM9MYWBgYKl7I7u37ZzrkvmPM2vebz17mouBp7ggNTkzMSc+syQ1l42Bsyg1NzEzLzMv3WGOAgMIcDCw5CTmpTMwVWUAjeIDGZVXXJKYl5wKNbNa7ilfp6zHiklxfUfePPrxgAEAXWkcu3QAAAA=
