@@ -4,10 +4,9 @@ author: zhufucomcom
 version: '1.0'
 depend:
   - ServerScript
-softdepend:
   - Citizens
   - WorldEdit
-  - WorldTeleporter
+  - NBTAPI
 api-version: '1.14'
 commands:
   server:

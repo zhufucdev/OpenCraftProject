@@ -12,6 +12,7 @@ dependencies {
     api project(':scripting')
     api project(':pluginBase')
     api project(':webBase')
+    api project(':worldBase')
     compileOnly 'net.citizensnpcs:citizens-main:' + rootProject.ext.citizens_version
 
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

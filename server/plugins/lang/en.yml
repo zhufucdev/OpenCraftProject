@@ -378,12 +378,12 @@ trade:
       subtitle: "So, you can build your shop here"
     5:
       title: "About commands…"
-      subtitle: "Go back to your shop using /trade back "
+      subtitle: "Go back to your shop using /trade back"
     6:
-      subtitle: "And go back to the center using/trade center "
+      subtitle: "And go back to the center using /trade center"
     7:
       subtitle: "Check out /trade help for more information!"
-  help.title: "Guide to trading system"
+  help.title: "Guide on trading system"
   error:
     chunkNotFound: "Your territory couldn't be found"
     pwdUnset: "There's no password on this server"
@@ -401,6 +401,7 @@ trade:
   territory:
     enter: "You've entered your territory"
     leave: "You've left your territory"
+    info: "Your territory (ID: %s) is located at chunk (%s, %s)"
   pwd.setTo: "The password of this server has set to %s"
   explorer: "Trade Explorer"
   cancelled: "Trade cancelled."

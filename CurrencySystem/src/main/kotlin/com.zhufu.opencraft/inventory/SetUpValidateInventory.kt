@@ -5,11 +5,14 @@ import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.util.toInfoMessage
 import com.zhufu.opencraft.util.toSuccessMessage
 import com.zhufu.opencraft.util.toTipMessage
+import net.citizensnpcs.api.CitizensAPI
+import net.citizensnpcs.api.npc.NPC
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Sign
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -19,15 +22,21 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 
 class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, private val player: Player) :
-    NPCItemInventory(baseLocation, null, itemSell, CurrencySystem.instance) {
+    NPCItemInventory(baseLocation, null, itemSell, TradeManager.plugin) {
     companion object {
         val inventories = ArrayList<SetUpValidateInventory>()
     }
 
+    override val clickableNPC: NPC =
+        CitizensAPI.getNPCRegistry().createNPC(
+            EntityType.ARMOR_STAND,
+            TextUtil.info("配置交易")
+        )
+
     private var confirmItem: ItemStack
     private var cancelItem: ItemStack
     private var giveSignItem: ItemStack
-    override var inventoryName: String = TextUtil.tip("确认销售[uuid:$id]")
+    override var inventoryName: String = TextUtil.info("确认销售[uuid:$id]")
     override var inventory: Inventory = Bukkit.createInventory(null, InventoryType.CHEST, inventoryName)
     var items = SellingItemInfo(itemSell, -1, itemSell.amount)
 
@@ -81,7 +90,7 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
     private fun giveSign() {
         player.closeInventory()
         inventory.clear(inventory.size - 2)
-        player.inventory.addItem(ItemStack(Material.ACACIA_SIGN))
+        player.inventory.addItem(ItemStack(Material.OAK_SIGN))
     }
 
     override fun cancel(player: HumanEntity?) {

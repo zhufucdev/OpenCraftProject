@@ -2,10 +2,9 @@ group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    implementation project(':pluginBase')
-    implementation project(':playerManagment')
-    implementation project(':worldBase')
-    compileOnly 'net.citizensnpcs:citizens-main:' + rootProject.ext.citizens_version
+    compileOnly project(':pluginBase')
+    compileOnly project(':playerManagment')
+    compileOnly project(':worldBase')
     implementation 'org.codehaus.groovy:groovy:3.0.12'
     implementation 'org.codehaus.groovy:groovy-json:3.0.12'
 }

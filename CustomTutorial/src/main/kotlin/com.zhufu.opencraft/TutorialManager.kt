@@ -59,7 +59,7 @@ object TutorialManager {
     }
 
     private val id
-        get() = mList.maxBy { it.id }.id
+        get() = mList.maxOfOrNull { it.id } ?: 0
 
     fun getNewID(): Int {
         for (i in 0..id) {
@@ -78,7 +78,7 @@ object TutorialManager {
         writer.flush()
     }
 
-    fun deleteFile(element: Tutorial) = CustomTutorial.getFile(getName(element)).delete()
+    private fun deleteFile(element: Tutorial) = CustomTutorial.getFile(getName(element)).delete()
 
     fun loadFromFile() {
         CustomTutorial.saveDir.listFiles()?.forEach { file ->
