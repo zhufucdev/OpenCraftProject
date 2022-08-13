@@ -157,7 +157,7 @@ open class MessagePool private constructor() {
 
     val messages = ArrayList<Message>()
     fun add(text: String, type: Type, extra: ConfigurationSection? = null): Message {
-        val max = messages.maxBy { it.id }.id
+        val max = messages.maxOfOrNull { it.id } ?: -1
         val msg = Message(text, false, max + 1, type, extra, this)
         messages.add(msg)
         return msg
