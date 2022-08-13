@@ -1,33 +1,27 @@
-package com.baidu.translate;
+package com.baidu.translate
 
-public class TransApi {
-    private static final String TRANS_API_HOST = "fanyi-api.baidu.com";
-    private static final String TRANS_API_PATHS = "api/trans/vip/translate";
+import java.net.URLEncoder
 
-    private final String appid;
-    private final String securityKey;
-
-    public TransApi(String appid, String securityKey) {
-        this.appid = appid;
-        this.securityKey = securityKey;
-    }
-
-    public String getTransResult(String query, String from, String to) {
-        String url = buildParams(query, from, to);
-
-        try {
-            return HTTPUtil.request(url);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+class TransApi(private val appid: String, private val securityKey: String) {
+    fun getTransResult(query: String, from: String, to: String): String? {
+        val url = buildParams(query, from, to)
+        return try {
+            HTTPUtil.request(url)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
-    private String buildParams(String query, String from, String to) {
-        String salt = String.valueOf(System.currentTimeMillis());
-        String src = appid + query + salt + securityKey;
-        return "https://" + TRANS_API_HOST + "/" + TRANS_API_PATHS + "?q" + query + "&from=" + from
-                + "&to=" + to + "&appid=" + appid + "&salt=" + salt + "&sign=" + MD5.md5(src);
+    private fun buildParams(query: String, from: String, to: String): String {
+        val salt = System.currentTimeMillis().toString()
+        val src = appid + query + salt + securityKey
+        return ("https://" + TRANS_API_HOST + "/" + TRANS_API_PATHS + "?q" + URLEncoder.encode(query, Charsets.UTF_8)
+                + "&from=" + from + "&to=" + to + "&appid=" + appid + "&salt=" + salt + "&sign=" + MD5.md5(src))
     }
 
+    companion object {
+        private const val TRANS_API_HOST = "fanyi-api.baidu.com"
+        private const val TRANS_API_PATHS = "api/trans/vip/translate"
+    }
 }

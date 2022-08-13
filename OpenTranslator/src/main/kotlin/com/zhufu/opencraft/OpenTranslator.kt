@@ -32,13 +32,13 @@ class OpenTranslator : JavaPlugin(), Listener {
         val detections = Translate.toTranslateOrNot(msg)
         val sb = StringBuilder()
         sb.append(getter["translator.usingLang", detectLang])
-        detections.forEach {
+        detections.map {
             when (it) {
                 Expression -> sb.append(getter["translator.containsExpr"])
                 ColorCode -> sb.append(getter["translator.containsColor"])
                 LanguageExpr -> sb.append(getter["translator.containsLang"])
             }
-            sb.append(',')
+            sb.append(' ')
         }
         sb.deleteCharAt(sb.lastIndex)
         info.playerOutputStream.send(sb.toString().toInfoMessage())

@@ -1,43 +1,36 @@
-package com.baidu.translate;
+package com.baidu.translate
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+object MD5 {
+    private val hexDigits = charArrayOf(
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
+        'e', 'f'
+    )
 
-public class MD5 {
-    private static final char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
-            'e', 'f' };
-
-    public static String md5(String input) {
-        if (input == null)
-            return null;
-
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            byte[] inputByteArray = input.getBytes(StandardCharsets.UTF_8);
-            messageDigest.update(inputByteArray);
-            byte[] resultByteArray = messageDigest.digest();
-            return byteArrayToHex(resultByteArray);
-        } catch (NoSuchAlgorithmException e) {
-            return null;
+    fun md5(input: String?): String? {
+        return if (input == null) null else try {
+            val messageDigest = MessageDigest.getInstance("MD5")
+            val inputByteArray = input.toByteArray(StandardCharsets.UTF_8)
+            messageDigest.update(inputByteArray)
+            val resultByteArray = messageDigest.digest()
+            byteArrayToHex(resultByteArray)
+        } catch (e: NoSuchAlgorithmException) {
+            null
         }
     }
 
-    @NotNull
     @Contract("_ -> new")
-    private static String byteArrayToHex(byte[] byteArray) {
-        char[] resultCharArray = new char[byteArray.length * 2];
-        int index = 0;
-        for (byte b : byteArray) {
-            resultCharArray[index++] = hexDigits[b >>> 4 & 0xf];
-            resultCharArray[index++] = hexDigits[b & 0xf];
+    private fun byteArrayToHex(byteArray: ByteArray): String {
+        val resultCharArray = CharArray(byteArray.size * 2)
+        var index = 0
+        for (b in byteArray) {
+            resultCharArray[index++] = hexDigits[b.toInt() ushr 4 and 0xf]
+            resultCharArray[index++] = hexDigits[b.toInt() and 0xf]
         }
-
-        return new String(resultCharArray);
-
+        return String(resultCharArray)
     }
-
 }
