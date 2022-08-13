@@ -13,6 +13,9 @@ import com.zhufu.opencraft.Game.env
 import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
+import com.zhufu.opencraft.inventory.NPCExistence
+import com.zhufu.opencraft.inventory.NPCItemInventory
+import com.zhufu.opencraft.inventory.TradeValidateInventory
 import com.zhufu.opencraft.util.*
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
@@ -579,42 +582,40 @@ class CurrencySystem : JavaPlugin() {
             logger.warning("Donation map doesn't exists! Put it at ${donation.absolutePath}")
         }
 
-        if (server.pluginManager.isPluginEnabled("Citizens")) {
-            CitizensAPI.getNPCRegistry().toList().forEach {
-                if (it.data().get<Boolean?>("trade") == true)
-                    it.destroy()
-            }
+        CitizensAPI.getNPCRegistry().toList().forEach {
+            if (it.data().get<Boolean?>("trade") == true)
+                it.destroy()
+        }
 
-            fun uuidFor(npc: String) = config.getString(npc, null).let {
-                if (it != null) UUID.fromString(it)!!
-                else {
-                    val r = UUID.randomUUID()
-                    config.set(npc, r.toString())
-                    r!!
+        fun uuidFor(npc: String) = config.getString(npc, null).let {
+            if (it != null) UUID.fromString(it)!!
+            else {
+                val r = UUID.randomUUID()
+                config.set(npc, r.toString())
+                r!!
+            }
+        }
+
+        val traderUUID = uuidFor("trader")
+        val backUUID = uuidFor("back")
+
+        try {
+            npc = CitizensAPI.getNPCRegistry()
+                .createNPC(EntityType.WANDERING_TRADER, traderUUID, 0, EveryThing.traderInventoryName).apply {
+                    data()["trade"] = true
+                    data().saveTo(MemoryDataKey())
+                    spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
                 }
-            }
-
-            val traderUUID = uuidFor("trader")
-            val backUUID = uuidFor("back")
-
-            try {
-                npc = CitizensAPI.getNPCRegistry()
-                    .createNPC(EntityType.WANDERING_TRADER, traderUUID, 0, EveryThing.traderInventoryName).apply {
+            npcBack =
+                CitizensAPI.getNPCRegistry()
+                    .createNPC(EntityType.ARMOR_STAND, backUUID, 1, EveryThing.backNPCName.content())
+                    .apply {
                         data()["trade"] = true
                         data().saveTo(MemoryDataKey())
-                        spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
+                        spawn(Location(tradeWorld, 8.5, TradeWorldGenerator.base + 2.0, 4.0))
                     }
-                npcBack =
-                    CitizensAPI.getNPCRegistry()
-                        .createNPC(EntityType.ARMOR_STAND, backUUID, 1, EveryThing.backNPCName.content())
-                        .apply {
-                            data()["trade"] = true
-                            data().saveTo(MemoryDataKey())
-                            spawn(Location(tradeWorld, 8.5, TradeWorldGenerator.base + 2.0, 4.0))
-                        }
-            } catch (e: Exception) {
-                logger.warning("Failed to spawn trader NPCs: ${e.message}")
-            }
+        } catch (e: Exception) {
+            logger.warning("Failed to spawn trader NPCs: ${e.message}")
         }
 
         OfflineInfo.forEach {
@@ -626,12 +627,16 @@ class CurrencySystem : JavaPlugin() {
             }
         }
 
+        NPCExistence.setProducer { t, l ->
+            TradeValidateInventory(t, l)
+        }
         try {
             TradeManager.loadFromFile(File(tradeRoot, "tradeInfos.json"))
         } catch (e: Exception) {
             e.printStackTrace()
         }
         server.pluginManager.registerEvents(EveryThing, this)
+
     }
 
     override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator {
@@ -645,7 +650,6 @@ class CurrencySystem : JavaPlugin() {
         CitizensAPI.getNPCRegistry().toList().forEach {
             if (it.data().get<Boolean?>("trade") == true)
                 it.destroy()
-            it.data()
         }
     }
 }

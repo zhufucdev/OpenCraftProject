@@ -1,15 +1,15 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.TradeManager.printTradeError
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import com.zhufu.opencraft.inventory.NPCExistence
+import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.util.toComponent
 import com.zhufu.opencraft.util.toInfoMessage
 import com.zhufu.opencraft.util.toTipMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.event.HoverEvent.ShowItem
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.util.*
@@ -32,7 +32,7 @@ class TradeInfo : Cloneable, Destroyable {
 
     private var isDestroy = false
     var items: SellingItemInfo? = null
-    private var validateInventory: TradeValidateInventory? = null
+    private var validateInventory: NPCExistence? = null
     private var seller: String? = null
     private var faceLocation: Location? = null
     fun getSeller() = seller
@@ -43,7 +43,7 @@ class TradeInfo : Cloneable, Destroyable {
             if (faceLocation == null && it.isOnline)
                 faceLocation = it.player!!.location
 
-            validateInventory = TradeValidateInventory(this, faceLocation)
+            validateInventory = NPCExistence.impl(this, faceLocation)
             if (items == null)
                 throw IllegalAccessError("Items must not be null!")
             if (!ignoreInventoryItem) {
@@ -69,19 +69,20 @@ class TradeInfo : Cloneable, Destroyable {
 
         val it = Bukkit.getPlayer(UUID.fromString(buyer))
         val info = PlayerManager.findInfoByPlayer(it!!)
+        val getter = info.getter()
         if (info == null) {
-            it.printTradeError("我们无法确定您是谁", id)
+            it.error(getter["player.error.unknown"])
             return false
         }
         val playerCurrency = info.currency
         val prise = this.items!!.unitPrise * howMany
         if (playerCurrency < prise) {
-            it.printTradeError("您的货币数量不足", id, false)
+            it.error(getter["trade.error.poor"])
             return false
         }
         val what = items!!.item
         if (!it.setInventory(what, howMany)) {
-            it.printTradeError("您没有足够的物品", id, false)
+            it.error(getter["trade.error.lackOfItem"])
             return false
         }
         if (howMany != this.items!!.amount) {
@@ -92,9 +93,10 @@ class TradeInfo : Cloneable, Destroyable {
         if (seller != "server") {
             val seller = PlayerManager.findOfflineInfoByPlayer(UUID.fromString(seller!!)) ?: return false
             seller.currency += prise
-            if (seller.isOnline) {
-                seller.onlinePlayerInfo!!.player.info("${it.name}购买了您的${items!!.item.type}×$howMany，从而使您获得了${prise}个货币")
-            }
+            seller.messagePool.add(
+                "${it.name}购买了您的${items!!.item.type}×$howMany，从而使您获得了${prise}个货币",
+                MessagePool.Type.System
+            )
         }
         val sellerName: String = if (seller == "server") seller!!
         else Bukkit.getOfflinePlayer(UUID.fromString(seller)).name ?: "unknown"
@@ -124,7 +126,7 @@ class TradeInfo : Cloneable, Destroyable {
     override fun destroy() {
         if (seller == null || seller == "server" || items == null)
             return
-        validateInventory?.cancel(null)
+        validateInventory?.destroy()
         this.isDestroy = true
     }
 

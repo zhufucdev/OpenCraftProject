@@ -126,8 +126,7 @@ object EveryThing : Listener {
                     isTerritoryOutMessageShown = false
                 }
                 ?: event.player.error(Language.getDefault("player.error.unknown"))
-            event.player.info("您的领地(ID:${t.id})位于区块(${t.x},${t.z})")
-
+            event.player.info(getLang(event.player, "trade.territory.info", t.id, t.x, t.z))
         }
     }
 
@@ -227,7 +226,7 @@ object EveryThing : Listener {
                 }
                 val amount = itemsAround.sumOf { it.itemStack.amount }
                 itemSell.amount = amount
-                plugin?.logger?.info("${event.player.name} tries to sell ${itemsAround.first().itemStack.type.name}*$amount")
+                plugin.logger.info("${event.player.name} tries to sell ${itemsAround.first().itemStack.type.name}*$amount")
                 val location = itemsAround.first().location
                 if (location.block.type != Material.AIR) {
                     event.player.error(getter["trade.error.store.replacing"])

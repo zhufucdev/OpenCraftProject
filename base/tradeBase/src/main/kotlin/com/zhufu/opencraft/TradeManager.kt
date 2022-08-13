@@ -59,9 +59,7 @@ object TradeManager {
         }
     }
 
-    var plugin: JavaPlugin? = null
-    val isInit: Boolean
-        get() = plugin == null
+    lateinit var plugin: JavaPlugin
 
     fun init(plugin: JavaPlugin) {
         TradeManager.plugin = plugin
@@ -90,17 +88,22 @@ object TradeManager {
         if (seller != "server") {
             val sellerPlayer = Bukkit.getPlayer(UUID.fromString(seller))
             if (sellerPlayer != null) {
+                val detailedItem = what.displayName()
+                    .style(TextUtil.INFO_STYLE)
+                    .append(Component.text("×$amount").style(TextUtil.INFO_STYLE))
+                    .hoverEvent { HoverEvent.showItem(what.type.key, what.amount) as HoverEvent<Any> }
+
                 sellerPlayer.sendMessage(
-                    Component.text("您正在以${unitPrise}出售")
-                        .append(
-                            what.displayName()
-                                .append(Component.text("×$amount"))
-                                .hoverEvent { HoverEvent.showItem(what.type.key, what.amount) as HoverEvent<Any> }
-                        )
+                    Component.text("您正在以${unitPrise}货币出售")
+                        .append(detailedItem)
                         .style(TextUtil.INFO_STYLE)
                 )
                 Bukkit.getOnlinePlayers().filter { it.uniqueId.toString() != seller }.forEach {
-                    it.sendMessage(TextUtil.info("${sellerPlayer.name}正在以${unitPrise}出售${what.type.name}×$amount"))
+                    it.sendMessage(
+                        Component.text("${sellerPlayer.name}正在以${unitPrise}货币出售")
+                            .append(detailedItem)
+                            .style(TextUtil.INFO_STYLE)
+                    )
                 }
             }
         }
