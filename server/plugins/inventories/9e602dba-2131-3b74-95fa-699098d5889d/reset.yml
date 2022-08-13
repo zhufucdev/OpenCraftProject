@@ -1,5 +1,16 @@
-inventory: {}
-gameMode: SURVIVAL
+inventory:
+  '0':
+    ==: org.bukkit.inventory.ItemStack
+    v: 3120
+    type: WRITTEN_BOOK
+    meta:
+      ==: ItemMeta
+      meta-type: BOOK_SIGNED
+      title: OpenCraft Daily
+      author: OpenCraft Team
+      pages:
+      - '{"text":"§l§6You are catch-up."}'
+gameMode: CREATIVE
 health: 20.0
 foodLevel: 20
 walkSpeed: 0.2
@@ -8,9 +19,9 @@ exp: 0
 location:
   ==: org.bukkit.Location
   world: world
-  x: -80.4150528362935
-  y: 170.0
-  z: -36.83172611079833
-  pitch: 54.600025
-  yaw: 78.30004
+  x: -77.48750001192093
+  y: 169.0
+  z: -35.72564119050112
+  pitch: 18.750034
+  yaw: 157.34988
 potion: {}

@@ -15,8 +15,6 @@ base/*/build
 /server/libraries
 /server/versions/
 /server/logs/
-/server/world_survive/
-/server/world/
 /server/plugins/Skinny/
 /server/plugins/inventories/
 /server/plugins/lobbies/
@@ -24,3 +22,17 @@ base/*/build
 /server/plugins/tag/
 /server/plugins/specialItems/
 /server/plugins/statics/
+/server/plugins/ServerBoss/
+/server/plugins/CurrencySystem/
+/server/plugins/Citizens/
+/server/plugins/tutorials/
+/server/plugins/trade/
+/server/plugins/OperationFinder/
+/server/plugins/BlockLocker/
+/server/plugins/PlayerUtil/
+/server/world_survive/
+/server/world/
+/server/world_nether/
+/server/world_the_end/
+/server/world_trade/
+/server/plugins/WorldEdit/

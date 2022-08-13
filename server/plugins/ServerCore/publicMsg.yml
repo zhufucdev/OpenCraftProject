@@ -19,6 +19,7 @@
   extra:
     zhufucomcom: R
     topgod: R
+    zhufucdev: true
 '4':
   msg: $redTestRed$blueTestBlue
   read: false
