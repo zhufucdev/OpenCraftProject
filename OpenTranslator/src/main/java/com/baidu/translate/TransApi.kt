@@ -16,7 +16,7 @@ class TransApi(private val appid: String, private val securityKey: String) {
     private fun buildParams(query: String, from: String, to: String): String {
         val salt = System.currentTimeMillis().toString()
         val src = appid + query + salt + securityKey
-        return ("https://" + TRANS_API_HOST + "/" + TRANS_API_PATHS + "?q" + URLEncoder.encode(query, Charsets.UTF_8)
+        return ("https://" + TRANS_API_HOST + "/" + TRANS_API_PATHS + "?q=" + URLEncoder.encode(query, Charsets.UTF_8)
                 + "&from=" + from + "&to=" + to + "&appid=" + appid + "&salt=" + salt + "&sign=" + MD5.md5(src))
     }
 

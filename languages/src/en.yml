@@ -418,7 +418,7 @@ trade:
 
 translator:
   usingLang: "%s is your language."
-  containsExpr: "Detected expression!"
+  containsExpr: "Expression detected!"
   containsColor: "Custom color code detected!"
   containsLang: "With language reference!"
   translating: "Translating…"

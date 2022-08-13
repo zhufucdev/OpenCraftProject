@@ -30,18 +30,16 @@ class OpenTranslator : JavaPlugin(), Listener {
 
         val detectLang = Translate.detectLanguage(msg)
         val detections = Translate.toTranslateOrNot(msg)
-        val sb = StringBuilder()
-        sb.append(getter["translator.usingLang", detectLang])
-        detections.map {
-            when (it) {
-                Expression -> sb.append(getter["translator.containsExpr"])
-                ColorCode -> sb.append(getter["translator.containsColor"])
-                LanguageExpr -> sb.append(getter["translator.containsLang"])
-            }
-            sb.append(' ')
-        }
-        sb.deleteCharAt(sb.lastIndex)
-        info.playerOutputStream.send(sb.toString().toInfoMessage())
+        info.playerOutputStream.send((
+                getter["translator.usingLang", detectLang].toList() +
+                detections.map {
+                    when (it) {
+                        Expression -> getter["translator.containsExpr"]
+                        ColorCode -> getter["translator.containsColor"]
+                        LanguageExpr -> getter["translator.containsLang"]
+                    }
+                }).joinToString(separator = " ").toInfoMessage()
+        )
         info.playerOutputStream.send(getter["translator.translating"])
 
         val translations = HashMap<String, String>()
