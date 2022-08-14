@@ -7,6 +7,5 @@ dependencies {
     compileOnly project(':inventoryBase')
     compileOnly project(':utils')
     compileOnly project(':blockManagment')
-    compileOnly project(':listeners')
     compileOnly 'net.citizensnpcs:citizens-main:' + rootProject.ext.citizens_version
 }

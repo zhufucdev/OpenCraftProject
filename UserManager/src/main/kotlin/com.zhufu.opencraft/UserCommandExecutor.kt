@@ -253,7 +253,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     inventory.create(DualInventory.RESET).load()
                     status = Info.GameStatus.InLobby
                 }
-                PlayerLobbyManager[targetInfo].tpHere(this)
+                PlayerLobbyManager[targetInfo].visitBy(this)
             }
 
             player.isInvulnerable = true

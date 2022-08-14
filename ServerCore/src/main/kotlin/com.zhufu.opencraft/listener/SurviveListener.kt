@@ -1,5 +1,6 @@
-package com.zhufu.opencraft
+package com.zhufu.opencraft.listener
 
+import com.zhufu.opencraft.*
 import com.zhufu.opencraft.Base.endWorld
 import com.zhufu.opencraft.Base.lobby
 import com.zhufu.opencraft.Base.netherWorld
@@ -15,7 +16,6 @@ import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.special_item.Insurance
 import com.zhufu.opencraft.util.*
-import net.kyori.adventure.text.TranslatableComponent
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -319,7 +319,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 )
             ).block.type != Material.AIR
         ) {
-            info.tag.set("isSurvivor", true)
+            info.isSurvivor = true
             info.saveServerID()
 
             Bukkit.getScheduler().runTaskLater(plugin, { _ ->
@@ -419,7 +419,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             sendPlayerOutOfSpawnMessage(event.player)
         } else if (info.status == InLobby && event.block.world == lobby) {
             if (!PlayerLobbyManager.isInOwnLobby(info) && !event.player.isOp && PlayerLobbyManager.targetOf(event.player)
-                    ?.canBuildBy(event.player) != true
+                    ?.isPartner(event.player) != true
             ) {
                 event.isCancelled = true
                 event.player.sendActionBar(info.getter()["lobby.error.breakNotPermitted"].toErrorMessage())
@@ -451,7 +451,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     event.isCancelled = true
                 }
             } else if (!event.player.isOp && PlayerLobbyManager.targetOf(event.player)
-                    ?.canBuildBy(event.player) != true
+                    ?.isPartner(event.player) != true
             ) {
                 event.isCancelled = true
                 event.player.sendActionBar(info.getter()["lobby.error.buildNotPermitted"].toErrorMessage())

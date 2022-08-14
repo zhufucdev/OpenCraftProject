@@ -3,7 +3,6 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     compileOnly project(':playerManagment')
-    compileOnly project(':listeners')
     compileOnly project(':tradeBase')
     compileOnly project(':inventoryBase')
     compileOnly project(':blockManagment')

@@ -56,7 +56,7 @@ object ChartHandler : Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin)
     }
 
-    fun spawnNPC(it: Everything.Cube, chart: List<ServerPlayer>) {
+    fun spawnNPC(it: Cube, chart: List<ServerPlayer>) {
         CitizensAPI.getNPCRegistry().apply {
             if (chart.isNotEmpty()) {
                 updateFor(it, 0, chart)
@@ -70,7 +70,7 @@ object ChartHandler : Listener {
         }
     }
 
-    private fun updateFor(cube: Everything.Cube, index: Int, chart: List<ServerPlayer>) {
+    private fun updateFor(cube: Cube, index: Int, chart: List<ServerPlayer>) {
         val unknownName = Language.getDefault("player.unknownName")
         fun processLocation(l: Location) =
             l.add(Vector(0, 1, 0)).center.apply {
@@ -121,7 +121,7 @@ object ChartHandler : Listener {
         }
     }
 
-    fun remove(it: Everything.Cube) {
+    fun remove(it: Cube) {
         it.fill(it.from.world!!, Material.AIR)
         CitizensAPI.getNPCRegistry().toList().forEach { npc ->
             if (npc.data().has("temp") && it.contains(npc.storedLocation.clone().add(Vector(0, -1, 0)))) {

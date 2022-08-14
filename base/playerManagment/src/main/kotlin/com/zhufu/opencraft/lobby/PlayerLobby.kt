@@ -10,15 +10,13 @@ import com.zhufu.opencraft.*
 import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.data.ServerPlayer
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.io.File
 import java.nio.file.Paths
-import java.util.concurrent.Executors
-import java.util.concurrent.FutureTask
 import kotlin.math.abs
 
 class PlayerLobby(val owner: OfflineInfo) {
@@ -58,6 +56,9 @@ class PlayerLobby(val owner: OfflineInfo) {
     var views: Long
         get() = tag.getLong("views", 0L)
         set(value) = tag.set("views", value)
+    var visitorGameMode: GameMode
+        get() = GameMode.valueOf(tag.getString("visitorGameMode", "CREATIVE")!!)
+        set(value) = tag.set("visitorGameMode", value.name)
 
     fun reviews(): List<Pair<String, Boolean>> = arrayListOf<Pair<String, Boolean>>().apply {
         val configuration = tag.getConfigurationSection("review") ?: return@apply
@@ -83,7 +84,7 @@ class PlayerLobby(val owner: OfflineInfo) {
     }
 
     fun partners(): List<String> = tag.getStringList("partners")
-    fun canBuildBy(player: Player) = partners().contains(player.name)
+    fun isPartner(player: Player) = partners().contains(player.name)
 
     fun addPartner(who: ServerPlayer): Boolean {
         if (who == owner)
@@ -174,7 +175,7 @@ class PlayerLobby(val owner: OfflineInfo) {
         }
     }
 
-    fun tpHere(player: Player) {
+    fun visitBy(player: Player) {
         Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore) { _ ->
             while (isInitializing) {
                 Thread.sleep(200)
@@ -189,12 +190,14 @@ class PlayerLobby(val owner: OfflineInfo) {
                 PlayerLobbyManager.targetMap[player] = this
                 val getter = player.getter()
                 player.info()?.apply {
-                    if (!isSurvivor && (player.info()?.territoryID ?: -1) == this@PlayerLobby.id) {
+                    val isOwner = uuid == owner.uuid
+                    val isPartner = isPartner(player)
+                    if (!isSurvivor && isOwner) {
                         // To make speeches
                         var delay = 20L
                         fun speak(order: Int, arg: String? = null, block: (String) -> Unit) {
                             val string =
-                                if (arg != null) getter["lobby.speeches.$order", arg] else getter["lobby.speeches.$order", arg]
+                                if (arg != null) getter["lobby.speeches.$order", arg] else getter["lobby.speeches.$order"]
                             var length = 0
                             string.forEach { if (it.isLetterOrDigit()) length++ }
                             delay += length
@@ -211,6 +214,10 @@ class PlayerLobby(val owner: OfflineInfo) {
                         speak(3) {
                             player.tip(it)
                         }
+                    } else if (!isOwner && !isPartner) {
+                        player.gameMode = visitorGameMode
+                    } else if (isPartner) {
+                        player.gameMode = GameMode.CREATIVE
                     }
                 }
 

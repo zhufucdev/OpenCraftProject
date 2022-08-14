@@ -630,6 +630,12 @@ lobby:
     like: '%s名玩家喜欢这个主城'
     dislike: '%s名玩家不喜欢这个主城'
     views: '%s浏览量'
+  mode:
+    title: '访客游戏模式'
+    creative: '创造'
+    adventure: '冒险'
+    spectator: '观察'
+    tip: '点击以切换'
   warn:
     noSpawnpoint: '%s的主城没有设置出生点，传送到默认位置'
   error:

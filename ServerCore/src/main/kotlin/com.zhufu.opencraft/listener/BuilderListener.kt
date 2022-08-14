@@ -1,6 +1,8 @@
-package com.zhufu.opencraft
+package com.zhufu.opencraft.listener
 
 import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.info
+import com.zhufu.opencraft.offlineInfo
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.util.toErrorMessage
 import org.bukkit.*

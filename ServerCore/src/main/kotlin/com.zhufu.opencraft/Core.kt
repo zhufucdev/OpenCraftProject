@@ -16,8 +16,7 @@ import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.events.PlayerInventorySaveEvent
 import com.zhufu.opencraft.events.PlayerJoinGameEvent
-import com.zhufu.opencraft.listener.NPCListener
-import com.zhufu.opencraft.listener.NPCSelectListener
+import com.zhufu.opencraft.listener.*
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
@@ -121,7 +120,7 @@ class Core : JavaPlugin(), Listener {
         ServerCaller["SolvePlayerLobby"] = {
             val info = (it.firstOrNull()
                 ?: throw IllegalArgumentException("This call must be give at least one Info parameter.")) as Info
-            PlayerLobbyManager[info].also { lobby -> if (!lobby.isInitialized) lobby.initialize() }.tpHere(info.player)
+            PlayerLobbyManager[info].also { lobby -> if (!lobby.isInitialized) lobby.initialize() }.visitBy(info.player)
         }
         if (!server.pluginManager.isPluginEnabled("Citizens")) {
             logger.warning("Citizens is not enabled.")

@@ -8,7 +8,6 @@ dependencies {
     api project(':tradeBase')
     api project(':utils')
     api project(':miniGameBase')
-    api project(':listeners')
     api project(':scripting')
     api project(':pluginBase')
     api project(':webBase')

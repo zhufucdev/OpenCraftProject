@@ -611,6 +611,12 @@ lobby:
     like: '%s players like this lobby.'
     dislike: '%s players dislike this lobby.'
     views: '%s views are present.'
+  mode:
+    title: 'Visitor Game Mode'
+    creative: 'Creative'
+    adventure: 'Adventure'
+    spectator: 'Spectator'
+    tip: 'Click to switch'
   warn:
     noSpawnpoint: "%s's lobby doesn't have a spawn point. Teleporting to the default location..."
   statics:

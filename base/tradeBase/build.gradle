@@ -4,7 +4,6 @@ version '1.0-SNAPSHOT'
 dependencies {
     compileOnly project(':pluginBase')
     compileOnly project(':inventoryBase')
-    compileOnly project(':listeners')
     compileOnly project(':playerManagment')
     compileOnly 'net.citizensnpcs:citizens-main:' + rootProject.ext.citizens_version
 }

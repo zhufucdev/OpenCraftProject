@@ -1,7 +1,9 @@
-package com.zhufu.opencraft
+package com.zhufu.opencraft.listener
 
+import com.zhufu.opencraft.PlayerManager
 import com.zhufu.opencraft.data.DualInventory
 import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.error
 import com.zhufu.opencraft.events.PlayerDeobserveEvent
 import com.zhufu.opencraft.events.PlayerObserveEvent
 import com.zhufu.opencraft.util.*
@@ -109,7 +111,7 @@ object PlayerObserverListener : Listener {
     fun onPlayerQuit(event: PlayerQuitEvent){
         val p = mList.indexOfFirst { it.player == event.player }
         if (p != -1){
-            mList[p].observingPlayers.forEach { playerDeobserve(com.zhufu.opencraft.events.PlayerDeobserveEvent(it)) }
+            mList[p].observingPlayers.forEach { playerDeobserve(PlayerDeobserveEvent(it)) }
             mList.removeAt(p)
         }
         else{

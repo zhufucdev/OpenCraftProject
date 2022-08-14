@@ -274,7 +274,7 @@ class PlayerUtil : JavaPlugin() {
                     } else {
                         when (args.last()) {
                             "go" -> {
-                                PlayerLobbyManager[target].tpHere(sender)
+                                PlayerLobbyManager[target].visitBy(sender)
                             }
                             else -> {
                                 val info = sender.info()

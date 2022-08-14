@@ -61,7 +61,7 @@ object PortalHandler : Listener {
         }
     }
 
-    private fun Player.owns(sth: Everything.Cube?) =
+    private fun Player.owns(sth: Cube?) =
         sth != null && sth.savedData.has("owner") && sth.savedData["owner"].asString.let { it == name || (it == "op" && isOp) }
 
     private fun blockDistance(a: Location, b: Location) =

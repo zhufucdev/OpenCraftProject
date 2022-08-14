@@ -5,6 +5,7 @@ import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.lobby.PlayerLobby
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.util.*
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
@@ -81,6 +82,7 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
                             addItemFlags(ItemFlag.HIDE_ENCHANTS)
                         }
                     }
+
                     5 -> ItemStack(Material.POISONOUS_POTATO).updateItemMeta<ItemMeta> {
                         displayName(getter["lobby.dislike"].toErrorMessage())
                         if (review == false) {
@@ -89,6 +91,7 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
                             addItemFlags(ItemFlag.HIDE_ENCHANTS)
                         }
                     }
+
                     else -> super.getToolbarItem(index)
                 }
             } else if (index == 6) {
@@ -99,16 +102,35 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
             } else if (index == 5) {
                 if (!isGathering)
                     ItemStack(Material.GRASS_BLOCK).updateItemMeta<ItemMeta> {
-                        displayName(getter["lobby.gather.title"].toInfoMessage())
-                        lore(listOf(
-                            getter["lobby.gather.info", PlayerLobbyManager[info].partners().size].toComponent(),
-                            getter["lobby.gather.click"].toTipMessage()
-                        ))
+                        displayName(getter["lobby.gather.title"].toTitleMessage())
+                        lore(
+                            listOf(
+                                getter["lobby.gather.info", PlayerLobbyManager[info].partners().size].toInfoMessage(),
+                                getter["lobby.gather.click"].toTipMessage()
+                            )
+                        )
                     }
                 else
                     Widgets.back.updateItemMeta<ItemMeta> {
                         displayName(getter["ui.back"].toInfoMessage())
                     }
+            } else if (index == 4 && !isGathering) {
+                val lobby = PlayerLobbyManager[info]
+                ItemStack(
+                    when (lobby.visitorGameMode) {
+                        GameMode.ADVENTURE -> Material.COMPASS
+                        GameMode.SPECTATOR -> Material.ENDER_EYE
+                        else -> Material.COMMAND_BLOCK
+                    }
+                ).updateItemMeta<ItemMeta> {
+                    displayName(getter["lobby.mode.title"].toTitleMessage())
+                    lore(
+                        listOf(
+                            getter["lobby.mode.${lobby.visitorGameMode.name.lowercase()}"].toInfoMessage(),
+                            getter["lobby.mode.tip"].toTipMessage()
+                        )
+                    )
+                }
             } else {
                 super.getToolbarItem(index)
             }
@@ -123,7 +145,7 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
                 } else {
                     PlayerLobbyManager[info]
                 }
-                lobby.tpHere(info.player)
+                lobby.visitBy(info.player)
             } else {
                 val target = list[index].owner
                 if (target.name != null) {
@@ -152,6 +174,7 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
                         }
                         refresh()
                     }
+
                     5 -> {
                         when (review) {
                             false -> currentLobby.cancelReviewFor(info)
@@ -167,6 +190,14 @@ class LobbyVisitor(plugin: Plugin, private val info: Info) : PageInventory<Lobby
             else
                 if (index == 5) {
                     adapter.isGathering = !adapter.isGathering
+                    refresh()
+                } else if (index == 4) {
+                    currentLobby.visitorGameMode =
+                        when (currentLobby.visitorGameMode) {
+                            GameMode.CREATIVE -> GameMode.ADVENTURE
+                            GameMode.ADVENTURE -> GameMode.SPECTATOR
+                            else -> GameMode.CREATIVE
+                        }
                     refresh()
                 }
         }

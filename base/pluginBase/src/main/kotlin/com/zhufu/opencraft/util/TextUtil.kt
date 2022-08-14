@@ -25,6 +25,7 @@ object TextUtil {
         override fun toString(): String = code
     }
 
+    val TITLE_STYLE get() = Style.style(NamedTextColor.AQUA, TextDecoration.BOLD)
     val INFO_STYLE get() = Style.style(NamedTextColor.YELLOW)
     val SUCCESS_STYLE get() = Style.style(NamedTextColor.GREEN)
     val ERROR_STYLE get() = Style.style(NamedTextColor.RED, TextDecoration.BOLD)
@@ -164,6 +165,7 @@ object TextUtil {
     }
 }
 
+fun String.toTitleMessage() = Component.text(this, TextUtil.TITLE_STYLE)
 fun String.toInfoMessage() = Component.text(this, TextUtil.INFO_STYLE)
 fun String.toTipMessage() = Component.text(this, TextUtil.TIP_STYLE)
 fun String.toWarnMessage() = Component.text(this, TextUtil.WARN_STYLE)

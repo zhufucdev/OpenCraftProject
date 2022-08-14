@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.Base.Extend.appendToJson
 import com.zhufu.opencraft.data.Info
+import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
 import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.util.toInfoMessage
@@ -52,111 +53,12 @@ object Everything : Listener {
         try {
             reader.beginArray()
             while (reader.hasNext()) {
-                cubes.add(Cube.fromJson(JsonParser().parse(reader).asJsonObject) ?: continue)
+                cubes.add(Cube.fromJson(JsonParser.parseReader(reader).asJsonObject) ?: continue)
             }
             reader.endArray()
         } catch (e: Exception) {
             print("[PlayerUtil] Unable to load configurations: ${e.message}: ${e.cause}")
             e.printStackTrace()
-        }
-    }
-
-    class Cube(val from: Location, val to: Location) {
-        var type = "DTWB"
-        val data = YamlConfiguration()
-        var savedData = JsonObject()
-
-        fun contains(location: Location): Boolean {
-            fun validate(a: Int, b: Int, x: Int) =
-                if (a < b) x in a..b else x in b..a
-
-            return validate(from.blockX, to.blockX, location.blockX)
-                    && validate(from.blockY, to.blockY, location.blockY)
-                    && validate(from.blockZ, to.blockZ, location.blockZ)
-        }
-
-        fun fill(world: World, material: Material) {
-            fun doZ(x: Int, y: Int) {
-                if (from.blockZ < to.blockZ) {
-                    for (z in from.blockZ..to.blockZ) {
-                        //world.getBlockAt(x,y,z).setTypeIdAndData(material.itemType.uuid,material.data,true)
-                        world.getBlockAt(x, y, z).also {
-                            it.setType(material, true)
-                        }
-                    }
-                } else {
-                    for (z in to.blockZ..from.blockZ) {
-                        world.getBlockAt(x, y, z).also {
-                            it.setType(material, true)
-                        }
-                    }
-                }
-            }
-
-            fun doY(x: Int) {
-                if (from.blockY < to.blockY) {
-                    for (y in from.blockY..to.blockY) {
-                        doZ(x, y)
-                    }
-                } else {
-                    for (y in to.blockY..from.blockY) {
-                        doZ(x, y)
-                    }
-                }
-            }
-            if (from.blockX < to.blockX) {
-                for (x in from.blockX..to.blockX) {
-                    doY(x)
-                }
-            } else {
-                for (x in to.blockX..from.blockX) {
-                    doY(x)
-                }
-            }
-        }
-
-        fun appendToJson(writer: JsonWriter) {
-            writer.beginObject()
-                .name("from")
-            from.appendToJson(writer)
-            writer.name("to")
-            to.appendToJson(writer)
-            writer
-                .name("type").value(type)
-                .name("data").jsonValue(savedData.toString())
-                .endObject()
-        }
-
-        companion object {
-            fun fromJson(obj: JsonObject): Cube? {
-                var from: Location? = null
-                var to: Location? = null
-                if (obj.has("from")) {
-                    from = Base.Extend.fromJsonToLocation(JsonReader(StringReader(obj["from"].asJsonObject.toString())))
-                }
-                if (obj.has("to")) {
-                    to = Base.Extend.fromJsonToLocation(JsonReader(StringReader(obj["to"].asJsonObject.toString())))
-                }
-                if (from == null || to == null)
-                    return null
-                val r = Cube(from, to)
-                if (obj.has("type"))
-                    r.type = obj["type"].asString
-                if (obj.has("data")) {
-                    r.savedData = obj["data"].asJsonObject
-                }
-                return r
-            }
-        }
-
-        override fun equals(other: Any?): Boolean {
-            return other is Cube && other.from == this.from && other.to == this.to
-        }
-
-        override fun hashCode(): Int {
-            var result = from.hashCode()
-            result = 31 * result + to.hashCode()
-            return result
         }
     }
 
@@ -325,9 +227,7 @@ object Everything : Listener {
     fun onPlayerClick(event: PlayerInteractEvent) {
         fun plus() {
             val player = event.player
-            val info = player.info()
-            if (info?.status != Info.GameStatus.Surviving)
-                return
+            val info = player.info() ?: return
             if (!info.preference.playerUtilitiesGesture)
                 return
             fun reset() {
@@ -363,8 +263,13 @@ object Everything : Listener {
             val value = clickMap[player]
             if (value != null && value.first >= 3) {
                 if (System.currentTimeMillis() - value.second <= 1200) {
-                    MenuInterface(mPlugin!!, player).show(player)
+                    val info = player.info() ?: return
                     event.isCancelled = true
+                    when (info.status) {
+                        Info.GameStatus.Surviving -> MenuInterface(mPlugin!!, player).show(player)
+                        Info.GameStatus.InLobby -> LobbyVisitor(mPlugin!!, info).show(player)
+                        else -> event.isCancelled = false
+                    }
                 }
                 clickMap.remove(player)
             }
@@ -439,4 +344,103 @@ object Everything : Listener {
     }
 
     private val originItemMap = HashMap<UUID, Pair<ItemStack, (String?) -> Unit>>()
+}
+
+class Cube(val from: Location, val to: Location) {
+    var type = "DTWB"
+    val data = YamlConfiguration()
+    var savedData = JsonObject()
+
+    fun contains(location: Location): Boolean {
+        fun validate(a: Int, b: Int, x: Int) =
+            if (a < b) x in a..b else x in b..a
+
+        return validate(from.blockX, to.blockX, location.blockX)
+                && validate(from.blockY, to.blockY, location.blockY)
+                && validate(from.blockZ, to.blockZ, location.blockZ)
+    }
+
+    fun fill(world: World, material: Material) {
+        fun doZ(x: Int, y: Int) {
+            if (from.blockZ < to.blockZ) {
+                for (z in from.blockZ..to.blockZ) {
+                    //world.getBlockAt(x,y,z).setTypeIdAndData(material.itemType.uuid,material.data,true)
+                    world.getBlockAt(x, y, z).also {
+                        it.setType(material, true)
+                    }
+                }
+            } else {
+                for (z in to.blockZ..from.blockZ) {
+                    world.getBlockAt(x, y, z).also {
+                        it.setType(material, true)
+                    }
+                }
+            }
+        }
+
+        fun doY(x: Int) {
+            if (from.blockY < to.blockY) {
+                for (y in from.blockY..to.blockY) {
+                    doZ(x, y)
+                }
+            } else {
+                for (y in to.blockY..from.blockY) {
+                    doZ(x, y)
+                }
+            }
+        }
+        if (from.blockX < to.blockX) {
+            for (x in from.blockX..to.blockX) {
+                doY(x)
+            }
+        } else {
+            for (x in to.blockX..from.blockX) {
+                doY(x)
+            }
+        }
+    }
+
+    fun appendToJson(writer: JsonWriter) {
+        writer.beginObject()
+            .name("from")
+        from.appendToJson(writer)
+        writer.name("to")
+        to.appendToJson(writer)
+        writer
+            .name("type").value(type)
+            .name("data").jsonValue(savedData.toString())
+            .endObject()
+    }
+
+    companion object {
+        fun fromJson(obj: JsonObject): Cube? {
+            var from: Location? = null
+            var to: Location? = null
+            if (obj.has("from")) {
+                from = Base.Extend.fromJsonToLocation(JsonReader(StringReader(obj["from"].asJsonObject.toString())))
+            }
+            if (obj.has("to")) {
+                to = Base.Extend.fromJsonToLocation(JsonReader(StringReader(obj["to"].asJsonObject.toString())))
+            }
+            if (from == null || to == null)
+                return null
+            val r = Cube(from, to)
+            if (obj.has("type"))
+                r.type = obj["type"].asString
+            if (obj.has("data")) {
+                r.savedData = obj["data"].asJsonObject
+            }
+            return r
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Cube && other.from == this.from && other.to == this.to
+    }
+
+    override fun hashCode(): Int {
+        var result = from.hashCode()
+        result = 31 * result + to.hashCode()
+        return result
+    }
 }
