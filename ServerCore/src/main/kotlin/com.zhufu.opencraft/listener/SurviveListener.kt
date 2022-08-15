@@ -381,7 +381,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         if (info.status == Surviving) {
             if (info.isSurveyPassed || !info.outOfSpawn) {
                 event.player.success(getter["user.spawnpoint.saved"])
-                info.survivalSpawn
+                info.survivalSpawn = event.bed.location
                 event.player.bedSpawnLocation = event.bed.location
             } else {
                 event.isCancelled = true
