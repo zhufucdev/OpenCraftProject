@@ -222,7 +222,7 @@ abstract class MiniGame : Listener {
                     it.player.sendMessage(TextUtil.info(Language[it, "game.reset"]))
                     it.status = Info.GameStatus.InLobby
                 }
-                ?.inventory?.create(RESET)?.load()
+                ?.inventory?.getOrCreate(RESET)?.load()
         }
         gaming.clear()
 
@@ -264,7 +264,7 @@ abstract class MiniGame : Listener {
         gaming.add(player, team = getSuitablePlayerTeam())
         broadcast("player.joinGame", "(${gaming.size}/${getMaxPlayerCount()}) ${player.name}", getGameName())
         //Load player profile
-        info.inventory.create(NOTHING).load()
+        info.inventory.getOrCreate(NOTHING).load()
         DualInventory.resetPlayer(player)
         info.status = Info.GameStatus.MiniGaming
 
@@ -298,7 +298,7 @@ abstract class MiniGame : Listener {
         player.setGameName(Team.NONE)
         PlayerManager.findInfoByPlayer(player)
             ?.also { it.status = Info.GameStatus.InLobby }
-            ?.inventory?.create(RESET)?.load()
+            ?.inventory?.getOrCreate(RESET)?.load()
     }
 
     private fun getSuitablePlayerTeam(): Team {
@@ -438,7 +438,7 @@ abstract class MiniGame : Listener {
         player.health = 20.toDouble()
         player.foodLevel = 25
         player.exp = 0f
-        PlayerManager.findInfoByPlayer(player)?.inventory?.create(RESET)?.load()
+        PlayerManager.findInfoByPlayer(player)?.inventory?.getOrCreate(RESET)?.load()
     }
 
     /**

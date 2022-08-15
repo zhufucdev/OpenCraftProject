@@ -2,53 +2,38 @@ package com.zhufu.opencraft.data
 
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.ServerStatics
-import com.zhufu.opencraft.player_community.Friendship
+import com.zhufu.opencraft.player_community.Friendships
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
 import com.zhufu.opencraft.updateItemMeta
+import org.bson.Document
+import org.bson.types.Binary
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.permissions.ServerOperator
 import java.io.File
-import java.nio.file.Paths
+import java.security.MessageDigest
 import java.util.*
 import javax.security.auth.DestroyFailedException
 import javax.security.auth.Destroyable
-import kotlin.collections.HashMap
 
 abstract class ServerPlayer(
     private val createNew: Boolean,
-    val uuid: UUID? = null,
+    val uuid: UUID,
     private val nameToExtend: String? = null
 ) : ServerOperator, Destroyable {
     companion object {
-        val memory = HashMap<UUID, YamlConfiguration>()
-
-        val size: Int
-            get() {
-                var r = 0
-                Paths.get("plugins", "tag").toFile().listFiles()?.forEach {
-                    if (!it.isHidden && !it.isDirectory) {
-                        r++
-                    }
-                }
-                r += Paths.get("plugins", "tag", "preregister").toFile().listFiles()?.size ?: 0
-                return r
-            }
-
         fun forEachSaved(l: (ServerPlayer) -> Unit) {
-            Paths.get("plugins", "tag").toFile().listFiles()?.forEach {
-                if (!it.isHidden && !it.isDirectory)
-                    l(OfflineInfo(UUID.fromString(it.nameWithoutExtension)))
-            }
-            Paths.get("plugins", "tag", "preregister").toFile().listFiles()?.forEach {
-                if (!it.isHidden)
-                    l(PreregisteredInfo(it.nameWithoutExtension))
+            Database.tag.find().forEach {
+                val id = it.get("_id", UUID::class.java)
+                if (Bukkit.getPlayer(id) == null) {
+                    l(PreregisteredInfo(id))
+                } else {
+                    l(OfflineInfo(id, false))
+                }
             }
         }
 
@@ -65,112 +50,32 @@ abstract class ServerPlayer(
                         offlineInfo
                 }
             }
-            else -> throw IllegalStateException()
+            else -> throw IllegalArgumentException()
         }
     }
 
-    override fun equals(other: Any?): Boolean = other is ServerPlayer && other.tagFile == this.tagFile
+    val doc: Document = Database.tag(uuid, createNew)
+    internal fun update() {
+        Database.tag(uuid, doc)
+    }
 
-    abstract val tagFile: File
     abstract val playerDir: File
-    private var privateTag: YamlConfiguration? = null
-    var tag: YamlConfiguration
-        get() = if (uuid != null) {
-            memory[uuid].let {
-                if (it == null) {
-                    val t = initTag(createNew)
-                    memory[uuid] = t
-                    t
-                } else {
-                    it
-                }
+    val friendships get() = Friendships.of(this)
+    val checkpoints get() = Checkpoints.of(this)
+    val sharedCheckpoints: List<Pair<ServerPlayer, Checkpoint>>
+        get() = friendships.mapNotNull { friend ->
+            if (friend.isFriend) friend.sharedCheckpoints.forEach { point ->
+                if (!checkpoints.contains(point))
+                    return@mapNotNull friend.friend to point
             }
-        } else {
-            privateTag.let {
-                if (it == null) {
-                    val r = initTag(createNew)
-                    privateTag = r
-                    r
-                } else {
-                    privateTag!!
-                }
-            }
+            null
         }
-        set(value) {
-            if (uuid != null) memory[uuid] = value
-            else privateTag = value
-        }
-    val friendship get() = Friendship.from(this)
-
-    private fun initTag(createNew: Boolean) = try {
-        if (tagFile.exists())
-            YamlConfiguration.loadConfiguration(tagFile)
-        else {
-            ServerStatics.playerNumber++
-            if (createNew) {
-                tagFile.createNewFile()
-            }
-            YamlConfiguration()
-        }
-    } catch (e: Throwable) {
-        println("Could not load tag for player $uuid")
-        throw e
-    }
-
-    open fun save() {
-        if (friendship.isNotEmpty())
-            friendship.save()
-        if (!messagePool.isEmpty) {
-            tag.set("messages", messagePool.serialize())
-        }
-        tag.set("checkpoints", null)
-        checkpoints.forEach {
-            tag.set("checkpoints.${it.name}", it.location)
-        }
-        try {
-            tag.save(tagFile)
-        } catch (e: Exception) {
-            Bukkit.getLogger().warning("Failed to save $name's tag file:")
-            e.printStackTrace()
-        }
-        if (PlayerStatics.contains(this))
-            statics!!.save()
-    }
-
-    var checkpoints = arrayListOf<CheckpointInfo>().apply {
-        val checkpoints = tag.getConfigurationSection("checkpoints")
-        checkpoints?.getKeys(false)?.forEach {
-            try {
-                add(
-                    CheckpointInfo(
-                        location = checkpoints.getSerializable(it, Location::class.java)!!,
-                        name = it
-                    )
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-        private set
-    val sharedCheckpoints: List<Pair<ServerPlayer, CheckpointInfo>>
-        get() {
-            val r = arrayListOf<Pair<ServerPlayer, CheckpointInfo>>()
-            friendship.forEach { friend ->
-                if (friend.isFriend) friend.sharedCheckpoints.forEach { point ->
-                    if (!checkpoints.contains(point))
-                        r.add(friend.friend to point)
-                }
-            }
-            return r
-        }
-
     fun removeCheckpoint(name: String): Boolean {
         val index = checkpoints.firstOrNull { it.name == name }
         return if (index != null) {
             checkpoints.remove(index)
-            friendship.forEach {
-                it.sharedCheckpoints.remove(index)
+            friendships.forEach {
+                it.removeSharedCheckpoint(index)
             }
             true
         } else {
@@ -178,91 +83,140 @@ abstract class ServerPlayer(
         }
     }
 
-    var password: String?
-        get() = tag.getString("password", null)
-        set(value) = tag.set("password", value)
-    val inventoriesFile: File
-        get() = Paths.get("plugins", "inventories", uuid.toString()).toFile()
+    val hasPassword: Boolean
+        get() = doc.containsKey("password")
+    fun setPassword(pwd: String?) {
+        if (pwd == null) {
+            doc.remove("password")
+        } else {
+            val md = MessageDigest.getInstance("SHA-256")
+            val encoded = pwd.encodeToByteArray()
+            val bytes = md.digest(encoded)
+            doc["password"] = bytes
+        }
+        update()
+    }
+    fun matchPassword(pwd: String): Boolean {
+        if (!doc.containsKey("password"))
+            throw NullPointerException("Password not set.")
+
+        val md = MessageDigest.getInstance("SHA-256")
+        val encoded = pwd.encodeToByteArray()
+        val encrypt = md.digest(encoded)
+        return encrypt.contentEquals(doc.get("password", Binary::class.java).data)
+    }
 
     var currency: Long
-        get() = tag.getLong("currency", 0)
+        get() = doc.getLong("currency") ?: 0
         set(value) {
             statics?.setCurrency(value)
-            tag.set("currency", value)
+            doc["currency"] = value
+            update()
         }
     var territoryID: Int
-        get() = tag.getInt("territoryID", -1).let {
-            if (it == -1) {
-                val r = ServerStatics.playerNumber - 1
-                territoryID = r
-                r
-            } else
-                it
-        }
+        get() = doc.getInteger("territoryID", -1)
         set(value) {
-            tag.set("territoryID", value)
+            doc["territoryID"] = value
+            update()
         }
     val isOnline: Boolean
         get() = Bukkit.getOnlinePlayers().any { it.uniqueId == uuid }
     val onlinePlayerInfo: Info?
-        get() = if (isOnline) Info.findByPlayer(uuid!!) else null
+        get() = if (isOnline) Info.findByPlayer(uuid) else null
 
     var isSurveyPassed: Boolean
-        get() = tag.getBoolean("isSurveyPassed", false)
-        set(value) = tag.set("isSurveyPassed", value)
+        get() = doc.getBoolean("isSurveyPassed", false)
+        set(value) {
+            doc["isSurveyPassed"] = value
+            update()
+        }
     var gameTime: Long
-        get() = tag.getLong("gameTime", 0)
-        set(value) = tag.set("gameTime", value)
+        get() = doc.getLong("gameTime") ?: 0
+        set(value) {
+            doc["gameTime"] = value
+            update()
+        }
     var damageDone: Double
-        get() = tag.getDouble("damage", 0.0)
-        set(value) = tag.set("damage", value)
+        get() = doc.getDouble("damage") ?: 0.0
+        set(value) {
+            doc["damage"] = value
+            update()
+        }
     val remainingDemoTime: Long
         get() = 90 * 60 * 1000L - gameTime
     var remainingSurveyChance: Int
-        get() = tag.getInt("surveyChanceRemaining", 10)
-        set(value) = tag.set("surveyChanceRemaining", value)
-    val preference: PlayerPreference = PlayerPreference(tag)
+        get() = doc.getInteger("surveyChanceRemaining", 10)
+        set(value) {
+            doc["surveyChanceRemaining"] = value
+            update()
+        }
+    val preference: PlayerPreference = PlayerPreference(doc)
 
     var userLanguage: String
-        get() = tag.getString("lang", Language.LANG_ZH)!!
-        set(value) = tag.set("lang", value)
+        get() = doc.getString("lang") ?: Language.defaultLangCode
+        set(value) {
+            doc["lang"] = value
+            update()
+        }
     val isUserLanguageSelected: Boolean
-        get() = tag.contains("lang")
+        get() = doc.contains("lang")
     var nickname: String?
-        get() = tag.getString("nickname", null)
-        set(value) = tag.set("nickname", value)
+        get() = doc.getString("nickname")
+        set(value) {
+            if (value != null) {
+                doc["nickname"] = value
+            } else {
+                doc.remove("nickname")
+            }
+            update()
+        }
 
     val offlinePlayer: OfflinePlayer
-        get() =
-            if (uuid != null) Bukkit.getOfflinePlayer(uuid)
-            else throw IllegalStateException("Cannot read offline player for an info with uuid null.")
+        get() = Bukkit.getOfflinePlayer(uuid)
 
     open var name: String?
         get() = nameToExtend
-            ?: tag.getString("name")
+            ?: doc.getString("name")
             ?: try {
                 offlinePlayer.name
             } catch (e: IllegalStateException) {
                 null
             }
-        set(value) = tag.set("name", value)
+        set(value) {
+            if (value != null) {
+                doc["name"] = value
+            } else {
+                doc.remove("name")
+            }
+            update()
+        }
     var skin: String?
-        get() = tag.getString("skin", null)
-        set(value) = tag.set("skin", value)
+        get() = doc.getString("skin")
+        set(value) {
+            if (value != null) {
+                doc["skin"] = value
+            } else {
+                doc.remove("skin")
+            }
+            update()
+        }
 
     var builderLevel: Int
-        get() = tag.getInt("builder", 0)
+        get() = doc.getInteger("builder", 0)
         set(value) {
-            tag.set(
-                "builder",
-                if (value > 0) value else null
-            )
+            if (value > 0) {
+                doc["builder"] = value
+            } else {
+                doc.remove("builder")
+            }
+            update()
         }
     val isBuilder get() = builderLevel > 0
     var isSurvivor
-        get() = tag.getBoolean("isSurvivor", false)
+        get() = doc.getBoolean("isSurvivor", false)
         set(value) {
-            tag.set("isSurvivor", value)
+            doc["isSurvivor"] = value
+            update()
         }
     private val skull by lazy {
         ItemStack(Material.PLAYER_HEAD).updateItemMeta<SkullMeta> {
@@ -282,9 +236,14 @@ abstract class ServerPlayer(
         offlinePlayer.isOp = value
     }
 
+    init {
+        if (territoryID == -1) {
+            territoryID = ServerStatics.playerCount
+        }
+    }
+
     open fun delete() {
-        tagFile.delete()
-        inventoriesFile.delete()
+        Database.drop(uuid)
     }
 
     private var isDestroyed = false
@@ -294,28 +253,23 @@ abstract class ServerPlayer(
             throw DestroyFailedException()
         }
 
-        save()
-        friendship.destroy()
+        friendships.destroy()
         MessagePool.remove(this)
-        if (uuid != null) {
-            memory.remove(uuid)
-            PlayerStatics.remove(uuid)
-        }
+        PlayerStatics.remove(uuid)
         isDestroyed = true
     }
 
+    override fun equals(other: Any?): Boolean {
+        return other is ServerPlayer && other.uuid == this.uuid
+    }
+
     override fun hashCode(): Int {
-        var result = uuid?.hashCode() ?: 0
-        result = 31 * result + tagFile.hashCode()
+        var result = uuid.hashCode()
         result = 31 * result + playerDir.hashCode()
         return result
     }
 
     val statics get() = PlayerStatics.from(this)
     val messagePool get() = MessagePool.of(this)
-
-    var maxLoopExecution
-        get() = tag.getLong("maxLoopExecution", 1000)
-        set(value) = tag.set("maxLoopExecution", value)
     val scriptDir get() = File(playerDir, "script").also { if (!it.exists()) it.mkdirs() }
 }

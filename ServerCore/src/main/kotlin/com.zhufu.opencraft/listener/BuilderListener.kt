@@ -56,14 +56,14 @@ object BuilderListener : Listener {
         }
         if (info.status == Info.GameStatus.Surviving) {
             info.status = Info.GameStatus.Building
-            info.inventory.create("builder").apply {
+            info.inventory.getOrCreate("builder").apply {
                 set("gameMode", GameMode.CREATIVE.name)
                 load()
             }
             updatePermissions(player, info.builderLevel)
         } else if (info.status == Info.GameStatus.Building) {
             info.status = Info.GameStatus.Surviving
-            info.inventory.create("survivor").load()
+            info.inventory.getOrCreate("survivor").load()
             player.gameMode = GameMode.SURVIVAL
             updatePermissions(player, 0)
         }

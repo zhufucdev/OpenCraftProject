@@ -1,18 +1,17 @@
 package com.zhufu.opencraft.player_community
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
+import com.mongodb.client.model.Filters
+import com.zhufu.opencraft.Base
+import com.zhufu.opencraft.data.Database
 import com.zhufu.opencraft.data.ServerPlayer
-import org.bukkit.Bukkit
-import java.io.File
-import java.nio.file.Paths
+import org.bson.Document
 import java.util.*
-import kotlin.collections.HashMap
 
-class PlayerStatics private constructor(val parent: ServerPlayer, private var data: JsonObject) {
+class PlayerStatics private constructor(val owner: ServerPlayer) {
+    val collection = Database.statics(owner.uuid)
     private fun getToday() = Calendar.getInstance().apply {
         time = Date()
+        timeZone = Base.timeZone
         set(Calendar.SECOND, 0)
         set(Calendar.MINUTE, 0)
         set(Calendar.HOUR_OF_DAY, 0)
@@ -21,6 +20,7 @@ class PlayerStatics private constructor(val parent: ServerPlayer, private var da
 
     private fun getYesterday() = Calendar.getInstance().apply {
         time = Date()
+        timeZone = Base.timeZone
         set(Calendar.SECOND, 0)
         set(Calendar.MINUTE, 0)
         set(Calendar.HOUR_OF_DAY, 0)
@@ -40,7 +40,7 @@ class PlayerStatics private constructor(val parent: ServerPlayer, private var da
             set(today, value)
             tT = value
         }
-    private var dT: Double = get(today, "damage")?.asDouble ?: 0.0
+    private var dT: Double = document(today)?.getDouble("damage") ?: 0.0
     var damageToday: Double
         get() {
             syncDate { dT = 0.0 }
@@ -52,50 +52,42 @@ class PlayerStatics private constructor(val parent: ServerPlayer, private var da
             dT = value
         }
 
-    private var cY: Long = get(getYesterday(), "currency")?.asLong ?: parent.currency.also {
-        setCurrency(parent.currency)
+    private var cY: Long = document(getYesterday())?.getLong("currency") ?: owner.currency.also {
+        setCurrency(owner.currency)
     }
     val currencyDelta: Long
         get() {
-        syncDate {
-            cY = get(getYesterday(), "currency")?.asLong ?: parent.currency.also { setCurrency(parent.currency) }
+            syncDate {
+                cY =
+                    document(getYesterday())?.getLong("currency") ?: owner.currency.also { setCurrency(owner.currency) }
+            }
+            return owner.currency - cY
         }
-        return parent.currency - cY
-    }
 
     fun setCurrency(current: Long) {
         syncDate()
-        set(timeToday, "currency", current)
+        set(today, "currency", current)
     }
 
-    operator fun get(time: Long) = data[time.toString()]?.let {
-        if (it.isJsonObject) {
-            it.asJsonObject["time"]?.asLong
-        } else {
-            it.asLong
-        }
-    } ?: 0L
+    operator fun get(time: Long) = document(time)?.getLong("time") ?: 0L
 
-    fun get(time: Long, key: String) = try { data[time.toString()]?.asJsonObject?.get(key) } catch (e: Exception) { null }
-
-    operator fun set(time: Long, value: Long) {
-        val obj = JsonObject()
-        obj.addProperty("time", value)
-        data.add(time.toString(), obj)
+    private fun document(day: Long) = try {
+        collection.find(Filters.eq(day)).first()
+    } catch (e: Exception) {
+        null
     }
 
-    fun set(time: Long, key: String, value: Number) {
-        val obj = data[time.toString()]?.let {
-            if (it.isJsonObject) {
-                it.asJsonObject
-            } else {
-                JsonObject().apply {
-                    addProperty("time", it.asLong)
-                }
-            }
-        } ?: JsonObject()
-        obj.addProperty(key, value)
-        data.add(time.toString(), obj)
+    private fun documentOrCreate(day: Long) = document(day)
+        ?: Document("_id", day).also { collection.insertOne(it) }
+
+    operator fun set(day: Long, value: Long) {
+        documentOrCreate(day)["time"] = value
+    }
+
+    fun set(day: Long, key: String, value: Number) {
+        val doc = documentOrCreate(day)
+        doc[key] = value
+        collection.replaceOne(Filters.eq(day), doc)
     }
 
     private fun syncDate(onNewDay: (() -> Unit)? = null) {
@@ -106,87 +98,34 @@ class PlayerStatics private constructor(val parent: ServerPlayer, private var da
         }
     }
 
-    fun getData() = data
-
-    val file: File by lazy {
-        Paths.get(
-            "plugins",
-            "statics",
-            parent.uuid!!.toString() + ".json"
-        ).toFile()
-    }
-
-    fun save() {
-        file.apply {
-            if (!exists()) {
-                if (!parentFile.exists())
-                    parentFile.mkdirs()
-                createNewFile()
-            }
-            val writer = this.writer()
-            GsonBuilder()
-                .setPrettyPrinting()
-                .create()
-                .toJson(data, writer)
-            writer.apply {
-                flush()
-                close()
-            }
-        }
-    }
+    fun getDailyPlayTime() = collection.find().map { it.getLong("_id") to it.getLong("time") }.toList()
 
     fun copyFrom(other: PlayerStatics) {
-        data = other.data
-        save()
+        collection.drop()
+        Database.statics(owner.uuid).insertMany(other.collection.find().toList())
     }
 
     fun delete() {
-        file.delete()
+        collection.drop()
     }
 
     companion object {
         private val map = HashMap<UUID, PlayerStatics>()
         fun forEach(l: (PlayerStatics) -> Unit) {
-            map.forEach { _, u ->
+            map.forEach { (_, u) ->
                 l(u)
             }
         }
 
-        fun saveAll() {
-            forEach { it.save() }
-        }
-
         fun remove(uuid: UUID) = map.remove(uuid)
 
-        fun contains(player: ServerPlayer) = player.uuid?.let { map.containsKey(it) } ?: false
+        fun contains(player: ServerPlayer) = map.containsKey(player.uuid)
         fun from(player: ServerPlayer): PlayerStatics? {
-            val uuid = player.uuid ?: return null
+            val uuid = player.uuid
             if (map.containsKey(uuid)) {
                 return map[uuid]!!
             }
-            val file =
-                Paths.get(
-                    "plugins",
-                    "statics",
-                    "$uuid.json"
-                ).toFile()
-            val data = if (!file.exists()) {
-                file.parentFile.apply {
-                    if (!exists()) mkdirs()
-                }
-                file.createNewFile()
-
-                JsonObject()
-            } else {
-                try {
-                    JsonParser().parse(file.reader()).asJsonObject
-                } catch (e: Exception) {
-                    Bukkit.getLogger()
-                        .warning("Failed to load statics file for ${player.name}. Using an empty one instead.")
-                    JsonObject()
-                }
-            }
-            return PlayerStatics(player, data)
+            return PlayerStatics(player)
                 .also { map[uuid] = it }
         }
     }

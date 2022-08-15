@@ -216,7 +216,7 @@ object TutorialManager {
 
             Bukkit.getScheduler().runTaskLater(mPlugin!!, { _ ->
                 //Start playing
-                info?.inventory?.create(DualInventory.RESET)?.load(inventoryOnly = true)
+                info?.inventory?.getOrCreate(DualInventory.RESET)?.load(inventoryOnly = true)
                 if (to is HumanEntity) {
                     to.gameMode = GameMode.SPECTATOR
                 }

@@ -2,6 +2,7 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.data.ServerPlayer
 import org.bukkit.configuration.file.YamlConfiguration
+import java.util.*
 import kotlin.math.sqrt
 
 object Game {
@@ -16,6 +17,7 @@ object Game {
         "secondsPerQuestion",
         "notice",
         "url",
+        "database",
         "diamondExchange",
         "debug",
         "ssHotReload"
@@ -27,7 +29,7 @@ object Game {
             ServerPlayer.forEachSaved {
                 if (!it.isOp) {
                     var weight =
-                        sqrt(it.currency.toDouble()) - 1200000.0 /   (it.gameTime / 1000.0 + 400) + 3000 + sqrt(it.damageDone)
+                        sqrt(it.currency.toDouble()) - 1200000.0 / (it.gameTime / 1000.0 + 400) + 3000 + sqrt(it.damageDone)
                     if (it.isSurveyPassed) {
                         weight += 40
                     }

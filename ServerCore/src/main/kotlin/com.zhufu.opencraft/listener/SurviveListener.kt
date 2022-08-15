@@ -7,9 +7,8 @@ import com.zhufu.opencraft.Base.netherWorld
 import com.zhufu.opencraft.Base.surviveWorld
 import com.zhufu.opencraft.Base.tradeWorld
 import com.zhufu.opencraft.api.ServerCaller
+import com.zhufu.opencraft.data.*
 import com.zhufu.opencraft.data.DualInventory.Companion.RESET
-import com.zhufu.opencraft.data.DualInventory
-import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.data.Info.GameStatus.*
 import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
@@ -60,7 +59,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 gameMode = GameMode.SURVIVAL
 
                 var bound = 20000
-                bound -= (File("plugins${File.separatorChar}inventories").listFiles()?.size ?: 0) * 10
+                bound -= OfflineInfo.count.toInt() * 10
                 if (bound <= 5000) bound = 5000
                 var r = Base.getRandomLocation(surviveWorld, bound, y = 128)
                 while (r.block.biome.name.contains("OCEAN"))
@@ -68,7 +67,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 teleport(r)
 
                 info.status = Surviving
-                inventory.create("survivor").load()
+                inventory.getOrCreate("survivor").load()
             }
 
             if (info.isSurvivor) {
@@ -76,16 +75,12 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     isInvulnerable = false
                     return true
                 }
-                val inventory = info.inventory.create("survivor")
+                val inventory = info.inventory.getOrCreate("survivor")
 
                 fun reset() {
-                    val config = info.inventory.create("survivor")
-                    if (config.has("inventory"))
-                        for (i in 0 until this.inventory.size) {
-                            this.inventory.setItem(i, config.get<ItemStack>("inventory.$i") ?: continue)
-                        }
+                    info.inventory.getOrCreate("survivor")
 
-                    info.tag.set("isSurvivor", false)
+                    info.isSurvivor = false
                     inventory.addItem(ItemStack(Material.DIAMOND, 2))
                     error(getter["survival.compe.1"])
                     info(getter["survival.compe.2"])
@@ -94,9 +89,10 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     randomSpawn(info.inventory)
                 }
 
-                val l = inventory.get<Location>("location")
-                val s = info.tag.getSerializable("surviveSpawn", Location::class.java, null)
-                val isLocationCorrect = l?.world == surviveWorld || l?.world == netherWorld || l?.world == endWorld
+                val l = inventory.location
+                val s = info.survivalSpawn
+                val isLocationCorrect =
+                    l != null && (l.world == surviveWorld || l.world == netherWorld || l.world == endWorld)
                 val isSpawnCorrect = s?.world == surviveWorld
                 if (!isLocationCorrect && isSpawnCorrect) {
                     error(getter["survival.saveNotFound.1"])
@@ -106,7 +102,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 } else if (isLocationCorrect && !isSpawnCorrect) {
                     error(getter["survival.spawnNotFound.1"])
                     info(getter["survival.spawnNotFound.2"])
-                    info.tag.set("surviveSpawn", l)
+                    info.survivalSpawn = l
                 } else if (!isLocationCorrect) {
                     reset()
                     return true
@@ -127,7 +123,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     e.printStackTrace()
                     sendMessage(*TextUtil.printException(e))
                     info.apply {
-                        this.inventory.create(RESET).load(false)
+                        this.inventory.getOrCreate(RESET).load(false)
                         status = InLobby
                         isSurvivor = false
                     }
@@ -186,7 +182,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                         || validateDirection(BlockFace.SOUTH)
                         || validateDirection(BlockFace.NORTH))
             ) {
-                Bukkit.getLogger().info("Computer booted.")
+                Bukkit.getLogger().info("Computer was booted by ${event.player.name}.")
                 val info = event.player.info()
                 val getter = info.getter()
                 if (info == null) {
@@ -219,16 +215,16 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             return
         when (info!!.status) {
             InLobby -> {
-                info.inventory.create(RESET).load()
+                info.inventory.getOrCreate(RESET).load()
             }
 
             Surviving -> {
                 event.respawnLocation =
-                    info.tag.getSerializable("surviveSpawn", Location::class.java, null) ?: lobby.spawnLocation
+                    info.survivalSpawn ?: lobby.spawnLocation
             }
 
             InTutorial -> {
-                info.inventory.create(RESET).load()
+                info.inventory.getOrCreate(RESET).load()
             }
 
             Building -> {
@@ -246,12 +242,11 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         val info = PlayerManager.findInfoByPlayer(event.entity)
         if (validateInfo(info)) {
             if (info!!.status == Surviving) {
-                info.tag
-                    .apply {
-                        set("lastDeath.location", event.entity.location)
-                        set("lastDeath.reason", event.deathMessage)
-                        set("lastDeath.time", System.currentTimeMillis())
-                    }
+                info.lastDeath = DeathInfo(
+                    System.currentTimeMillis(),
+                    event.deathMessage ?: "",
+                    event.entity.location
+                )
 
                 var dropInPercentage = 1.0
                 event.entity.inventory.specialItems.forEach { item ->
@@ -291,9 +286,9 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     event.newTotalExp = (event.entity.totalExperience * dropInPercentage).roundToInt()
                     event.keepInventory = true
                 } else {
-                    if (!info.tag.getBoolean("isInsuranceTipShown", false)) {
+                    if (!info.isInsuranceAdShown) {
                         event.entity.tip(getLang(event.entity, "insurance.tip"))
-                        info.tag.set("isInsuranceTipShown", true)
+                        info.isInsuranceAdShown = true
                     }
 
                     event.keepInventory = false
@@ -320,14 +315,13 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             ).block.type != Material.AIR
         ) {
             info.isSurvivor = true
-            info.saveServerID()
 
             Bukkit.getScheduler().runTaskLater(plugin, { _ ->
                 if (info.status != Surviving) return@runTaskLater
                 val player = event.player
                 val getter = getLangGetter(player.info())
-                info.tag.set("surviveSpawn", player.location)
-                info.inventory.create("survivor").save()
+                info.survivalSpawn = player.location
+                info.inventory.getOrCreate("survivor").load()
                 player.isInvulnerable = false
                 val title = Title.title(
                     getter["survival.loseProtect"].toInfoMessage(),
@@ -339,7 +333,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         if (info.status == Surviving && !info.isSurveyPassed) {
             if (event.to.world != surviveWorld)
                 return
-            val distance = event.to.distance(info.tag.getSerializable("surviveSpawn", Location::class.java) ?: return)
+            val distance = event.to.distance(info.survivalSpawn ?: return)
             if (distance >= 100) {
                 if (!info.outOfSpawn) {
                     info.outOfSpawn = true
@@ -387,7 +381,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         if (info.status == Surviving) {
             if (info.isSurveyPassed || !info.outOfSpawn) {
                 event.player.success(getter["user.spawnpoint.saved"])
-                info.tag.set("surviveSpawn", event.bed.location)
+                info.survivalSpawn
                 event.player.bedSpawnLocation = event.bed.location
             } else {
                 event.isCancelled = true
@@ -486,7 +480,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                             it.logout()
                             Bukkit.getPluginManager().callEvent(PlayerLogoutEvent(it, true))
                         }
-                        ?.inventory?.create(RESET)?.load(savePresent = true)
+                        ?.inventory?.getOrCreate(RESET)?.load(savePresent = true)
             }
 
             surviveWorld -> {
@@ -510,7 +504,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                         event.player.sendMessage(Game.gameWarn)
                         return
                     }
-                    if (!info.tag.getBoolean("isSurvivor", false)) {
+                    if (!info.isSurvivor) {
                         event.player.error(getLang(info, "survival.notRegistered.1"))
                         event.player.tip(getLang(info, "survival.notRegistered.2"))
                     } else {
@@ -569,7 +563,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     event.player.error(Language.getDefault("player.error.unknown"))
                     return
                 }
-                location = info.tag.getSerializable("surviveSpawn", Location::class.java)!!
+                location = info.survivalSpawn!!
             }
 
             lobby -> {

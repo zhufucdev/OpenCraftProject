@@ -176,7 +176,9 @@ command:
   unnamed: '未命名'
 
 server:
-  saveInventory: '成功保存了你的物品栏'
+  inventory:
+    saved: '成功保存了你的物品栏'
+    error: '保存物品栏失败：%s'
   statics:
     title: 'OpenCraft统计'
     coinCount: '货币数量: %s'
@@ -203,7 +205,7 @@ trade:
   territory:
     enter: '你已进入自己的领地'
     leave: '你已退出自己的领地'
-    info: '你的领地（ID：%s）位于区块（%s, %s)'
+    info: '你的领地（ID：%s）位于区块（%s, %s）'
   error:
     pwdUnset: '密码未设定'
     chunkNotFound: '抱歉，但我们无法找到你的领地'

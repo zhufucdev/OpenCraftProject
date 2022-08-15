@@ -2,7 +2,7 @@ package com.zhufu.opencraft.ui
 
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.data.Info
-import com.zhufu.opencraft.player_community.FriendWrap
+import com.zhufu.opencraft.player_community.Friendship
 import com.zhufu.opencraft.util.toComponent
 import com.zhufu.opencraft.util.toInfoMessage
 import com.zhufu.opencraft.util.toTipMessage
@@ -13,26 +13,27 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-class FriendShareInventory(info: Info, friend: FriendWrap, plugin: Plugin, override val parentInventory: ClickableInventory) :
+class FriendShareInventory(info: Info, friendship: Friendship, plugin: Plugin, override val parentInventory: ClickableInventory) :
     PageInventory<FriendShareInventory.Adapter>(
         title = info.getter()["ui.friend.share.title"].toInfoMessage(),
-        adapter = Adapter(info, friend),
+        adapter = Adapter(info, friendship),
         itemsOnePage = 36,
         plugin = plugin
     ), Backable {
-    class Adapter(val info: Info, val friend: FriendWrap) : PageInventory.Adapter() {
+    class Adapter(val info: Info, val friendship: Friendship) : PageInventory.Adapter() {
         override val size: Int
-            get() = info.checkpoints.size + 1
+            get() = checkpoints.size + 1
+        var checkpoints = info.checkpoints.sortedBy { it.name }
         override val hasToolbar: Boolean
             get() = true
         val getter = info.getter()
 
         override fun getItem(index: Int, currentPage: Int): ItemStack {
-            return if (index < info.checkpoints.size) {
-                val point = info.checkpoints[index]
+            return if (index < checkpoints.size) {
+                val point = checkpoints[index]
                 ItemStack(Material.ENDER_PEARL).updateItemMeta<ItemMeta> {
                     displayName(point.name.toInfoMessage())
-                    val contains = friend.sharedCheckpoints.contains(point)
+                    val contains = friendship.sharedCheckpoints.contains(point)
                     lore(listOf(getter["ui.friend.point.title"].toComponent(), getter["ui.friend.share." +
                             if (!contains) "start" else "stop"].toTipMessage()))
                     if (contains) {
@@ -44,8 +45,8 @@ class FriendShareInventory(info: Info, friend: FriendWrap, plugin: Plugin, overr
                 info.skullItem.updateItemMeta<ItemMeta> {
                     displayName(info.name?.toComponent())
                     lore(listOf(getter["ui.friend.location.title"].toComponent(), getter["ui.friend.share." +
-                            if (!friend.shareLocation) "start" else "stop"].toTipMessage()))
-                    if (friend.shareLocation) {
+                            if (!friendship.shareLocation) "start" else "stop"].toTipMessage()))
+                    if (friendship.shareLocation) {
                         addEnchant(Enchantment.ARROW_INFINITE, 1, true)
                         addItemFlags(ItemFlag.HIDE_ENCHANTS)
                     }
@@ -62,22 +63,26 @@ class FriendShareInventory(info: Info, friend: FriendWrap, plugin: Plugin, overr
                 super.getToolbarItem(index)
             }
         }
+
+        override fun onRefresh() {
+            checkpoints = info.checkpoints.sortedBy { it.name }
+        }
     }
 
     init {
         setOnItemClickListener { index, _ ->
-            if (index < info.checkpoints.size) {
-                val point = info.checkpoints[index]
-                friend.sharedCheckpoints.apply {
+            if (index < adapter.checkpoints.size) {
+                val point = adapter.checkpoints[index]
+                friendship.sharedCheckpoints.apply {
                     if (contains(point)) {
-                        remove(point)
+                        friendship.removeSharedCheckpoint(point)
                     } else {
-                        add(point)
+                        friendship.shareCheckpoint(point)
                     }
                 }
                 refresh()
             } else {
-                friend.shareLocation = !friend.shareLocation
+                friendship.shareLocation = !friendship.shareLocation
                 refresh()
             }
         }

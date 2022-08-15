@@ -3,6 +3,7 @@ package com.zhufu.opencraft
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import com.zhufu.opencraft.player_community.MessagePool
+import com.zhufu.opencraft.player_community.PublicMessagePool
 import org.bukkit.*
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -10,6 +11,7 @@ import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import java.io.File
 import java.nio.file.Paths
+import java.util.TimeZone
 import java.util.UUID
 import java.util.function.Consumer
 import kotlin.concurrent.fixedRateTimer
@@ -23,6 +25,8 @@ object Base {
     lateinit var endWorld: World
     lateinit var lobby: World
     lateinit var tradeWorld: World
+
+    val timeZone = TimeZone.getTimeZone("Asia/Shanghai")
 
     /* Extended Functions */
     fun getRandomLocation(world: World, bound: Int, x: Int? = null, y: Int? = null, z: Int? = null): Location =
@@ -83,8 +87,9 @@ object Base {
         return x to z
     }
 
-    val msgPoolFile: File get() = Paths.get("plugins", "ServerCore", "publicMsg.yml").toFile()
-    val publicMsgPool = MessagePool.public(msgPoolFile)
+    @Deprecated("Outdated", ReplaceWith("PublicMessagePool"))
+    val publicMsgPool get() = PublicMessagePool
+    val serverID get() = UUID.fromString("33B67ABC-F831-4FA5-A37E-BE289B8D5C98")
 
     object Extend {
         fun String.isDigit(): Boolean {

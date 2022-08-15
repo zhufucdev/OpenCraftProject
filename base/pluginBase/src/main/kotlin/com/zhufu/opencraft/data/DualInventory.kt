@@ -1,47 +1,29 @@
 package com.zhufu.opencraft.data
 
+import com.mongodb.client.model.Filters
 import com.zhufu.opencraft.*
 import com.zhufu.opencraft.api.ServerCaller
+import com.zhufu.opencraft.data.DualInventory.Companion.NOTHING
+import com.zhufu.opencraft.data.DualInventory.Companion.RESET
 import com.zhufu.opencraft.data.Info.Companion.plugin
+import org.bson.Document
+import org.bson.types.Binary
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import java.io.File
+import javax.security.auth.Destroyable
 
-class DualInventory(val player: Player? = null, private val parent: ServerPlayer) {
-    private val files: List<File>
-        get() = parent.inventoriesFile
-            .also { if (!it.exists()) it.mkdirs() }
-            .listFiles()!!.filter { it.isFile }
-    private val mList = ArrayList<InventoryInfo>()
+class DualInventory(val player: Player? = null, parent: ServerPlayer) {
+    internal val collection = Database.inventory(parent.uuid)
 
     fun delete() {
-        files.forEach {
-            if (!it.delete()) {
-                throw IllegalStateException("Could not delete ${it.path}")
-            }
-        }
-        parent.inventoriesFile.delete()
-        mList.forEach { it.destroy() }
-        mList.clear()
-    }
-
-    init {
-        files.forEach {
-            try {
-                val t = InventoryInfo(player, it.nameWithoutExtension, it, this)
-                mList.add(t)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
+        collection.drop()
     }
 
     companion object {
@@ -50,7 +32,7 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
 
         fun resetPlayer(player: Player) {
             player.inventory.clear()
-            player.healthScale = 20.toDouble()
+            player.health = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.value
             player.foodLevel = 20
             player.totalExperience = 0
             player.walkSpeed = 0.2f
@@ -63,297 +45,241 @@ class DualInventory(val player: Player? = null, private val parent: ServerPlayer
         }
     }
 
-    var present = InventoryInfo(player, NOTHING, File(""), this)
-    var last = InventoryInfo(player, NOTHING, File(""), this)
-    fun load(name: String = "default") {
-        present.save()
+    var present = InventoryInfo(player, NOTHING, this)
+    var last = InventoryInfo(player, NOTHING, this)
 
-        val index = mList.indexOfFirst { it.name == name }
-        if (index == -1) throw InventoryNotFoundException(name, "Have you created it?")
-        mList[index].load()
+    fun getOrCreate(name: String = "default"): InventoryInfo {
+        return InventoryInfo(player, name, this)
     }
 
-    fun save(name: String = "default") {
-        val index = mList.indexOfFirst { it.name == name }
-        if (index == -1) throw InventoryNotFoundException(name, "Have you created it?")
-        mList[index].save()
+    internal fun update(inventory: InventoryInfo) {
+        collection.replaceOne(Filters.eq(inventory.name), inventory.doc)
     }
+}
 
-    fun create(name: String = "default"): InventoryInfo {
-        val e = mList.firstOrNull { it.name == name }
-        if (e == null) {
-            val element = InventoryInfo(
-                player,
-                name,
-                File(
-                    File("plugins${File.separatorChar}inventories${File.separatorChar}${parent.uuid}").also { if (!it.exists()) it.mkdirs() },
-                    "$name.yml"
-                ),
-                this
-            )
-            mList.add(element)
-            return element
+class InventoryInfo internal constructor(val player: Player?, val name: String, val parent: DualInventory) : Destroyable {
+    var inventoryOnly: Boolean = false
+
+    val doc: Document = parent.collection.find(Filters.eq(name)).first()
+        ?: Document("_id", name).also { parent.collection.insertOne(it) }
+    private fun update() {
+        parent.update(this)
+    }
+    var gameMode: GameMode?
+        get() {
+            return GameMode.valueOf(doc.getString("gameMode") ?: return null)
         }
-        return e
-    }
-
-    fun destroy(name: String): Boolean {
-        val index = mList.indexOfFirst { it.name == name }
-        if (index == -1)
-            return false
-        mList[index].destroy()
-        mList.removeAt(index)
-        return true
-    }
-
-    fun forEach(l: (InventoryInfo) -> Unit) = mList.forEach(l)
-    class InventoryNotFoundException(which: String, msg: String) : Exception("No such inventory: $which. $msg")
-
-    class InventoryInfo(val player: Player?, val name: String, val file: File, val parent: DualInventory) {
-        var inventoryOnly: Boolean = false
-
-        private val config: YamlConfiguration
-        var isDestroyed = false
-            private set
-
-        init {
-            validateFile()
-            config = when {
-                file.exists() -> YamlConfiguration.loadConfiguration(file)
-                name != NOTHING -> {
-                    file.createNewFile()
-                    YamlConfiguration()
-                }
-                else -> YamlConfiguration()
-            }
+        set(value) {
+            doc["gameMode"] = value
+            update()
+        }
+    val location: Location?
+        get() {
+            return Location.deserialize(doc.get("location", Document::class.java) ?: return null)
         }
 
-        private fun validateFile(): Boolean {
-            if (file.path.isNotEmpty() && !file.exists()) {
-                file.parentFile.mkdirs()
-                file.createNewFile()
-                return false
-            }
-            return true
+    private var destroyed = false
+    override fun isDestroyed() = destroyed
+
+    fun sync() {
+        if (destroyed)
+            throw IllegalAccessException("This object must not have been destroyed!")
+        if (player == null)
+            throw IllegalStateException("Can't read player's info when it doesn't exists!")
+
+        if (name == NOTHING) return
+
+        Bukkit.getLogger()
+            .info("Saving inventory named $name for player ${player.name}${if (inventoryOnly) "[InventoryOnly]" else ""}")
+        val inventoryDoc = Document()
+        player.inventory.forEachIndexed { index, itemStack ->
+            if (itemStack == null || itemStack.type == Material.AIR)
+                return@forEachIndexed
+            inventoryDoc[index.toString()] = itemStack.serializeAsBytes()
+        }
+        doc["inventory"] = inventoryDoc
+
+        if (!inventoryOnly) {
+            doc["gameMode"] = player.gameMode.name
+            doc["health"] = player.health
+            doc["foodLevel"] = player.foodLevel
+            doc["walkSpeed"] = player.walkSpeed
+            doc["flySpeed"] = player.flySpeed
+            doc["exp"] = player.totalExperience
+            doc["location"] = Document(player.location.serialize())
+            doc["potion"] = player.activePotionEffects.map { Document(it.serialize()) }
+        }
+        update()
+    }
+
+    fun load(savePresent: Boolean = true, inventoryOnly: Boolean = false) {
+        if (destroyed)
+            throw IllegalAccessException("This object must not be destroyed.")
+        if (player == null)
+            throw IllegalStateException("Couldn't read player's info when it doesn't exists.")
+
+        this.inventoryOnly = inventoryOnly
+        if (savePresent)
+            parent.present.sync()
+
+        val event = PlayerLoadInventoryEvent(player, parent.present, this)
+        Bukkit.getPluginManager().callEvent(event)
+        if (event.isCancelled) {
+            return
         }
 
-        fun save() {
-            if (isDestroyed)
-                throw IllegalAccessException("This object must not have been destroyed!")
-            if (player == null)
-                throw IllegalStateException("Can't read player's info when it doesn't exists!")
+        parent.last = parent.present
+        parent.present = this
+        Bukkit.getLogger().info("Present inventory of ${player.name} is ${this.name}")
 
-            if (name == NOTHING) return
-
-            Bukkit.getLogger()
-                .info("Saving inventory named $name for player ${player.name}${if (inventoryOnly) "[InventoryOnly]" else ""}")
-            player.inventory.forEachIndexed { index, itemStack ->
-                val path = "inventory.$index"
-                config.set(path, null)
-                if (itemStack == null)
-                    return@forEachIndexed
-
-                config.set(path, itemStack)
-            }
-
+        if (name == NOTHING)
+            return
+        else if (name == RESET) {
             if (!inventoryOnly) {
-                config.set("gameMode", player.gameMode.name)
-                config.set("health", player.health)
-                config.set("foodLevel", player.foodLevel)
-                config.set("walkSpeed", player.walkSpeed)
-                config.set("flySpeed", player.flySpeed)
-                config.set("exp", player.totalExperience)
-                config.set("location", player.location)
-
-                val potion = config.createSection("potion")
-                potion.getKeys(false).forEach {
-                    potion.set(it, null)
-                }
-                player.activePotionEffects.forEach {
-                    potion.set(it.type.name, it)
-                }
-                config.set("potion", potion)
+                ServerCaller["SolvePlayerLobby"]?.invoke(
+                    listOf(
+                        player.info()
+                            ?: throw IllegalStateException("Could not found ${player.name}'s info to rest.")
+                    )
+                ) ?: Bukkit.getLogger().warning("SolvePlayerLobby of ServerCaller is missing out.")
+                player.gameMode = GameMode.CREATIVE
+                player.removePotionEffect(PotionEffectType.BLINDNESS)
+                player.walkSpeed = 0.2f
+                player.flySpeed = 0.1f
+            } else {
+                player.inventory.clear()
+                return
             }
-            config.save(file)
         }
 
-        fun load(savePresent: Boolean = true, inventoryOnly: Boolean = false) {
-            if (isDestroyed)
-                throw IllegalAccessException("This object must not be destroyed!")
-            if (player == null)
-                throw IllegalStateException("Can't read player's info when it doesn't exists!")
-
-            this.inventoryOnly = inventoryOnly
-            if (savePresent)
-                parent.present.save()
-
-            Bukkit.getPluginManager().callEvent(PlayerLoadInventoryEvent(player, parent.present, this))
-
-            parent.last = parent.present
-            parent.present = this
-            Bukkit.getLogger().info("Present inventory of ${player.name} is ${this.name}")
-
-            if (name == NOTHING)
-                return
-            else if (name == RESET) {
-                if (!inventoryOnly) {
-                    ServerCaller["SolvePlayerLobby"]?.invoke(
-                        listOf(
-                            player.info()
-                                ?: throw IllegalStateException("Could not found ${player.name}'s info to rest.")
-                        )
-                    ) ?: Bukkit.getLogger().warning("SolvePlayerLobby of ServerCaller is missing out.")
-                    player.gameMode = GameMode.CREATIVE
-                    player.removePotionEffect(PotionEffectType.BLINDNESS)
-                    player.walkSpeed = 0.2f
-                    player.flySpeed = 0.1f
-                } else {
-                    player.inventory.clear()
-                    return
-                }
-            }
-            if (!validateFile()) {
-                resetPlayer(player)
-                return
-            }
-
-            val failureList = ArrayList<String>()
-            player.inventory.clear()
-            if (config.isSet("inventory")) {
-                for (i in 0 until player.inventory.size) {
-                    val path = "inventory.$i"
-                    val item = config.getItemStack(path, ItemStack(Material.AIR))
+        val failureList = ArrayList<String>()
+        player.inventory.clear()
+        if (doc.containsKey("inventory")) {
+            val invDoc = doc.get("inventory", Document::class.java)
+            for (i in 0 until player.inventory.size) {
+                if (invDoc.containsKey(i.toString())) {
+                    val data = invDoc.get(i.toString(), Binary::class.java)
+                    val item = ItemStack.deserializeBytes(data.data)
                     player.inventory.setItem(i, item)
                 }
             }
+        }
 
-            if (!inventoryOnly && name != RESET) {
-                Bukkit.getScheduler().runTask(plugin) { _ ->
-                    player.fallDistance = 0f
-                    val location = config.getSerializable("location", Location::class.java, null)
-                    if (location != null)
-                        player.teleport(location)
-                    else {
-                        failureList.add("player/location: invalid argument")
-                    }
+        if (!inventoryOnly && name != RESET) {
+            Bukkit.getScheduler().runTask(plugin) { _ ->
+                player.fallDistance = 0f
+                val locationData = doc.get("location", Document::class.java)
+                if (locationData != null) {
+                    val location = Location.deserialize(locationData)
+                    player.teleport(location)
+                } else {
+                    failureList.add("player/location: invalid argument")
+                }
 
-                    if (config.isSet("gameMode"))
-                        player.gameMode = GameMode.valueOf(config["gameMode"] as String)
+                if (doc.containsKey("gameMode"))
+                    player.gameMode = gameMode!!
 
-                    if (config.isSet("health")) {
-                        val health = config.getDouble("health")
-                        if (health <= 20)
-                            player.health = health
-                        else {
-                            failureList.add("player/health: health value reaches the top limit")
-                        }
-                    }
-                    if (config.isSet("foodLevel"))
-                        player.foodLevel = config.getInt("foodLevel")
-                    if (config.isSet("exp"))
-                        player.totalExperience = config.getInt("exp")
-                    if (config.isSet("walkSpeed"))
-                        player.walkSpeed = config.getDouble("walkSpeed").toFloat()
-                    if (config.isSet("flySpeed"))
-                        player.flySpeed = config.getDouble("flySpeed").toFloat()
-                    //For Potion Effects
-                    player.activePotionEffects.forEach {
-                        player.removePotionEffect(it.type)
-                    }
-                    config.getConfigurationSection("potion")?.getKeys(false)?.forEach {
+                if (doc.containsKey("foodLevel"))
+                    player.foodLevel = doc.getInteger("foodLevel")
+                if (doc.containsKey("exp"))
+                    player.totalExperience = doc.getInteger("exp")
+                if (doc.containsKey("walkSpeed"))
+                    player.walkSpeed = doc.getDouble("walkSpeed").toFloat()
+                if (doc.containsKey("flySpeed"))
+                    player.flySpeed = doc.getDouble("flySpeed").toFloat()
+                player.activePotionEffects.clear()
+                if (doc.containsKey("potion")) {
+                    doc.getList("potion", Document::class.java).forEachIndexed { index, document ->
+                        val effect = PotionEffect(document)
                         try {
-                            player.addPotionEffect(config.getSerializable("potion.$it", PotionEffect::class.java)!!)
+                            player.addPotionEffect(effect)
                         } catch (e: Exception) {
-                            failureList.add("player/potion/$it: ${e::class.simpleName}: ${e.message}")
+                            failureList.add("player/potion/$index: ${e::class.simpleName}: ${e.message}")
                             e.printStackTrace()
                         }
                     }
                 }
-            }
-
-            if (failureList.isNotEmpty()) {
-                player.error(getLang(player, "user.error.whileLoading"))
-                player.warn(
-                    buildString {
-                        failureList.forEach {
-                            append(it)
-                            append(',')
-                        }
-                        deleteCharAt(lastIndex)
-                    }
-                )
-            }
-        }
-
-        fun destroy() {
-            if (file.exists()) file.delete()
-            isDestroyed = true
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        fun <T> get(path: String): T? {
-            return try {
-                config.get(path) as T?
-            } catch (e: Exception) {
-                null
-            }
-        }
-
-        fun has(path: String) = config.isSet(path)
-
-        fun set(path: String, value: Any) = config.set(path, value)
-        fun addItem(item: ItemStack): Boolean {
-            val inventory = config.getConfigurationSection("inventory") ?: YamlConfiguration()
-            val max = inventory.getKeys(false).maxOfOrNull { key -> key.toInt() }
-            fun msg(i: Int) {
-                config.set("inventory", inventory)
-                this.player?.success("物品已添加至您的${name}物品栏第${i + 1}格")
-            }
-            if (max == null) {
-                inventory.set("0", item)
-                msg(0)
-                return true
-            } else {
-                for (i in 0..if (max < 35) max + 1 else 35) {
-                    if (!inventory.isSet(i.toString())) {
-                        inventory.set(i.toString(), item)
-                        msg(i)
-                        return true
+                if (doc.containsKey("health")) {
+                    val health = doc.getDouble("health")
+                    if (health <= player.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.value)
+                        player.health = health
+                    else {
+                        failureList.add("player/health: health value reaches the top limit")
                     }
                 }
             }
-            return false
         }
 
-        fun setItem(index: Int, item: ItemStack?) = config.set("inventory.$index", item)
-
-        fun any(l: (ItemStack) -> Boolean): Boolean =
-            config.getConfigurationSection("inventory")
-                ?.getKeys(false)
-                ?.any {
-                    val section = config.getItemStack("inventory.$it")
-                    section?.let { s -> l(s) } ?: false
-                }
-                ?: false
-
-        fun items(): List<ItemStack?> {
-            val result = arrayListOf<ItemStack?>()
-            val config = config.getConfigurationSection("inventory") ?: YamlConfiguration()
-            (0..35).forEach {
-                config.getItemStack(it.toString()).apply {
-                    result.add(this?.clone())
-                }
-            }
-            return result
-        }
-
-        override fun equals(other: Any?): Boolean {
-            return other is InventoryInfo
-                    && other.name == this.name
-        }
-
-        override fun hashCode(): Int {
-            return name.hashCode()
+        if (failureList.isNotEmpty()) {
+            player.error(getLang(player, "user.error.whileLoading"))
+            player.warn(failureList.joinToString())
         }
     }
+
+    override fun destroy() {
+        parent.collection.deleteOne(Filters.eq(name))
+        destroyed = true
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> get(path: String): T? {
+        return try {
+            doc[path] as T?
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun has(path: String) = doc.containsKey(path)
+
+    fun set(path: String, value: Any) = doc.set(path, value)
+    fun addItem(item: ItemStack): Boolean {
+        val inventory = doc.get("inventory", Document::class.java)
+        val max = inventory.maxOfOrNull { it.key.toInt() }
+        fun msg(i: Int) {
+            doc["inventory"] = inventory
+            this.player?.success("物品已添加至您的${name}物品栏第${i + 1}格")
+            update()
+        }
+        if (max == null) {
+            inventory["0"] = item.serializeAsBytes()
+            msg(0)
+            return true
+        } else {
+            for (i in 0..if (max < 35) max + 1 else 35) {
+                if (!inventory.containsKey(i.toString())) {
+                    inventory[i.toString()] = item.serializeAsBytes()
+                    msg(i)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun setItem(index: Int, item: ItemStack?) {
+        val invDoc = doc.get("inventory", Document::class.java) ?: return
+        if (item == null) {
+            invDoc.remove(index.toString())
+        } else {
+            invDoc[index.toString()] = item.serializeAsBytes()
+        }
+    }
+
+    fun any(l: (ItemStack) -> Boolean): Boolean =
+        doc.get("inventory", Document::class.java)
+            ?.any {
+                l(ItemStack.deserializeBytes((it.value as Binary? ?: return@any false).data))
+            }
+            ?: false
+
+    override fun equals(other: Any?): Boolean {
+        return other is InventoryInfo
+                && other.name == this.name
+    }
+
+    override fun hashCode(): Int {
+        return name.hashCode()
+    }
+
 }

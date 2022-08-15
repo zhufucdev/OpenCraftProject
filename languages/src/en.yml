@@ -137,7 +137,9 @@ survey:
   toPlaceBlock: "To place the block, use /survey to take the server survey to become a regular."
 
 server:
-  saveInventory: "Saved your inventory successfully."
+  inventory:
+    saved: "Saved your inventory successfully."
+    error: "An error occurred while saving your inventory: %s"
   statics:
     title: "OpenCraftStatics"
     coinCount: "Coins: %s"
@@ -388,7 +390,7 @@ trade:
     chunkNotFound: "Your territory couldn't be found"
     pwdUnset: "There's no password on this server"
     inventoryFull: "Trade Failed: Your inventory is full."
-    error: "Trade Failed: You don't have enough coins."
+    poor: "Trade Failed: You don't have enough coins."
     lackOfItem: "Trade Failed: You don't have enough items."
     notFound: "Couldn't find this trade"
     store:

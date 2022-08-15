@@ -53,7 +53,7 @@ class TraderInventory(val player: Player) {
             player.sendMessage(Language.getDefault("player.error.unknown").toErrorMessage())
             return
         }
-        info.inventory.create("survivor").load(false, true)
+        info.inventory.getOrCreate("survivor").load(false, true)
         player.openInventory(inventory)
     }
 
@@ -130,7 +130,7 @@ class TraderInventory(val player: Player) {
                     if (success) {
                         val info = player.info()!!
 
-                        val survivor = info.inventory.create("survivor")
+                        val survivor = info.inventory.getOrCreate("survivor")
                         if (survivor.any { item -> StatefulSpecialItem[item] is FlyWand }) {
                             player.error(getter["wand.duplicate.title"])
                             player.tip(getter["wand.duplicate.tip"])
@@ -160,7 +160,7 @@ class TraderInventory(val player: Player) {
                 ).setOnPayListener { success ->
                     val info = player.info()!!
                     if (success) {
-                        val survivor = info.inventory.create("survivor")
+                        val survivor = info.inventory.getOrCreate("survivor")
                         if (!survivor.addItem(Portal(getter))) {
                             player.error(getter["trade.error.inventoryFull"])
                             return@setOnPayListener false
@@ -186,7 +186,7 @@ class TraderInventory(val player: Player) {
                 )
                     .setOnPayListener { success ->
                         if (success) {
-                            val inventory = player.info()!!.inventory.create("survivor")
+                            val inventory = player.info()!!.inventory.getOrCreate("survivor")
                             if (!inventory.addItem(insurance)) {
                                 player.error(getter["trade.error.inventoryFull"])
                                 return@setOnPayListener false
@@ -269,9 +269,7 @@ class TraderInventory(val player: Player) {
     }
 
     fun confirm() {
-        val tag = PlayerManager.findInfoByPlayer(player)
-            ?.tag ?: return
-        tag.set("npcTrade", tag.getInt("npcTrade") + 1)
+        PlayerManager.findInfoByPlayer(player)?.let { it.npcTradeCount ++ }
 
         TradeManager.sell(
             seller = "server",

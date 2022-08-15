@@ -10,7 +10,6 @@ import com.zhufu.opencraft.events.UserLoginEvent
 import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
-import com.zhufu.opencraft.player_community.Friend
 import com.zhufu.opencraft.util.*
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component
@@ -49,8 +48,8 @@ class UserManager : JavaPlugin(), Listener {
 
         server.onlinePlayers.forEach {
             val info = Info(it)
-            if (info.password != null)
-                info.login(info.password!!)
+            if (info.hasPassword)
+                info.login()
             PlayerManager.add(info)
         }
 
@@ -95,7 +94,7 @@ class UserManager : JavaPlugin(), Listener {
         if (player.address!!.hostName == info.savedAddress) {
             player.info(getLang(info, "user.loginWithIP"))
             Bukkit.getScheduler().runTask(this) { _ ->
-                info.login(info.password!!)
+                info.login()
                 server.pluginManager.apply {
                     callEvent(UserLoginEvent(player))
                 }
@@ -230,7 +229,7 @@ class UserManager : JavaPlugin(), Listener {
                 info.userLanguage = code
                 info.doNotTranslate = false
                 Bukkit.getScheduler().runTask(this) { _ ->
-                    info.inventory.create(DualInventory.RESET).load()
+                    info.inventory.getOrCreate(DualInventory.RESET).load()
                     Bukkit.getPluginManager()
                         .callEvent(
                             PlayerTeleportedEvent(
@@ -244,13 +243,6 @@ class UserManager : JavaPlugin(), Listener {
                 event.player.error(Language.getDefault("user.error.langNotFound"))
                 Language.printLanguages(event.player)
             }
-        }
-    }
-
-    @EventHandler
-    fun onServerReload(event: ServerReloadEvent) {
-        Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
-            Friend.saveAll()
         }
     }
 }

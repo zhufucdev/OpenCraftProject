@@ -1,24 +1,32 @@
 package com.zhufu.opencraft.data
 
+import com.mongodb.client.model.Filters
+import org.bukkit.Bukkit
+
 import java.io.File
 import java.nio.file.Paths
+import java.util.*
 
-class PreregisteredInfo(override val id: String) : WebInfo(true, nameToExtend = id) {
+class PreregisteredInfo : WebInfo {
+    constructor(name: String) : super(true, nameToExtend = name, uuid = UUID.randomUUID())
+    constructor(id: UUID) : super(false, id)
     companion object {
-        fun exists(name: String) = Paths.get("plugins", "tag", "preregister", "$name.yml").toFile().exists()
+        fun exists(name: String) = Database.tag(name)?.let {
+            val id = it.get("_id", UUID::class.java)
+            val player = Bukkit.getOfflinePlayer(name)
+            id != player.uniqueId
+        } == true
+    }
+    init {
+        name = name
     }
 
-    override val tagFile: File
-        get() = File(
-            Paths.get("plugins", "tag", "preregister").toFile().also { if (!it.exists()) it.mkdirs() },
-            "$name.yml"
-        )
     override val playerDir: File
         get() = Paths.get("plugins", "playerDir", "preregister", name).toFile().also { if (!it.exists()) it.mkdirs() }
     override val face: File
         get() = Paths.get("plugins", "faces", "$name.png").toFile()
 
     val isRegistered: Boolean
-        get() = Paths.get("plugins", "tag", "$name.yml").toFile().exists()
+        get() = offlineInfo != null
     val offlineInfo by lazy { OfflineInfo.findByName(name!!) }
 }

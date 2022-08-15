@@ -57,7 +57,7 @@ object PlayerObserverListener : Listener {
             event.player.error("您不能在游戏中观战")
             return
         }
-        info.inventory.create(DualInventory.RESET).load(inventoryOnly = true)
+        info.inventory.getOrCreate(DualInventory.RESET).load(inventoryOnly = true)
         event.player.showTitle(
             Title.title(
                 "推荐使用第三人称进行观战".toComponent().color(NamedTextColor.AQUA),

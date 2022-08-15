@@ -1,319 +1,241 @@
 package com.zhufu.opencraft.player_community
 
-import com.google.gson.JsonElement
-import com.google.gson.JsonParser
-import com.google.gson.stream.JsonWriter
-import com.zhufu.opencraft.*
+import com.mongodb.client.model.Filters
+import com.zhufu.opencraft.Base
 import com.zhufu.opencraft.api.ChatInfo
+import com.zhufu.opencraft.data.Database
+import com.zhufu.opencraft.data.DatabaseRecord
+import com.zhufu.opencraft.data.RecordHolder
 import com.zhufu.opencraft.data.ServerPlayer
-import com.zhufu.opencraft.util.*
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toSuccessMessage
+import com.zhufu.opencraft.util.toTipMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.minimessage.MiniMessage
-import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.configuration.file.YamlConfiguration
-import java.io.File
-import java.io.StringWriter
+import org.bson.Document
 import java.text.SimpleDateFormat
 import java.util.*
 
-open class MessagePool private constructor() {
+open class MessagePool internal constructor(val owner: UUID) : RecordHolder<Message> {
     enum class Type {
         Friend, System, Public, OneTime
     }
 
-    class PublicMessagePool : MessagePool() {
-        override fun markAsRead(i: Int) =
-            throw UnsupportedOperationException("Call [markAsRead(Int,ServerPlayer)] instead.")
-
-        override fun sendAllTo(player: ChatInfo) {
-            messages.forEach {
-                sendTo(player, it)
-            }
-        }
-
-        override fun sendUnreadTo(player: ChatInfo) {
-            messages.forEach {
-                if (it.extra?.contains(player.id) != true) {
-                    sendTo(player, it)
-                }
-            }
-        }
-
-        override fun sendTo(player: ChatInfo, msg: Message) {
-            player.playerOutputStream.send(msg.toComponent(player))
-            if (msg.type == Type.OneTime) {
-                msg.apply {
-                    if (extra == null) extra = YamlConfiguration()
-                    if (!extra!!.contains(player.id)) {
-                        extra!!.set(player.id, true)
-                    }
-                }
-            }
-        }
-
-        fun markAsRead(id: Int, player: ServerPlayer): Boolean {
-            var r = false
-            get(id)?.apply {
-                if (extra == null) extra = YamlConfiguration()
-                if (!extra!!.contains(player.name!!)) {
-                    extra!!.set(player.name!!, true)
-                    r = true
-                }
-            }
-            return r
-        }
-
-        fun markAsUnread(id: Int, player: ServerPlayer): Boolean {
-            var r = false
-            get(id)?.apply {
-                if (extra != null) {
-                    if (extra!!.contains(player.name!!)) {
-                        extra!!.set(player.name!!, null)
-                        r = true
-                    }
-                } else r = true
-            }
-            return r
-        }
-
-        fun isRead(id: Int, player: ServerPlayer) = get(id)?.extra?.contains(player.name!!)
-    }
-
-    class Message(
-        val text: String,
-        var read: Boolean,
-        val id: Int,
-        val type: Type,
-        var extra: ConfigurationSection? = null,
-        private val parent: MessagePool
-    ) {
-        fun sendTo(receiver: ChatInfo) = parent.sendTo(receiver, this)
-
-        private fun createExtra() {
-            if (extra == null)
-                extra = YamlConfiguration()
-        }
-
-        fun recordTime() {
-            createExtra()
-            extra!!.set("time", System.currentTimeMillis())
-        }
-
-        val time get() = extra?.getLong("time", -1) ?: -1L
-        var sender: String?
-            get() = extra?.getString("sender")
-            set(value) {
-                createExtra()
-                extra!!.set("sender", value)
-            }
-
-        fun toComponent(player: ChatInfo): Component {
-            return Component.empty().toBuilder().apply {
-                // time & date prefix
-                if (time >= 0) {
-                    val simple = SimpleDateFormat("MM/dd HH:mm").format(Date(time))
-                    val detailed = SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Date(time))
-                    it.append(
-                        Component.text(simple)
-                            .hoverEvent {
-                                HoverEvent.showText(Component.text(detailed))
-                                        as HoverEvent<Any>
-                            }
-                    )
-                }
-                if (sender != null) {
-                    it.append(Component.text("$sender "))
-                }
-                // main content
-                it.append(Component.text(TextUtil.getCustomizedText(text, player) + ' '))
-                // [Read] label
-                val tip = Language[player.targetLang, "msg.clickToRead"].toTipMessage()
-                val command = "/pu server:markMessageRead ${id}${if (type == Type.Public) " public" else ""}"
-                val readLabel = "[${Language.byChat(player, "msg.read")}]".toSuccessMessage()
-                it.append(
-                    readLabel
-                        .clickEvent(ClickEvent.runCommand(command))
-                        .hoverEvent { HoverEvent.showText(tip) as HoverEvent<Any> }
-                )
-            }.build()
-        }
-
-        override fun equals(other: Any?): Boolean =
-            other is Message
-                    && other.text == text
-                    && other.id == id
-
-        override fun hashCode(): Int {
-            var result = text.hashCode()
-            result = 31 * result + read.hashCode()
-            result = 31 * result + id
-            result = 31 * result + type.hashCode()
-            result = 31 * result + (extra?.hashCode() ?: 0)
-            return result
-        }
-    }
-
-    val messages = ArrayList<Message>()
-    fun add(text: String, type: Type, extra: ConfigurationSection? = null): Message {
-        val max = messages.maxOfOrNull { it.id } ?: -1
-        val msg = Message(text, false, max + 1, type, extra, this)
-        messages.add(msg)
+    protected val collection = Database.messagePool(owner)
+    fun add(text: String, type: Type): Message {
+        val max = collection.find().maxOfOrNull { it.getInteger("_id") } ?: -1
+        val msg = Message(text, false, max + 1, type, null, this)
+        collection.insertOne(msg.toDocument())
         return msg
     }
 
-    fun remove(id: Int) = messages.removeAll { it.id == id }
+    fun remove(id: Int) {
+        collection.deleteOne(Filters.eq(id))
+    }
     fun forEach(l: ((Message) -> Unit)) {
-        messages.sortBy { it.id }
-        messages.forEach(l)
+        collection.find().sortedBy { it.getInteger("_id") }.forEach { l(Message.from(it, this)) }
     }
 
-    operator fun get(id: Int) = messages.firstOrNull { it.id == id }
+    override fun update(record: Message) {
+        collection.replaceOne(Filters.eq(record.id), record.toDocument())
+    }
+
+    operator fun get(id: Int): Message? {
+        return Message.from(collection.find(Filters.eq(id)).first() ?: return null, this)
+    }
 
     open fun sendTo(player: ChatInfo, msg: Message) {
         player.playerOutputStream.send(msg.toComponent(player))
         if (msg.type == Type.OneTime) {
-            messages.remove(msg)
+            collection.deleteOne(Filters.eq(msg.id))
         }
     }
 
     open fun sendAllTo(player: ChatInfo) {
-        Base.publicMsgPool.sendAllTo(player)
-        messages.forEach {
+        PublicMessagePool.sendAllTo(player)
+        forEach {
             sendTo(player, it)
         }
     }
 
     open fun sendUnreadTo(player: ChatInfo) {
-        messages.forEach {
+        forEach {
             if (!it.read) {
                 sendTo(player, it)
             }
         }
     }
 
-    open fun markAsRead(i: Int) = let {
-        var r = false
-        messages.forEach {
-            if (it.id == i && !it.read) {
-                r = true
-                it.read = true
-            }
-        }
-        r
+    private fun markRead(id: Int, read: Boolean): Boolean {
+        val doc = collection.find(Filters.eq(id)).first() ?: return false
+        doc["read"] = read
+        collection.replaceOne(Filters.eq(id), doc)
+        return true
     }
 
-    open fun markAsUnread(i: Int) = let {
-        var r = false
-        messages.forEach {
-            if (it.id == i && it.read) {
-                r = true
-                it.read = false
-            }
-        }
-        r
-    }
+    open fun markAsRead(id: Int) = markRead(id, true)
 
-    fun serialize(): YamlConfiguration = YamlConfiguration().apply {
-        messages.forEach {
-            createSection(it.id.toString()).apply {
-                set("msg", it.text)
-                set("read", it.read)
-                set("type", it.type.name)
-                if (it.extra?.getKeys(false)?.isNotEmpty() == true)
-                    set("extra", it.extra)
-            }
-        }
-    }
+    open fun markAsUnread(id: Int) = markRead(id, false)
 
-    val isEmpty get() = messages.isEmpty()
+    val isEmpty get() = collection.find().first() == null
 
     companion object {
-        @Deprecated("Not safe", ReplaceWith("MessagePool.toComponent"))
-        fun getJson(msg: Message, player: ChatInfo): JsonElement {
-            val sr = StringWriter()
-            val writer = JsonWriter(sr)
-                .beginArray()
-            if (msg.time != -1L)
-                writer
-                    .beginObject()
-                    .name("text").value("(${SimpleDateFormat("MM/dd HH:mm").format(Date(msg.time))}) ")
-                    .name("hoverEvent").beginObject()
-                    .name("action").value("show_text")
-                    .name("value").value(SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Date(msg.time)))
-                    .endObject()
-                    .endObject()
-            if (msg.sender != null)
-                writer
-                    .beginObject()
-                    .name("text").value("${msg.sender}: ")
-                    .endObject()
-            writer.value(TextUtil.getCustomizedText(msg.text, player) + ' ')
-                .beginObject()//Click to read and hover for help.
-                .name("text")
-                .value(
-                    TextUtil.getColoredText(
-                        "[${Language.byChat(player, "msg.read")}]",
-                        TextUtil.TextColor.GREEN,
-                        true
-                    )
-                )
-                .name("clickEvent")
-                .beginObject()
-                .name("action").value("run_command")
-                .name("value")
-                .value("/pu server:markMessageRead ${msg.id}${if (msg.type == Type.Public) " public" else ""}")
-                .endObject()
-                .name("hoverEvent")
-                .beginObject()
-                .name("action").value("show_text")
-                .name("value").value(TextUtil.tip(Language[player.targetLang, "msg.clickToRead"]))
-                .endObject()
-                .endObject()
-                .endArray()
-            return JsonParser.parseString(sr.toString())
-        }
-
         private val cache = HashMap<ServerPlayer, MessagePool>()
-
-        private fun addAllTo(r: MessagePool, section: ConfigurationSection) {
-            var max = 0
-            section.getKeys(false).sorted().forEach {
-                r.messages.add(
-                    Message(
-                        text = section.getString("$it.msg", "")!!,
-                        read = section.getBoolean("$it.read", false),
-                        id = it.toIntOrNull().let { id -> id?.also { if (max < id) max = id } ?: max++ },
-                        type = Type.valueOf(section.getString("$it.type", "System")!!),
-                        extra = section.getConfigurationSection("$it.extra"),
-                        parent = r
-                    )
-                )
-            }
-        }
-
         fun of(who: ServerPlayer): MessagePool {
             if (cache.containsKey(who))
                 return cache[who]!!
-            val r = MessagePool()
-            val section = who.tag.getConfigurationSection("messages")
-            if (section != null) addAllTo(r, section)
+            val r = MessagePool(who.uuid)
             cache[who] = r
             return r
         }
 
         fun remove(who: ServerPlayer) = cache.remove(who)
+    }
+}
 
-        fun public(file: File): PublicMessagePool {
-            val r = PublicMessagePool()
-            if (!file.exists()) {
-                if (!file.parentFile.exists())
-                    file.parentFile.mkdirs()
-                file.createNewFile()
-            } else
-                addAllTo(r, YamlConfiguration.loadConfiguration(file))
-            return r
+object PublicMessagePool : MessagePool(Base.serverID) {
+    override fun markAsRead(id: Int) =
+        throw UnsupportedOperationException("Call [markAsRead(Int,ServerPlayer)] instead.")
+
+    override fun sendAllTo(player: ChatInfo) {
+        forEach {
+            sendTo(player, it)
         }
+    }
+
+    override fun sendUnreadTo(player: ChatInfo) {
+        forEach {
+            if (!it.extra.containsKey(player.uuid.toString())) {
+                sendTo(player, it)
+            }
+        }
+    }
+
+    override fun sendTo(player: ChatInfo, msg: Message) {
+        player.playerOutputStream.send(msg.toComponent(player))
+        if (msg.type == Type.OneTime) {
+            msg.apply {
+                if (!extra.containsKey(player.uuid.toString())) {
+                    extra[player.uuid.toString()] = true
+                }
+            }
+        }
+    }
+
+    fun markAsRead(id: Int, player: ServerPlayer): Boolean {
+        var r = false
+        get(id)?.apply {
+            if (!extra.containsKey(player.uuid.toString())) {
+                extra[player.uuid.toString()] = true
+                r = true
+            }
+        }
+        return r
+    }
+
+    fun markAsUnread(id: Int, player: ServerPlayer): Boolean {
+        var r = false
+        get(id)?.apply {
+            if (extra.containsKey(player.uuid.toString())) {
+                extra[player.uuid.toString()] = null
+                r = true
+            }
+        }
+        return r
+    }
+
+    fun isRead(id: Int, player: ServerPlayer) = get(id)?.extra?.contains(player.uuid.toString())
+}
+
+class Message internal constructor(
+    val text: String,
+    var read: Boolean,
+    val id: Int,
+    val type: MessagePool.Type,
+    extra: Document? = null,
+    override val parent: MessagePool
+) : DatabaseRecord<Message> {
+    fun sendTo(receiver: ChatInfo) = parent.sendTo(receiver, this)
+
+    val extra: Document by lazy { extra ?: Document() }
+
+    fun recordTime() {
+        extra["time"] = System.currentTimeMillis()
+        parent.update(this)
+    }
+
+    val time get() = extra.getLong("time") ?: -1L
+    var sender: UUID?
+        get() = extra.get("sender", UUID::class.java)
+        set(value) {
+            extra["sender"] = value
+            parent.update(this)
+        }
+
+    @Suppress("UNCHECKED_CAST")
+    fun toComponent(player: ChatInfo): Component {
+        return Component.empty().toBuilder().apply {
+            // time & date prefix
+            if (time >= 0) {
+                val simple = SimpleDateFormat("MM/dd HH:mm").format(Date(time))
+                val detailed = SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Date(time))
+                it.append(
+                    Component.text("[$simple] ")
+                        .hoverEvent {
+                            HoverEvent.showText(Component.text(detailed))
+                                    as HoverEvent<Any>
+                        }
+                )
+            }
+            if (sender != null) {
+                it.append(Component.text(ServerPlayer.of(uuid = sender).name + ": "))
+            }
+            // main content
+            it.append(Component.text(TextUtil.getCustomizedText(text, player) + ' '))
+            // [Read] label
+            val tip = Language[player.targetLang, "msg.clickToRead"].toTipMessage()
+            val command = "/pu server:markMessageRead ${id}${if (type == MessagePool.Type.Public) " public" else ""}"
+            val readLabel = "[${Language.byChat(player, "msg.read")}]".toSuccessMessage()
+            it.append(
+                readLabel
+                    .clickEvent(ClickEvent.runCommand(command))
+                    .hoverEvent { HoverEvent.showText(tip) as HoverEvent<Any> }
+            )
+        }.build()
+    }
+
+    override fun toDocument(): Document = Document(mapOf(
+        "_id" to id,
+        "text" to text,
+        "read" to read,
+        "type" to type.name,
+        "extra" to extra
+    ))
+
+    override fun equals(other: Any?): Boolean =
+        other is Message
+                && other.text == text
+                && other.id == id
+
+    override fun hashCode(): Int {
+        var result = text.hashCode()
+        result = 31 * result + read.hashCode()
+        result = 31 * result + id
+        result = 31 * result + type.hashCode()
+        result = 31 * result + extra.hashCode()
+        return result
+    }
+
+    companion object {
+        internal fun from(doc: Document, parent: MessagePool) = Message(
+            doc.getString("text"),
+            doc.getBoolean("read"),
+            doc.getInteger("_id"),
+            MessagePool.Type.valueOf(doc.getString("type")),
+            doc["extra"] as Document?,
+            parent
+        )
     }
 }

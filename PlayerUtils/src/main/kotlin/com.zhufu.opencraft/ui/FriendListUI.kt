@@ -19,20 +19,20 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
         itemsOnePage = 36,
         plugin = plugin
     ), Backable {
-    private val friendship get() = adapter.friendship
+    private val friendships get() = adapter.friendships
 
     class Adapter(val info: Info) : PageInventory.Adapter() {
         val getter = info.getter()
-        val friendship by lazy { info.friendship }
+        val friendships by lazy { info.friendships.toList() }
         override val size: Int
-            get() = if (!addMode) info.friendship.size + 1 else strangers.size
+            get() = if (!addMode) info.friendships.count() + 1 else strangers.size
         override val hasToolbar: Boolean
             get() = true
 
         val strangers by lazy {
             val r = arrayListOf<ServerPlayer>()
             ServerPlayer.forEachSaved {
-                if (it.name != null && it != info && !friendship.contains(it))
+                if (it.name != null && it != info && !info.friendships.contains(it))
                     r.add(it)
             }
             r
@@ -42,8 +42,8 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
 
         override fun getItem(index: Int, currentPage: Int): ItemStack {
             return if (!addMode) {
-                if (index < friendship.size) {
-                    val friend = friendship[index]
+                if (index < friendships.count()) {
+                    val friend = friendships[index]
                     friend.friend.skullItem.updateItemMeta<ItemMeta> {
                         displayName(friend.name?.toComponent())
                         lore(buildList {
@@ -65,7 +65,7 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
                     displayName(player.name?.toComponent())
                     lore(listOf(
                         getter["ui.friend.send"].toTipMessage(),
-                        getter["ui.friend.count", player.friendship.size].toComponent()
+                        getter["ui.friend.count", player.friendships.count()].toComponent()
                     ))
                 }
             }
@@ -85,8 +85,8 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
     init {
         setOnItemClickListener { index, _ ->
             if (!adapter.addMode) {
-                if (index < friendship.size) {
-                    val friend = friendship[index]
+                if (index < friendships.size) {
+                    val friend = friendships[index]
                     close()
                     FriendInteractUI(plugin, friend, info, this).show()
                 } else {
@@ -102,7 +102,7 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
                 }
             } else {
                 val player = adapter.strangers[index]
-                friendship.add(player)
+                info.friendships.add(player)
                 info.player.success(adapter.getter["user.friend.sent"])
                 player.messagePool.apply {
                     val a = add(

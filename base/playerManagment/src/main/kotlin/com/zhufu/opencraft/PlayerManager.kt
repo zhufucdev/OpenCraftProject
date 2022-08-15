@@ -4,10 +4,8 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.api.ChatInfo
 import com.zhufu.opencraft.data.Info
-import com.zhufu.opencraft.data.Info.Companion.cache
 import com.zhufu.opencraft.data.Info.Companion.plugin
 import com.zhufu.opencraft.data.OfflineInfo
-import com.zhufu.opencraft.data.OfflineInfo.Companion.cacheList
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.util.TextUtil
@@ -35,7 +33,6 @@ object PlayerManager : Listener {
     }
 
     fun remove(chatInfo: ChatInfo) = chatters.remove(chatInfo)
-    fun findChatter(name: String) = chatters.firstOrNull { it.id == name } ?: cache.firstOrNull { it.name == name }
     fun removeFirstChatter(l: (ChatInfo) -> Boolean): Boolean {
         val index = chatters.indexOfFirst(l)
         if (index == -1)
@@ -47,28 +44,28 @@ object PlayerManager : Listener {
     fun findInfoByPlayer(player: Player) = Info.findByPlayer(player)
     fun findInfoByPlayer(uuid: UUID) = Info.findByPlayer(uuid)
     fun findInfoByName(name: String) = Info.findByName(name)
-    fun findOfflineInfoByPlayer(uuid: UUID): OfflineInfo? = cache.firstOrNull { it.uuid == uuid }
-        ?: cacheList.firstOrNull { it.uuid == uuid }
+    fun findOfflineInfoByPlayer(uuid: UUID): OfflineInfo? = Info.cache.firstOrNull { it.uuid == uuid }
+        ?: OfflineInfo.cache.firstOrNull { it.uuid == uuid }
         ?: try {
-            OfflineInfo(uuid).also { cacheList.add(it) }
+            OfflineInfo(uuid).also { OfflineInfo.cache.add(it) }
         } catch (e: Exception) {
             null
         }
     fun findOfflineInfoByName(name: String) = OfflineInfo.findByName(name)
 
     fun createOfflinePlayer(uuid: UUID) = findOfflineInfoByPlayer(uuid)
-        ?: OfflineInfo(uuid, true).also { cacheList.add(it) }
+        ?: OfflineInfo(uuid, true).also { OfflineInfo.cache.add(it) }
 
-    fun forEachPlayer(l: (Info) -> Unit) = cache.forEach(l)
+    fun forEachPlayer(l: (Info) -> Unit) = Info.cache.forEach(l)
     fun forEachChatter(l: (ChatInfo) -> Unit) {
-        cache.forEach(l)
+        Info.cache.forEach(l)
         chatters.forEach(l)
     }
 
-    fun forEachOffline(l: (OfflineInfo) -> Unit) = cacheList.forEach(l)
+    fun forEachOffline(l: (OfflineInfo) -> Unit) = OfflineInfo.cache.forEach(l)
 
-    fun addOffline(info: OfflineInfo) = cacheList.add(info)
-    fun add(info: Info) = cache.add(info)
+    fun addOffline(info: OfflineInfo) = OfflineInfo.cache.add(info)
+    fun add(info: Info) = Info.cache.add(info)
     fun remove(p: Player) = forEachPlayer {
         if (it.uuid == p.uniqueId) {
             it.destroy()

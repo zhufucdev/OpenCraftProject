@@ -10,6 +10,7 @@ import com.zhufu.opencraft.data.PreregisteredInfo
 import com.zhufu.opencraft.data.RegisteredInfo
 import com.zhufu.opencraft.data.WebInfo
 import com.zhufu.opencraft.player_community.MessagePool
+import com.zhufu.opencraft.player_community.PublicMessagePool
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.wiki.Search
@@ -107,7 +108,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                     info == null -> //When no such user
                                         addProperty("r", -1)
 
-                                    info.password != pwd -> //When wrong password
+                                    !info.matchPassword(pwd) -> //When wrong password
                                         addProperty("r", 1)
 
                                     else -> {
@@ -131,7 +132,6 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                         val obj = JsonObject()
                         obj.apply {
                             if (containsUser(remoteAddress)) {
-                                users[remoteAddress]!!.save()
                                 val removed = users.remove(remoteAddress)!!
                                 removed.lastExchange?.apply {
                                     try {
@@ -174,7 +174,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                         val register = register(id, remoteAddress)
                                         var excepted = false
                                         register.apply {
-                                            password = pwd
+                                            setPassword(pwd)
                                             name = id
                                             if (nick != null) {
                                                 if (nick.length <= 20)
@@ -184,7 +184,6 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                     addProperty("r", 1)
                                                 }
                                             }
-                                            save()
                                         }
                                         if (!excepted)
                                             addProperty("r", 0)
@@ -202,9 +201,8 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                             if (find == null) {
                                 addProperty("r", -1)
                             } else {
-                                find.tagFile.deleteRecursively()
+                                find.delete()
                                 users.remove(remoteAddress)
-                                ServerStatics.playerNumber--
                                 addProperty("r", 0)
                             }
                         }.toString().toByteArray() to MimeType.JSON
@@ -271,15 +269,15 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                             add("privileges", r)
                                     }
                                     if (check.contains("statics")) {
-                                        val statics = find.statics?.getData()
+                                        val statics = find.statics?.getDailyPlayTime()
                                         if (statics == null)
                                             addProperty("r", -1)
                                         else {
                                             val value = JsonObject()
-                                            statics.entrySet().forEach { (time, v) ->
+                                            statics.forEach { (day, duration) ->
                                                 value.addProperty(
-                                                    time,
-                                                    if (v.isJsonObject) v.asJsonObject["time"].asLong else v.asLong
+                                                    day.toString(),
+                                                    duration
                                                 )
                                             }
                                             add("statics", value)
@@ -294,19 +292,19 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                     addProperty("text", it.text)
                                                     addProperty("read", it.read)
                                                     addProperty("type", it.type.name.lowercase())
-                                                    if (it.type == MessagePool.Type.Friend && it.extra != null) {
-                                                        addProperty("sender", it.extra!!.getString("sender"))
+                                                    if (it.type == MessagePool.Type.Friend) {
+                                                        addProperty("sender", it.sender?.toString())
                                                     }
                                                 }
                                             )
                                         }
-                                        Base.publicMsgPool.forEach {
+                                        PublicMessagePool.forEach {
                                             messages.add(
                                                 JsonObject().apply {
                                                     addProperty("id", it.id)
                                                     addProperty("text", it.text)
                                                     if (find.name != null)
-                                                        addProperty("read", it.extra?.contains(find.name!!) == true)
+                                                        addProperty("read", PublicMessagePool.isRead(it.id, find))
                                                     addProperty("type", "public")
                                                 }
                                             )
@@ -364,7 +362,6 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                             what.length > 20 -> addProperty("r", 2)
                                             else -> {
                                                 info.nickname = what
-                                                info.save()
                                                 addProperty("r", 0)
                                             }
                                         }
@@ -393,7 +390,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                 addProperty("r", -1)
                                             } else {
                                                 val r = if (index.second) {
-                                                    Base.publicMsgPool.markAsRead(index.first!!, info)
+                                                    PublicMessagePool.markAsRead(index.first!!, info)
                                                 } else {
                                                     info.messagePool.markAsRead(index.first!!)
                                                 }
@@ -414,7 +411,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                 addProperty("r", 503)
                                             } else {
                                                 val r = if (index.second) {
-                                                    Base.publicMsgPool.markAsUnread(index.first!!, info)
+                                                    PublicMessagePool.markAsUnread(index.first!!, info)
                                                 } else {
                                                     info.messagePool.markAsUnread(index.first!!)
 
@@ -643,7 +640,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                             "player" -> {
                                 addProperty("online", Bukkit.getOnlinePlayers().size)
                                 addProperty("maxOnline", Bukkit.getMaxPlayers())
-                                addProperty("totalPlayers", ServerStatics.playerNumber)
+                                addProperty("totalPlayers", ServerStatics.playerCount)
                             }
 
                             else -> addProperty("r", 404)
@@ -908,7 +905,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                                                 broadcast(
                                                     "wiki.thanks",
                                                     TextUtil.TextColor.YELLOW,
-                                                    users[remoteAddress]?.id,
+                                                    users[remoteAddress]?.nickname,
                                                     infoInput["title"].asString
                                                 )
                                             }
@@ -1118,7 +1115,7 @@ class MajorHandler(private val root: File, private val wikiRoot: File, private v
                             }
                             if (!invalid) {
                                 logger.info("navigator is $navigator")
-                                File(root, "navigator.html").readText().replace("\$navigation", navigator!!)
+                                File(root, "navigator.html").readText().replace("\$navigation", navigator)
                                     .toByteArray()
                             } else {
                                 invalidFile.readBytes()

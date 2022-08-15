@@ -2,7 +2,7 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.data.ServerPlayer
 import com.zhufu.opencraft.inventory.PaymentDialog
-import com.zhufu.opencraft.player_community.FriendWrap
+import com.zhufu.opencraft.player_community.Friendship
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.special_item.Coin
 import com.zhufu.opencraft.util.toComponent
@@ -26,9 +26,9 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
             if (info == null) {
                 sender.error(getter["player.error.unknown"])
             } else {
-                fun checkIsFriend(target: ServerPlayer): FriendWrap? {
-                    if (info.friendship.contains(target)) {
-                        val friend = info.friendship[target]!!
+                fun checkIsFriend(target: ServerPlayer): Friendship? {
+                    if (info.friendships.contains(target)) {
+                        val friend = info.friendships[target]!!
                         if (friend.isFriend) {
                             return friend
                         } else {
@@ -40,12 +40,11 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     return null
                 }
                 if (info.isLogin) {
-
                     when (args.size) {
                         0 -> {
                             sender.info(getter["user.friend.list"])
-                            if (info.friendship.isNotEmpty())
-                                info.friendship.forEach {
+                            if (info.friendships.count() > 0)
+                                info.friendships.forEach {
                                     sender.sendMessage(
                                         Component.text(it.friend.name ?: getter["command.error.unknown"]).toBuilder()
                                             .apply { b ->
@@ -74,7 +73,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         }
 
                         1 -> {
-                            val friend = info.friendship[args.first()]
+                            val friend = info.friendships[args.first()]
                             if (friend != null) {
                                 if (friend.isFriend)
                                     friend.printStatics(sender, getter)
@@ -88,12 +87,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         2 -> {
                             val name = args.first()
                             val target = try {
-                                ServerPlayer.of(name = name).let {
-                                    if (it == info)
-                                        null
-                                    else
-                                        it
-                                }
+                                ServerPlayer.of(name = name).takeIf { it != info }
                             } catch (e: Exception) {
                                 null
                             }
@@ -103,7 +97,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             }
                             when (args[1]) {
                                 "add" -> {
-                                    fun sendPassMessage(r: FriendWrap) {
+                                    fun sendPassMessage(r: Friendship) {
                                         sender.success(getter["user.friend.added", name])
                                         r.friend.messagePool.apply {
                                             add(
@@ -116,8 +110,8 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                             }
                                         }
                                     }
-                                    if (!info.friendship.contains(target)) {
-                                        val r = info.friendship.add(target)
+                                    if (!info.friendships.contains(target)) {
+                                        val r = info.friendships.add(target)
                                         if (r.isFriend) {
                                             sendPassMessage(r)
                                         } else {
@@ -125,12 +119,12 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                             target.messagePool.apply {
                                                 val a = add(
                                                     text = "\$info\${user.friend.request.title,${sender.name}}",
-                                                    type = MessagePool.Type.System
+                                                    type = MessagePool.Type.OneTime
                                                 )
                                                 val b = add(
                                                     text = "\$tip\${user.friend.request.tip,${sender.name}," +
                                                             "${sender.name}}",
-                                                    type = MessagePool.Type.System
+                                                    type = MessagePool.Type.OneTime
                                                 )
                                                 a.recordTime()
                                                 if (target.isOnline) {
@@ -142,7 +136,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                             }
                                         }
                                     } else {
-                                        val friendInfo = info.friendship[target]!!
+                                        val friendInfo = info.friendships[target]!!
                                         when {
                                             friendInfo.isFriend -> sender.error(getter["user.friend.added", name])
                                             friendInfo.isParentAdder -> sender.error(getter["user.friend.sent"])
@@ -155,8 +149,8 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                 }
 
                                 "del" -> {
-                                    if (info.friendship.contains(target)) {
-                                        if (info.friendship.remove(target)) {
+                                    if (info.friendships.contains(target)) {
+                                        if (info.friendships.remove(target)) {
                                             sender.success(getter["user.friend.removed", name])
                                             target.messagePool.add(
                                                 text = "\$info\${user.friend.wasRemoved,${sender.name}}",
@@ -296,7 +290,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                 text = message,
                                                 type = MessagePool.Type.Friend
                                             ).apply {
-                                                this.sender = info.nickname ?: sender.name
+                                                this.sender = info.uuid
                                                 recordTime()
                                                 if (target.isOnline)
                                                     sendTo(target.onlinePlayerInfo!!)
@@ -322,12 +316,12 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                 if (point != null) {
                                                     if (share) {
                                                         if (!friendInfo.sharedCheckpoints.contains(point)) {
-                                                            friendInfo.sharedCheckpoints.add(point)
+                                                            friendInfo.shareCheckpoint(point)
                                                         }
                                                         sender.success(getter["user.friend.point.start", n, name])
                                                     } else {
                                                         if (friendInfo.sharedCheckpoints.contains(point)) {
-                                                            friendInfo.sharedCheckpoints.remove(point)
+                                                            friendInfo.removeSharedCheckpoint(point)
                                                         }
                                                         sender.info(getter["user.friend.point.stop", n, name])
                                                     }
@@ -364,7 +358,7 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
             if (info != null) {
                 if (args.size == 1) {
                     val names = mutableListOf<String>()
-                    info.friendship.forEach {
+                    info.friendships.forEach {
                         names.add(it.name ?: return@forEach)
                     }
                     ServerPlayer.forEachSaved {

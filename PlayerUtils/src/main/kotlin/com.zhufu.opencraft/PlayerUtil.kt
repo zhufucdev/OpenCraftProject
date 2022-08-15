@@ -6,6 +6,7 @@ import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.lobby.PlayerLobby
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
+import com.zhufu.opencraft.player_community.PublicMessagePool
 import com.zhufu.opencraft.special_item.*
 import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
@@ -132,14 +133,14 @@ class PlayerUtil : JavaPlugin() {
                 }
                 "server:markMessageRead" -> {
                     if (args.size >= 2) {
-                        val index = args[1].toIntOrNull() ?: return true
+                        val id = args[1].toIntOrNull() ?: return true
                         var r = false
                         if (args.size >= 3) {
                             if (args[2] == "public") {
-                                r = Base.publicMsgPool.markAsRead(index, sender.info() ?: return true)
+                                r = PublicMessagePool.markAsRead(id, sender.info() ?: return true)
                             }
                         } else {
-                            r = sender.info()?.messagePool?.markAsRead(index) == true
+                            r = sender.info()?.messagePool?.markAsRead(id) == true
                         }
                         if (r)
                             sender.success(getter["msg.markAsRead"])
@@ -272,33 +273,35 @@ class PlayerUtil : JavaPlugin() {
                     if (target == null) {
                         sender.error(getter["player.error.notFound", args.first()])
                     } else {
+                        val info = sender.info()
+                        if (info == null) {
+                            sender.error(getter["player.error.unknown"])
+                            return true
+                        }
                         when (args.last()) {
                             "go" -> {
+                                if (info.isLogin)
+                                    info.logout()
                                 PlayerLobbyManager[target].visitBy(sender)
                             }
                             else -> {
-                                val info = sender.info()
-                                if (info == null) {
-                                    sender.error(getter["player.error.unknown"])
-                                } else {
-                                    val lobby = PlayerLobbyManager[info]
-                                    when (args.last()) {
-                                        "permit" -> {
-                                            if (lobby.addPartner(target))
-                                                sender.success(getter["lobby.permitted", target.name])
-                                            else
-                                                sender.error(getter["lobby.error.alreadyPermitted", target.name])
-                                        }
-                                        "forbid" -> {
-                                            if (lobby.removePartner(target))
-                                                sender.success(getter["lobby.forbid", target.name])
-                                            else
-                                                sender.error(getter["lobby.error.alreadyForbidden", target.name])
-                                        }
-                                        else -> {
-                                            sender.error(getter["command.error.usage"])
-                                            printUsage()
-                                        }
+                                val lobby = PlayerLobbyManager[info]
+                                when (args.last()) {
+                                    "permit" -> {
+                                        if (lobby.addPartner(target))
+                                            sender.success(getter["lobby.permitted", target.name])
+                                        else
+                                            sender.error(getter["lobby.error.alreadyPermitted", target.name])
+                                    }
+                                    "forbid" -> {
+                                        if (lobby.removePartner(target))
+                                            sender.success(getter["lobby.forbid", target.name])
+                                        else
+                                            sender.error(getter["lobby.error.alreadyForbidden", target.name])
+                                    }
+                                    else -> {
+                                        sender.error(getter["command.error.usage"])
+                                        printUsage()
                                     }
                                 }
                             }

@@ -4,7 +4,7 @@ import com.zhufu.opencraft.*
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.inventory.PaymentDialog
 import com.zhufu.opencraft.Base.Extend.toPrettyString
-import com.zhufu.opencraft.data.CheckpointInfo
+import com.zhufu.opencraft.data.Checkpoint
 import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.util.*
 import net.kyori.adventure.text.Component
@@ -18,18 +18,19 @@ import org.bukkit.plugin.Plugin
 class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory: ClickableInventory) :
     PageInventory<CheckpointUI.Adapter>(
         Language[info.userLanguage, "ui.checkpoint.title"].toComponent(),
-        Adapter(info.checkpoints, Language.LangGetter(info)), 36, plugin
+        Adapter(info, info.getter()), 36, plugin
     ), Backable {
     private val tasks
         get() = adapter.tasks
 
-    class Adapter(val checkopints: ArrayList<CheckpointInfo>, val getter: Language.LangGetter) :
+    class Adapter(val info: Info, val getter: Language.LangGetter) :
         PageInventory.Adapter() {
+        var checkpoints = info.checkpoints.sortedBy { it.name }
         override val size: Int
-            get() = checkopints.size + if (!isManaging) 1 else 0
+            get() = checkpoints.size + if (!isManaging) 1 else 0
         override val hasToolbar: Boolean
             get() = true
-        val tasks = HashMap<CheckpointInfo, Char>()
+        val tasks = HashMap<Checkpoint, Char>()
         var isManaging = false
         var isDeleting = false
         var isRenaming = false
@@ -40,8 +41,8 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
         }
 
         override fun getItem(index: Int, currentPage: Int): ItemStack {
-            return if (index < checkopints.size) {
-                val info = checkopints[index]
+            return if (index < checkpoints.size) {
+                val info = checkpoints[index]
                 val selected = tasks.containsKey(info)
                 ItemStack(if (!selected) Material.ENDER_PEARL else Material.ENDER_EYE).apply {
                     itemMeta = itemMeta!!.apply {
@@ -135,12 +136,16 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                 else -> super.getToolbarItem(index)
             }
         }
+
+        override fun onRefresh() {
+            checkpoints = info.checkpoints.sortedBy { it.name }
+        }
     }
 
     init {
         setOnItemClickListener { index, _ ->
-            if (index < adapter.checkopints.size) {
-                val point = adapter.checkopints[index]
+            if (index < adapter.checkpoints.size) {
+                val point = adapter.checkpoints[index]
                 if (!adapter.isManaging) {
                     PaymentDialog(
                         info.player,
@@ -180,7 +185,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                         }
                         refresh(index)
                     } else if (adapter.isRenaming) {
-                        PlayerUtil.selected[info.player] = info.checkpoints[index]
+                        PlayerUtil.selected[info.player] = adapter.checkpoints[index]
                         info.player.tip(adapter.getter["ui.checkpoint.rename.tip"])
                         close()
                     }
@@ -188,7 +193,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
             } else {
                 val prefix = adapter.getter["ui.checkpoint.new.title"]
                 var max = 0
-                adapter.checkopints.forEach {
+                adapter.checkpoints.forEach {
                     if (it.name.startsWith(prefix)) {
                         it.name.substring(prefix.length).toIntOrNull()?.apply {
                             if (this > max)
@@ -201,7 +206,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                     if (location.world == Base.lobby) {
                         error(this@CheckpointUI.adapter.getter["command.error.world"])
                     } else {
-                        info.checkpoints.add(CheckpointInfo(info.player.location, name))
+                        info.checkpoints.add(Checkpoint(info.player.location, name))
                         success(
                             adapter.getter[
                                     "user.checkpoint.saved",

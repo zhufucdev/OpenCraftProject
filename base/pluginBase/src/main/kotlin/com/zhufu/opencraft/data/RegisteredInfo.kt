@@ -19,22 +19,6 @@ open class RegisteredInfo(uuid: UUID, createNew: Boolean = false) : WebInfo(crea
             return data.isSet("password")
         }
     }
-
-    override val tagFile: File
-        get() = Paths.get("plugins", "tag", "$uuid.yml").toFile().also { register ->
-            if (!register.exists()) {
-                val preregister =
-                    Paths.get(
-                        register.parent, "preregister", "${offlinePlayer.name}.yml"
-                    ).toFile()
-                if (preregister.exists()) {
-                    preregister.apply {
-                        renameTo(register)
-                        delete()
-                    }
-                }
-            }
-        }
     override val playerDir: File
         get() = Paths.get("plugins", "playerDir", uuid.toString()).toFile().also {
             if (!it.exists()) it.mkdirs()
@@ -47,8 +31,6 @@ open class RegisteredInfo(uuid: UUID, createNew: Boolean = false) : WebInfo(crea
             }
         }
 
-    override val id: String
-        get() = name ?: "unknown"
     override var doNotTranslate = false
     override val displayName get() = "$name Web"
     override val targetLang: String get() = this.userLanguage

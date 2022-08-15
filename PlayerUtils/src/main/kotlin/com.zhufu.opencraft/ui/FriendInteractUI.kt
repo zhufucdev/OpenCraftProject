@@ -4,7 +4,7 @@ import com.zhufu.opencraft.*
 import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.inventory.PayInputDialog
 import com.zhufu.opencraft.inventory.PaymentDialog
-import com.zhufu.opencraft.player_community.FriendWrap
+import com.zhufu.opencraft.player_community.Friendship
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.util.*
 import org.bukkit.Bukkit
@@ -17,21 +17,21 @@ import org.bukkit.plugin.Plugin
 
 class FriendInteractUI(
     plugin: Plugin,
-    private val friend: FriendWrap,
+    private val friendship: Friendship,
     private val info: Info,
     override val parentInventory: ClickableInventory
 ) : ClickableInventory(plugin), Backable {
     override val inventory: Inventory = Bukkit.createInventory(null, 36)
-    val getter by lazy { Language.LangGetter(friend.parent) }
+    val getter by lazy { Language.LangGetter(friendship.owner) }
 
     private fun refresh() {
-        if (friend.exits)
+        if (friendship.exits)
             inventory.apply {
-                setItem(13, friend.friend.skullItem.updateItemMeta<ItemMeta> {
-                    displayName(friend.name?.toComponent())
-                    if (friend.isFriend)
+                setItem(13, friendship.friend.skullItem.updateItemMeta<ItemMeta> {
+                    displayName(friendship.name?.toComponent())
+                    if (friendship.isFriend)
                         lore(buildList {
-                            friend.statics(getter).forEach {
+                            friendship.statics(getter).forEach {
                                 add(it.toInfoMessage())
                             }
                         })
@@ -39,19 +39,19 @@ class FriendInteractUI(
                 val deleteItem = Widgets.cancel.updateItemMeta<ItemMeta> {
                     displayName(getter["ui.friend.del"].toErrorMessage())
                 }
-                if (friend.isFriend) {
+                if (friendship.isFriend) {
                     setItem(18, ItemStack(Material.GOLD_INGOT).updateItemMeta<ItemMeta> {
                         displayName(getter["ui.friend.transfer.title"].toInfoMessage())
                         lore(listOf(getter["ui.friend.transfer.click"].toTipMessage()))
                     })
                     setItem(20, ItemStack(Material.OAK_SIGN).updateItemMeta<ItemMeta> {
                         displayName(getter["ui.friend.msg.title"].toInfoMessage())
-                        lore(listOf(getter["ui.friend.msg.tip", friend.name].toTipMessage()))
+                        lore(listOf(getter["ui.friend.msg.tip", friendship.name].toTipMessage()))
                     })
                     setItem(22, ItemStack(Material.CHEST).updateItemMeta<ItemMeta> {
                         displayName(getter["ui.friend.inventory.title"].toInfoMessage())
                         lore(listOf(
-                            getter["ui.friend.inventory.${if (friend.sharedInventory == null) "buy" else "check"}"]
+                            getter["ui.friend.inventory.${if (friendship.sharedInventory == null) "buy" else "check"}"]
                                 .toTipMessage()
                         ))
                     })
@@ -78,8 +78,8 @@ class FriendInteractUI(
 
     init {
         refresh()
-        info.friendship.setOnChangedListener {
-            if (it == friend)
+        info.friendships.setOnChangedListener {
+            if (it == friendship)
                 refresh()
         }
     }
@@ -93,18 +93,18 @@ class FriendInteractUI(
             back(info.player)
         } else {
             fun add() {
-                if (friend.isParentAdder) {
+                if (friendship.isParentAdder) {
                     info.player.error(getter["user.friend.sent"])
                 } else {
-                    friend.startAt = System.currentTimeMillis()
-                    info.player.success(getter["user.friend.added", friend.name])
-                    friend.friend.messagePool.apply {
+                    friendship.startAt = System.currentTimeMillis()
+                    info.player.success(getter["user.friend.added", friendship.name])
+                    friendship.friend.messagePool.apply {
                         add(
                             text = "\${user.friend.added,${info.player.name}}",
                             type = MessagePool.Type.System
                         ).let {
                             it.recordTime()
-                            val target = friend.friend
+                            val target = friendship.friend
                             if (target.isOnline)
                                 it.sendTo(target.onlinePlayerInfo!!)
                         }
@@ -114,10 +114,10 @@ class FriendInteractUI(
             }
 
             fun del() {
-                val target = friend.friend
-                if (info.friendship.remove(target)) {
+                val target = friendship.friend
+                if (info.friendships.remove(target)) {
                     info.player.success(getter["user.friend.removed", target.name])
-                    if (friend.isFriend) {
+                    if (friendship.isFriend) {
                         target.messagePool.add(
                             text = "\$info\${user.friend.wasRemoved,${info.player.name}}",
                             type = MessagePool.Type.System
@@ -133,16 +133,16 @@ class FriendInteractUI(
                 }
             }
 
-            if (friend.isFriend) {
+            if (friendship.isFriend) {
                 when (event.rawSlot) {
                     18 -> {
                         PayInputDialog(plugin, info, sellingItem = inventory.getItem(18)!!)
                             .setOnPayListener { success ->
                                 if (success) {
-                                    val target = friend.friend
+                                    val target = friendship.friend
 
                                     target.currency += amount
-                                    friend.transferred += amount
+                                    friendship.transferred += amount
 
                                     info.player.success(getter["user.friend.transfer.out", amount, target.name])
                                     target.messagePool.add(
@@ -164,11 +164,11 @@ class FriendInteractUI(
                             .show()
                     }
                     20 -> {
-                        info.player.tip(getter["ui.friend.msg.tip", friend.name])
+                        info.player.tip(getter["ui.friend.msg.tip", friendship.name])
                         close()
                     }
                     22 -> {
-                        if (friend.sharedInventory == null) {
+                        if (friendship.sharedInventory == null) {
                             PaymentDialog(
                                 player = info.player,
                                 sellingItems = SellingItemInfo(
@@ -183,10 +183,10 @@ class FriendInteractUI(
                             )
                                 .setOnPayListener { success ->
                                     if (success) {
-                                        friend.createSharedInventory()
+                                        friendship.createSharedInventory()
                                         info.player.apply {
                                             success(getter["user.friend.inventory.created"])
-                                            openInventory(friend.sharedInventory!!)
+                                            openInventory(friendship.sharedInventory!!)
                                         }
                                     } else {
                                         info.player.error(getter["trade.error.poor"])
@@ -198,11 +198,11 @@ class FriendInteractUI(
                                 }
                                 .show()
                         } else {
-                            info.player.openInventory(friend.sharedInventory!!)
+                            info.player.openInventory(friendship.sharedInventory!!)
                         }
                     }
                     24 -> {
-                        FriendShareInventory(info, friend, plugin, this).show(showingTo!!)
+                        FriendShareInventory(info, friendship, plugin, this).show(showingTo!!)
                     }
                     26 -> del()
                 }

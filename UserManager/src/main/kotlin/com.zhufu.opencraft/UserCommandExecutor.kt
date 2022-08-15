@@ -245,12 +245,12 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
 
         val thisInfo = PlayerManager.findInfoByPlayer(this) ?: return
         if (thisInfo.status == Info.GameStatus.InLobby) {
-            thisInfo.inventory.create("survivor").set("location", player.location)
+            thisInfo.inventory.getOrCreate("survivor").set("location", player.location)
             ServerCaller["SolvePlayerLogin"]!!(listOf(thisInfo))
         } else {
             if (targetInfo.status == Info.GameStatus.InLobby) {
                 thisInfo.apply {
-                    inventory.create(DualInventory.RESET).load()
+                    inventory.getOrCreate(DualInventory.RESET).load()
                     status = Info.GameStatus.InLobby
                 }
                 PlayerLobbyManager[targetInfo].visitBy(this)
@@ -347,7 +347,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         sender.error(getter["command.error.usage"])
                     }
 
-                    args[1] != info.password
+                    !info.matchPassword(args[1])
                     -> {
                         sender.error(getter["user.error.wrongOldPwd"])
                     }
@@ -358,7 +358,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     }
 
                     else -> {
-                        info.password = args[2]
+                        info.setPassword(args[2])
                         sender.info(getter["user.pwd.changed"])
                         return true
                     }
@@ -377,8 +377,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                 }
                 if (args.size == 2 && args[1] == "back") {
                     val dest = try {
-                        info.tag.getSerializable("surviveSpawn", Location::class.java)
-                            ?: throw IllegalArgumentException()
+                        info.survivalSpawn ?: throw IllegalArgumentException()
                     } catch (e: Exception) {
                         sender.error(getter["user.error.spawnpointNotFound"])
                         sender.warn(getter["gameWarn"])
@@ -464,7 +463,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                         sender.error(getter["command.error.playerNotFound"])
                         return true
                     }
-                    if (info.friendship[target]?.let { it.isFriend && it.shareLocation } == true) {
+                    if (info.friendships[target]?.let { it.isFriend && it.shareLocation } == true) {
                         sender.goto(player1)
                     } else {
                         if (target.gotoRequests.any { it.requester == sender && !it.isAccepted && !it.isTimeOut }) {
@@ -529,7 +528,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                 } else {
                     fun doDefault() {
                         if (!sendGotoRequest(args[1]) && !gotoCheckpoint(info, args[1])) {
-                            info.friendship.forEach {
+                            info.friendships.forEach {
                                 if (gotoCheckpoint(it.friend, args[1])) {
                                     return
                                 }
@@ -546,7 +545,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             }
                         if (target != null) {
                             fun error() = sender.error(getter["user.error.checkpointNotFound"])
-                            if (info.friendship[target]?.isFriend != true || !gotoCheckpoint(
+                            if (info.friendships[target]?.isFriend != true || !gotoCheckpoint(
                                     target,
                                     args[1].substring(args[1].indexOf('/') + 1)
                                 )
@@ -642,17 +641,9 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             )
                         )
 
-                        if (info.tag.isSet("lastDeath")) {
-                            val time = info.tag.getLong("lastDeath.time", -1)
-                            val location = info.tag.getSerializable("lastDeath.location", Location::class.java)
-                            val reason = info.tag.getString("lastDeath.reason", "")
-                            sender.sendMessage(
-                                *arrayOf(
-                                    "${getter["user.lastDeath.time"]}: ${if (time == -1L) "null" else time.toString()}",
-                                    "${getter["user.lastDeath.location"]}: ${location?.toPrettyString() ?: "null"}",
-                                    "${getter["user.lastDeath.reason"]}: ${if (reason!!.isEmpty()) "null" else reason}"
-                                )
-                            )
+                        val death = info.lastDeath
+                        if (death != null) {
+                            death.show(sender)
                         } else {
                             sender.info(getter["user.lastDeath.noRecord"])
                         }
@@ -664,13 +655,13 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                             sender.error(getter["player.error.unknown"])
                             return true
                         }
-                        val t = info.tag.getSerializable("lastDeath.location", Location::class.java)
-                        if (t == null) {
+                        val death = info.lastDeath
+                        if (death == null) {
                             sender.error(getter["user.lastDeath.noRecord"])
                             return true
                         }
                         val prise = Game.env.getInt("backToDeathPrise")
-                        sender.info(getter["user.lastDeath.last", t.toPrettyString()])
+                        sender.info(getter["user.lastDeath.last", death.location.toPrettyString()])
                         sender.tip(getter["user.lastDeath.toGo", Bukkit.getPluginCommand("user bd")!!.usage, prise])
                     }
                 }
@@ -682,8 +673,8 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     sender.error(getter["player.unknown"])
                     return true
                 }
-                val t = info.tag.getSerializable("lastDeath.location", Location::class.java)
-                if (t == null) {
+                val death = info.lastDeath
+                if (death == null) {
                     sender.error(getter["user.lastDeath.noRecord"])
                     return true
                 }
@@ -693,15 +684,15 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     return true
                 }
 
-                val event = PlayerTeleportedEvent(sender, sender.location, t)
+                val event = PlayerTeleportedEvent(sender, sender.location, death.location)
                 Bukkit.getPluginManager().callEvent(event)
                 if (!event.isCancelled) {
-                    sender.teleport(t)
+                    death.teleport(sender)
                     info.currency -= prise
                     sender.info(getter["user.lastDeath.goTo", prise])
                 }
 
-                info.tag.set("lastDeath", null)
+                info.lastDeath = null
             }
 
             "saveas" -> {
@@ -724,7 +715,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                 if (info.checkpoints.any { it.name == id }) {
                     sender.error(getter["user.checkpoint.alreadyExist", id])
                 } else {
-                    val point = CheckpointInfo(sender.location, id)
+                    val point = Checkpoint(sender.location, id)
                     info.checkpoints.add(point)
                     sender.info(getter["user.checkpoint.saved", point.location.toPrettyString(), id])
                     sender.tip(getter["user.checkpoint.toGo", id])
@@ -787,7 +778,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                 val oldPwd = args[1]
                 val pwd = args[2]
 
-                if (info.password != pwd) {
+                if (!info.matchPassword(pwd)) {
                     sender.error(getter["user.login.failed"])
                     return true
                 }
@@ -795,7 +786,7 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                 var result: OfflineInfo? = null
                 var errorSent = false
                 OfflineInfo.forEach {
-                    if (it.password != oldPwd || it.uuid == sender.uniqueId)
+                    if (!it.matchPassword(oldPwd) || it.uuid == sender.uniqueId)
                         return@forEach
                     if (result == null) {
                         result = it

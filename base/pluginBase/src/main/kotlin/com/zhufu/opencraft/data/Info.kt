@@ -70,42 +70,49 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
     override val targetLang: String
         get() = userLanguage
     override val playerOutputStream: PlayerOutputStream by lazy { BukkitPlayerOutputStream(player) }
-    override val id: String
-        get() = name ?: "unknown"
 
     val gotoRequests = ArrayList<GotoRequest>()
 
     var inventory: DualInventory = DualInventory(player, this)
 
-    var isRegistered: Boolean = password != null
+    var isRegistered: Boolean = hasPassword
         private set
     var isLogin: Boolean = false
         private set
     val isInBuilderMode get() = status == GameStatus.Building
     override var name: String?
-        get() = tag.getString("name", player.name)
+        get() = doc.getString("name") ?: player.name
         set(value) {
-            tag.set("name", value)
+            if (value == null) {
+                doc.remove("name")
+            } else {
+                doc["name"] = value
+            }
+            update()
         }
 
     var savedAddress: String?
-        get() = tag.getString("address")
+        get() = doc.getString("address")
         private set(value) {
-            tag.set("address", value)
-            save()
+            if (value == null) {
+                doc.remove("address")
+            } else {
+                doc["address"] = value
+            }
+            update()
         }
 
     fun copyFrom(target: OfflineInfo): List<String> {
         val failureList = ArrayList<String>()
         val oldInventory = File("plugins${File.separatorChar}inventories${File.separatorChar}${target.uuid}")
         if (oldInventory.exists()) {
-            inventory.present.save()
+            inventory.present.sync()
 
             try {
                 this.inventory.delete()
                 oldInventory.renameTo(File("plugins${File.separatorChar}inventories${File.separatorChar}${this.uuid}"))
                 inventory = DualInventory(player, this)
-                inventory.create(DualInventory.RESET).load()
+                inventory.getOrCreate(DualInventory.RESET).load()
             } catch (e: Exception) {
                 failureList.add("inventories/${e::class.simpleName} ${e.cause}")
             }
@@ -119,8 +126,8 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
         }
 
         try {
-            this.tag = target.tag
-            save()
+            doc.putAll(target.doc)
+            update()
         } catch (e: Exception) {
             failureList.add("tag/${e::class.simpleName}: ${e.message}")
         }
@@ -132,19 +139,12 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
         isLogin = true
         val getter = getLangGetter(this as ChatInfo)
         when {
-            pwd == password -> try {
-                login()
-            } catch (e: Exception) {
-                player.sendMessage(*TextUtil.printException(e))
-
-                isLogin = false
-                isRegistered = false
-                player.tip(getter["user.error.toRegister", plugin.server.getPluginCommand("user reg")?.usage]);
-            }
-            password == null -> {
+            matchPassword(pwd) -> login()
+            !hasPassword -> {
                 isLogin = false
                 player.error(getter["user.toRegister"])
             }
+
             else -> {
                 isLogin = false
                 player.error(getter["user.login.failed"])
@@ -152,22 +152,35 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
         }
     }
 
-    private fun login() {
-        player.removePotionEffect(PotionEffectType.BLINDNESS)
-        player.walkSpeed = 0.2f
-        player.flySpeed = 0.1f
-        player.gameMode = GameMode.SURVIVAL
-        player.isInvulnerable = false
+    fun login() {
+        try {
+            player.removePotionEffect(PotionEffectType.BLINDNESS)
+            player.walkSpeed = 0.2f
+            player.flySpeed = 0.1f
+            player.gameMode = GameMode.SURVIVAL
+            player.isInvulnerable = false
 
-        plugin.server.onlinePlayers.forEach { it.showPlayer(plugin, player) }
+            plugin.server.onlinePlayers.forEach { it.showPlayer(plugin, player) }
 
-        savedAddress = player.address!!.hostName
-        isLogin = true
-        player.resetTitle()
+            savedAddress = player.address!!.hostName
+            isLogin = true
+            player.resetTitle()
 
-        ServerCaller["SolvePlayerSurvive"]!!(listOf(player))
+            ServerCaller["SolvePlayerSurvive"]!!(listOf(player))
 
-        player.info(getter()["user.login.success"])
+            player.info(getter()["user.login.success"])
+        } catch (e: Exception) {
+            player.sendMessage(*TextUtil.printException(e))
+
+            isLogin = false
+            isRegistered = false
+            player.tip(
+                player.info().getter()[
+                        "user.error.toRegister",
+                        plugin.server.getPluginCommand("user reg")?.usage
+                ]
+            )
+        }
     }
 
     /**
@@ -200,27 +213,21 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
      * Logout before getting into lobby
      */
     fun logout() {
-        inventory.create(DualInventory.RESET).load()
+        inventory.getOrCreate(DualInventory.RESET).load()
 
         status = GameStatus.InLobby
         isLogin = false
     }
 
     fun registerPlayer(pwd: String) {
-        password = pwd
+        setPassword(pwd)
         isRegistered = true
 
         login()
-        saveServerID()
-    }
-
-    fun saveServerID() {
-        inventory.present.save()
-        save()
     }
 
     override fun destroy() {
-        inventory.present.save()
+        inventory.present.sync()
         cache.removeAll { it.uuid == uuid }
         super.destroy()
     }

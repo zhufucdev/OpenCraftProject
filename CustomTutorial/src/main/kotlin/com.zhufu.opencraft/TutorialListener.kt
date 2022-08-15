@@ -45,7 +45,7 @@ class TutorialListener : Listener {
             return
         }
         info.status = Info.GameStatus.InTutorial
-        info.inventory.create(DualInventory.RESET).load(inventoryOnly = true)
+        info.inventory.getOrCreate(DualInventory.RESET).load(inventoryOnly = true)
         originProjectData[player] = project.clone()
         inCreation[player] = project
         player.gameMode = GameMode.SPECTATOR

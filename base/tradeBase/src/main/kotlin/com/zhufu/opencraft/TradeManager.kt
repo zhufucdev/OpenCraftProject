@@ -7,7 +7,6 @@ import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.util.toComponent
-import net.kyori.adventure.nbt.api.BinaryTagHolder
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -45,7 +44,7 @@ object TradeManager {
 
     fun loadTradeCompass(player: Info) {
         if (player.player.world == Base.tradeWorld) {
-            player.inventory.create(DualInventory.RESET).load(inventoryOnly = true)
+            player.inventory.getOrCreate(DualInventory.RESET).load(inventoryOnly = true)
             player.player.inventory.addItem(
                 ItemStack(Material.COMPASS)
                     .updateItemMeta<ItemMeta> {

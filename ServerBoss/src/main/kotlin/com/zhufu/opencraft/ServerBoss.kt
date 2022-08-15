@@ -65,6 +65,7 @@ class ServerBoss : JavaPlugin() {
                 spawnCount = 0
             }
             val targetHour = spawnCount * spawnPeriod
+            timeZone = Base.timeZone
             set(Calendar.HOUR_OF_DAY, floor(targetHour).toInt())
             set(Calendar.MINUTE, (60 * (targetHour - floor(targetHour))).toInt())
             set(Calendar.SECOND, 0)

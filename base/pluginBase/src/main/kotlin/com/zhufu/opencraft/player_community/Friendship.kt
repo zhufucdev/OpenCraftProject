@@ -1,115 +1,78 @@
 package com.zhufu.opencraft.player_community
 
+import com.zhufu.opencraft.util.Language
+import com.zhufu.opencraft.contentSize
+import com.zhufu.opencraft.data.Checkpoint
 import com.zhufu.opencraft.data.ServerPlayer
-import org.bukkit.Bukkit
+import com.zhufu.opencraft.info
+import org.bukkit.command.CommandSender
+import org.bukkit.inventory.Inventory
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.security.auth.Destroyable
 
-class Friendship private constructor(list: List<String>?, val parent: ServerPlayer) :
-    ArrayList<FriendWrap>(), Destroyable {
-    init {
-        list?.forEach {
-            try {
-                add(FriendWrap(Friend.of(UUID.fromString(it)), parent))
-            } catch (e: Exception) {
-                Bukkit.getLogger().warning("Unable to initialize friendship for player ${parent.name}.")
-                e.printStackTrace()
-            }
+class Friendship(private val impl: FriendshipImpl, val owner: ServerPlayer) : Destroyable {
+    val isParentAdder = impl.a == owner
+    val friend = if (impl.a == owner) impl.b else impl.a
+    val name get() = friend.name
+    val id get() = impl.id
+    var startAt: Long
+        get() = impl.startAt
+        set(value) {
+            impl.startAt = value
+        }
+    val isFriend get() = impl.isFriend
+    var transferred: Long
+        get() = impl.transferred
+        set(value) {
+            impl.transferred = value
+        }
+    var shareLocation: Boolean
+        get() = impl.shareLocation
+        set(value) {
+            impl.shareLocation = value
+        }
+    val sharedInventory: Inventory? get() = impl.sharedInventory
+    val sharedCheckpoints get() = impl.sharedCheckpoints
+    fun createSharedInventory() = impl.createSharedInventory()
+    fun statics(getter: Language.LangGetter): List<String> {
+        val header = "user.friend.info"
+        return listOf(
+            getter["$header.time", SimpleDateFormat("yyyy/dd/MM HH:mm:ss").format(Date(startAt))],
+            getter["$header.transfer", transferred],
+            if (sharedInventory == null)
+                getter["$header.noInventory"]
+            else
+                getter["$header.inventory", sharedInventory!!.contentSize()],
+            getter["$header.checkpoints", sharedCheckpoints.size]
+        )
+    }
+    fun printStatics(receiver: CommandSender, getter: Language.LangGetter) {
+        receiver.info(getter["user.friend.info.title", this@Friendship.name])
+        statics(getter).forEach {
+            receiver.info(it)
         }
     }
 
-    fun contains(name: String) = any { it.name == name }
-    fun contains(who: ServerPlayer) = any { it.friend == who }
-    operator fun get(name: String) = firstOrNull { it.name == name }
-    operator fun get(who: ServerPlayer) = firstOrNull { it.friend == who }
+    fun shareCheckpoint(checkpoint: Checkpoint) = impl.addSharedCheckpoint(checkpoint)
+    fun removeSharedCheckpoint(checkpoint: Checkpoint) = impl.removeSharedCheckpoint(checkpoint)
 
-    fun add(who: ServerPlayer, each: Boolean = true): FriendWrap {
-        return if (!contains(who)) {
-            val r = FriendWrap(Friend.from(parent, who) ?: Friend(parent, who, id = UUID.randomUUID()), parent)
-            if (each) {
-                if (who.friendship.contains(parent))
-                    r.startAt = System.currentTimeMillis()
-                else {
-                    who.friendship.add(parent, false)
-                }
-            }
-            add(r)
-            r.save()
-            onChanged?.invoke(r)
-            r
-        } else {
-            this[who]!!
-        }
-    }
+    val exits get() = impl.exists
+    fun delete() = impl.delete()
 
-    override fun remove(element: FriendWrap): Boolean {
-        return super.remove(element).also { if (it) {
-            element.delete()
-            onChanged?.invoke(element)
-        } }
-    }
+    override fun equals(other: Any?): Boolean =
+        other is Friendship && other.impl == impl
 
-    override fun removeAt(index: Int): FriendWrap {
-        return super.removeAt(index).also {
-            it.delete()
-            onChanged?.invoke(it)
-        }
-    }
-
-    fun remove(who: ServerPlayer): Boolean {
-        for (i in this) {
-            if (i.friend == who) {
-                return remove(i).also {
-                    if (it) onChanged?.invoke(i)
-                }
-            }
-        }
-        return false
-    }
-
-    override fun removeAll(elements: Collection<FriendWrap>): Boolean = throw UnsupportedOperationException()
-    override fun removeRange(fromIndex: Int, toIndex: Int) = throw UnsupportedOperationException()
-
-    fun save() {
-        val list = arrayListOf<String>()
-        forEach {
-            it.save()
-            list.add(it.id.toString())
-        }
-        parent.tag.apply {
-            set("friendship", null)
-            set("friendship", list.toList())
-        }
-    }
-
-    private var onChanged: ((FriendWrap) -> Unit)? = null
-    fun setOnChangedListener(l: (FriendWrap) -> Unit) {
-        onChanged = l
-    }
-
-    fun firstOrNull(predicate: (FriendWrap) -> Boolean): FriendWrap? {
-        for (i in this) {
-            if (predicate(i)) return i
-        }
-        return null
+    override fun hashCode(): Int {
+        var result = impl.hashCode()
+        result = 31 * result + owner.hashCode()
+        result = 31 * result + friend.hashCode()
+        return result
     }
 
     private var isDestroyed = false
     override fun isDestroyed(): Boolean = isDestroyed
     override fun destroy() {
-        forEach {
-            it.destroy()
-        }
-
-        memory.remove(parent)
         isDestroyed = true
-    }
-
-    companion object {
-        private val memory = HashMap<ServerPlayer, Friendship>()
-
-        fun from(player: ServerPlayer) =
-            memory[player]
-                ?: Friendship(player.tag.getStringList("friendship"), player).also { memory[player] = it }
     }
 }
