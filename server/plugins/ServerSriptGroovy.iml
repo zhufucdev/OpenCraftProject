@@ -31,9 +31,10 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy:3.0.4" level="project" />
-    <orderEntry type="library" name="Gradle: com.destroystokyo.paper:paper-api:1.16.1-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy:3.0.12" level="project" />
     <orderEntry type="library" name="Gradle: io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.mongodb:mongodb-driver-sync:4.7.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.mongodb:bson:4.7.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.mongodb:mongodb-driver-core:4.7.1" level="project" />
   </component>
 </module>

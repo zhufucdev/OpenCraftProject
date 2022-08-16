@@ -12,6 +12,12 @@
     "bypassesPlayerLimit": false
   },
   {
+    "uuid": "677efeef-4ae4-354c-aadd-c9d6461834a2",
+    "name": "Imaizumi_Kagerou",
+    "level": 4,
+    "bypassesPlayerLimit": false
+  },
+  {
     "uuid": "88143e28-8ed6-370d-b088-e4a7fff6942a",
     "name": "zhufu2",
     "level": 4,
@@ -32,6 +38,12 @@
   {
     "uuid": "5428602b-449e-3f8e-a22a-35858cb3ded4",
     "name": "topgod",
+    "level": 4,
+    "bypassesPlayerLimit": false
+  },
+  {
+    "uuid": "ac840b8d-d2df-3b5a-a764-754fd4d3af37",
+    "name": "L_iu",
     "level": 4,
     "bypassesPlayerLimit": false
   }

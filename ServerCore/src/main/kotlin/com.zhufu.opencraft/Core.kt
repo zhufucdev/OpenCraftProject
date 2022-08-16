@@ -18,6 +18,7 @@ import com.zhufu.opencraft.events.PlayerInventorySaveEvent
 import com.zhufu.opencraft.events.PlayerJoinGameEvent
 import com.zhufu.opencraft.listener.*
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
+import com.zhufu.opencraft.player_community.FriendshipImpl
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
 import com.zhufu.opencraft.player_community.PublicMessagePool
@@ -186,11 +187,24 @@ class Core : JavaPlugin(), Listener {
         Database.close()
     }
 
+    private fun saveSharedInventory() {
+        FriendshipImpl.cached.forEach {
+            try {
+                it.serializeInventory()
+                it.update()
+            } catch (e: Exception) {
+                logger.warning("Error while saving shared inventory between ${it.a.name} and ${it.b.name}.")
+                e.printStackTrace()
+            }
+        }
+    }
+
     private fun saveAll() {
         Bukkit.getLogger().info("Saving everything...")
         env.save(envFile)
         BuilderListener.saveConfig()
         PlayerLobbyManager.saveAll()
+        saveSharedInventory()
     }
 
     private var urlLooper = 0
@@ -278,14 +292,14 @@ class Core : JavaPlugin(), Listener {
                     }
 
 
-                    val modifier = PlayerModifier(info)
                     if (info.player.inventory.containsSpecialItem) {
+                        val modifier = PlayerModifier(info)
                         val data = YamlConfiguration()
                         info.player.inventory.specialItems.forEach { item ->
                             item.tick(modifier, data, obj, --sort)
                         }
+                        modifier.apply()
                     }
-                    modifier.apply()
 
                     obj.getScore(
                         buildString {

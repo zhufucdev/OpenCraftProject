@@ -13,17 +13,14 @@ import java.io.File
 import java.nio.file.Paths
 import java.util.*
 
-class FriendshipImpl(
-    val a: ServerPlayer,
-    val b: ServerPlayer,
-    startAt: Long = -1,
-    val id: UUID = UUID.randomUUID(),
-    doc: Document? = null,
-    private val extra: Document = Document()
-) {
+class FriendshipImpl {
+    val a: ServerPlayer
+    val b: ServerPlayer
+    val id: UUID
     var sharedInventory: Inventory? = null
     private val _checkpoints = mutableSetOf<Checkpoint>()
     val sharedCheckpoints get() = _checkpoints.toList()
+    private val extra: Document
     var transferred: Long
         get() = extra.getLong("transfer") ?: 0
         set(value) {
@@ -46,14 +43,29 @@ class FriendshipImpl(
             update()
         }
 
-    init {
-        this.doc = doc ?: Document(mapOf(
-            "_id" to id,
-            "a" to a.uuid,
-            "b" to b.uuid,
-            "extra" to extra
-        ))
-        this.startAt = startAt
+    constructor(a: ServerPlayer, b: ServerPlayer) {
+        this.id = UUID.randomUUID()
+        this.doc =
+            Document()
+                .append("_id", id)
+                .append("a", a.uuid)
+                .append("b", b.uuid)
+        this.extra = Document()
+        this.a = a
+        this.b = b
+
+        doc["extra"] = extra
+        cache[id] = this
+        update()
+    }
+
+    private constructor(doc: Document) {
+        this.a = ServerPlayer.of(uuid = doc.get("a", UUID::class.java))
+        this.b = ServerPlayer.of(uuid = doc.get("b", UUID::class.java))
+        this.id = doc.get("_id", UUID::class.java)
+        this.doc = doc
+        this.extra = doc.get("extra", Document::class.java)
+            ?: Document().also { this.doc["extra"] = it }
 
         if (isFriend) {
             if (extra.containsKey("sharedInventory")) {
@@ -75,28 +87,50 @@ class FriendshipImpl(
                 }
             }
         }
+
         cache[id] = this
     }
 
     fun createSharedInventory() {
-        if (sharedInventory == null)
+        if (sharedInventory == null) {
             sharedInventory = Bukkit.createInventory(null, 45)
+        }
     }
 
     fun addSharedCheckpoint(checkpoint: Checkpoint) {
         _checkpoints.add(checkpoint)
+        serializeCheckpoints()
         update()
     }
 
     fun removeSharedCheckpoint(checkpoint: Checkpoint) {
         _checkpoints.remove(checkpoint)
+        serializeCheckpoints()
         update()
+    }
+
+    private fun serializeCheckpoints() {
+        val chkDoc = Document()
+        _checkpoints.forEach {
+            chkDoc.append(it.name, Document(it.location.serialize()))
+        }
+        extra["sharedCheckpoints"] = chkDoc
+    }
+
+    fun serializeInventory() {
+        val inv = sharedInventory ?: return
+        val invDoc = Document()
+        inv.forEachIndexed { index, itemStack ->
+            if (itemStack != null)
+                invDoc[index.toString()] = itemStack.serializeAsBytes()
+        }
+        extra["sharedInventory"] = invDoc
     }
 
     var exists = true
         private set
 
-    private fun update() {
+    fun update() {
         Database.friendship(id, doc)
     }
 
@@ -121,33 +155,24 @@ class FriendshipImpl(
 
     companion object {
         private val cache = HashMap<UUID, FriendshipImpl>()
-
+        val cached = cache.values
         fun deserialize(document: Document): FriendshipImpl {
-            val uuid = document.get("_id", UUID::class.java)
-            return FriendshipImpl(
-                a = ServerPlayer.of(
-                    uuid = document.get("a", UUID::class.java)
-                ),
-                b = ServerPlayer.of(
-                    uuid = document.get("b", UUID::class.java)
-                ),
-                startAt = document.getLong("startAt"),
-                id = uuid,
-                doc = document,
-                extra = document.get("extra", Document::class.java)
-            )
+            val a = ServerPlayer.of(uuid = document.get("a", UUID::class.java))
+            val b = ServerPlayer.of(uuid = document.get("b", UUID::class.java))
+            return between(a, b) ?: FriendshipImpl(document)
         }
 
         fun of(uuid: UUID) = cache[uuid] ?: Database.friendship(uuid)?.let { deserialize(it) }
 
-        fun between(a: ServerPlayer, b: ServerPlayer): FriendshipImpl? {
-            val filter: (FriendshipImpl) -> Boolean = { (it.a == a && it.b == b) || (it.b == a && it.a == b) }
+        private fun between(a: UUID, b: UUID): FriendshipImpl? {
+            val filter: (FriendshipImpl) -> Boolean = { (it.a.uuid == a && it.b.uuid == b) || (it.b.uuid == a && it.a.uuid == b) }
             val index = cache.values.firstOrNull(filter)
             if (index != null)
                 return index
-            return Database.friendship(a.uuid, b.uuid)
-                ?.let { deserialize(it) }
-                ?.also { cache[it.id] = it }
+            return Database.friendship(a, b)
+                ?.let { FriendshipImpl(it) }
         }
+
+        fun between(a: ServerPlayer, b: ServerPlayer): FriendshipImpl? = between(a.uuid, b.uuid)
     }
 }
