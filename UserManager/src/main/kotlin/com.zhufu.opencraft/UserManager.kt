@@ -25,6 +25,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
+import java.net.InetAddress
 import java.time.Duration
 
 class UserManager : JavaPlugin(), Listener {
@@ -88,10 +89,14 @@ class UserManager : JavaPlugin(), Listener {
         }
     }
 
+    private fun shouldAutologin(address: InetAddress): Boolean {
+        return !address.isAnyLocalAddress
+    }
+
     private fun showLoginMsg(info: Info) {
         val player = info.player
         logger.info("${player.name} login with address: ${player.address!!.hostName}")
-        if (player.address!!.hostName == info.savedAddress) {
+        if (player.address!!.hostName == info.savedAddress && shouldAutologin(player.address.address)) {
             player.info(getLang(info, "user.loginWithIP"))
             Bukkit.getScheduler().runTask(this) { _ ->
                 info.login()
