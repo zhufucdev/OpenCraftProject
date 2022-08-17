@@ -53,7 +53,6 @@ class ChunkWall : JavaPlugin() {
         CW.originWorld = WorldCreator("game_cw_origin").createWorld()!!
 
         GameManager.registerGameType(CW::class)
-        GameManager.addNew("CW")
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {

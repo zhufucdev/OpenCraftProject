@@ -4,8 +4,6 @@ import com.mongodb.client.model.Filters
 import com.zhufu.opencraft.Base
 import com.zhufu.opencraft.api.ChatInfo
 import com.zhufu.opencraft.data.Database
-import com.zhufu.opencraft.data.DatabaseRecord
-import com.zhufu.opencraft.data.RecordHolder
 import com.zhufu.opencraft.data.ServerPlayer
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.util.TextUtil
@@ -18,7 +16,7 @@ import org.bson.Document
 import java.text.SimpleDateFormat
 import java.util.*
 
-open class MessagePool internal constructor(val owner: UUID) : RecordHolder<Message> {
+open class MessagePool internal constructor(val owner: UUID) {
     enum class Type {
         Friend, System, Public, OneTime
     }
@@ -38,7 +36,7 @@ open class MessagePool internal constructor(val owner: UUID) : RecordHolder<Mess
         collection.find().sortedBy { it.getInteger("_id") }.forEach { l(Message.from(it, this)) }
     }
 
-    override fun update(record: Message) {
+    fun update(record: Message) {
         collection.replaceOne(Filters.eq(record.id), record.toDocument())
     }
 
@@ -155,8 +153,8 @@ class Message internal constructor(
     val id: Int,
     val type: MessagePool.Type,
     extra: Document? = null,
-    override val parent: MessagePool
-) : DatabaseRecord<Message> {
+    val parent: MessagePool
+) {
     fun sendTo(receiver: ChatInfo) = parent.sendTo(receiver, this)
 
     val extra: Document by lazy { extra ?: Document() }
@@ -206,7 +204,7 @@ class Message internal constructor(
         }.build()
     }
 
-    override fun toDocument(): Document = Document(mapOf(
+    fun toDocument(): Document = Document(mapOf(
         "_id" to id,
         "text" to text,
         "read" to read,

@@ -10,7 +10,6 @@ import org.bukkit.plugin.java.JavaPlugin
 class TenMinSur : JavaPlugin() {
     override fun onEnable() {
         GameManager.registerGameType(TMS::class)
-        GameManager.addNew("TMS")
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {

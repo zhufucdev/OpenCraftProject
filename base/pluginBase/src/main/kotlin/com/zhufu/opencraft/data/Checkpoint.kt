@@ -7,18 +7,19 @@ import org.bson.Document
 import org.bukkit.Location
 import java.util.*
 
-class Checkpoint(val location: Location, name: String) : Nameable, Cloneable, DatabaseRecord<Checkpoint> {
-    override var parent: Checkpoints? = null
+class Checkpoint(val location: Location, name: String) : Nameable, Cloneable {
+    var parent: Checkpoints? = null
 
     private var _name: String = name
     override var name: String
         get() = _name
         set(value) {
+            val oldName = _name
             _name = value
-            parent?.update(this)
+            parent?.update(this, oldName)
         }
 
-    override fun toDocument() = Document(
+    fun toDocument() = Document(
         mapOf("name" to name)
                 + location.serialize()
     )
@@ -36,15 +37,15 @@ class Checkpoint(val location: Location, name: String) : Nameable, Cloneable, Da
     }
 }
 
-class Checkpoints private constructor(val owner: ServerPlayer) : Iterable<Checkpoint>, RecordHolder<Checkpoint> {
+class Checkpoints private constructor(val owner: ServerPlayer) : Iterable<Checkpoint> {
     val doc = Database.checkpoint(owner.uuid)
     fun add(checkpoint: Checkpoint) {
         checkpoint.parent = this
         doc.insertOne(checkpoint.toDocument())
     }
 
-    override fun update(record: Checkpoint) {
-        doc.replaceOne(eq("name", record.name), record.toDocument())
+    fun update(record: Checkpoint, oldName: String) {
+        doc.replaceOne(eq("name", oldName), record.toDocument())
     }
 
     fun remove(checkpoint: Checkpoint) {
