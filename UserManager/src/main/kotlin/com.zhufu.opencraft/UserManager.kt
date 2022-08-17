@@ -91,7 +91,7 @@ class UserManager : JavaPlugin(), Listener {
     private fun showLoginMsg(info: Info) {
         val player = info.player
         logger.info("${player.name} login with address: ${player.address!!.hostName}")
-        if (player.address!!.hostName == info.savedAddress) {
+        if (player.address!!.hostName == info.savedAddress && player.address.hostName != "localhost") {
             player.info(getLang(info, "user.loginWithIP"))
             Bukkit.getScheduler().runTask(this) { _ ->
                 info.login()
