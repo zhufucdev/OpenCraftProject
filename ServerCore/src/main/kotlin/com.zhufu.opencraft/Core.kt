@@ -66,7 +66,7 @@ class Core : JavaPlugin(), Listener {
     private var reloadTask: BukkitTask? = null
     private var inventoryTask: BukkitTask? = null
     private var awardTask: Timer? = null
-    private lateinit var scoreBoardTask: BukkitTask
+    private var scoreBoardTask: BukkitTask? = null
     override fun onEnable() {
         //World initializations
         spawnWorld = server.createWorld(
@@ -141,7 +141,7 @@ class Core : JavaPlugin(), Listener {
                 set(Calendar.SECOND, 0)
                 set(Calendar.DAY_OF_YEAR, get(Calendar.DAY_OF_YEAR) + 1)
             }.timeInMillis),
-            period = 10
+            period = Duration.ofDays(2).toMillis()
         ) {
             val chart = Game.dailyChart
             for (i in 0..(2 to chart.lastIndex).smaller()) {
@@ -184,6 +184,8 @@ class Core : JavaPlugin(), Listener {
         }
         PlayerObserverListener.onServerStop()
         saveAll()
+        listOf(reloadTask, inventoryTask, scoreBoardTask).forEach { it?.cancel() }
+        awardTask?.cancel()
         Database.close()
     }
 
