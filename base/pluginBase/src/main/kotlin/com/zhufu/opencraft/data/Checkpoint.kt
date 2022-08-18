@@ -60,5 +60,7 @@ class Checkpoints private constructor(val owner: ServerPlayer) : Iterable<Checkp
     }
 
     override fun iterator() =
-        doc.find().map { Checkpoint(Location.deserialize(it), it.getString("name")) }.iterator()
+        doc.find()
+            .map { Checkpoint(Location.deserialize(it), it.getString("name")).apply { parent = this@Checkpoints } }
+            .iterator()
 }
