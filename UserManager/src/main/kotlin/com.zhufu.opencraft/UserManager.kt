@@ -91,6 +91,7 @@ class UserManager : JavaPlugin(), Listener {
 
     private fun shouldAutologin(address: InetAddress): Boolean {
         return !address.isAnyLocalAddress
+                && !listOf("192.168", "localhost").any { address.hostName.startsWith(it) }
     }
 
     private fun showLoginMsg(info: Info) {
