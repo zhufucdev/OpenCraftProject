@@ -70,6 +70,10 @@ class LittleOneAI(private val parent: TargetAI, private val npc: NPC, plugin: Pl
                 }
             }
             BehaviorStatus.RUNNING
+        } else if (!NPCController.isCurrentBossAlive) {
+            npc.despawn()
+            npc.destroy()
+            BehaviorStatus.SUCCESS
         } else {
             when (target) {
                 npc.navigator.entityTarget?.target -> {

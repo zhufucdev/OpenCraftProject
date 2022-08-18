@@ -1,13 +1,13 @@
 package com.zhufu.opencraft.ai
 
 import com.zhufu.opencraft.*
-import com.zhufu.opencraft.traits.Equipments
 import com.zhufu.opencraft.util.TextUtil
 import net.citizensnpcs.api.ai.tree.BehaviorGoalAdapter
 import net.citizensnpcs.api.ai.tree.BehaviorStatus
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.trait.trait.Equipment
+import net.citizensnpcs.api.trait.trait.Equipment.EquipmentSlot
 import org.bukkit.*
 import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
@@ -286,13 +286,14 @@ class TargetAI(
                         )
                 }
                 addTrait(Equipment().apply {
-                    equipment[0] = ItemStack(Material.IRON_SWORD).apply {
+
+                    this[EquipmentSlot.HAND] = ItemStack(Material.IRON_SWORD).apply {
                         addUnsafeEnchantment(
                             Enchantment.DAMAGE_ALL,
                             (NPCController.weaponDamageLevelFor(difficulty) / 2).roundToInt()
                         )
                     }
-                    equipment[Equipments.HELMET.index] = ItemStack(Material.IRON_HELMET)
+                    this[EquipmentSlot.HELMET] = ItemStack(Material.IRON_HELMET)
                 })
                 data()["little"] = true
                 defaultGoalController.addBehavior(LittleOneAI(this@TargetAI, this, NPCController.mPlugin), 1)

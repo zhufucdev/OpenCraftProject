@@ -4,7 +4,6 @@ import com.zhufu.opencraft.Base.random
 import com.zhufu.opencraft.ai.TargetAI
 import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.player_community.MessagePool
-import com.zhufu.opencraft.traits.Equipments
 import com.zhufu.opencraft.util.TextUtil
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.NPCDamageByEntityEvent
@@ -12,11 +11,11 @@ import net.citizensnpcs.api.event.NPCDeathEvent
 import net.citizensnpcs.api.event.NPCSpawnEvent
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.trait.trait.Equipment
+import net.citizensnpcs.api.trait.trait.Equipment.EquipmentSlot
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
@@ -211,12 +210,12 @@ object NPCController : Listener {
         fun set(lessWeight: String, moreWeight: String, p: Float) {
             fun takeLessWeight() = Base.trueByPercentages(p)
 
-            Equipments.values().forEach {
+            EquipmentSlot.values().forEach {
                 val root = it.name
                 if (root.contains("HAND"))
                     return@forEach
                 val name = "${if (takeLessWeight()) lessWeight else moreWeight}_$root"
-                r.equipment[it.index] = getEnchant(ItemStack(Material.getMaterial(name)!!))
+                r[it] = getEnchant(ItemStack(Material.getMaterial(name)!!))
             }
         }
         when {
@@ -333,15 +332,17 @@ object NPCController : Listener {
     @EventHandler
     fun onBossDeath(event: NPCDeathEvent) {
         if (event.npc.data().get<Boolean?>("little") == true) {
+            event.npc.despawn()
             event.npc.destroy()
         } else if (::currentNPC.isInitialized && event.npc == currentNPC) {
             if (Base.trueByPercentages(percentageToDropWeapon()))
                 event.drops.add(getWeaponForCurrent(0.5))
-            if (!withOutEqu)
-                Equipments.values().forEach { equipment ->
+            if (!withOutEqu) {
+                val trait = event.npc.getOrAddTrait(Equipment::class.java)
+                EquipmentSlot.values().forEach { equipment ->
                     if (Base.trueByPercentages(percentageToDropEqui()))
                         event.drops.add(
-                            event.npc.getOrAddTrait(Equipment::class.java)[equipment.index].also {
+                            trait[equipment].also {
                                 (it.itemMeta as Damageable).damage =
                                     (Material.DIAMOND_CHESTPLATE.maxDurability * random.nextDouble(
                                         0.1,
@@ -356,6 +357,7 @@ object NPCController : Listener {
                             }
                         )
                 }
+            }
             event.droppedExp = expForCurrent().roundToInt()
             currentNPC.storedLocation.chunk.isForceLoaded = false
             isCurrentBossAlive = false
