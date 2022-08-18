@@ -16,7 +16,8 @@ object NavigateUtility {
     }
 
     fun dashTo(npc: Entity, to: Location, rate: Double) {
-        npc.velocity =
-            to.toVector().subtract(npc.location.toVector()).multiply(rate)
+        val direction = to.toVector().subtract(npc.location.toVector()).normalize()
+        npc.teleportAsync(npc.location.setDirection(direction))
+        npc.velocity = direction.multiply(rate)
     }
 }

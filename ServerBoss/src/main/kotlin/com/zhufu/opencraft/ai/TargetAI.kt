@@ -84,7 +84,6 @@ class TargetAI(
                 }
 
                 if (npc.entity.world == npc.storedLocation.world)
-
                     npc.entity.apply {
                         if (target.isFlying) {
                             NavigateUtility.targetFlyable(this, target)
@@ -253,10 +252,12 @@ class TargetAI(
 
     private fun updateTarget() {
         val old = target
-        target = npc.entity?.getNearbyEntities(radius, radius, radius)?.firstOrNull { it.type == EntityType.PLAYER }
+        val newTarget = npc.entity?.getNearbyEntities(radius, radius, radius)
+            ?.firstOrNull { it.type == EntityType.PLAYER && !it.isInvulnerable }
                 as Player?
-        if (target != null && target != old) {
-            damageByTarget[target!!] = 0.0
+        if (newTarget != null && newTarget != old) {
+            damageByTarget[newTarget] = 0.0
+            target = newTarget
         }
     }
 

@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.java.JavaPlugin
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import kotlin.math.floor
@@ -31,12 +32,10 @@ class ServerBoss : JavaPlugin() {
                     nextDate = it
                     logger.info("Boss will spawn at ${format.format(it)}.")
                 },
-                period = 10,
+                period = Duration.ofDays(2).toMillis(),
                 action = {
-                    Bukkit.getScheduler().callSyncMethod(this@ServerBoss) {
-                        NPCController.spawn(++spawnTime)
-                        setTimer()
-                    }
+                    NPCController.spawn(++spawnTime)
+                    setTimer()
                     this.cancel()
                 }
             )

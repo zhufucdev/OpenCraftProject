@@ -3,6 +3,7 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.Base.random
 import com.zhufu.opencraft.ai.TargetAI
 import com.zhufu.opencraft.data.OfflineInfo
+import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.traits.Equipments
 import com.zhufu.opencraft.util.TextUtil
 import net.citizensnpcs.api.CitizensAPI
@@ -12,8 +13,10 @@ import net.citizensnpcs.api.event.NPCSpawnEvent
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.trait.trait.Equipment
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
@@ -30,6 +33,8 @@ import org.bukkit.inventory.meta.Damageable
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
+import java.util.UUID
+import kotlin.math.ln
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import kotlin.math.sin
@@ -54,6 +59,7 @@ object NPCController : Listener {
 
     fun close() {
         if (isCurrentBossAlive) {
+            currentNPC.despawn()
             currentNPC.destroy()
             Bukkit.removeBossBar(BOSS_BAR_NAMESPACE)
         }
@@ -64,15 +70,94 @@ object NPCController : Listener {
         }
     }
 
-    fun spawn(difficulty: Long) {
-        if (isCurrentBossAlive) {
-            currentNPC.despawn()
-            currentBossBar.removeAll()
+    private fun spawn1(spawnLocation: Location) {
+        Bukkit.getScheduler().callSyncMethod(mPlugin) {
+            spawnLocation.apply {
+                add(Vector(0, 2, 0))
+                chunk.isForceLoaded = true
+                chunk.load(true)
+            }
+
+            currentNPC.apply {
+                if (!withOutEqu) {
+                    addTrait(equipmentForCurrent())
+                }
+                onSpawn {
+                    if (withOutEqu) {
+                        (entity as LivingEntity).apply {
+                            val maxHealth = healthForSpecial()
+                            getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue = maxHealth
+                            health = maxHealth
+                        }
+                    }
+
+                    broadcast("boss.spawned.1", TextUtil.TextColor.RED)
+                    broadcast(
+                        "boss.spawned.2",
+                        TextUtil.TextColor.WHITE,
+                        spawnLocation.blockX.toString(),
+                        spawnLocation.blockY.toString(),
+                        spawnLocation.blockZ.toString()
+                    )
+                }
+                defaultGoalController.apply {
+                    addBehavior(
+                        TargetAI(currentNPC, radiusForCurrent(), difficulty, mPlugin, spawnLocation),
+                        1
+                    )
+                }
+                isProtected = false
+                isFlyable = true
+                spawn(spawnLocation)
+            }
+
+            isCurrentBossAlive = true
+
+            currentBossBar = Bukkit.createBossBar(
+                BOSS_BAR_NAMESPACE,
+                TextUtil.error("ServerBoss # $difficulty"),
+                BarColor.RED,
+                BarStyle.SEGMENTED_12
+            )
+            spawn2()
         }
+    }
+
+    private fun spawn2() {
+        var spawned = false
+        Bukkit.getScheduler().runTaskTimer(mPlugin, { task ->
+            if (currentNPC.entity?.isDead == false || !spawned) {
+                Bukkit.getOnlinePlayers().forEach {
+                    if (!currentBossBar.players.contains(it)) {
+                        currentBossBar.addPlayer(it)
+                    }
+                }
+                if (currentNPC.entity != null) {
+                    spawned = true
+                }
+                currentBossBar.apply {
+                    progress = (currentNPC.entity as LivingEntity?)?.healthRate() ?: 1.0
+                }
+            } else {
+                Bukkit.removeBossBar(BOSS_BAR_NAMESPACE)
+                task.cancel()
+                currentBossBar.removeAll()
+            }
+        }, 0, 1)
+    }
+
+    fun spawn(difficulty: Long) {
+        Bukkit.getScheduler().callSyncMethod(mPlugin) {
+            if (isCurrentBossAlive) {
+                currentNPC.despawn()
+                currentNPC.destroy()
+                currentBossBar.removeAll()
+            }
+        }
+
         this.difficulty = difficulty
         damageMap.clear()
         totalDamage = 0F
-
         currentType = when (random.nextInt(7)) {
             0 -> EntityType.ZOMBIE
             1 -> EntityType.SKELETON
@@ -92,79 +177,20 @@ object NPCController : Listener {
         var spawnLocation =
             Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
 
-        fun test() {
-            while (spawnLocation.block.type.isEmpty) {
-                spawnLocation.add(Vector(0, -1, 0))
-            }
-            if (spawnLocation.block.isLiquid) {
-                spawnLocation = Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
-                test()
-            }
-        }
-        test()
-        spawnLocation.apply {
-            add(Vector(0, 2, 0))
-            chunk.isForceLoaded = true
-            chunk.load(true)
-        }
-
-        currentNPC.apply {
-            if (!withOutEqu) {
-                addTrait(equipmentForCurrent())
-            }
-            onSpawn {
-                if (withOutEqu) {
-                    (entity as LivingEntity).apply {
-                        val maxHealth = healthForSpecial()
-                        getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue = maxHealth
-                        health = maxHealth
-                    }
+        Bukkit.getScheduler().runTaskAsynchronously(mPlugin, Runnable {
+            fun test() {
+                while (spawnLocation.block.type.isEmpty) {
+                    spawnLocation.add(Vector(0, -1, 0))
                 }
-
-                broadcast("boss.spawned.1", TextUtil.TextColor.RED)
-                broadcast(
-                    "boss.spawned.2",
-                    TextUtil.TextColor.WHITE,
-                    spawnLocation.blockX.toString(),
-                    spawnLocation.blockY.toString(),
-                    spawnLocation.blockZ.toString()
-                )
-            }
-            defaultGoalController.apply {
-                addBehavior(
-                    TargetAI(currentNPC, radiusForCurrent(), difficulty, mPlugin, spawnLocation),
-                    1
-                )
-            }
-            isProtected = false
-            isFlyable = true
-            spawn(spawnLocation)
-        }
-
-        isCurrentBossAlive = true
-
-        currentBossBar = Bukkit.createBossBar(
-            BOSS_BAR_NAMESPACE,
-            TextUtil.error("ServerBoss # $difficulty"),
-            BarColor.RED,
-            BarStyle.SEGMENTED_12
-        )
-        Bukkit.getScheduler().runTaskTimer(mPlugin, { task ->
-            Bukkit.getOnlinePlayers().forEach {
-                if (!currentBossBar.players.contains(it)) {
-                    currentBossBar.addPlayer(it)
+                if (spawnLocation.block.isLiquid) {
+                    spawnLocation = Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
+                    test()
                 }
             }
-            if (currentNPC.entity?.isDead == false) {
-                currentBossBar.apply {
-                    progress = (currentNPC.entity as LivingEntity).healthRate()
-                }
-            } else {
-                Bukkit.removeBossBar(BOSS_BAR_NAMESPACE)
-                task.cancel()
-                currentBossBar.removeAll()
-            }
-        }, 0, 5)
+            test()
+
+            spawn1(spawnLocation)
+        })
     }
 
     private fun equipmentForCurrent(): Equipment {
@@ -255,7 +281,7 @@ object NPCController : Listener {
         }
     }
 
-    fun currencyForCurrent() = -250000.0 / (difficulty + 2451.0 / 49) + 5000
+    fun currencyForCurrent() = 300 * ln(difficulty + 2.0)
     fun healthForSpecial() = -20000.0 / (difficulty + 39) + 500
     fun arrowSpeedForCurrent() = -100 / (difficulty + 99) + 1.6F
     fun arrowSpreadForCurrent() = 1002 / (difficulty + 166F) + 6
@@ -265,7 +291,7 @@ object NPCController : Listener {
     fun radiusForCurrent() = sin(difficulty / 3.0) + 16
     fun arrowDamageForCurrent() = -1200.0 / (difficulty + 299) + 6
     fun littleBossMaxSpawnCount() = -1008.0 / (difficulty + 111) + 10
-    fun expForCurrent() = -10000.0 / (difficulty - 9.0 / 59) + 12000
+    fun expForCurrent() = 1200 * ln(difficulty + 3.0)
     fun fireSpawnRateForCurrent() = -56F / (difficulty + 79) + 0.8F
 
     val spawnListeners = HashMap<NPC, () -> Unit>()
@@ -274,7 +300,7 @@ object NPCController : Listener {
         spawnListeners[event.npc]?.invoke()
     }
 
-    private val damageMap = HashMap<Player, Double>()
+    private val damageMap = HashMap<UUID, Double>()
     var totalDamage = 0F
     @EventHandler
     fun onBossDamaged(event: NPCDamageByEntityEvent) {
@@ -284,8 +310,8 @@ object NPCController : Listener {
                     event.isCancelled = true
                     player.error(getLang(player, "boss.error.building"))
                 } else {
-                    val damage = damageMap.getOrDefault(player, 0.0) + event.damage
-                    damageMap[player] = damage
+                    val damage = damageMap.getOrDefault(player.uniqueId, 0.0) + event.damage
+                    damageMap[player.uniqueId] = damage
                     totalDamage += event.damage.toFloat()
                 }
             }
@@ -337,16 +363,18 @@ object NPCController : Listener {
                 damageMap.forEach { (p, d) ->
                     val weight = d / totalDamage
                     val currency = (totalCurrency * weight).roundToLong()
-                    val getter = p.getter()
-                    p.success(getter["boss.award", d, weight, totalCurrency, currency])
-                    val info = OfflineInfo.findByUUID(p.uniqueId)
-                    if (info == null) {
-                        p.error(getter["player.error.unknown"])
-                    } else {
+                    val info = OfflineInfo.findByUUID(p)
+                    if (info != null) {
                         info.currency += currency
+                        info.messagePool.add(
+                            "\$success\${boss.award,$d,$weight,$totalCurrency,$currency}",
+                            MessagePool.Type.System
+                        ).also {
+                            if (info.isOnline)
+                                it.sendTo(info.onlinePlayerInfo!!)
+                        }
+                        Bukkit.getPlayer(p)?.info(getLang(info.userLanguage,"boss.next", nextDate))
                     }
-
-                    p.info(getter["boss.next", nextDate])
                 }
                 damageMap.clear()
                 totalDamage = 0F
