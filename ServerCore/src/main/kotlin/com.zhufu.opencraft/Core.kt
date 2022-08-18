@@ -145,7 +145,7 @@ class Core : JavaPlugin(), Listener {
         ) {
             val chart = Game.dailyChart
             for (i in 0..(2 to chart.lastIndex).smaller()) {
-                val award = -300 * i + 1000
+                val award = -30 * i + 100
                 chart[i].apply {
                     messagePool.add(
                         text = "\${chart.award,$award}",
