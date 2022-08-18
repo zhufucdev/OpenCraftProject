@@ -1,5 +1,6 @@
 package com.zhufu.opencraft.data
 
+import com.google.common.cache.CacheBuilder
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.ServerStatics
 import com.zhufu.opencraft.player_community.Friendships
@@ -52,9 +53,14 @@ abstract class ServerPlayer(
             }
             else -> throw IllegalArgumentException()
         }
+
+        private val cache = hashMapOf<UUID, Document>()
+        private fun tag(uuid: UUID, createNew: Boolean) =
+            cache[uuid]
+                ?: Database.tag(uuid, createNew).also { cache[uuid] = it }
     }
 
-    val doc: Document = Database.tag(uuid, createNew)
+    val doc: Document = tag(uuid, createNew)
     internal fun update() {
         Database.tag(uuid, doc)
     }

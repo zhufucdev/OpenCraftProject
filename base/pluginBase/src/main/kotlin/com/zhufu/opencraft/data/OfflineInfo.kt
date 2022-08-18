@@ -31,6 +31,7 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
 
         fun findByUUID(uuid: UUID): OfflineInfo? =
             cache.firstOrNull { it.uuid == uuid }
+                ?: Info.findByPlayer(uuid)
                 ?: try {
                     OfflineInfo(uuid).also { cache.add(it) }
                 } catch (e: Exception) {

@@ -121,7 +121,7 @@ class FriendInteractUI(
                         target.messagePool.add(
                             text = "\$info\${user.friend.wasRemoved,${info.player.name}}",
                             type = MessagePool.Type.System
-                        ).let {
+                        ).also {
                             it.recordTime()
                             if (target.isOnline)
                                 it.sendTo(target.onlinePlayerInfo!!)

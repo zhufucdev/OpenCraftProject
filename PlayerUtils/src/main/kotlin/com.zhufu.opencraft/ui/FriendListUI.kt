@@ -115,6 +115,7 @@ class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: Cli
                         type = MessagePool.Type.System
                     )
                     a.recordTime()
+                    b.recordTime()
                     if (player.isOnline) {
                         with(player.onlinePlayerInfo!!) {
                             sendTo(this, a)
