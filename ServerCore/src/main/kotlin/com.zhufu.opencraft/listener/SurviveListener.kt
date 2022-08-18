@@ -397,9 +397,13 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
     }
 
     private fun sendPlayerOutOfSpawnMessage(player: HumanEntity) {
-        val getter = getLangGetter(PlayerManager.findInfoByPlayer(player.uniqueId))
-        player.error(getter["survey.outOfSpawn2"])
-        player.tip(getter["survey.toPlaceBlock"])
+        val info = player.info()
+        val getter = info.getter()
+        player.sendActionBar(getter["survey.outOfSpawn2"].toErrorMessage())
+        if (info?.isSurveyRequestShown != true) {
+            player.tip(getter["survey.toPlaceBlock"])
+            info?.isSurveyRequestShown = true
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH)

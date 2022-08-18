@@ -63,6 +63,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
     var outOfSpawn = false
     var isTerritoryInMessageShown = false
     var isTerritoryOutMessageShown = false
+    var isSurveyRequestShown = false
 
     override var doNotTranslate = false
     override val displayName: String

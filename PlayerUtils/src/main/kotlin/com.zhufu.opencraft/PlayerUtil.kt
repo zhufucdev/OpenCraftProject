@@ -11,6 +11,7 @@ import com.zhufu.opencraft.special_item.*
 import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
 import com.zhufu.opencraft.util.toInfoMessage
+import com.zhufu.opencraft.util.toSuccessMessage
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.Command
@@ -143,9 +144,9 @@ class PlayerUtil : JavaPlugin() {
                             r = sender.info()?.messagePool?.markAsRead(id) == true
                         }
                         if (r)
-                            sender.success(getter["msg.markAsRead"])
+                            sender.sendActionBar(getter["msg.markAsRead"].toSuccessMessage())
                         else
-                            sender.warn(getter["msg.alreadyRead"])
+                            sender.sendActionBar(getter["msg.alreadyRead"].toSuccessMessage())
                     }
                 }
                 "messages" -> {
