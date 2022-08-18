@@ -2,3 +2,5 @@ name: ServerScript
 main: com.zhufucdev.opencraft.ServerScript
 version: '1.0'
 api-version: '1.19'
+depend:
+  - CoreRuntime

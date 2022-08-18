@@ -1,0 +1,12 @@
+name: Updater
+main: com.zhufu.opencraft.Updater
+version: '1.0'
+api-version: '1.19'
+depend:
+  - CoreRuntime
+load: STARTUP
+commands:
+  updater:
+    usage: /updater <标题>[;<小标题>]
+    description: 触发服务器重载
+    permission: op

@@ -1,0 +1,6 @@
+main: 'com.zhufu.opencraft.CoreRuntime'
+name: 'CoreRuntime'
+description: 'Provide third-party runtime classes for almost every OpenCraft plugin.'
+version: '1.0'
+api-version: '1.19'
+load: STARTUP

@@ -77,12 +77,6 @@ fun Player.sendActionText(msg: String) {
     sendActionBar(msg.toComponent())
 }
 
-fun runSync(l: () -> Unit) {
-    Bukkit.getScheduler().runTask(Base.pluginCore) { _ ->
-        l()
-    }
-}
-
 @Suppress("UNCHECKED_CAST")
 fun <T : ItemMeta> ItemStack.updateItemMeta(block: T.() -> Unit): ItemStack {
     itemMeta = (itemMeta as T).apply(block)

@@ -57,14 +57,17 @@ class DualInventory(val player: Player? = null, parent: ServerPlayer) {
     }
 }
 
-class InventoryInfo internal constructor(val player: Player?, val name: String, val parent: DualInventory) : Destroyable {
+class InventoryInfo internal constructor(val player: Player?, val name: String, val parent: DualInventory) :
+    Destroyable {
     var inventoryOnly: Boolean = false
 
     val doc: Document = parent.collection.find(Filters.eq(name)).first()
         ?: Document("_id", name).also { parent.collection.insertOne(it) }
+
     private fun update() {
         parent.update(this)
     }
+
     var gameMode: GameMode?
         get() {
             return GameMode.valueOf(doc.getString("gameMode") ?: return null)
@@ -153,8 +156,20 @@ class InventoryInfo internal constructor(val player: Player?, val name: String, 
         }
 
         val failureList = ArrayList<String>()
-        player.inventory.clear()
-        if (doc.containsKey("inventory")) {
+        fun runCatching(key: String, block: () -> Unit) {
+            if (doc.containsKey(key)) {
+                try {
+                    block()
+                } catch (e: Exception) {
+                    Bukkit.getLogger().warning("Error while loading inventory $name for player ${player.name}.")
+                    e.printStackTrace()
+                    failureList.add("player/$key: ${e.message}")
+                }
+            }
+        }
+
+        runCatching("inventory") {
+            player.inventory.clear()
             val invDoc = doc.get("inventory", Document::class.java)
             for (i in 0 until player.inventory.size) {
                 if (invDoc.containsKey(i.toString())) {
@@ -168,27 +183,41 @@ class InventoryInfo internal constructor(val player: Player?, val name: String, 
         if (!inventoryOnly && name != RESET) {
             Bukkit.getScheduler().runTask(plugin) { _ ->
                 player.fallDistance = 0f
-                val locationData = doc.get("location", Document::class.java)
-                if (locationData != null) {
-                    val location = Location.deserialize(locationData)
-                    player.teleport(location)
-                } else {
-                    failureList.add("player/location: invalid argument")
+                runCatching("location") {
+                    when (val locationData = doc["location"]) {
+                        is Document -> {
+                            val location = Location.deserialize(locationData)
+                            player.teleport(location)
+                        }
+
+                        is Location -> {
+                            player.teleport(locationData)
+                        }
+
+                        else -> {
+                            failureList.add("player/location: invalid argument")
+                        }
+                    }
                 }
 
-                if (doc.containsKey("gameMode"))
+                runCatching("gameMode") {
                     player.gameMode = gameMode!!
+                }
 
-                if (doc.containsKey("foodLevel"))
+                runCatching("foodLevel") {
                     player.foodLevel = doc.getInteger("foodLevel")
-                if (doc.containsKey("exp"))
+                }
+                runCatching("exp") {
                     player.totalExperience = doc.getInteger("exp")
-                if (doc.containsKey("walkSpeed"))
+                }
+                runCatching("walkSpeed") {
                     player.walkSpeed = doc.getDouble("walkSpeed").toFloat()
-                if (doc.containsKey("flySpeed"))
+                }
+                runCatching("flySpeed") {
                     player.flySpeed = doc.getDouble("flySpeed").toFloat()
+                }
                 player.activePotionEffects.clear()
-                if (doc.containsKey("potion")) {
+                runCatching("potion") {
                     doc.getList("potion", Document::class.java).forEachIndexed { index, document ->
                         val effect = PotionEffect(document)
                         try {
@@ -199,7 +228,7 @@ class InventoryInfo internal constructor(val player: Player?, val name: String, 
                         }
                     }
                 }
-                if (doc.containsKey("health")) {
+                runCatching("health") {
                     val health = doc.getDouble("health")
                     if (health <= player.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.value)
                         player.health = health

@@ -6,7 +6,6 @@ import java.util.*
 import kotlin.math.sqrt
 
 object Game {
-    const val gameWarn = "gameWarn"
     lateinit var env : YamlConfiguration
     val varNames = arrayOf(
         "reloadDelay",

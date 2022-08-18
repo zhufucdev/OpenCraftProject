@@ -173,24 +173,27 @@ object NPCController : Listener {
             }
             else -> EntityType.WITHER_SKELETON
         }
-        currentNPC = CitizensAPI.getNPCRegistry().createNPC(currentType, TextUtil.error("Server Boss # $difficulty"))
-        var spawnLocation =
-            Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
+        Bukkit.getScheduler().callSyncMethod(mPlugin) {
+            currentNPC =
+                CitizensAPI.getNPCRegistry().createNPC(currentType, TextUtil.error("Server Boss # $difficulty"))
+            var spawnLocation =
+                Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
 
-        Bukkit.getScheduler().runTaskAsynchronously(mPlugin, Runnable {
-            fun test() {
-                while (spawnLocation.block.type.isEmpty) {
-                    spawnLocation.add(Vector(0, -1, 0))
+            Bukkit.getScheduler().runTaskAsynchronously(mPlugin, Runnable {
+                fun test() {
+                    while (spawnLocation.block.type.isEmpty) {
+                        spawnLocation.add(Vector(0, -1, 0))
+                    }
+                    if (spawnLocation.block.isLiquid) {
+                        spawnLocation = Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
+                        test()
+                    }
                 }
-                if (spawnLocation.block.isLiquid) {
-                    spawnLocation = Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
-                    test()
-                }
-            }
-            test()
+                test()
 
-            spawn1(spawnLocation)
-        })
+                spawn1(spawnLocation)
+            })
+        }
     }
 
     private fun equipmentForCurrent(): Equipment {

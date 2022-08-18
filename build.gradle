@@ -100,7 +100,7 @@ subprojects {
         }
     }
 
-    if (project.name != 'ServerCore') {
+    if (project.name != 'CoreRuntime') {
         dependencies {
             if (!isBaseProject)
                 compileOnly project(':pluginBase')

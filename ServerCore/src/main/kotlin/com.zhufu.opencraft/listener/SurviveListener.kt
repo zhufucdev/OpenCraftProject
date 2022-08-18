@@ -505,7 +505,6 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     if (info == null) {
                         event.isCancelled = true
                         event.player.error(Language.getDefault("player.error.unknown"))
-                        event.player.sendMessage(Game.gameWarn)
                         return
                     }
                     if (!info.isSurvivor) {

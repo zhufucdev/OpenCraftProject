@@ -12,9 +12,6 @@ dependencies {
     api project(':pluginBase')
     api project(':webBase')
     api project(':worldBase')
-    compileOnly 'net.citizensnpcs:citizens-main:' + rootProject.ext.citizens_version
 
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    api "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
-    api "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttp_version}"
+    compileOnly 'net.citizensnpcs:citizens-main:' + rootProject.ext.citizens_version
 }
