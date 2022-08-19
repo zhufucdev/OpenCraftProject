@@ -115,7 +115,7 @@ object EveryThing : Listener {
                         event.isCancelled = true
                         PlayerManager.showPlayerOutOfDemoTitle(event.player)
                     }
-                    status = Info.GameStatus.InLobby
+                    status = Info.GameStatus.Surviving
                     inventory.getOrCreate(RESET).load(inventoryOnly = true)
                     if (!isTradeTutorialShown) {
                         CurrencySystem.showTutorial(event.player)
@@ -145,7 +145,6 @@ object EveryThing : Listener {
                 getPlayerTerritory(event.player).contains(event.player.location)
             if (!inMsgShown && inTerritory) {
                 event.player.sendActionBar(info.getter()["trade.territory.enter"].toInfoMessage())
-                info.status = Info.GameStatus.Surviving
                 info.inventory.getOrCreate("survivor").load(inventoryOnly = true)
                 info.isTerritoryInMessageShown = true
                 info.isTerritoryOutMessageShown = false
@@ -153,7 +152,6 @@ object EveryThing : Listener {
                     event.player.gameMode = GameMode.SURVIVAL
             } else if (!outMsgShown && !inTerritory) {
                 event.player.sendActionBar(info.getter()["trade.territory.leave"].toInfoMessage())
-                info.status = Info.GameStatus.InLobby
                 loadTradeCompass(info)
                 info.isTerritoryOutMessageShown = true
                 info.isTerritoryInMessageShown = false
@@ -185,11 +183,10 @@ object EveryThing : Listener {
             event.player.error(Language.getDefault("player.error.unknown"))
             return
         }
-        if (playerInfo.status != Info.GameStatus.Surviving)
-            return
         if (event.itemDrop.itemStack.type == Material.WOODEN_AXE) {
             val getter = playerInfo.getter()
-            if (!getPlayerTerritory(event.player).contains(event.itemDrop.location)) {
+            if (event.player.world == tradeWorld
+                && !getPlayerTerritory(event.player).contains(event.itemDrop.location)) {
                 event.player.error(getter["trade.error.store.wrongPlace"])
                 return
             }
