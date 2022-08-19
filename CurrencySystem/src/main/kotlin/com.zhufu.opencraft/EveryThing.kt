@@ -21,6 +21,7 @@ import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.util.toInfoMessage
 import net.citizensnpcs.api.event.NPCLeftClickEvent
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Item
@@ -255,8 +256,13 @@ object EveryThing : Listener {
             if (info == null) {
                 event.clicker.error(Language.getDefault("player.error.unknown"))
             } else {
-                info.status = Info.GameStatus.Surviving
-                info.inventory.getOrCreate("survivor").load()
+                val inv = info.inventory.getOrCreate("survivor")
+                val call = PlayerTeleportedEvent(event.clicker, event.clicker.location, inv.location)
+                Bukkit.getPluginManager().callEvent(call)
+                if (!call.isCancelled) {
+                    info.status = Info.GameStatus.Surviving
+                    inv.load()
+                }
             }
         }
     }
