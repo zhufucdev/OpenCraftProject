@@ -525,7 +525,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             }
             Bukkit.getScheduler().runTaskLater(plugin, { _ ->
                 event.player.isInvulnerable = false
-            }, 20)
+            }, 40)
         }
     }
 
