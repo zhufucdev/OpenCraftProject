@@ -79,7 +79,8 @@ object NPCController : Listener {
 
             currentNPC.apply {
                 if (!withOutEqu) {
-                    addTrait(equipmentForCurrent())
+                    getOrAddTrait(Equipment::class.java)
+                        .apply { applyEquipments(this) }
                 }
                 onSpawn {
                     if (withOutEqu) {
@@ -157,6 +158,7 @@ object NPCController : Listener {
         this.difficulty = difficulty
         damageMap.clear()
         totalDamage = 0F
+        withOutEqu = false
         currentType = when (random.nextInt(7)) {
             0 -> EntityType.ZOMBIE
             1 -> EntityType.SKELETON
@@ -165,11 +167,13 @@ object NPCController : Listener {
                 withOutEqu = true
                 EntityType.SPIDER
             }
+
             4 -> EntityType.DROWNED
             5 -> {
                 withOutEqu = true
                 EntityType.BLAZE
             }
+
             else -> EntityType.WITHER_SKELETON
         }
         Bukkit.getScheduler().callSyncMethod(mPlugin) {
@@ -195,8 +199,7 @@ object NPCController : Listener {
         }
     }
 
-    private fun equipmentForCurrent(): Equipment {
-        val r = Equipment()
+    private fun applyEquipments(trait: Equipment): Equipment {
         val protectionVal = (-1026.0 / (difficulty + 42.0 / 50) + 300).roundToInt()
         val thornsVal = (-1000.0 / (difficulty + 124) + 20).roundToInt()
         fun getEnchant(item: ItemStack): ItemStack {
@@ -215,26 +218,31 @@ object NPCController : Listener {
                 if (root.contains("HAND"))
                     return@forEach
                 val name = "${if (takeLessWeight()) lessWeight else moreWeight}_$root"
-                r[it] = getEnchant(ItemStack(Material.getMaterial(name)!!))
+
+                trait[it] = getEnchant(ItemStack(Material.getMaterial(name)!!))
             }
         }
         when {
             difficulty < 10 ->
                 set("CHAINMAIL", "LEATHER", difficulty / 10F)
+
             difficulty < 30 ->
                 set("IRON", "CHAINMAIL", (difficulty - 10) / 20F)
+
             difficulty < 50 ->
                 set("IRON", "GOLDEN", (difficulty - 30) / 20F)
+
             difficulty < 70 ->
                 set("GOLDEN", "DIAMOND", (difficulty - 50) / 20F)
+
             else ->
                 set("DIAMOND", "DIAMOND", 0F)
         }
-        r.equipment[0] = getWeaponForCurrent()
-        return r
+        trait[EquipmentSlot.HAND] = getWeaponForCurrent()
+        return trait
     }
 
-    fun weaponDamageLevelFor(difficulty: Long) = -600.0 / (difficulty + 23) + 25
+    fun weaponDamageLevelFor(difficulty: Long) = 4 * ln(difficulty + 1.0).let { if (it > 23) 23.0 else it }
     private fun getWeaponForCurrent(cut: Double = 1.0): ItemStack {
         fun set(material: Material) = ItemStack(material).apply {
             fun take() = Base.trueByPercentages(-1F / difficulty + 1)
@@ -273,10 +281,13 @@ object NPCController : Listener {
             when {
                 difficulty < 10 ->
                     set(Material.STONE_SWORD)
+
                 difficulty < 30 ->
                     set(Material.GOLDEN_SWORD)
+
                 difficulty < 50 ->
                     set(Material.IRON_SWORD)
+
                 else ->
                     set(Material.DIAMOND_SWORD)
             }
@@ -297,6 +308,7 @@ object NPCController : Listener {
     fun fireSpawnRateForCurrent() = -56F / (difficulty + 79) + 0.8F
 
     val spawnListeners = HashMap<NPC, () -> Unit>()
+
     @EventHandler
     fun onBossSpawn(event: NPCSpawnEvent) {
         spawnListeners[event.npc]?.invoke()
@@ -304,6 +316,7 @@ object NPCController : Listener {
 
     private val damageMap = HashMap<UUID, Double>()
     var totalDamage = 0F
+
     @EventHandler
     fun onBossDamaged(event: NPCDamageByEntityEvent) {
         if (::currentNPC.isInitialized && event.npc == currentNPC) {
@@ -342,7 +355,7 @@ object NPCController : Listener {
                 EquipmentSlot.values().forEach { equipment ->
                     if (Base.trueByPercentages(percentageToDropEqui()))
                         event.drops.add(
-                            trait[equipment].also {
+                            trait[equipment]?.also {
                                 (it.itemMeta as Damageable).damage =
                                     (Material.DIAMOND_CHESTPLATE.maxDurability * random.nextDouble(
                                         0.1,
@@ -378,7 +391,7 @@ object NPCController : Listener {
                             if (info.isOnline)
                                 it.sendTo(info.onlinePlayerInfo!!)
                         }
-                        Bukkit.getPlayer(p)?.info(getLang(info.userLanguage,"boss.next", nextDate))
+                        Bukkit.getPlayer(p)?.info(getLang(info.userLanguage, "boss.next", nextDate))
                     }
                 }
                 damageMap.clear()

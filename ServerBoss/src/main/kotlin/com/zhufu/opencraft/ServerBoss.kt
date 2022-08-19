@@ -4,6 +4,7 @@ import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.inventory.PaymentDialog
 import com.zhufu.opencraft.util.toInfoMessage
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.util.Vector
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDate
@@ -54,9 +56,30 @@ class ServerBoss : JavaPlugin() {
         val minuteOfDay = LocalTime.now(Base.timeZone.toZoneId()).let { it.hour * 60 + it.minute }
         val index = minuteOfDay / spawnPeriod + 1
         return Date.from(
-            LocalDate.now().atStartOfDay(Base.timeZone.toZoneId())
-                .plusSeconds((index * spawnPeriod * 60).toLong()).toInstant()
+            LocalDate.now(Base.timeZone.toZoneId())
+                .atStartOfDay()
+                .atZone(Base.timeZone.toZoneId())
+                .plusMinutes((index * spawnPeriod).toLong())
+                .toInstant()
         )
+    }
+
+    private fun Location.spread(): Location {
+        val location = clone()
+        location.add(Vector.getRandom().setX(0).multiply(10))
+        return if (block.isEmpty) {
+            val down = location.clone().add(0.0, -1.0, 0.0)
+            while (down.block.isEmpty) {
+                down.add(0.0, -1.0, 0.0)
+            }
+            down
+        } else {
+            val up = location.clone().add(0.0, 1.0, 0.0)
+            while (!up.block.isEmpty) {
+                up.add(0.0, 1.0, 0.0)
+            }
+            up
+        }
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -67,7 +90,7 @@ class ServerBoss : JavaPlugin() {
                     if (NPCController.isCurrentBossAlive) {
                         val info = sender.info()
                         if (info?.isLogin == true) {
-                            val dest = NPCController.currentNPC.entity.location
+                            val dest = NPCController.currentNPC.entity.location.spread()
                             PaymentDialog(
                                 player = sender,
                                 sellingItems = SellingItemInfo(

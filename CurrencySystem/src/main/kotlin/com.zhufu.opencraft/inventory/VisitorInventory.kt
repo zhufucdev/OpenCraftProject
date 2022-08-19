@@ -47,13 +47,14 @@ class VisitorInventory(plugin: Plugin, val player: Player) : PageInventory<Visit
             val element = tradeMap[index]
             return OfflineInfo.findByUUID(UUID.fromString(element.first().getSeller()))!!
                 .skullItem
-                .updateItemMeta<ItemMeta> {
+                .updateItemMeta<SkullMeta> {
+                    owningPlayer?.name?.let { displayName(Component.text(it)) }
                     lore(element.map {
                         it.items!!.item.displayName()
                             .append(
                                 Component.text(
                                     "×" + it.items!!.amount
-                                            + "->" + it.items!!.prise
+                                            + " -> " + it.items!!.prise
                                 )
                             )
                     })

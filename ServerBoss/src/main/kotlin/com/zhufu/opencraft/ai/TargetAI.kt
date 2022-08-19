@@ -77,10 +77,11 @@ class TargetAI(
                 val distanceToTarget = target.location.distance(npc.entity.location)
                 if (distanceToTarget > radius) {
                     updateTarget()
-                    if (this.target == null) {
-                        this.target = target
-                    } else
-                        return BehaviorStatus.RUNNING
+                    return if (this.target == null) {
+                        BehaviorStatus.FAILURE
+                    } else {
+                        BehaviorStatus.RUNNING
+                    }
                 }
 
                 if (npc.entity.world == npc.storedLocation.world)
@@ -285,8 +286,7 @@ class TargetAI(
                             )
                         )
                 }
-                addTrait(Equipment().apply {
-
+                getOrAddTrait(Equipment::class.java).apply {
                     this[EquipmentSlot.HAND] = ItemStack(Material.IRON_SWORD).apply {
                         addUnsafeEnchantment(
                             Enchantment.DAMAGE_ALL,
@@ -294,7 +294,7 @@ class TargetAI(
                         )
                     }
                     this[EquipmentSlot.HELMET] = ItemStack(Material.IRON_HELMET)
-                })
+                }
                 data()["little"] = true
                 defaultGoalController.addBehavior(LittleOneAI(this@TargetAI, this, NPCController.mPlugin), 1)
 
