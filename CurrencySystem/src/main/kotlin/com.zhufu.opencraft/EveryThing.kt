@@ -183,6 +183,9 @@ object EveryThing : Listener {
             event.player.error(Language.getDefault("player.error.unknown"))
             return
         }
+        if (playerInfo.status != Info.GameStatus.Surviving) {
+            return
+        }
         if (event.itemDrop.itemStack.type == Material.WOODEN_AXE) {
             val getter = playerInfo.getter()
             if (event.player.world == tradeWorld
