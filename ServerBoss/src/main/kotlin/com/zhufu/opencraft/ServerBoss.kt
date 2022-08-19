@@ -13,9 +13,10 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.java.JavaPlugin
 import java.text.SimpleDateFormat
 import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
-import kotlin.math.floor
 
 class ServerBoss : JavaPlugin() {
     private var timer: Timer? = null
@@ -40,7 +41,6 @@ class ServerBoss : JavaPlugin() {
                 }
             )
         }
-        fixSpawnCount()
         setTimer()
     }
 
@@ -50,29 +50,13 @@ class ServerBoss : JavaPlugin() {
         NPCController.close()
     }
 
-    private var spawnCount = 0
-    private fun fixSpawnCount() {
-        val hourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        spawnCount = (hourOfDay / spawnPeriod).toInt() + 1
-        logger.info("Fixed spawn count is $spawnCount.")
-    }
-
     private fun getNextDate(): Date {
-        return with(Calendar.getInstance()) {
-            if (spawnCount >= 24 / spawnPeriod) {
-                set(Calendar.DAY_OF_MONTH, get(Calendar.DAY_OF_MONTH) + 1)
-                spawnCount = 0
-            }
-            val targetHour = spawnCount * spawnPeriod
-            timeZone = Base.timeZone
-            set(Calendar.HOUR_OF_DAY, floor(targetHour).toInt())
-            set(Calendar.MINUTE, (60 * (targetHour - floor(targetHour))).toInt())
-            set(Calendar.SECOND, 0)
-
-            spawnCount++
-
-            Date(timeInMillis)
-        }
+        val minuteOfDay = LocalTime.now(Base.timeZone.toZoneId()).let { it.hour * 60 + it.minute }
+        val index = minuteOfDay / spawnPeriod + 1
+        return Date.from(
+            LocalDate.now().atStartOfDay(Base.timeZone.toZoneId())
+                .plusSeconds((index * spawnPeriod * 60).toLong()).toInstant()
+        )
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -182,8 +166,12 @@ class ServerBoss : JavaPlugin() {
     }
 
     companion object {
-        var nextDate: Date? = null
-        val format = SimpleDateFormat("MM/dd HH:mm:ss")
-        val spawnPeriod get() = 1.5
+        lateinit var nextDate: Date
+        val format = SimpleDateFormat("MM/dd HH:mm:ss").apply { timeZone = Base.timeZone }
+
+        /**
+         * Period between boss spwans, in minutes
+         */
+        val spawnPeriod get() = 90.0
     }
 }

@@ -32,6 +32,7 @@ open class MessagePool internal constructor(val owner: UUID) {
     fun remove(id: Int) {
         collection.deleteOne(Filters.eq(id))
     }
+
     fun forEach(l: ((Message) -> Unit)) {
         collection.find().sortedBy { it.getInteger("_id") }.forEach { l(Message.from(it, this)) }
     }
@@ -177,8 +178,14 @@ class Message internal constructor(
         return Component.empty().toBuilder().apply {
             // time & date prefix
             if (time >= 0) {
-                val simple = SimpleDateFormat("MM/dd HH:mm").format(Date(time))
-                val detailed = SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Date(time))
+                val simple =
+                    SimpleDateFormat("MM/dd HH:mm")
+                        .apply { timeZone = Base.timeZone }
+                        .format(Date(time))
+                val detailed =
+                    SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+                        .apply { timeZone = Base.timeZone }
+                        .format(Date(time))
                 it.append(
                     Component.text("[$simple] ")
                         .hoverEvent {
@@ -204,13 +211,15 @@ class Message internal constructor(
         }.build()
     }
 
-    fun toDocument(): Document = Document(mapOf(
-        "_id" to id,
-        "text" to text,
-        "read" to read,
-        "type" to type.name,
-        "extra" to extra
-    ))
+    fun toDocument(): Document = Document(
+        mapOf(
+            "_id" to id,
+            "text" to text,
+            "read" to read,
+            "type" to type.name,
+            "extra" to extra
+        )
+    )
 
     override fun equals(other: Any?): Boolean =
         other is Message

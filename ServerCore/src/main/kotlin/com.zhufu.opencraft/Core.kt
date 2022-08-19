@@ -48,8 +48,12 @@ import org.bukkit.util.Vector
 import java.io.File
 import java.nio.charset.Charset
 import java.nio.file.Paths
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
@@ -131,16 +135,17 @@ class Core : JavaPlugin(), Listener {
     private fun scheduleAwards() {
         fun Pair<Int, Int>.smaller() = if (first < second) first else second
         val yesterday = SimpleDateFormat("MM/dd").format(Date())
-
+        val r = Date.from(
+            LocalDate.now(Base.timeZone.toZoneId())
+                .atStartOfDay()
+                .plusDays(1)
+                .atZone(Base.timeZone.toZoneId())
+                .toInstant()
+        )
+        logger.info("Next award will be carried at ${DateFormat.getInstance().format(Date.from(r.toInstant()))}.")
         awardTask = fixedRateTimer(
             name = "awardTask",
-            startAt = Date(Calendar.getInstance().apply {
-                timeZone = Base.timeZone
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.DAY_OF_YEAR, get(Calendar.DAY_OF_YEAR) + 1)
-            }.timeInMillis),
+            startAt = r,
             period = Duration.ofDays(2).toMillis()
         ) {
             val chart = Game.dailyChart
