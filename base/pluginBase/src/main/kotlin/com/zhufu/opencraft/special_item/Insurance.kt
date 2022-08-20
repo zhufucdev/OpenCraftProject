@@ -23,6 +23,10 @@ class Insurance(
     init {
         nbt.setString("player", player)
         nbt.setLong("number", number)
+        updateMeta(getter)
+    }
+
+    override fun updateMeta(getter: Language.LangGetter) {
         updateItemMeta<BookMeta> {
             title = TextUtil.info(getter["insurance.name"])
             author = getter["insurance.content.2"]

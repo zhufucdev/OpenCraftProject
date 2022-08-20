@@ -4,6 +4,7 @@ import com.zhufu.opencraft.*
 import com.zhufu.opencraft.Base.endWorld
 import com.zhufu.opencraft.Base.lobby
 import com.zhufu.opencraft.Base.netherWorld
+import com.zhufu.opencraft.Base.random
 import com.zhufu.opencraft.Base.surviveWorld
 import com.zhufu.opencraft.Base.tradeWorld
 import com.zhufu.opencraft.api.ServerCaller
@@ -13,7 +14,9 @@ import com.zhufu.opencraft.data.Info.GameStatus.*
 import com.zhufu.opencraft.events.PlayerLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
+import com.zhufu.opencraft.special_item.Coin
 import com.zhufu.opencraft.special_item.Insurance
+import com.zhufu.opencraft.special_item.SpecialItem
 import com.zhufu.opencraft.util.*
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
@@ -29,6 +32,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
@@ -611,5 +615,33 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         if (event.entity is Creeper || event.entity is Wither) {
             event.blockList().clear()
         }
+    }
+
+    /**
+     * 30% chance to drop coins ranging from 2 to 11 evenly randomized
+     * from a monster
+     */
+    @EventHandler
+    fun onMonsterDeath(event: EntityDeathEvent) {
+        val whitelist = listOf(
+            EntityType.ZOMBIE, EntityType.ZOMBIE_VILLAGER, EntityType.SKELETON, EntityType.WITHER_SKELETON,
+            EntityType.CREEPER, EntityType.ENDERMAN, EntityType.HUSK, EntityType.DROWNED
+        )
+        if (!whitelist.contains(event.entity.type)) {
+            return
+        }
+        if (Base.trueByPercentages(0.7F)) {
+            return
+        }
+        val amount = random.nextInt(10) + 2
+        event.drops.add(Coin(Language.LangGetter.default).apply { setAmount(amount) })
+    }
+
+    @EventHandler
+    fun onPlayerPickupSI(event: PlayerAttemptPickupItemEvent) {
+        val item = event.item.itemStack
+        val si = SpecialItem[item] ?: return
+        si.updateMeta(event.player.getter())
+        event.item.itemStack = si
     }
 }

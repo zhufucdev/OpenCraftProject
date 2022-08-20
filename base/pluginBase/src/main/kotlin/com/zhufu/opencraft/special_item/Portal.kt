@@ -2,6 +2,7 @@ package com.zhufu.opencraft.special_item
 
 import com.zhufu.opencraft.updateItemMeta
 import com.zhufu.opencraft.util.*
+import de.tr7zw.nbtapi.NBTItem
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
@@ -12,7 +13,16 @@ import org.bukkit.inventory.meta.ItemMeta
 import java.util.*
 
 class Portal : StatelessSpecialItem {
+    val secondary: Boolean
     constructor(getter: Language.LangGetter, secondary: Boolean = false) : super(Material.OBSIDIAN, SIID) {
+        this.secondary = secondary
+        val nbt = NBTItem(this)
+        nbt.setBoolean("secondary", secondary)
+        nbt.applyNBT(this)
+        updateMeta(getter)
+    }
+
+    override fun updateMeta(getter: Language.LangGetter) {
         updateItemMeta<ItemMeta> {
             displayName(
                 (getter["portal.name"] + if (secondary) " 2" else "").toComponent().color(NamedTextColor.LIGHT_PURPLE)
@@ -36,6 +46,7 @@ class Portal : StatelessSpecialItem {
     constructor(from: ItemStack) : super(Material.OBSIDIAN, SIID) {
         this.amount = from.amount
         this.itemMeta = from.itemMeta
+        this.secondary = NBTItem(this).let { it.hasKey("secondary") && it.getBoolean("secondary") }
     }
 
     companion object : StatelessSICompanion {

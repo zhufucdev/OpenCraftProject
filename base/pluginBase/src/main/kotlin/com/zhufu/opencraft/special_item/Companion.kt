@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.UUID
 
 interface SICompanion {
-    fun newInstance(getter: Language.LangGetter, madeFor: Player): StatelessSpecialItem
+    fun newInstance(getter: Language.LangGetter, madeFor: Player): SpecialItem
     val SIID: UUID
 }
 

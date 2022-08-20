@@ -85,7 +85,7 @@ class FlyWandInventory(val player: Player, val wand: FlyWand, plugin: Plugin) : 
                 PaymentDialog(player, SellingItemInfo(confirmItem.clone(), 100, time), TradeManager.getNewID(), plugin)
                     .setOnPayListener { success ->
                         if (success) {
-                            wand.updateTime(wand.timeRemaining + time * 60)
+                            wand.updateTime(wand.timeRemaining + time * 60, player.getter())
                             player.success("以为您手中的权杖续费${time}分钟")
                         } else {
                             player.error("交易失败: 您没有足够的货币")

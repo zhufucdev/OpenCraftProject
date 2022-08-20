@@ -14,6 +14,15 @@ import java.util.UUID
 
 class Coin : StatelessSpecialItem {
     constructor(getter: Language.LangGetter) : super(Material.GOLD_INGOT, SIID) {
+        updateMeta(getter)
+    }
+
+    constructor(from: ItemStack) : super(Material.GOLD_INGOT, SIID) {
+        this.amount = from.amount
+        this.itemMeta = from.itemMeta
+    }
+
+    override fun updateMeta(getter: Language.LangGetter) {
         updateItemMeta<ItemMeta> {
             displayName(getter["coin.name"].toInfoMessage())
             lore(listOf(getter["coin.title"].toTipMessage()))
@@ -21,11 +30,6 @@ class Coin : StatelessSpecialItem {
             addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ENCHANTS)
         }
         addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)
-    }
-
-    constructor(from: ItemStack) : super(Material.GOLD_INGOT, SIID) {
-        this.amount = from.amount
-        this.itemMeta = from.itemMeta
     }
 
     companion object : StatelessSICompanion {

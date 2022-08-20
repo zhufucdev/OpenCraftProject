@@ -1,6 +1,7 @@
 package com.zhufu.opencraft.special_item
 
 import com.zhufu.opencraft.PlayerModifier
+import com.zhufu.opencraft.getter
 import com.zhufu.opencraft.updateItemMeta
 import com.zhufu.opencraft.util.*
 import de.tr7zw.nbtapi.NBTCompound
@@ -22,12 +23,13 @@ class FlyWand(getter: Language.LangGetter, timeRemaining: Double = MAX_TIME_REMA
 
     override fun tick(mod: PlayerModifier, data: YamlConfiguration, score: Objective, scoreboardSorter: Int) {
         if (!data.isSet("hasFlyWand")) {
+            var getter = mod.info.getter()
             var allowFlight =
                 mod.player.gameMode == GameMode.CREATIVE || mod.player.gameMode == GameMode.SPECTATOR
             data.set("hasFlyWand", true)
             if (!allowFlight) {
                 if (mod.player.isFlying) {
-                    updateTime(timeRemaining - 0.05)
+                    updateTime(timeRemaining - 0.05, getter)
                     if (inventoryPosition != -1)
                         mod.player.inventory.setItem(inventoryPosition, this)
                 }
@@ -71,7 +73,7 @@ class FlyWand(getter: Language.LangGetter, timeRemaining: Double = MAX_TIME_REMA
             nbt.setDouble("remaining", value)
         }
 
-    fun updateTime(timeRemaining: Double) {
+    fun updateTime(timeRemaining: Double, getter: Language.LangGetter) {
         this.timeRemaining = timeRemaining
         updateItemMeta<ItemMeta> {
             displayName(getter["wand.name"].toComponent().color(NamedTextColor.RED))
@@ -87,10 +89,14 @@ class FlyWand(getter: Language.LangGetter, timeRemaining: Double = MAX_TIME_REMA
         }
     }
 
+    override fun updateMeta(getter: Language.LangGetter) {
+        updateTime(timeRemaining, getter)
+    }
+
     val isUpToTime: Boolean
         get() = timeRemaining <= 0
 
     init {
-        updateTime(timeRemaining)
+        updateTime(timeRemaining, getter)
     }
 }

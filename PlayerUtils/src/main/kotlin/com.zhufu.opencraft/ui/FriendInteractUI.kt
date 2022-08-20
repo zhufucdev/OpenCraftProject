@@ -193,8 +193,9 @@ class FriendInteractUI(
                                     }
                                     true
                                 }
-                                .setOnConfirmListener {
+                                .setOnCancelListener {
                                     info.player.info(getter["user.friend.inventory.cancelled"])
+                                    back(info.player)
                                 }
                                 .show()
                         } else {

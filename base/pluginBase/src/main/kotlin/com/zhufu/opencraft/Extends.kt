@@ -5,10 +5,10 @@ import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.data.ServerPlayer
 import com.zhufu.opencraft.special_item.Coin
+import com.zhufu.opencraft.special_item.SpecialItem
 import com.zhufu.opencraft.special_item.StatefulSpecialItem
 import com.zhufu.opencraft.special_item.StatelessSpecialItem
 import com.zhufu.opencraft.util.*
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
@@ -162,19 +162,18 @@ fun HumanEntity.setInventory(type: ItemStack, amount: Int): Boolean {
 fun HumanEntity.addCash(amount: Int) = setInventory(Coin(getter()), amount)
 
 val Inventory.containsSpecialItem: Boolean
-    get() = this.any { if (it != null) StatefulSpecialItem.isSpecial(it) else false }
-val Inventory.specialItems: List<StatefulSpecialItem>
-    get() {
-        val r = ArrayList<StatefulSpecialItem>()
-        for (i in 0 until this.size) {
-            val it = this.getItem(i) ?: continue
-            StatefulSpecialItem[it]?.apply {
-                inventoryPosition = i
-                r.add(this)
+    get() = this.any { if (it != null) SpecialItem.isSpecial(it) else false }
+val Inventory.specialItems: List<SpecialItem>
+    get() =
+        buildList {
+            for (i in 0 until this@specialItems.size) {
+                val it = this@specialItems.getItem(i) ?: continue
+                SpecialItem[it]?.apply {
+                    inventoryPosition = i
+                    add(this)
+                }
             }
         }
-        return r
-    }
 
 fun vector(yaw: Double, pitch: Double) = Vector(sin(pitch) * cos(yaw), sin(pitch) * sin(yaw), cos(pitch))
 

@@ -52,6 +52,10 @@ open class SpecialItemAdapter(
             adapter.deserialize?.invoke(this, config, getter)
         }
 
+        override fun updateMeta(getter: Language.LangGetter) {
+            adapter.make?.invoke(this, getter)
+        }
+
         override fun tick(
             mod: PlayerModifier,
             data: YamlConfiguration,

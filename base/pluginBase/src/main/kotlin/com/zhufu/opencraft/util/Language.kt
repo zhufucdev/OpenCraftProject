@@ -150,6 +150,10 @@ object Language {
             result = 31 * result + conf.hashCode()
             return result
         }
+
+        companion object {
+            val default get() = LangGetter(Language.defaultLangCode)
+        }
     }
 
     class LangNotFoundException(what: String) : Exception("Language called $what must exists!")

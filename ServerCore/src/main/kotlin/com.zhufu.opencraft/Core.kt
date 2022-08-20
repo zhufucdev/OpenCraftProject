@@ -22,6 +22,7 @@ import com.zhufu.opencraft.player_community.FriendshipImpl
 import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.player_community.PlayerStatics
 import com.zhufu.opencraft.player_community.PublicMessagePool
+import com.zhufu.opencraft.special_item.StatefulSpecialItem
 import com.zhufu.opencraft.survey.SurveyManager
 import com.zhufu.opencraft.util.*
 import net.citizensnpcs.api.CitizensAPI
@@ -298,12 +299,17 @@ class Core : JavaPlugin(), Listener {
                         ServerStatics.onlineTime += 2
                     }
 
-
                     if (info.player.inventory.containsSpecialItem) {
                         val modifier = PlayerModifier(info)
                         val data = YamlConfiguration()
                         info.player.inventory.specialItems.forEach { item ->
-                            item.tick(modifier, data, obj, --sort)
+                            if (item.holder != info.player) {
+                                item.holder = info.player
+                                item.updateMeta(getter)
+                                info.player.inventory.setItem(item.inventoryPosition, item)
+                            }
+                            if (item is StatefulSpecialItem)
+                                item.tick(modifier, data, obj, --sort)
                         }
                         modifier.apply()
                     }

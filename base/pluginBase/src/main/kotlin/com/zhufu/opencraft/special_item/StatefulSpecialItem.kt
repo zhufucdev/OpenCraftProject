@@ -15,12 +15,11 @@ import java.util.UUID
 import kotlin.reflect.full.companionObjectInstance
 
 /**
- * A self-programmed item.
- *
- * @param id Identity of the item. If null, this item is [frozen].
+ * A special item that has access to its NBT
+ * and [PlayerModifier].
  */
-abstract class StatefulSpecialItem(m: Material, val getter: Language.LangGetter, id: UUID, typeID: UUID) :
-    StatelessSpecialItem(m, typeID) {
+abstract class StatefulSpecialItem(m: Material, getter: Language.LangGetter, id: UUID, typeID: UUID) :
+    SpecialItem(m, typeID) {
     companion object {
         const val KEY_INSTANCE_ID = "si_instance_id"
         const val KEY_COMPOUND = "special_item"
@@ -31,11 +30,6 @@ abstract class StatefulSpecialItem(m: Material, val getter: Language.LangGetter,
 
         private val cache = mutableSetOf<StatefulSpecialItem>()
         private val adapters = arrayListOf<SpecialItemAdapter>()
-
-        fun isSpecial(item: ItemStack): Boolean {
-            val nbt = NBTItem(item)
-            return nbt.hasKey(KEY_INSTANCE_ID)
-        }
 
         operator fun get(item: ItemStack): StatefulSpecialItem? {
             if (item.type == Material.AIR) {
@@ -96,13 +90,16 @@ abstract class StatefulSpecialItem(m: Material, val getter: Language.LangGetter,
             adapters.clear()
         }
 
-        fun make(name: String, amount: Int, give: Player): StatelessSpecialItem? {
+        fun make(name: String, amount: Int, give: Player): SpecialItem? {
             val clazz = (prebuilt + StatelessSpecialItem.prebuilt).firstOrNull { it.simpleName.equals(name, true) }
             val getter = give.info().getter()
             if (clazz != null) {
                 return (clazz.kotlin.companionObjectInstance as SICompanion)
                     .newInstance(getter, give)
-                    .apply { setAmount(amount) }
+                    .apply {
+                        setAmount(amount)
+                        holder = give
+                    }
             }
             val adapter = adapters.firstOrNull { it.name == name }
             if (adapter != null)
