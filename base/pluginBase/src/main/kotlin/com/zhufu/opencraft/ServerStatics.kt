@@ -22,7 +22,7 @@ object ServerStatics {
         val timestamp = LocalDateTime.now().atZone(Base.timeZone.toZoneId()).toInstant().epochSecond
         collection.insertOne(
             Document("_id", timestamp)
-                .append("tps", Bukkit.getTPS())
+                .append("tps", Bukkit.getTPS().first())
                 .append("online_players", Bukkit.getOnlinePlayers().size)
                 .append("total_players", playerCount)
                 .append("loaded_chunks", Base.surviveWorld.loadedChunks.size)
