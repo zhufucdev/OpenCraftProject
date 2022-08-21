@@ -80,6 +80,8 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
         private set
     var isLogin: Boolean = false
         private set
+    var hasLogin: Boolean = false
+        private set
     val isInBuilderMode get() = status == GameStatus.Building
     override var name: String?
         get() = doc.getString("name") ?: player.name
@@ -165,6 +167,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
 
             savedAddress = player.address!!.hostName
             isLogin = true
+            hasLogin = true
             player.resetTitle()
 
             ServerCaller["SolvePlayerSurvive"]!!(listOf(player))

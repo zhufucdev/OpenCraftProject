@@ -96,7 +96,7 @@ class UserManager : JavaPlugin(), Listener {
     private fun showLoginMsg(info: Info) {
         val player = info.player
         logger.info("${player.name} login with address: ${player.address!!.hostName}")
-        if (player.address!!.hostName == info.savedAddress && shouldAutologin(player.address.address)) {
+        if (info.hasLogin || (player.address!!.hostName == info.savedAddress && shouldAutologin(player.address.address))) {
             player.info(getLang(info, "user.loginWithIP"))
             Bukkit.getScheduler().runTask(this) { _ ->
                 info.login()
@@ -106,7 +106,7 @@ class UserManager : JavaPlugin(), Listener {
             }
             player.resetTitle()
         } else {
-            val getter = getLangGetter(info)
+            val getter = info.getter()
             if (!info.isRegistered) {
                 val title = Title.title(
                     getter["user.reg1"].toInfoMessage(),
@@ -131,15 +131,6 @@ class UserManager : JavaPlugin(), Listener {
                 player.showTitle(title)
             }
 
-            Bukkit.getScheduler().runTaskLater(
-                this,
-                { _ ->
-                    if (info.player.isOnline && !info.isLogin && info.player.world == spawnWorld) {
-                        logger.info("${player.name} may be kicked because of timeout.")
-                        player.kick(getter["user.login.timeout"].toErrorMessage())
-                    }
-                }, if (info.isRegistered) 30 * 25L else 60 * 25L
-            )
             Bukkit.getScheduler().runTask(this) { _ ->
                 info.logout(boardLocation)
             }

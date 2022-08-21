@@ -106,8 +106,6 @@ class InventoryInfo internal constructor(val player: Player?, val name: String, 
             doc["gameMode"] = player.gameMode.name
             doc["health"] = player.health
             doc["foodLevel"] = player.foodLevel
-            doc["walkSpeed"] = player.walkSpeed
-            doc["flySpeed"] = player.flySpeed
             doc["exp"] = player.totalExperience
             doc["location"] = Document(player.location.serialize())
             doc["potion"] = player.activePotionEffects.map { Document(it.serialize()) }
@@ -203,20 +201,13 @@ class InventoryInfo internal constructor(val player: Player?, val name: String, 
                 runCatching("gameMode") {
                     player.gameMode = gameMode!!
                 }
-
                 runCatching("foodLevel") {
                     player.foodLevel = doc.getInteger("foodLevel")
                 }
                 runCatching("exp") {
                     player.totalExperience = doc.getInteger("exp")
                 }
-                runCatching("walkSpeed") {
-                    player.walkSpeed = doc.getDouble("walkSpeed").toFloat()
-                }
-                runCatching("flySpeed") {
-                    player.flySpeed = doc.getDouble("flySpeed").toFloat()
-                }
-                player.activePotionEffects.clear()
+                player.activePotionEffects.forEach { player.removePotionEffect(it.type) }
                 runCatching("potion") {
                     doc.getList("potion", Document::class.java).forEachIndexed { index, document ->
                         val effect = PotionEffect(document)
