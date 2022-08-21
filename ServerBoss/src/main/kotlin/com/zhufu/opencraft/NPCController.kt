@@ -189,8 +189,11 @@ object NPCController : Listener {
                         spawnLocation.add(Vector(0, -1, 0))
                     }
                     if (spawnLocation.block.isLiquid) {
-                        if (!originallyLoaded)
-                            spawnLocation.chunk.unload(false)
+                        if (!originallyLoaded) {
+                            Bukkit.getScheduler().callSyncMethod(mPlugin) {
+                                spawnLocation.chunk.unload(false)
+                            }
+                        }
                         spawnLocation = Base.getRandomLocation(Base.surviveWorld, 100000, y = 150)
                         originallyLoaded = spawnLocation.isChunkLoaded
                         test()
