@@ -296,7 +296,6 @@ class Core : JavaPlugin(), Listener {
 
                     if (isRound && info.status != Info.GameStatus.InLobby && info.status != Info.GameStatus.InTutorial) {
                         info.gameTime += 2 * 1000L
-                        ServerStatics.onlineTime += 2
                     }
 
                     if (info.player.inventory.containsSpecialItem) {
@@ -659,7 +658,7 @@ class Core : JavaPlugin(), Listener {
                             }
                             PublicMessagePool.add(
                                 text = text,
-                                type = MessagePool.Type.Public
+                                type = MessagePool.Type.System
                             )
                             sender.success("已在公共消息池中追加该内容")
                             PlayerManager.forEachChatter { publicMsgPool.sendUnreadTo(it) }
@@ -1050,6 +1049,7 @@ class Core : JavaPlugin(), Listener {
     @EventHandler
     fun onServeReload(event: ServerReloadEvent) {
         saveAll()
+        ServerStatics.record()
     }
 }
 

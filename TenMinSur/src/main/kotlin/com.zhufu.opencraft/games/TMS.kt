@@ -59,6 +59,7 @@ class TMS : MiniGame() {
                 var r = Base.getRandomLocation(world, 1000, y = 128)
                 var b = world.getBiome(r.blockX, world.getHighestBlockYAt(r), r.blockZ)
                 while (b == Biome.DESERT || b == Biome.OCEAN || b == Biome.DEEP_OCEAN || b == Biome.MUSHROOM_FIELDS) {
+                    r.chunk.unload(false)
                     r = Base.getRandomLocation(world, 1000, y = 128)
                     b = world.getBiome(r.blockX, world.getHighestBlockYAt(r), r.blockZ)
                 }

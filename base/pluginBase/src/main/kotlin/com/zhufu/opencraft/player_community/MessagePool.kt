@@ -18,7 +18,7 @@ import java.util.*
 
 open class MessagePool internal constructor(val owner: UUID) {
     enum class Type {
-        Friend, System, Public, OneTime
+        Friend, System, OneTime
     }
 
     protected val collection = Database.messagePool(owner)
@@ -118,6 +118,7 @@ object PublicMessagePool : MessagePool(Base.serverID) {
             msg.apply {
                 if (!extra.containsKey(player.uuid.toString())) {
                     extra[player.uuid.toString()] = true
+                    update(msg)
                 }
             }
         }
@@ -129,6 +130,7 @@ object PublicMessagePool : MessagePool(Base.serverID) {
             if (!extra.containsKey(player.uuid.toString())) {
                 extra[player.uuid.toString()] = true
                 r = true
+                update(this)
             }
         }
         return r
@@ -140,6 +142,7 @@ object PublicMessagePool : MessagePool(Base.serverID) {
             if (extra.containsKey(player.uuid.toString())) {
                 extra[player.uuid.toString()] = null
                 r = true
+                update(this)
             }
         }
         return r
@@ -201,7 +204,7 @@ class Message internal constructor(
             it.append(Component.text(TextUtil.getCustomizedText(text, player) + ' '))
             // [Read] label
             val tip = Language[player.targetLang, "msg.clickToRead"].toTipMessage()
-            val command = "/pu server:markMessageRead ${id}${if (type == MessagePool.Type.Public) " public" else ""}"
+            val command = "/pu server:markMessageRead ${id}${if (parent == PublicMessagePool) " public" else ""}"
             val readLabel = "[${Language.byChat(player, "msg.read")}]".toSuccessMessage()
             it.append(
                 readLabel

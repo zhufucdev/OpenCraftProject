@@ -66,8 +66,13 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 bound -= OfflineInfo.count.toInt() * 10
                 if (bound <= 5000) bound = 5000
                 var r = Base.getRandomLocation(surviveWorld, bound, y = 128)
-                while (r.block.biome.name.contains("OCEAN"))
+                var originallyLoaded = r.isChunkLoaded
+                while (r.block.biome.name.contains("OCEAN")) {
+                    if (!originallyLoaded)
+                        r.chunk.unload(false)
                     r = Base.getRandomLocation(surviveWorld, bound, y = 128)
+                    originallyLoaded = r.isChunkLoaded
+                }
                 teleport(r)
 
                 info.status = Surviving

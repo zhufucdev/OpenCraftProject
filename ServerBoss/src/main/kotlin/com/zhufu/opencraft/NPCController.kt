@@ -180,7 +180,8 @@ object NPCController : Listener {
             currentNPC =
                 CitizensAPI.getNPCRegistry().createNPC(currentType, TextUtil.error("Server Boss # $difficulty"))
             var spawnLocation =
-                Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
+                Base.getRandomLocation(Base.surviveWorld, 100000, y = 150)
+            var originallyLoaded = spawnLocation.isChunkLoaded
 
             Bukkit.getScheduler().runTaskAsynchronously(mPlugin, Runnable {
                 fun test() {
@@ -188,7 +189,10 @@ object NPCController : Listener {
                         spawnLocation.add(Vector(0, -1, 0))
                     }
                     if (spawnLocation.block.isLiquid) {
-                        spawnLocation = Base.getRandomLocation(Base.surviveWorld, 100000, y = 256)
+                        if (!originallyLoaded)
+                            spawnLocation.chunk.unload(false)
+                        spawnLocation = Base.getRandomLocation(Base.surviveWorld, 100000, y = 150)
+                        originallyLoaded = spawnLocation.isChunkLoaded
                         test()
                     }
                 }

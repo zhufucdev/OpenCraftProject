@@ -77,6 +77,7 @@ class CW : MiniGame() {
                             biomeAlreadyUsed.add(b)
                             break
                         }
+                        r.chunk.unload(false)
                         r = Base.getRandomLocation(originWorld, 10000)
                         b = originWorld.getBiome(r.blockX, r.toHighestLocation().blockY, r.blockZ)
                         if (times >= 4000) {
