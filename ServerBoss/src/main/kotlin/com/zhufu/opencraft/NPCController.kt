@@ -60,6 +60,7 @@ object NPCController : Listener {
         if (isCurrentBossAlive) {
             currentNPC.despawn()
             currentNPC.destroy()
+            currentNPC.storedLocation.chunk.removePluginChunkTicket(mPlugin)
             Bukkit.removeBossBar(BOSS_BAR_NAMESPACE)
         }
         CitizensAPI.getNPCRegistry().forEach {
@@ -73,8 +74,7 @@ object NPCController : Listener {
         Bukkit.getScheduler().callSyncMethod(mPlugin) {
             spawnLocation.apply {
                 add(Vector(0, 2, 0))
-                chunk.isForceLoaded = true
-                chunk.load(true)
+                chunk.addPluginChunkTicket(mPlugin)
             }
 
             currentNPC.apply {
@@ -149,6 +149,7 @@ object NPCController : Listener {
     fun spawn(difficulty: Long) {
         Bukkit.getScheduler().callSyncMethod(mPlugin) {
             if (isCurrentBossAlive) {
+                currentNPC.storedLocation.chunk.removePluginChunkTicket(mPlugin)
                 currentNPC.despawn()
                 currentNPC.destroy()
                 currentBossBar.removeAll()
@@ -379,7 +380,7 @@ object NPCController : Listener {
                 }
             }
             event.droppedExp = expForCurrent().roundToInt()
-            currentNPC.storedLocation.chunk.isForceLoaded = false
+            currentNPC.storedLocation.chunk.removePluginChunkTicket(mPlugin)
             isCurrentBossAlive = false
 
             Bukkit.getScheduler().runTaskAsynchronously(mPlugin) { _ ->

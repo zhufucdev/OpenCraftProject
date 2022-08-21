@@ -280,10 +280,9 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                         val location = event.entity.eyeLocation
                         Bukkit.getScheduler().callSyncMethod(plugin) {
                             location.chunk.apply {
-                                isForceLoaded = true
-                                load()
+                                addPluginChunkTicket(plugin)
                                 Bukkit.getScheduler().runTaskLater(plugin, { _ ->
-                                    isForceLoaded = false
+                                    removePluginChunkTicket(plugin)
                                 }, 5 * 20 * 60)
                             }
                         }
