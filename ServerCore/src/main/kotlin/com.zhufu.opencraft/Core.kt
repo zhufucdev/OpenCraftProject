@@ -119,6 +119,7 @@ class Core : JavaPlugin(), Listener {
             PlayerObserverListener::init,
             PlayerLobbyManager::init,
             BuilderListener::init,
+            SpecialItemHandle::init,
             SpecialBlockHandler::init
         ).forEach {
             runInit(it, this)

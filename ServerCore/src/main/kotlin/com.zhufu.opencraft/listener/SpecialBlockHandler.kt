@@ -11,6 +11,7 @@ import com.zhufu.opencraft.special_item.Placeable
 import com.zhufu.opencraft.special_item.SpecialItem
 import org.bson.Document
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -77,13 +78,17 @@ object SpecialBlockHandler : Listener {
         if (si is Placeable) {
             val sb = (si.block.companionObjectInstance as SBCompanion).from(event.block.location)
             register(sb, true)
+        } else {
+            event.isCancelled = true
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = false)
     fun onBreak(event: BlockBreakEvent) {
         val removed = remove(event.block.location)
-        if (removed is Dropable) {
+        if (removed is Dropable
+            && event.player.gameMode != GameMode.CREATIVE
+            && event.block.getDrops(event.player.inventory.itemInMainHand, event.player).isNotEmpty()) {
             event.isDropItems = false
             event.block.world.dropItemNaturally(event.block.location, removed.itemToDrop)
         }

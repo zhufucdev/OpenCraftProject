@@ -25,7 +25,7 @@ abstract class StatefulSpecialItem(m: Material, getter: Language.LangGetter, id:
         const val KEY_COMPOUND = "special_item"
 
         // Prebuilt special items by reflection
-        private val prebuilt =
+        val prebuilt =
             Reflections("com.zhufu.opencraft.special_item").getSubTypesOf(StatefulSpecialItem::class.java)
 
         private val cache = mutableSetOf<StatefulSpecialItem>()

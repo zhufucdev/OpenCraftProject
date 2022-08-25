@@ -151,6 +151,7 @@ object Base {
     }
 
     val pluginCore: Plugin = Bukkit.getPluginManager().getPlugin("ServerCore")!!
+    val namespacedKey = NamespacedKey.fromString("opencraft")!!
 
     object TutorialUtil {
         fun Entity.tplock(location: Location, time: Long) {

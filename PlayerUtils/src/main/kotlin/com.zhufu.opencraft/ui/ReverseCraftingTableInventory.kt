@@ -213,7 +213,7 @@ class ReverseCraftingTableInventory(val getter: Language.LangGetter, plugin: Plu
 
             is ShapelessRecipe -> {
                 recipe.ingredientList.forEachIndexed { i, item ->
-                    val index = if (i < 3) i + 6 else if (i < 6) i + 15 else i + 24
+                    val index = if (i < 3) i + 6 else if (i < 6) i + 12 else i + 18
                     item.amount = output
                     inventory.setItem(index, item)
                 }
