@@ -207,7 +207,7 @@ trade:
     5.title: '指令的使用'
     5.subtitle: '你可以随时使用/trade back 以回到自己的领地'
     6.subtitle: '或是/trade center 回到交易世界枢纽'
-    7.subtitle: '要阅读详细信息，例如如何建造商店，使用/trade help'
+    7.subtitle: '要阅读详细信息，例如如何建造商店，使用/user help'
   help.title: '经济系统 帮助文档'
   giveCurrency.objective: '已给予%s %s货币'
   giveCurrency.subjective: '你已被给予%s货币，你现在有%s个货币'

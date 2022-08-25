@@ -394,7 +394,7 @@ trade:
     6:
       subtitle: "And go back to the center using /trade center"
     7:
-      subtitle: "Check out /trade help for more information!"
+      subtitle: "Check out /user help for more information!"
   help.title: "Guide on trading system"
   error:
     chunkNotFound: "Your territory couldn't be found"
