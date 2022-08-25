@@ -111,5 +111,5 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
         destroy()
     }
 
-    var inventory: DualInventory = DualInventory(onlinePlayerInfo?.player, this)
+    var inventory: DualInventory = DualInventory(this)
 }

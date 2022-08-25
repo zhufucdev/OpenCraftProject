@@ -19,7 +19,7 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import javax.security.auth.Destroyable
 
-class DualInventory(val player: Player? = null, parent: ServerPlayer) {
+class DualInventory(val parent: ServerPlayer) {
     internal val collection = Database.inventory(parent.uuid)
 
     fun delete() {
@@ -45,11 +45,11 @@ class DualInventory(val player: Player? = null, parent: ServerPlayer) {
         }
     }
 
-    var present = InventoryInfo(player, NOTHING, this)
-    var last = InventoryInfo(player, NOTHING, this)
+    var present = InventoryInfo(NOTHING, this)
+    var last = InventoryInfo(NOTHING, this)
 
     fun getOrCreate(name: String = "default"): InventoryInfo {
-        return InventoryInfo(player, name, this)
+        return InventoryInfo(name, this)
     }
 
     internal fun update(inventory: InventoryInfo) {
@@ -57,8 +57,9 @@ class DualInventory(val player: Player? = null, parent: ServerPlayer) {
     }
 }
 
-class InventoryInfo internal constructor(val player: Player?, val name: String, val parent: DualInventory) :
+class InventoryInfo internal constructor(val name: String, val parent: DualInventory) :
     Destroyable {
+    val player: Player? = parent.parent.onlinePlayerInfo?.player
     var inventoryOnly: Boolean = false
 
     val doc: Document = parent.collection.find(Filters.eq(name)).first()

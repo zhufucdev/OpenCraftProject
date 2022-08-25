@@ -112,7 +112,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
             try {
                 this.inventory.delete()
                 oldInventory.renameTo(File("plugins${File.separatorChar}inventories${File.separatorChar}${this.uuid}"))
-                inventory = DualInventory(player, this)
+                inventory = DualInventory(this)
                 inventory.getOrCreate(DualInventory.RESET).load()
             } catch (e: Exception) {
                 failureList.add("inventories/${e::class.simpleName} ${e.cause}")
