@@ -254,7 +254,7 @@ class InventoryInfo internal constructor(val player: Player?, val name: String, 
 
     fun set(path: String, value: Any) = doc.set(path, value)
     fun addItem(item: ItemStack): Boolean {
-        val inventory = doc.get("inventory", Document::class.java)
+        val inventory = doc.get("inventory", Document::class.java) ?: Document()
         val max = inventory.maxOfOrNull { it.key.toInt() }
         fun msg(i: Int) {
             doc["inventory"] = inventory
