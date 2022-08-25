@@ -59,7 +59,7 @@ class DualInventory(val parent: ServerPlayer) {
 
 class InventoryInfo internal constructor(val name: String, val parent: DualInventory) :
     Destroyable {
-    val player: Player? = parent.parent.onlinePlayerInfo?.player
+    val player: Player? get() = parent.parent.onlinePlayerInfo?.player
     var inventoryOnly: Boolean = false
 
     val doc: Document = parent.collection.find(Filters.eq(name)).first()
@@ -88,8 +88,7 @@ class InventoryInfo internal constructor(val name: String, val parent: DualInven
     fun sync() {
         if (destroyed)
             throw IllegalAccessException("This object must not have been destroyed!")
-        if (player == null)
-            throw IllegalStateException("Can't read player's info when it doesn't exists!")
+        val player = this.player ?: throw IllegalStateException("Can't read player's info when it doesn't exists!")
 
         if (name == NOTHING) return
 
@@ -117,8 +116,7 @@ class InventoryInfo internal constructor(val name: String, val parent: DualInven
     fun load(savePresent: Boolean = true, inventoryOnly: Boolean = false) {
         if (destroyed)
             throw IllegalAccessException("This object must not be destroyed.")
-        if (player == null)
-            throw IllegalStateException("Couldn't read player's info when it doesn't exists.")
+        val player = this.player ?: throw IllegalStateException("Couldn't read player's info when it doesn't exists.")
 
         this.inventoryOnly = inventoryOnly
         if (savePresent)
