@@ -2,13 +2,12 @@ package com.zhufu.opencraft
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.zhufu.opencraft.Base.TutorialUtil.gmd
-import com.zhufu.opencraft.Base.TutorialUtil.tplock
-import com.zhufu.opencraft.Base.TutorialUtil.linearMotion
-import com.zhufu.opencraft.Base.tradeWorld
-import com.zhufu.opencraft.Base.Extend.toPrettyString
-import com.zhufu.opencraft.inventory.TraderInventory
 import com.zhufu.opencraft.Base.Extend.isDigit
+import com.zhufu.opencraft.Base.Extend.toPrettyString
+import com.zhufu.opencraft.Base.TutorialUtil.gmd
+import com.zhufu.opencraft.Base.TutorialUtil.linearMotion
+import com.zhufu.opencraft.Base.TutorialUtil.tplock
+import com.zhufu.opencraft.Base.tradeWorld
 import com.zhufu.opencraft.Game.env
 import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.data.OfflineInfo
@@ -16,12 +15,11 @@ import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.inventory.NPCExistence
 import com.zhufu.opencraft.inventory.NPCItemInventory
 import com.zhufu.opencraft.inventory.TradeValidateInventory
+import com.zhufu.opencraft.inventory.TraderInventory
 import com.zhufu.opencraft.util.*
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
-import net.citizensnpcs.api.trait.trait.Equipment
 import net.citizensnpcs.api.util.MemoryDataKey
-import net.citizensnpcs.trait.SkinTrait
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
@@ -33,18 +31,19 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.generator.ChunkGenerator
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.Vector
-import java.io.*
+import java.io.File
+import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.Socket
 import java.nio.file.Paths
 import java.time.Duration
 import java.util.*
-import java.util.concurrent.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.FutureTask
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 class CurrencySystem : JavaPlugin() {
     companion object {
@@ -250,10 +249,6 @@ class CurrencySystem : JavaPlugin() {
         }
     }
 
-    private fun showHelp(): String = File(dataFolder, "help.txt")
-        .also { if (!it.parentFile.exists()) it.parentFile.mkdirs() }
-        .readText()
-
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (command.name == "trade") {
             if (sender !is Player && args.size < 3 && args.first() != "pwd") {
@@ -297,10 +292,6 @@ class CurrencySystem : JavaPlugin() {
                     server.pluginManager.callEvent(event)
                     if (!event.isCancelled)
                         player.teleport(tradeWorld.spawnLocation)
-                }
-
-                "help" -> {
-                    sender.sendMessage(*TextUtil.format(showHelp(), getter["trade.help.title"]))
                 }
 
                 "give" -> {
@@ -462,7 +453,7 @@ class CurrencySystem : JavaPlugin() {
         args: Array<out String>
     ): MutableList<String> {
         if (command.name == "trade") {
-            val commands = mutableListOf("back", "center", "help", "donation")
+            val commands = mutableListOf("back", "center", "donation")
             if (sender.isOp) commands.addAll(arrayOf("give", "set"))
             if (args.isEmpty()) {
                 return commands

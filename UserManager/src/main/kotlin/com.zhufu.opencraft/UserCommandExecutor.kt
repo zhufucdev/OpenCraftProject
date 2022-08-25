@@ -892,6 +892,11 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                 }
             }
 
+            "help" -> {
+                val content = TextUtil.getCustomizedText(getter["user.helpDoc"])
+                sender.sendMessage(*content.split('\n').toTypedArray())
+            }
+
             else -> {
                 sender.error(getter["command.error.usage"])
                 return false

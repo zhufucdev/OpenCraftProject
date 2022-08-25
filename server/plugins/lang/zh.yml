@@ -132,10 +132,19 @@ user:
     toGo: '使用%s来确认回到上次的死亡地点，然而这会消耗你%s个货币'
     goTo: '你已使用%s个货币回到上次的死亡地点'
   langChangeSucceed: '你的语言已更改为%s'
-
-helpDoc:
-  notFound: '找不到帮助文件，请联系服务器管理员'
-  title: '>>用户帮助文档'
+  helpDoc: |
+    $tip如何不用一堆指令访问服务器内容？
+    使用/pu menu 或者左键三次方块、右键一次空气来打开图形界面
+    
+    $tip这个手势好烦啊，能不能关掉？
+    使用/user prefer playerUtilitiesGesture off
+    
+    $tip怎么合成逆向合成工作台？
+    配方如下：
+    XX
+    OO
+    OO
+    其中，X代表下界合金锭，O则是木板
 
 survey:
   notMemberYet: '你尚未成为正式会员'

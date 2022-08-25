@@ -123,9 +123,19 @@ user:
     toGo: "Go back to last death location by using %s, but this coasts you %s."
     goTo: "Used %s coins to take you back to death location."
 
-helpDoc:
-  notFound: "Help document not found. Please contact the server operator."
-  title: ">>The User's Help Document"
+  helpDoc: |
+    $tipHow to access UI instead of a bunch of commands?
+    Issue command /pu menu or right click three times on a block and right click once on the air.
+    
+    $tipThis gesture is so annoying. Can I turn it off?
+    Use /user prefer playerUtilitiesGesture off
+    
+    $tipHow to craft a Reverse Crafting Table?
+    The recipe is like:
+    XX
+    OO
+    OO
+    where X is netherite ingot and O any plank
 
 survey:
   notMemberYet: "You've not been a regular."
@@ -384,7 +394,7 @@ trade:
     6:
       subtitle: "And go back to the center using /trade center"
     7:
-      subtitle: "Check out /trade help for more information!"
+      subtitle: "Check out /user help for more information!"
   help.title: "Guide on trading system"
   error:
     chunkNotFound: "Your territory couldn't be found"
