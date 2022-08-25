@@ -151,7 +151,10 @@ class ReverseCraftingTableInventory(val getter: Language.LangGetter, plugin: Plu
             recipesCount = 0
             drawResults(null, null)
         } else {
-            val recipes = Bukkit.getRecipesFor(material).filter { it is ShapedRecipe || it is ShapelessRecipe }
+            val recipes = Bukkit.getRecipesFor(material).filter {
+                (it is ShapedRecipe || it is ShapelessRecipe)
+                        && !SpecialItem.isSpecial(it.result)
+            }
             recipesCount = recipes.size
             drawResults(
                 if (recipeIndex < recipes.size)
