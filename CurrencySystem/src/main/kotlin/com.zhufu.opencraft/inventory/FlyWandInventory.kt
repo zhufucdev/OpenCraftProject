@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-class FlyWandInventory(val player: Player, val wand: FlyWand, plugin: Plugin) : ClickableInventory(plugin) {
+class FlyWandInventory(val player: Player, val wand: FlyWand, plugin: Plugin) : IntractableInventory(plugin) {
     companion object {
         var id: Int = 0
         const val limit = FlyWand.MAX_TIME_REMAINING.toInt() / 60

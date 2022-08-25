@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: ClickableInventory) :
+class FriendListUI(info: Info, plugin: Plugin, override val parentInventory: IntractableInventory) :
     PageInventory<FriendListUI.Adapter>(
         title = getLang(info, "ui.friend.title").toInfoMessage(),
         adapter = Adapter(info),

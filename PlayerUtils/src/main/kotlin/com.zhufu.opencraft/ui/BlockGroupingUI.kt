@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
-class BlockGroupingUI(private val player: Player, plugin: Plugin, override val parentInventory: ClickableInventory) :
+class BlockGroupingUI(private val player: Player, plugin: Plugin, override val parentInventory: IntractableInventory) :
     PageInventory<BlockGroupingUI.Adapter>(
         Language[player, "ui.block.grouping.title"].toInfoMessage(),
         Adapter(player), 36, plugin

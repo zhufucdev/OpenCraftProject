@@ -3,6 +3,6 @@ package com.zhufu.opencraft
 import org.bukkit.entity.Player
 
 interface Backable {
-    val parentInventory: ClickableInventory?
+    val parentInventory: IntractableInventory?
     fun back(showTo: Player) = parentInventory?.show(showTo) ?: showTo.closeInventory()
 }

@@ -15,11 +15,11 @@ import org.bukkit.plugin.Plugin
 
 class BlockController(
     plugin: Plugin,
-    override val parentInventory: ClickableInventory,
+    override val parentInventory: IntractableInventory,
     private val info: BlockLockManager.BlockInfo,
     item: ItemStack,
     private val player: Player
-) : ClickableInventory(plugin), Backable {
+) : IntractableInventory(plugin), Backable {
 
     private val getter = getLangGetter(player.info())
     override val inventory: Inventory = Bukkit.createInventory(null, 9, info.name.toInfoMessage())

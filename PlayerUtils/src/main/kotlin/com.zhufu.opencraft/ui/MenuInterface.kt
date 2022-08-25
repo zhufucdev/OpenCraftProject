@@ -20,7 +20,7 @@ import java.math.BigDecimal
 import java.math.MathContext
 
 class MenuInterface(plugin: Plugin, private val player: Player) :
-    ClickableInventory(plugin) {
+    IntractableInventory(plugin) {
     companion object {
         var id = 0
     }

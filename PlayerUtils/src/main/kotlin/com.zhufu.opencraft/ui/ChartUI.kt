@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-class ChartUI(plugin: Plugin, info: Info, override val parentInventory: ClickableInventory?) :
+class ChartUI(plugin: Plugin, info: Info, override val parentInventory: IntractableInventory?) :
     PageInventory<ChartUI.Adapter>(
         plugin = plugin,
         adapter = Adapter(info),

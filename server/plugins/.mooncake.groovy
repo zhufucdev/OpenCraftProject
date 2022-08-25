@@ -19,9 +19,9 @@ ItemStack getMooncakeFor(OfflineInfo info) {
     r.editMeta {
         String displayName
         String lore
-        if (info.targetLang == Language.LANG_EN) {
+        if (info.userLanguage == Language.LANG_EN) {
             displayName = "Mooncake"
-            lore = "Gift for ${info.name} by Imaizumi_Kagerou"
+            lore = "Gift for ${info.name} from Imaizumi_Kagerou"
         } else {
             displayName = "月饼"
             lore = "今泉影郎向${info.name}的馈赠"

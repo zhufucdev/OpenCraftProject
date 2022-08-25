@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory: ClickableInventory) :
+class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory: IntractableInventory) :
     PageInventory<CheckpointUI.Adapter>(
         Language[info.userLanguage, "ui.checkpoint.title"].toComponent(),
         Adapter(info, info.getter()), 36, plugin

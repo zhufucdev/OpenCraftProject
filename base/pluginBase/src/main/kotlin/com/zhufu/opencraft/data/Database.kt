@@ -5,6 +5,7 @@ import com.mongodb.MongoClientSettings
 import com.mongodb.client.*
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.eq
+import com.zhufu.opencraft.Base
 import org.bson.Document
 import org.bson.UuidRepresentation
 import org.bson.conversions.Bson
@@ -93,4 +94,6 @@ object Database {
     }
 
     fun inventory(player: UUID) = find("inventory", player)
+
+    fun specialBlock() = find("sb", Base.serverID)
 }

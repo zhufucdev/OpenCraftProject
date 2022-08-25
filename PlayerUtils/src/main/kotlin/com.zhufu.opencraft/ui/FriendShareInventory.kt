@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-class FriendShareInventory(info: Info, friendship: Friendship, plugin: Plugin, override val parentInventory: ClickableInventory) :
+class FriendShareInventory(info: Info, friendship: Friendship, plugin: Plugin, override val parentInventory: IntractableInventory) :
     PageInventory<FriendShareInventory.Adapter>(
         title = info.getter()["ui.friend.share.title"].toInfoMessage(),
         adapter = Adapter(info, friendship),

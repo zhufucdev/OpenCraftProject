@@ -14,4 +14,5 @@ dependencies {
     api project(':worldBase')
 
     compileOnly 'net.citizensnpcs:citizens-main:' + rootProject.ext.citizens_version
+    compileOnly 'org.mongodb:mongodb-driver-sync:4.7.1'
 }

@@ -561,6 +561,18 @@ insurance:
     1: 'Insurer: %s'
     2: 'Guarantor: OpenCraft Team'
     3: 'This insurance guarantees that 80% of your inventory will be kept after your death.'
+rct:
+  name: 'Reverse Crafting Table'
+  panel:
+    title: 'Input'
+    subtitle: 'Place items in the center'
+  reverse:
+    title: 'Reverse Craft >>'
+    tip: 'Click to iterate through recipes'
+  error:
+    unavailable: 'Reverse crafting table is currently unavailable.'
+    unhandled: "Reverse crafting table can't handle this item."
+    poor: 'No enough material'
 
 msg:
   read: 'Read'

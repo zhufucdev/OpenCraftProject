@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
 class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingItemInfo, id: Int, plugin: Plugin) :
-    ClickableInventory(plugin) {
+    IntractableInventory(plugin) {
     override val inventory: Inventory =
         Bukkit.createInventory(null, InventoryType.CHEST, "确认支付[uuid:$id]".toInfoMessage())
     lateinit var confirmItem: ItemStack

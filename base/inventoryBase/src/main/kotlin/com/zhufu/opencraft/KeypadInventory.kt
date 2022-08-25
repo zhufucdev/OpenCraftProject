@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
 abstract class KeypadInventory(plugin: Plugin, protected val getter: Language.LangGetter, title: Component) :
-    ClickableInventory(plugin) {
+    IntractableInventory(plugin) {
     final override val inventory: Inventory = Bukkit.createInventory(null, 36, title)
     var amount: Int
 

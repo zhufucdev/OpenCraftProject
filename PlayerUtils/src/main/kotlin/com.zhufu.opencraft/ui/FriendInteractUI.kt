@@ -19,8 +19,8 @@ class FriendInteractUI(
     plugin: Plugin,
     private val friendship: Friendship,
     private val info: Info,
-    override val parentInventory: ClickableInventory
-) : ClickableInventory(plugin), Backable {
+    override val parentInventory: IntractableInventory
+) : IntractableInventory(plugin), Backable {
     override val inventory: Inventory = Bukkit.createInventory(null, 36)
     val getter by lazy { Language.LangGetter(friendship.owner) }
 

@@ -10,6 +10,7 @@ import com.zhufu.opencraft.player_community.PublicMessagePool
 import com.zhufu.opencraft.special_item.*
 import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
+import com.zhufu.opencraft.ui.ReverseCraftingTableInventory
 import com.zhufu.opencraft.util.toInfoMessage
 import com.zhufu.opencraft.util.toSuccessMessage
 import org.bukkit.Bukkit
@@ -39,6 +40,11 @@ class PlayerUtil : JavaPlugin() {
                     ui.show(info.player)
                 }
             }
+        }
+        ServerCaller["SolveRCT"] = {
+            val player = (it.firstOrNull()
+                ?: throw IllegalArgumentException("This call must be given at least one Player parameter.")) as Player
+            ReverseCraftingTableInventory(player.getter(), this).show(player)
         }
     }
 

@@ -9,7 +9,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
-open class PageInventory<T : PageInventory.Adapter> : ClickableInventory {
+open class PageInventory<T : PageInventory.Adapter> : IntractableInventory {
     var adapter: T
     val itemsOnePage: Int
     val title: Component

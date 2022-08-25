@@ -35,8 +35,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.*
+import org.bukkit.inventory.CraftingInventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.Vector
@@ -401,6 +403,13 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 own.spawnPoint = event.bed.location
                 event.player.success(getter["lobby.spawnpointSet"])
             }
+        }
+    }
+
+    @EventHandler
+    fun onSICrafted(event: CraftItemEvent) {
+        if (event.inventory.matrix.any { SpecialItem.isSpecial(it ?: return@any false) }) {
+            event.isCancelled = true
         }
     }
 

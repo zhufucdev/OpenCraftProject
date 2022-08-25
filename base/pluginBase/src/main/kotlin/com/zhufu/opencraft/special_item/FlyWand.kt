@@ -23,12 +23,12 @@ class FlyWand(getter: Language.LangGetter, timeRemaining: Double = MAX_TIME_REMA
 
     override fun tick(mod: PlayerModifier, data: YamlConfiguration, score: Objective, scoreboardSorter: Int) {
         if (!data.isSet("hasFlyWand")) {
-            var getter = mod.info.getter()
+            val getter = mod.info.getter()
             var allowFlight =
                 mod.player.gameMode == GameMode.CREATIVE || mod.player.gameMode == GameMode.SPECTATOR
             data.set("hasFlyWand", true)
             if (!allowFlight) {
-                if (mod.player.isFlying) {
+                if (mod.player.isFlying && !mod.player.isInsideVehicle) {
                     updateTime(timeRemaining - 0.05, getter)
                     if (inventoryPosition != -1)
                         mod.player.inventory.setItem(inventoryPosition, this)

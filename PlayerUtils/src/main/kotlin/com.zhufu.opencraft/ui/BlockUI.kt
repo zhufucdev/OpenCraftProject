@@ -16,7 +16,7 @@ class BlockUI(
     plugin: Plugin,
     player: Player,
     private val root: BlockLockManager.GroupBlockInfo?,
-    override val parentInventory: ClickableInventory
+    override val parentInventory: IntractableInventory
 ) : PageInventory<BlockUI.Adapter>(
     Language[player, "ui.blockTitle"].toInfoMessage(),
     { Adapter(player, root?.children, root != null) },

@@ -36,5 +36,13 @@
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.mongodb:mongodb-driver-sync:4.7.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.mongodb:bson:4.7.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.mongodb:mongodb-driver-core:4.7.1" level="project" />
+    <orderEntry type="library" name="Gradle: net.kyori:adventure-api:4.11.0" level="project" />
+    <orderEntry type="library" name="Gradle: net.kyori:adventure-key:4.11.0" level="project" />
+    <orderEntry type="library" name="Gradle: net.kyori:adventure-text-logger-slf4j:4.11.0" level="project" />
+    <orderEntry type="library" name="Gradle: net.kyori:adventure-text-minimessage:4.11.0" level="project" />
+    <orderEntry type="library" name="Gradle: net.kyori:adventure-text-serializer-gson:4.11.0" level="project" />
+    <orderEntry type="library" name="Gradle: net.kyori:adventure-text-serializer-legacy:4.11.0" level="project" />
+    <orderEntry type="library" name="Gradle: net.kyori:adventure-text-serializer-plain:4.11.0" level="project" />
+    <orderEntry type="library" name="Gradle: de.tr7zw:item-nbt-api-plugin:2.10.0" level="project" />
   </component>
 </module>

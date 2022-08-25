@@ -3,7 +3,6 @@ package com.zhufu.opencraft
 import com.zhufu.opencraft.Everything.mPlugin
 import com.zhufu.opencraft.Everything.near
 import com.zhufu.opencraft.special_item.Portal
-import com.zhufu.opencraft.special_item.StatefulSpecialItem
 import com.zhufu.opencraft.special_item.StatelessSpecialItem
 import com.zhufu.opencraft.util.toErrorMessage
 import org.bukkit.*

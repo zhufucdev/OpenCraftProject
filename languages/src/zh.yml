@@ -580,6 +580,18 @@ insurance:
     1: '承保人: %s'
     2: '保证人: OpenCraft 团队'
     3: '此保险担保，在你死亡后，将有80%的物品被保留。'
+rct:
+  name: '逆向合成工作台'
+  panel:
+    title: '输入物品'
+    subtitle: '将物品放入中心'
+  reverse:
+    title: '逆向合成 >>'
+    tip: '点击以切换配方'
+  error:
+    unavailable: '逆向合成工作台目前不可用'
+    unhandled: '逆向合成工作台无法处理这个物品'
+    poor: '没有足够的原料'
 
 msg:
   read: '已读'

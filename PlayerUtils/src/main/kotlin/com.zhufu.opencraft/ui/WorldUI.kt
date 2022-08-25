@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-class WorldUI(plugin: Plugin, info: Info, override val parentInventory: ClickableInventory) : PageInventory<WorldUI.Adapter>(
+class WorldUI(plugin: Plugin, info: Info, override val parentInventory: IntractableInventory) : PageInventory<WorldUI.Adapter>(
     title = getLang(info, "ui.world.title").toInfoMessage(),
     adapter = Adapter(WorldManager.getAvailableWorlds().filter { it.permission.canUse(info.player) }, info.getter()),
     itemsOnePage = 36,

@@ -1,6 +1,6 @@
 package com.zhufu.opencraft.ui
 
-import com.zhufu.opencraft.ClickableInventory
+import com.zhufu.opencraft.IntractableInventory
 import com.zhufu.opencraft.Widgets
 import com.zhufu.opencraft.info
 import com.zhufu.opencraft.updateItemMeta
@@ -12,7 +12,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-class TriggerUI(plugin: Plugin) : ClickableInventory(plugin) {
+class TriggerUI(plugin: Plugin) : IntractableInventory(plugin) {
     companion object {
         val helpDoc = listOf(
             "none -> 无触发方式",

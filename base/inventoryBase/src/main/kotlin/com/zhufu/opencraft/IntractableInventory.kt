@@ -2,7 +2,6 @@ package com.zhufu.opencraft
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.HumanEntity
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
@@ -14,10 +13,14 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
-abstract class ClickableInventory(val plugin: Plugin) : Listener {
+abstract class IntractableInventory(val plugin: Plugin) : Listener {
     abstract val inventory: Inventory
     protected var isShowing = false
     protected var showingTo: HumanEntity? = null
+
+    protected fun builder(action: InventoryBuilder.() -> Unit) {
+        InventoryBuilder(inventory).apply(action)
+    }
 
     fun show(player: HumanEntity) {
         Bukkit.getPluginManager().registerEvents(this, plugin)
@@ -52,4 +55,18 @@ abstract class ClickableInventory(val plugin: Plugin) : Listener {
 
     open fun onClose(player: HumanEntity) {}
     open fun onMoveItem(event: InventoryDragEvent) {}
+}
+
+class InventoryBuilder internal constructor(private val target: Inventory) {
+    fun set(x: Int, y: Int, itemStack: ItemStack?) {
+        target.setItem(x + y * 9, itemStack)
+    }
+
+    fun fill(xRange: IntRange, yRange: IntRange, itemStack: ItemStack?) {
+        for (x in xRange) {
+            for (y in yRange) {
+                target.setItem(x + y * 9, itemStack)
+            }
+        }
+    }
 }
