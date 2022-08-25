@@ -110,4 +110,6 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
         super.delete()
         destroy()
     }
+
+    var inventory: DualInventory = DualInventory(onlinePlayerInfo?.player, this)
 }

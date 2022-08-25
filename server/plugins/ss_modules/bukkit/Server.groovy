@@ -66,6 +66,14 @@ class Server {
         Bukkit.getScheduler().runTaskTimer(Scripting.plugin, ticker, 0, 1)
     }
 
+    /**
+     * Run a bunch of code on the Bukkit main event loop
+     * @param action The code
+     */
+    static void runSync(Closure action) {
+        Bukkit.getScheduler().runTask(Scripting.plugin, action)
+    }
+
     static {
         listenEvent(SSReloadEvent.class) {
             HandlerList.unregisterAll(mListener)

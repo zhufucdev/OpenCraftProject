@@ -74,8 +74,6 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
 
     val gotoRequests = ArrayList<GotoRequest>()
 
-    var inventory: DualInventory = DualInventory(player, this)
-
     var isRegistered: Boolean = hasPassword
         private set
     var isLogin: Boolean = false

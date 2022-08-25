@@ -64,7 +64,7 @@ class InventoryInfo internal constructor(val player: Player?, val name: String, 
     val doc: Document = parent.collection.find(Filters.eq(name)).first()
         ?: Document("_id", name).also { parent.collection.insertOne(it) }
 
-    private fun update() {
+    fun update() {
         parent.update(this)
     }
 
