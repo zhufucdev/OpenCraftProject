@@ -48,18 +48,17 @@ class ReverseCraftingTableInventory(val getter: Language.LangGetter, plugin: Plu
         if (event.clickedInventory != inventory) {
             // shift click -> move to center slot
             if (event.action == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                val material = materialItem
+                if (material != null) {
+                    returnItems(event.whoClicked, arrayOf(material))
+                }
                 Bukkit.getScheduler().runTask(plugin, Runnable {
-                    val material = materialItem
-                    if (material == null) {
-                        val original = inventory.getItem(3)
-                        inventory.setItem(3, null)
-                        setMaterialItem(original)
-                        recipeIndex = 0
-                        updateRecipe(original)
-                        updateTipItem()
-                    } else {
-                        returnItems(event.whoClicked, arrayOf(material))
-                    }
+                    val original = inventory.getItem(3)
+                    inventory.setItem(3, null)
+                    setMaterialItem(original)
+                    recipeIndex = 0
+                    updateRecipe(original)
+                    updateTipItem()
                 })
             }
         } else if (event.rawSlot == 10) {
