@@ -156,7 +156,8 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
             return
         }
 
-        info.inventory.getOrCreate("survivor").load(inventoryOnly = true)
+        if (player.world == Base.tradeWorld)
+            info.inventory.getOrCreate("survivor").load(inventoryOnly = true)
 
         if (player.uniqueId.toString() == (tradeInfo.getSeller() ?: return)) {
             inventoryName = "修改$id"
@@ -208,7 +209,7 @@ class TradeValidateInventory(val tradeInfo: TradeInfo, face: Location?) : NPCIte
         } else if (!isPaying) {
             TradeManager.loadTradeCompass(info)
         }
-        if (info.isTerritoryInMessageShown)
+        if (!TradeTerritoryInfo(info).contains(player.location) && player.world == Base.tradeWorld)
             info.inventory.getOrCreate(DualInventory.RESET).load(inventoryOnly = true)
     }
 

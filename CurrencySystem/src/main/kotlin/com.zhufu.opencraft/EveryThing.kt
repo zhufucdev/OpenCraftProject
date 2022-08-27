@@ -1,8 +1,9 @@
 package com.zhufu.opencraft
 
+import com.zhufu.opencraft.Base.TutorialUtil.gmd
+import com.zhufu.opencraft.Base.TutorialUtil.linearMotion
+import com.zhufu.opencraft.Base.TutorialUtil.tplock
 import com.zhufu.opencraft.Base.tradeWorld
-import com.zhufu.opencraft.CurrencySystem.Companion.inventoryMap
-import com.zhufu.opencraft.CurrencySystem.Companion.territoryMap
 import com.zhufu.opencraft.CurrencySystem.Companion.transMap
 import com.zhufu.opencraft.TradeManager.loadTradeCompass
 import com.zhufu.opencraft.TradeManager.plugin
@@ -17,12 +18,14 @@ import com.zhufu.opencraft.inventory.TraderInventory.Companion.getPositionForLin
 import com.zhufu.opencraft.inventory.VisitorInventory
 import com.zhufu.opencraft.special_item.FlyWand
 import com.zhufu.opencraft.special_item.StatefulSpecialItem
-import com.zhufu.opencraft.util.Language
-import com.zhufu.opencraft.util.TextUtil
-import com.zhufu.opencraft.util.toInfoMessage
+import com.zhufu.opencraft.util.*
 import net.citizensnpcs.api.event.NPCLeftClickEvent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
@@ -37,11 +40,14 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Vector
 import java.io.File
+import java.time.Duration
 
 @Suppress("unused")
 object EveryThing : Listener {
-    val traderInventoryName = TextUtil.getColoredText("服务器商人", TextUtil.TextColor.AQUA, true, false)
+    val traderInventoryName =
+        TextUtil.getColoredText("服务器商人", TextUtil.TextColor.AQUA, bold = true, underlined = false)
     val backNPCName = "生存模式".toInfoMessage()
 
     /**
@@ -58,15 +64,22 @@ object EveryThing : Listener {
     @EventHandler
     fun onBlockBreak(event: BlockBreakEvent) {
         if (event.block.world == tradeWorld) {
-            if (!getPlayerTerritory(event.player).contains(event.block.location)) {
+            val info = event.player.info()
+            val getter = info.getter()
+            if (info == null) {
+                event.player.error(getter["player.error.unknown"])
                 event.isCancelled = true
-                event.player.error("您不能在此破坏方块")
+                return
+            }
+            if (!TradeTerritoryInfo(info).contains(event.block.location)) {
+                event.isCancelled = true
+                event.player.error(getter["trade.error.outOfTerritory"])
             } else {
                 if (event.block.type != Material.CHEST)
                     return
                 val t = SetUpValidateInventory.inventories.firstOrNull { it.baseLocation == event.block.location }
                 if (t != null) {
-                    event.player.info("已取消物品销售")
+                    event.player.info(getter["trade.sellCancelled"])
                 }
             }
         }
@@ -74,57 +87,45 @@ object EveryThing : Listener {
 
     @EventHandler
     fun onBlockPlace(event: BlockPlaceEvent) {
-        if (event.block.world == tradeWorld && !getPlayerTerritory(event.player).contains(event.blockPlaced.location)) {
+        val info = event.player.info()
+        val getter = info.getter()
+        if (info == null) {
+            event.player.error(getter["player.error.unknown"])
             event.isCancelled = true
-            event.player.error("您不能在此放置方块")
+            return
         }
-    }
-
-    /**
-     * Player Events
-     */
-    private fun getPlayerTerritory(player: Player): CurrencySystem.TradeTerritoryInfo {
-        var t = territoryMap.firstOrNull { it.player == player.uniqueId }
-        if (t == null) {
-            territoryMap.add(
-                CurrencySystem.TradeTerritoryInfo(
-                    player.uniqueId,
-                    player.info()?.territoryID.let {
-                        if (it != null)
-                            it
-                        else {
-                            player.error(player.getter()["player.error.unknown"])
-                            throw IllegalStateException()
-                        }
-                    }
-                ).also {
-                    t = it
-                }
-            )
+        if (event.block.world == tradeWorld && !TradeTerritoryInfo(info).contains(event.blockPlaced.location)) {
+            event.isCancelled = true
+            event.player.error(getter["trade.error.outOfTerritory"])
         }
-        return t!!
     }
 
     @EventHandler
     fun onPlayerTeleported(event: PlayerTeleportedEvent) {
         if (event.to?.world == tradeWorld) {
-            val t = getPlayerTerritory(event.player)
-            PlayerManager.findInfoByPlayer(event.player)
-                ?.apply {
-                    if (!isSurveyPassed && remainingDemoTime <= 0) {
-                        event.isCancelled = true
-                        PlayerManager.showPlayerOutOfDemoTitle(event.player)
-                    }
-                    status = Info.GameStatus.Surviving
-                    inventory.getOrCreate(RESET).load(inventoryOnly = true)
-                    if (!isTradeTutorialShown) {
-                        CurrencySystem.showTutorial(event.player)
-                    }
-                    isTerritoryInMessageShown = false
-                    isTerritoryOutMessageShown = false
+            val info = PlayerManager.findInfoByPlayer(event.player)
+            val getter = info.getter()
+            if (info == null) {
+                event.player.error(getter["player.error.unknown"])
+                event.isCancelled = true
+                return
+            }
+            val t = TradeTerritoryInfo(info)
+
+            info.apply {
+                if (!isSurveyPassed && remainingDemoTime <= 0) {
+                    event.isCancelled = true
+                    PlayerManager.showPlayerOutOfDemoTitle(event.player)
                 }
-                ?: event.player.error(Language.getDefault("player.error.unknown"))
-            event.player.info(getLang(event.player, "trade.territory.info", t.id, t.x, t.z))
+                status = Info.GameStatus.Surviving
+                inventory.getOrCreate(RESET).load(inventoryOnly = true)
+                if (!isTradeTutorialShown) {
+                    showTutorial(event.player)
+                }
+                isTerritoryInMessageShown = false
+                isTerritoryOutMessageShown = false
+            }
+            event.player.info(getter["trade.territory.info", info.territoryID, t.x, t.z])
         }
     }
 
@@ -141,8 +142,7 @@ object EveryThing : Listener {
             }
             val inMsgShown = info.isTerritoryInMessageShown
             val outMsgShown = info.isTerritoryOutMessageShown
-            val inTerritory =
-                getPlayerTerritory(event.player).contains(event.player.location)
+            val inTerritory = TradeTerritoryInfo(info).contains(event.player.location)
             if (!inMsgShown && inTerritory) {
                 event.player.sendActionBar(info.getter()["trade.territory.enter"].toInfoMessage())
                 info.inventory.getOrCreate("survivor").load(inventoryOnly = true)
@@ -189,7 +189,8 @@ object EveryThing : Listener {
         if (event.itemDrop.itemStack.type == Material.WOODEN_AXE) {
             val getter = playerInfo.getter()
             if (event.player.world == tradeWorld
-                && !getPlayerTerritory(event.player).contains(event.itemDrop.location)) {
+                && !TradeTerritoryInfo(playerInfo).contains(event.itemDrop.location)
+            ) {
                 event.player.error(getter["trade.error.store.wrongPlace"])
                 return
             }
@@ -244,14 +245,14 @@ object EveryThing : Listener {
      */
     @EventHandler
     fun onNPCClick(event: NPCLeftClickEvent) {
-        if (event.npc.name == CurrencySystem.npc?.name) {
+        if (event.npc == CurrencySystem.npc) {
             val info = PlayerManager.findInfoByPlayer(event.clicker)
             if (info != null && !info.isSurveyPassed && info.npcTradeCount > 10) {
                 PlayerManager.onPlayerOutOfDemo(info)
                 return
             }
             inventoryMap.add(TraderInventory(event.clicker).apply { show() })
-        } else if (event.npc.name == CurrencySystem.npcBack?.name) {
+        } else if (event.npc == CurrencySystem.npcBack) {
             val info = event.clicker.info()
             if (info == null) {
                 event.clicker.error(Language.getDefault("player.error.unknown"))
@@ -284,34 +285,185 @@ object EveryThing : Listener {
     fun onInventoryClickItem(event: InventoryClickEvent) {
         if (event.whoClicked.location.world != tradeWorld)
             return
-        val inventory = inventoryMap.firstOrNull { it.player.uniqueId == event.whoClicked.uniqueId } ?: return
+        val trader = inventoryMap.firstOrNull { it.player.uniqueId == event.whoClicked.uniqueId } ?: return
+        if (event.inventory != trader.inventory) {
+            return
+        }
         event.currentItem ?: return
         event.isCancelled = true
         if (event.slot <= 9 && transMap.containsKey(event.currentItem!!.type)) {
-            inventory.select(event.currentItem!!)
+            trader.select(event.currentItem!!)
         } else {
             when (event.slot) {
                 getPositionForLine(2) -> {
-                    inventory.subtractOne()
+                    trader.subtractOne()
                 }
 
                 getPositionForLine(6) -> {
-                    inventory.plusOne()
+                    trader.plusOne()
                 }
 
                 getPositionForLine(4) -> {
-                    if (inventory.selectedItem == null) {
+                    if (trader.selectedItem == null) {
                         event.whoClicked.printTradeError(
                             event.whoClicked.getter()["trade.error.notFound"],
                             TradeManager.getNewID()
                         )
                         return
                     }
-                    inventory.confirm()
+                    trader.confirm()
                 }
 
-                else -> inventory.selectSpecialItem(event.currentItem!!)
+                else -> trader.selectSpecialItem(event.currentItem!!)
             }
         }
     }
+}
+
+val inventoryMap = arrayListOf<TraderInventory>()
+
+private fun showTitle(
+    player: Player,
+    getter: Language.LangGetter,
+    titleCode: String,
+    subtitleCode: String,
+    showTime: Int,
+    instant: Boolean = false
+) {
+    val title =
+        Title.title(
+            getter[titleCode].toErrorMessage(),
+            Component.text(getter[subtitleCode], NamedTextColor.AQUA),
+            if (!instant)
+                Title.Times.times(
+                    Duration.ofMillis(250),
+                    Duration.ofSeconds(5),
+                    Duration.ofMillis(250)
+                )
+            else
+                Title.Times.times(
+                    Duration.ZERO,
+                    Duration.ofSeconds(5),
+                    Duration.ZERO
+                )
+        )
+    player.showTitle(title)
+    Thread.sleep(showTime * 1000L + 50)
+}
+
+fun showTutorial(player: Player) {
+    Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore, Runnable {
+        val info = PlayerManager.findInfoByPlayer(player)
+        if (info == null) {
+            player.error(Language.getDefault("player.error.unknown"))
+            return@Runnable
+        }
+        info.status = Info.GameStatus.InTutorial
+        val getter = Language[info]
+        player.gmd(GameMode.SPECTATOR)
+        player.tplock(
+            tradeWorld.spawnLocation
+                .add(Vector(0, 30, 0))
+                .setDirection(Vector(0, -90, 0)),
+            5 * 20
+        )
+        showTitle(
+            player,
+            getter,
+            "trade.tutorial.1.title",
+            "trade.tutorial.1.subtitle",
+            5
+        )
+
+        val l1 = Location(tradeWorld, 7.5, 62.0, 6.5)
+            .setDirection(Vector(0, 0, -90))
+        player.tplock(l1, 7 * 20)
+        showTitle(
+            player,
+            getter,
+            "trade.tutorial.2.title",
+            "trade.tutorial.2.subtitle",
+            7
+        )
+
+
+        val l2 = TradeTerritoryInfo(info)
+        val center = l2.center
+        val location2 =
+            Location(tradeWorld, center.x.toDouble(), tradeWorld.spawnLocation.y + 30, center.z.toDouble())
+                .setDirection(Vector(0, -90, 0))
+        player.tplock(location2, 7 * 20)
+        showTitle(
+            player,
+            getter,
+            "trade.tutorial.3.title",
+            "trade.tutorial.3.subtitle",
+            3
+        )
+        showTitle(
+            player,
+            getter,
+            "trade.tutorial.3.title",
+            "trade.tutorial.4.subtitle",
+            4,
+            true
+        )
+        val l3Top = tradeWorld.spawnLocation.clone()
+            .add(Vector(0, 30, 0))
+            .setDirection(Vector(0, -90, 0))
+        val l3Bottom = l3Top.clone().add(Vector(0.0, -15.0, 0.0))
+        val scheduler = Bukkit.getScheduler()
+        scheduler.runTask(CurrencySystem.instance) { _ ->
+            player.teleport(l3Top)
+        }
+        player.linearMotion(l3Bottom, 13 * 20)
+        showTitle(
+            player,
+            getter,
+            "trade.tutorial.5.title",
+            "trade.tutorial.5.subtitle",
+            4
+        )
+
+        showTitle(
+            player,
+            getter,
+            "trade.tutorial.5.title",
+            "trade.tutorial.6.subtitle",
+            4,
+            true
+        )
+        showTitle(
+            player,
+            getter,
+            "trade.tutorial.5.title",
+            "trade.tutorial.7.subtitle",
+            6,
+            true
+        )
+
+        player.linearMotion(tradeWorld.spawnLocation.setDirection(Vector(1, 0, 0)), 75)
+        Thread.sleep(4000L)
+
+        player.gmd(GameMode.ADVENTURE)
+        player.showTitle(
+            Title.title(
+                getter["tutorial.begin"].toSuccessMessage(),
+                Component.text(""),
+                Title.Times.times(
+                    Duration.ofMillis(150),
+                    Duration.ofSeconds(2),
+                    Duration.ofSeconds(1)
+                )
+            )
+        )
+
+
+        PlayerManager.findInfoByPlayer(player)
+            ?.also {
+                it.status = Info.GameStatus.Surviving
+                it.isTradeTutorialShown = true
+            }
+            ?: player.sendMessage(Language.getDefault("player.error.unknown").toWarnMessage())
+    })
 }

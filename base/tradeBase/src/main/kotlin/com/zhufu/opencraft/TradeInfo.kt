@@ -35,6 +35,10 @@ class TradeInfo : Cloneable, Destroyable {
     private var validateInventory: NPCExistence? = null
     private var seller: String? = null
     private var faceLocation: Location? = null
+
+    /**
+     * @return UUID of a player seller, or **server** of server trader.
+     */
     fun getSeller() = seller
     fun setSeller(value: String?, ignoreInventoryItem: Boolean) {
         seller = value

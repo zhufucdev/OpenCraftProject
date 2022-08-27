@@ -43,7 +43,7 @@ object TradeManager {
     }
 
     fun loadTradeCompass(player: Info) {
-        if (player.player.world == Base.tradeWorld) {
+        if (player.player.world == Base.tradeWorld && !TradeTerritoryInfo(player).contains(player.player.location)) {
             player.inventory.getOrCreate(DualInventory.RESET).load(inventoryOnly = true)
             player.player.inventory.addItem(
                 ItemStack(Material.COMPASS)
@@ -51,7 +51,7 @@ object TradeManager {
                         displayName(
                             Language[player, "trade.explorer"]
                                 .toComponent()
-                                .color(NamedTextColor.RED)
+                                .color(NamedTextColor.AQUA)
                         )
                     }
             )

@@ -408,15 +408,19 @@ trade:
       mixed: "Mixed items aren't permitted."
       duplicated: "Items duplicated with the server trader aren't permitted."
       replacing: "Your store is replacing some block."
-  giveCurrency.objective: "Given %s coin(s) to %s !"
-  giveCurrency.subjective: "A player gave you %s coin(s)，You've got %s coin(s) now!"
+    outOfTerritory: "You may not place or break blocks here."
+    territoryNotFound: "Sorry, we could not find this player's territory."
+  giveCurrency:
+    objective: "Given %s coin(s) to %s !"
+    subjective: "You were given %s coin(s)，You've got %s coin(s) now!"
   territory:
     enter: "You've entered your territory"
     leave: "You've left your territory"
     info: "Your territory (ID: %s) is located at chunk (%s, %s)"
   pwd.setTo: "The password of this server has set to %s"
   explorer: "Trade Explorer"
-  cancelled: "Trade cancelled."
+  cancelled: "Trade cancelled"
+  sellCancelled: "Item sell cancelled"
   pay:
     title: 'Payment Review'
     amount: 'Amount is %s.'

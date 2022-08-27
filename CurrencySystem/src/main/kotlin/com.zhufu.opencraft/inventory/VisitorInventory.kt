@@ -65,13 +65,21 @@ class VisitorInventory(plugin: Plugin, val player: Player) : PageInventory<Visit
     init {
         show(player)
         this.setOnItemClickListener { index, item ->
-            val t = CurrencySystem.territoryMap.firstOrNull {
-                it.player.toString() == adapter.tradeMap[index].first().getSeller()
+            fun reportError() {
+                player.error(getLang(player, "trade.error.territoryNotFound"))
             }
-            if (t == null) {
-                player.error("抱歉，但我们无法找到该玩家的领地")
+            val sellerName = adapter.tradeMap[index].first().getSeller()
+            if (sellerName == null) {
+                reportError()
                 return@setOnItemClickListener
             }
+
+            val seller = OfflineInfo.findByUUID(UUID.fromString(sellerName))
+            if (seller == null) {
+                reportError()
+                return@setOnItemClickListener
+            }
+            val t = TradeTerritoryInfo(seller)
             player.teleport(t.center)
         }
     }

@@ -29,7 +29,7 @@ class TraderInventory(val player: Player) {
     private val flyWandIcon = FlyWand(getter).froze()
     private val portalIcon = Portal(getter).froze()
     private val insuranceIcon = Insurance(getter, player.name).froze()
-    private val inventory = Bukkit.createInventory(null, 36, EveryThing.traderInventoryName)
+    val inventory = Bukkit.createInventory(null, 36, EveryThing.traderInventoryName)
         .apply {
             setItem(size - 9, flyWandIcon)
             setItem(size - 8, portalIcon)

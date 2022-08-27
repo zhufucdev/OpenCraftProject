@@ -4,26 +4,21 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.zhufu.opencraft.Base.Extend.isDigit
 import com.zhufu.opencraft.Base.Extend.toPrettyString
-import com.zhufu.opencraft.Base.TutorialUtil.gmd
-import com.zhufu.opencraft.Base.TutorialUtil.linearMotion
-import com.zhufu.opencraft.Base.TutorialUtil.tplock
 import com.zhufu.opencraft.Base.tradeWorld
 import com.zhufu.opencraft.Game.env
-import com.zhufu.opencraft.data.Info
-import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.inventory.NPCExistence
 import com.zhufu.opencraft.inventory.NPCItemInventory
 import com.zhufu.opencraft.inventory.TradeValidateInventory
-import com.zhufu.opencraft.inventory.TraderInventory
-import com.zhufu.opencraft.util.*
+import com.zhufu.opencraft.util.TextUtil
+import com.zhufu.opencraft.util.toErrorMessage
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.util.MemoryDataKey
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.title.Title
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.WorldCreator
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
@@ -32,13 +27,11 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.util.Vector
 import java.io.File
 import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.Socket
 import java.nio.file.Paths
-import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.FutureTask
@@ -47,12 +40,10 @@ import java.util.concurrent.TimeoutException
 
 class CurrencySystem : JavaPlugin() {
     companion object {
-        var npc: NPC? = null
-        var npcBack: NPC? = null
+        lateinit var npc: NPC
+        lateinit var npcBack: NPC
         val transMap = HashMap<Material, Long>()
-        val inventoryMap = arrayListOf<TraderInventory>()
-        val territoryMap = arrayListOf<TradeTerritoryInfo>()
-        val tradeRoot = Paths.get("plugins", "trade").toFile()
+        val tradeRoot: File get() = Paths.get("plugins", "trade").toFile()
         val donation: File
             get() = File(tradeRoot, "donation.png")
 
@@ -71,7 +62,7 @@ class CurrencySystem : JavaPlugin() {
                     try {
                         val client = checker!!.accept()
                         val input = client.getInputStream().bufferedReader()
-                        val json = JsonParser().parse(input.readLine()).asJsonObject
+                        val json = JsonParser.parseString(input.readLine()).asJsonObject
                         client.shutdownInput()
                         result = password.isNotEmpty() && json.has("pwd") && json["pwd"].asString == password
 
@@ -97,156 +88,6 @@ class CurrencySystem : JavaPlugin() {
         var password = ""
 
         lateinit var instance: CurrencySystem
-
-        private fun showTitle(
-            player: Player,
-            getter: Language.LangGetter,
-            titleCode: String,
-            subtitleCode: String,
-            showTime: Int,
-            instant: Boolean = false
-        ) {
-            val title =
-                Title.title(
-                    getter[titleCode].toErrorMessage(),
-                    Component.text(getter[subtitleCode], NamedTextColor.AQUA),
-                    if (!instant)
-                        Title.Times.times(
-                            Duration.ofMillis(250),
-                            Duration.ofSeconds(5),
-                            Duration.ofMillis(250)
-                        )
-                    else
-                        Title.Times.times(
-                            Duration.ZERO,
-                            Duration.ofSeconds(5),
-                            Duration.ZERO
-                        )
-                )
-            player.showTitle(title)
-            Thread.sleep(showTime * 1000L + 50)
-        }
-
-        fun showTutorial(player: Player) {
-            Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore, Runnable {
-                val info = PlayerManager.findInfoByPlayer(player)
-                if (info == null) {
-                    player.error(Language.getDefault("player.error.unknown"))
-                    return@Runnable
-                }
-                info.status = Info.GameStatus.InTutorial
-                val getter = Language[info]
-                player.gmd(GameMode.SPECTATOR)
-                player.tplock(
-                    tradeWorld.spawnLocation
-                        .add(Vector(0, 30, 0))
-                        .setDirection(Vector(0, -90, 0)),
-                    5 * 20
-                )
-                showTitle(
-                    player,
-                    getter,
-                    "trade.tutorial.1.title",
-                    "trade.tutorial.1.subtitle",
-                    5
-                )
-
-                val l1 = Location(tradeWorld, 7.5, 62.0, 6.5)
-                    .setDirection(Vector(0, 0, -90))
-                player.tplock(l1, 7 * 20)
-                showTitle(
-                    player,
-                    getter,
-                    "trade.tutorial.2.title",
-                    "trade.tutorial.2.subtitle",
-                    7
-                )
-
-
-                val l2 = territoryMap.firstOrNull { it.player == player.uniqueId }
-                if (l2 == null)
-                    player.sendMessage(getter["trade.error.chunkNotFound"].toErrorMessage())
-                else {
-                    val center = l2.center
-                    val location2 =
-                        Location(tradeWorld, center.x.toDouble(), tradeWorld.spawnLocation.y + 30, center.z.toDouble())
-                            .setDirection(Vector(0, -90, 0))
-                    player.tplock(location2, 7 * 20)
-                    showTitle(
-                        player,
-                        getter,
-                        "trade.tutorial.3.title",
-                        "trade.tutorial.3.subtitle",
-                        3
-                    )
-                    showTitle(
-                        player,
-                        getter,
-                        "trade.tutorial.3.title",
-                        "trade.tutorial.4.subtitle",
-                        4,
-                        true
-                    )
-                }
-                val l3Top = tradeWorld.spawnLocation.clone()
-                    .add(Vector(0, 30, 0))
-                    .setDirection(Vector(0, -90, 0))
-                val l3Bottom = l3Top.clone().add(Vector(0.0, -15.0, 0.0))
-                val scheduler = Bukkit.getScheduler()
-                scheduler.runTask(instance) { _ ->
-                    player.teleport(l3Top)
-                }
-                player.linearMotion(l3Bottom, 13 * 20)
-                showTitle(
-                    player,
-                    getter,
-                    "trade.tutorial.5.title",
-                    "trade.tutorial.5.subtitle",
-                    4
-                )
-
-                showTitle(
-                    player,
-                    getter,
-                    "trade.tutorial.5.title",
-                    "trade.tutorial.6.subtitle",
-                    4,
-                    true
-                )
-                showTitle(
-                    player,
-                    getter,
-                    "trade.tutorial.5.title",
-                    "trade.tutorial.7.subtitle",
-                    6,
-                    true
-                )
-
-                player.linearMotion(tradeWorld.spawnLocation.setDirection(Vector(1, 0, 0)), 75)
-                Thread.sleep(4000L)
-
-                player.gmd(GameMode.ADVENTURE)
-                player.showTitle(
-                    Title.title(
-                        getter["tutorial.begin"].toSuccessMessage(),
-                        Component.text(""),
-                        Title.Times.times(
-                            Duration.ofMillis(150),
-                            Duration.ofSeconds(2),
-                            Duration.ofSeconds(1)
-                        )
-                    )
-                )
-
-
-                PlayerManager.findInfoByPlayer(player)
-                    ?.also {
-                        it.status = Info.GameStatus.Surviving
-                        it.isTradeTutorialShown = true
-                    }
-                    ?: player.sendMessage(Language.getDefault("player.error.unknown").toWarnMessage())
-            })
-        }
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -272,11 +113,12 @@ class CurrencySystem : JavaPlugin() {
                 "back" -> {
                     val player = sender as Player
                     if (!checkLogin(player)) return true
-                    val t = territoryMap.firstOrNull { it.player == player.uniqueId }
-                    if (t == null) {
-                        sender.sendMessage(getter["trade.error.chunkNotFound"].toErrorMessage())
+                    val info = player.info()
+                    if (info == null) {
+                        player.error(getter["player.error.unknown"])
                         return true
                     }
+                    val t = TradeTerritoryInfo(info)
                     val dest = t.center
                     val event = PlayerTeleportedEvent(sender, sender.location, dest)
                     server.pluginManager.callEvent(event)
@@ -486,49 +328,6 @@ class CurrencySystem : JavaPlugin() {
         return mutableListOf()
     }
 
-    class TradeTerritoryInfo(val player: UUID, val id: Int) {
-        val x: Int
-        val z: Int
-
-        /**
-         * [fromX] is always smaller than [toX]
-         */
-        val fromX: Int
-        val fromZ: Int
-        val toX: Int
-        val toZ: Int
-
-        val center: Location
-            get() {
-                val dest = Location(tradeWorld, fromX + 16.0, TradeWorldGenerator.base.toDouble(), fromZ + 16.0)
-                while (dest.blockY < tradeWorld.maxHeight && (dest.block.type != Material.AIR || dest.clone().add(
-                        Vector(
-                            0,
-                            1,
-                            0
-                        )
-                    ).block.type != Material.AIR)
-                ) {
-                    dest.add(Vector(0, 1, 0))
-                }
-                return dest
-            }
-
-        fun contains(location: Location) = location.blockX in fromX..toX && location.blockZ in fromZ..toZ
-
-        init {
-            with(Base.getUniquePair(id)) {
-                this@TradeTerritoryInfo.x = first
-                this@TradeTerritoryInfo.z = second
-            }
-
-            fromX = 48 * (x - 1) + 16
-            fromZ = 48 * (z - 1) + 16
-            toX = fromX + 32
-            toZ = fromZ + 32
-        }
-    }
-
     private fun getDefaultServerTradeConfig(): YamlConfiguration {
         val r = YamlConfiguration()
         r.set("coal", 5)
@@ -607,15 +406,6 @@ class CurrencySystem : JavaPlugin() {
                     }
         } catch (e: Exception) {
             logger.warning("Failed to spawn trader NPCs: ${e.message}")
-        }
-
-        OfflineInfo.forEach {
-            try {
-                it.territoryID.let { id -> territoryMap.add(TradeTerritoryInfo(it.uuid!!, id)) }
-            } catch (e: Exception) {
-                logger.warning("Error while loading territory for ${it.name}")
-                e.printStackTrace()
-            }
         }
 
         NPCExistence.setProducer { t, l ->
