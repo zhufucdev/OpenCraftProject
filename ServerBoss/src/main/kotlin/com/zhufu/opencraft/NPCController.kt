@@ -60,7 +60,7 @@ object NPCController : Listener {
         if (isCurrentBossAlive) {
             currentNPC.despawn()
             currentNPC.destroy()
-            currentNPC.storedLocation.chunk.removePluginChunkTicket(mPlugin)
+            currentNPC.storedLocation?.chunk?.removePluginChunkTicket(mPlugin)
             Bukkit.removeBossBar(BOSS_BAR_NAMESPACE)
         }
         CitizensAPI.getNPCRegistry().forEach {
