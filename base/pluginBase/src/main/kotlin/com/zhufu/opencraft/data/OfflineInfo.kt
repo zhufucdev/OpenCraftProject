@@ -12,9 +12,7 @@ open class OfflineInfo(uuid: UUID, createNew: Boolean = false) : ServerPlayer(cr
         fun forEach(l: (OfflineInfo) -> Unit) =
             Database.tag.find().forEach {
                 val id = it.get("_id", UUID::class.java)
-                if (Bukkit.getPlayer(id) != null) {
-                    l(OfflineInfo(id, false))
-                }
+                l(OfflineInfo(id, false))
             }
 
         fun listPlayers(): List<OfflineInfo> {
