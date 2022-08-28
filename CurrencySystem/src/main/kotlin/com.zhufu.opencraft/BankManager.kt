@@ -84,7 +84,7 @@ object BankManager : Listener {
 
     fun removeBanker(near: Location): Boolean {
         bankers.forEach {
-            if (it.storedLocation.distance(near) < 4) {
+            if (it.storedLocation.world == near.world && it.storedLocation.distance(near) < 4) {
                 it.destroy()
                 bankers.remove(it)
                 return true
