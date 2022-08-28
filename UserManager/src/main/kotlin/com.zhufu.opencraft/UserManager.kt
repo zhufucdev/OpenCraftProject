@@ -7,7 +7,7 @@ import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.data.WebInfo
 import com.zhufu.opencraft.events.UserLoginEvent
-import com.zhufu.opencraft.events.PlayerLogoutEvent
+import com.zhufu.opencraft.events.UserLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.util.*
@@ -101,7 +101,7 @@ class UserManager : JavaPlugin(), Listener {
             Bukkit.getScheduler().runTask(this) { _ ->
                 info.login()
                 server.pluginManager.apply {
-                    callEvent(UserLoginEvent(player))
+                    callEvent(UserLoginEvent(player, info))
                 }
             }
             player.resetTitle()
@@ -175,7 +175,12 @@ class UserManager : JavaPlugin(), Listener {
             Bukkit.getPluginManager()
                 .callEvent(PlayerTeleportedEvent(event.player, null, PlayerLobbyManager[info].spawnPoint))
             Bukkit.getScheduler().runTaskLater(this, { _ ->
-                Bukkit.getPluginManager().callEvent(PlayerLogoutEvent(info, false))
+                Bukkit.getPluginManager().callEvent(
+                    UserLogoutEvent(
+                        info,
+                        false
+                    )
+                )
             }, 5)
         }
     }
@@ -185,13 +190,15 @@ class UserManager : JavaPlugin(), Listener {
         event.quitMessage(Component.empty())
         val info = PlayerManager.findInfoByPlayer(event.player) ?: return
         if (info.isLogin) {
-            broadcast("player.left", TextUtil.TextColor.YELLOW, info.player.name)
+            Bukkit.getPluginManager().callEvent(
+                UserLogoutEvent(info, true)
+            )
         }
         info.destroy()
     }
 
     @EventHandler
-    fun onPlayerLogout(event: PlayerLogoutEvent) {
+    fun onPlayerLogout(event: UserLogoutEvent) {
         if (event.showMessage()) broadcast("player.left", TextUtil.TextColor.YELLOW, event.info.player.name)
     }
 

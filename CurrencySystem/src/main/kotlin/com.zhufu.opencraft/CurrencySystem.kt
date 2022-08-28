@@ -349,8 +349,6 @@ class CurrencySystem : JavaPlugin() {
     }
 
     override fun onEnable() {
-        instance = this
-
         val serverTradeConfig = readServerTradeConfig()
         transMap[Material.COAL] = serverTradeConfig.getLong("coal", -1)
         transMap[Material.IRON_INGOT] = serverTradeConfig.getLong("iron", -1)
@@ -364,8 +362,7 @@ class CurrencySystem : JavaPlugin() {
             .createWorld()!!
         tradeWorld.peace()
 
-        QRUtil.init(this)
-        BankManager.init(this)
+
         password = config.getString("serverPwd", "")!!
 
         if (!donation.exists()) {
@@ -391,14 +388,14 @@ class CurrencySystem : JavaPlugin() {
 
         try {
             npc = CitizensAPI.getNPCRegistry()
-                .createNPC(EntityType.WANDERING_TRADER, traderUUID, 0, EveryThing.traderInventoryName).apply {
+                .createNPC(EntityType.WANDERING_TRADER, traderUUID, 0, MainHandle.traderInventoryName).apply {
                     data()["trade"] = true
                     data().saveTo(MemoryDataKey())
                     spawn(Location(tradeWorld, 7.5, TradeWorldGenerator.base + 2.toDouble(), 4.toDouble()))
                 }
             npcBack =
                 CitizensAPI.getNPCRegistry()
-                    .createNPC(EntityType.ARMOR_STAND, backUUID, 1, EveryThing.backNPCName.content())
+                    .createNPC(EntityType.ARMOR_STAND, backUUID, 1, MainHandle.backNPCName.content())
                     .apply {
                         data()["trade"] = true
                         data().saveTo(MemoryDataKey())
@@ -416,8 +413,10 @@ class CurrencySystem : JavaPlugin() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        server.pluginManager.registerEvents(EveryThing, this)
-
+        MainHandle.init(this)
+        QRUtil.init(this)
+        BankManager.init(this)
+        AdvertisementHandler.init(this)
     }
 
     override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator {

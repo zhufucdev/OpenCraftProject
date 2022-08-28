@@ -10,6 +10,7 @@ import com.zhufu.opencraft.special_item.StatefulSpecialItem
 import com.zhufu.opencraft.special_item.StatelessSpecialItem
 import com.zhufu.opencraft.util.*
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.HumanEntity
@@ -198,3 +199,5 @@ fun List<Any>.toString(split: String) = buildString {
 infix fun <T> Comparable<T>.smaller(second: T): T = if (this <= second) this as T else second
 @Suppress("UNCHECKED_CAST")
 infix fun <T> Comparable<T>.bigger(second: T): T = if (this <= second) second else this as T
+
+val ItemStack.isEmpty get() = type == Material.AIR || amount <= 0

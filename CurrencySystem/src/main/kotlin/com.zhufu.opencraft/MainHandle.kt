@@ -40,12 +40,19 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import java.io.File
 import java.time.Duration
 
 @Suppress("unused")
-object EveryThing : Listener {
+object MainHandle : Listener {
+    private lateinit var plugin: Plugin
+    fun init(plugin: Plugin) {
+        this.plugin = plugin
+        Bukkit.getPluginManager().registerEvents(this, plugin)
+    }
+
     val traderInventoryName =
         TextUtil.getColoredText("服务器商人", TextUtil.TextColor.AQUA, bold = true, underlined = false)
     val backNPCName = "生存模式".toInfoMessage()
@@ -166,11 +173,11 @@ object EveryThing : Listener {
         if (event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK) {
             val itemInHand = event.player.inventory.itemInMainHand
             if (event.player.world == tradeWorld && itemInHand.type == Material.COMPASS)
-                VisitorInventory(CurrencySystem.instance, event.player)
+                VisitorInventory(plugin, event.player)
             else {
                 val si = StatefulSpecialItem[itemInHand]
                 if (si is FlyWand) {
-                    FlyWandInventory(event.player, si, CurrencySystem.instance)
+                    FlyWandInventory(event.player, si, plugin)
                 }
             }
         }
@@ -413,7 +420,7 @@ fun showTutorial(player: Player) {
             .setDirection(Vector(0, -90, 0))
         val l3Bottom = l3Top.clone().add(Vector(0.0, -15.0, 0.0))
         val scheduler = Bukkit.getScheduler()
-        scheduler.runTask(CurrencySystem.instance) { _ ->
+        scheduler.runTask(plugin) { _ ->
             player.teleport(l3Top)
         }
         player.linearMotion(l3Bottom, 13 * 20)

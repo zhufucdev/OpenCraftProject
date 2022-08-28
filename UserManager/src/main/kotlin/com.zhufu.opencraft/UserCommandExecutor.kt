@@ -297,7 +297,8 @@ class UserCommandExecutor(private val plugin: UserManager) : TabExecutor {
                     if (info.isLogin) {
                         Bukkit.getPluginManager().callEvent(
                             UserLoginEvent(
-                                sender
+                                sender,
+                                info
                             )
                         )
                     }

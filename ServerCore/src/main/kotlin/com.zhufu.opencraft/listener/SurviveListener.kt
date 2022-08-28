@@ -11,7 +11,7 @@ import com.zhufu.opencraft.api.ServerCaller
 import com.zhufu.opencraft.data.*
 import com.zhufu.opencraft.data.DualInventory.Companion.RESET
 import com.zhufu.opencraft.data.Info.GameStatus.*
-import com.zhufu.opencraft.events.PlayerLogoutEvent
+import com.zhufu.opencraft.events.UserLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.special_item.Coin
@@ -38,11 +38,9 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.*
-import org.bukkit.inventory.CraftingInventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.Vector
-import java.io.File
 import kotlin.math.roundToInt
 
 @Suppress("unused")
@@ -205,7 +203,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                 else {
                     info.logout()
                     with(Bukkit.getPluginManager()) {
-                        callEvent(PlayerLogoutEvent(info, true))
+                        callEvent(UserLogoutEvent(info, true))
                         callEvent(
                             PlayerTeleportedEvent(
                                 event.player,
@@ -499,7 +497,12 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                         ?.also {
                             event.isCancelled = true
                             it.logout()
-                            Bukkit.getPluginManager().callEvent(PlayerLogoutEvent(it, true))
+                            Bukkit.getPluginManager().callEvent(
+                                UserLogoutEvent(
+                                    it,
+                                    true
+                                )
+                            )
                         }
                         ?.inventory?.getOrCreate(RESET)?.load(savePresent = true)
             }

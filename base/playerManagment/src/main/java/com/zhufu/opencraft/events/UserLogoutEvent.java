@@ -5,7 +5,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerLogoutEvent extends Event {
+public class UserLogoutEvent extends Event {
     private final Info info;
     private final boolean showMessage;
     private final HandlerList handlerList = new HandlerList();
@@ -15,7 +15,7 @@ public class PlayerLogoutEvent extends Event {
         return handlers;
     }
 
-    public PlayerLogoutEvent(@NotNull Info who, boolean showQuitMessage) {
+    public UserLogoutEvent(@NotNull Info who, boolean showQuitMessage) {
         info = who;
         this.showMessage = showQuitMessage;
     }
