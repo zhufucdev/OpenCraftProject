@@ -142,11 +142,16 @@ object TextUtil {
 
     fun formatLore(s: String): List<String> {
         val r = ArrayList<String>()
-        val border = 15
-        if (s.length > border) {
-            r.add(s.substring(0, border) + if (s[border - 1].isEnglishLetter()) "-" else "")
-            r.addAll(formatLore(s.substring(border)))
-        } else r.add(s)
+        fun formatLine(s1: String) {
+            val border = 20
+            if (s1.length > border) {
+                r.add(s1.substring(0, border) + if (s1[border - 1].isEnglishLetter()) "-" else "")
+                formatLine(s1.substring(border))
+            } else {
+                r.add(s1)
+            }
+        }
+        s.split('\n').forEach { formatLine(it) }
         return r
     }
 

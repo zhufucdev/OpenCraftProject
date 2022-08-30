@@ -11,8 +11,14 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
 
-class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingItemInfo, id: Int, plugin: Plugin) :
-    IntractableInventory(plugin) {
+class PaymentDialog(
+    val player: HumanEntity,
+    private val sellingItems: SellingItemInfo,
+    id: Int,
+    plugin: Plugin,
+    override val parentInventory: IntractableInventory? = null
+) :
+    IntractableInventory(plugin), Backable {
     override val inventory: Inventory =
         Bukkit.createInventory(null, InventoryType.CHEST, "确认支付[uuid:$id]".toInfoMessage())
     lateinit var confirmItem: ItemStack
@@ -73,6 +79,9 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
     fun cancel() {
         hide()
         onCancelListener?.invoke(this)
+        if (parentInventory != null) {
+            back(player)
+        }
     }
 
     fun confirm(isCash: Boolean = false) {
@@ -100,6 +109,11 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
     private var onConfirmListener: (PaymentDialog.(isCash: Boolean) -> Unit)? = null
     private var onCancelListener: (PaymentDialog.() -> Unit)? = null
     private var onPayListener: (PaymentDialog.(Boolean) -> Boolean)? = null
+
+    /**
+     * Listen for player confirm pay, which happens
+     * before payment actually happens.
+     */
     fun setOnConfirmListener(l: PaymentDialog.(Boolean) -> Unit): PaymentDialog {
         onConfirmListener = l
         return this
@@ -110,6 +124,10 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
         return this
     }
 
+    /**
+     * Listen for player pay
+     * @param l Parameters are __(Success)__ -> __CarryOn__
+     */
     fun setOnPayListener(l: PaymentDialog.(Boolean) -> Boolean): PaymentDialog {
         onPayListener = l
         return this
@@ -120,9 +138,11 @@ class PaymentDialog(val player: HumanEntity, private val sellingItems: SellingIt
             inventory.size - 3 -> {
                 cancel()
             }
+
             inventory.size - 2 -> {
                 confirm(true)
             }
+
             inventory.size - 1 -> {
                 confirm()
             }

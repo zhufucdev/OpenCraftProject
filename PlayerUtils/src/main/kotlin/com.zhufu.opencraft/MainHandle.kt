@@ -36,7 +36,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
-object Everything : Listener {
+object MainHandle : Listener {
     var mPlugin: Plugin? = null
     val cubes = ArrayList<Cube>()
     val file: File

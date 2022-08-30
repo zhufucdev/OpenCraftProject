@@ -74,10 +74,12 @@ class CraftWeb : JavaPlugin() {
     }
 
     override fun onDisable() {
-        if (instance.isInitialized)
+        if (instance.isInitialized) {
             instance.stop(0)
-        if (http.isInitialized)
+        }
+        if (http.isInitialized) {
             http.stop(0)
+        }
     }
 
     private fun init() {

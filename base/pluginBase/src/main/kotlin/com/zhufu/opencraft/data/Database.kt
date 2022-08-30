@@ -96,4 +96,5 @@ object Database {
     fun inventory(player: UUID) = find("inventory", player)
 
     fun specialBlock() = find("sb", Base.serverID)
+    fun ads() = find("ad", Base.serverID)
 }

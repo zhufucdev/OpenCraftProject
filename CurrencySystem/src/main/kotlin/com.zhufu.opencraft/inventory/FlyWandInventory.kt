@@ -77,12 +77,20 @@ class FlyWandInventory(val player: Player, val wand: FlyWand, plugin: Plugin) : 
                 time++
                 preventReachingLimit()
             }
+
             subItem -> {
                 time--
                 preventReachingLimit()
             }
+
             confirmItem -> {
-                PaymentDialog(player, SellingItemInfo(confirmItem.clone(), 100, time), TradeManager.getNewID(), plugin)
+                PaymentDialog(
+                    player,
+                    SellingItemInfo(confirmItem.clone(), 100, time),
+                    TradeManager.getNewID(),
+                    plugin,
+                    this
+                )
                     .setOnPayListener { success ->
                         if (success) {
                             wand.updateTime(wand.timeRemaining + time * 60, player.getter())

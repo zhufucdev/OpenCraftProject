@@ -11,6 +11,7 @@ import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import java.io.File
 import java.nio.file.Paths
+import java.util.Locale
 import java.util.TimeZone
 import java.util.UUID
 import java.util.function.Consumer
@@ -26,7 +27,8 @@ object Base {
     lateinit var lobby: World
     lateinit var tradeWorld: World
 
-    val timeZone = TimeZone.getTimeZone("Asia/Shanghai")
+    val timeZone: TimeZone = TimeZone.getTimeZone("Asia/Shanghai")
+    val locale: Locale = Locale.CHINA
 
     /* Extended Functions */
     fun getRandomLocation(world: World, bound: Int, x: Int? = null, y: Int? = null, z: Int? = null): Location =
@@ -208,5 +210,9 @@ object Base {
                 }
             }, 0, 1)
         }
+    }
+
+    suspend fun greetings() {
+        println("hello")
     }
 }

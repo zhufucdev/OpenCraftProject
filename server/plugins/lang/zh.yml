@@ -735,7 +735,58 @@ bank:
     1: '---以下是所有银行---'
     2: '最近的一个位于 %s'
     none: '未找到银行'
-
 chart:
   award: '恭喜！你在昨天的每日排行中名列前茅，服务器奖励你%s货币'
   showOff: '恭喜 %s 在%s的每日排行中获得第%s名！'
+ad:
+  title: '服务器广告'
+  click: '点击以租凭或管理'
+  unnamed: '未命名的广告'
+  manage: '点击修改租凭'
+  date: '始于%s'
+  weight: '这则广告被展示的概率为%s%'
+  deleted: '取消了这则广告'
+  rent: '租凭'
+  duration:
+    title: '显示时长'
+    five: '五秒'
+    ten: '十秒'
+    fifteen: '十五秒'
+  size:
+    title: '显示大小'
+    small:
+      name: '小'
+      des: '仅显示在副手'
+    adaptive:
+      name: '适应性'
+      des: '通常显示在主手，除非玩家双手皆满'
+    large:
+      name: '大'
+      des: '总显示在主手'
+  bonus:
+    title: '津贴'
+    tip: '当前津贴为%s'
+    subtitle: '为了让这则广告被更频繁地展示，你愿意多付出的价钱。'
+  url:
+    title: '图片地址'
+    des: "粘贴该则广告的图片直接链接（HTTP/HTTPS)。如果你不知道，请联系服务器管理员。"
+    tip: '使用/pu rename <新URL> 来填写链接'
+  tip:
+    title: '租凭须知'
+    body: |
+      务必保证图片大小为128×128，否则可能会被缩放。
+      你可以随时更换图片或取消租凭广告。
+  summary:
+    weekly: '每周将花费你%s元'
+    once: '这将花费你%s元'
+  selected: '已选择'
+  cancel:
+    title: '停止租凭'
+    des: '你不会再为此广告支付费用'
+  rename: '使用/pu rename <新名称> 来命名这则广告'
+  name: '当前名称为%s'
+  success: '成功租凭了此广告'
+  error:
+    noImage: '未指定图片'
+    imageFailed: '无法缓存图片，请联系服务器管理员：%s'
+    protocol: '无法缓存图片：不支持的传输协议'

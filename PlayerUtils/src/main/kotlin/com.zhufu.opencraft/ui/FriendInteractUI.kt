@@ -179,7 +179,8 @@ class FriendInteractUI(
                                     unitPrise = 10
                                 ),
                                 id = TradeManager.getNewID(),
-                                plugin = plugin
+                                plugin = plugin,
+                                parentInventory = this
                             )
                                 .setOnPayListener { success ->
                                     if (success) {

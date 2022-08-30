@@ -46,7 +46,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                 val selected = tasks.containsKey(info)
                 ItemStack(if (!selected) Material.ENDER_PEARL else Material.ENDER_EYE).apply {
                     itemMeta = itemMeta!!.apply {
-                        val rename = TextUtil.formatLore(info.name)
+                        val rename = TextUtil.formatLore(info.name!!)
                         displayName(rename.first().toComponent().color(NamedTextColor.AQUA))
                         val newLore = ArrayList<Component>()
                         for (i in 1 until rename.size) {
@@ -156,7 +156,10 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                                 },
                             3,
                             1
-                        ), TradeManager.getNewID(), plugin
+                        ),
+                        TradeManager.getNewID(),
+                        plugin,
+                        this
                     )
                         .setOnPayListener { success ->
                             if (success) {
@@ -185,7 +188,7 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                         }
                         refresh(index)
                     } else if (adapter.isRenaming) {
-                        PlayerUtil.selected[info.player] = adapter.checkpoints[index]
+                        RenameHandler.select(info.player, adapter.checkpoints[index])
                         info.player.tip(adapter.getter["ui.checkpoint.rename.tip"])
                         close()
                     }
@@ -194,8 +197,8 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                 val prefix = adapter.getter["ui.checkpoint.new.title"]
                 var max = 0
                 adapter.checkpoints.forEach {
-                    if (it.name.startsWith(prefix)) {
-                        it.name.substring(prefix.length).toIntOrNull()?.apply {
+                    if (it.name!!.startsWith(prefix)) {
+                        it.name!!.substring(prefix.length).toIntOrNull()?.apply {
                             if (this > max)
                                 max = this
                         }
@@ -243,10 +246,9 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                         refresh()
                     } else {
                         //Apply
-
                         tasks.forEach { (t, u) ->
                             if (u == 'D') {
-                                info.removeCheckpoint(t.name)
+                                info.removeCheckpoint(t.name!!)
                             }
                         }
                         adapter.reset()

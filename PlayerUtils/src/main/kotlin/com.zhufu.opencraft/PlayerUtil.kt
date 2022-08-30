@@ -1,13 +1,12 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.api.Nameable
 import com.zhufu.opencraft.api.ServerCaller
 import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.data.OfflineInfo
 import com.zhufu.opencraft.lobby.PlayerLobby
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.player_community.PublicMessagePool
-import com.zhufu.opencraft.special_item.*
+import com.zhufu.opencraft.special_item.StatefulSpecialItem
 import com.zhufu.opencraft.ui.LobbyVisitor
 import com.zhufu.opencraft.ui.MenuInterface
 import com.zhufu.opencraft.ui.ReverseCraftingTableInventory
@@ -21,12 +20,8 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
 class PlayerUtil : JavaPlugin() {
-    companion object {
-        val selected = HashMap<Player, Nameable>()
-    }
-
     override fun onEnable() {
-        Everything.init(this)
+        MainHandle.init(this)
         PortalHandler.init(this)
         ChartHandler.init(this)
 
@@ -49,7 +44,7 @@ class PlayerUtil : JavaPlugin() {
     }
 
     override fun onDisable() {
-        Everything.onServerClose()
+        MainHandle.onServerClose()
         PortalHandler.onServerClose()
         ChartHandler.cleanUp()
     }
@@ -67,7 +62,7 @@ class PlayerUtil : JavaPlugin() {
             }
             if (args.isNotEmpty()) {
                 if (args.first() == "CRT") {
-                    Everything.createCRT(sender.location)
+                    MainHandle.createCRT(sender.location)
                 }
             } else {
                 if (args.size < 7) {
@@ -88,13 +83,13 @@ class PlayerUtil : JavaPlugin() {
                 val to = Location(sender.world, x2.toDouble(), y2.toDouble(), z2.toDouble())
                 when (args.first()) {
                     "DTWB" -> {
-                        Everything.createDTWB(from, to)
+                        MainHandle.createDTWB(from, to)
                     }
                     "RP" -> {
 
                     }
                     "TP" -> {
-                        Everything.createTP(from, to)
+                        MainHandle.createTP(from, to)
                     }
                     else -> {
                         sender.error(getLang(sender, "command.error.usage"))
@@ -119,22 +114,13 @@ class PlayerUtil : JavaPlugin() {
                         sender.error(getter["user.error.notLoginYet"])
                 }
                 "rename" -> {
-                    if (!selected.containsKey(sender)) {
+                    if (!RenameHandler.hasSelection(sender)) {
                         sender.error(getter["pu.error.unselected"])
                     } else {
                         if (args.size < 2) {
                             sender.error(getter["command.error.usage"])
                         } else {
-                            val info = sender.info()
-                            if (info == null) {
-                                sender.error(getter["player.error.unknown"])
-                            } else {
-                                val checkpoint = selected[sender]!!
-                                val oldName = checkpoint.name
-                                val newName = args[1]
-                                checkpoint.name = newName
-                                sender.success(getter["ui.renamed", oldName, newName])
-                            }
+                            RenameHandler.rename(sender, args.drop(1).joinToString(" "))
                         }
                     }
                 }

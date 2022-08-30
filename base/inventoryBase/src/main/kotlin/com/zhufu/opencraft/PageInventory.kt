@@ -114,6 +114,7 @@ open class PageInventory<T : PageInventory.Adapter> : IntractableInventory {
     }
 
     override fun onClick(event: InventoryClickEvent) {
+        if (event.clickedInventory != inventory) return
         when (event.currentItem) {
             itemPeriodPage -> {
                 if (currentPage > 0) {

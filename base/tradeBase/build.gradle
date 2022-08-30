@@ -6,4 +6,5 @@ dependencies {
     compileOnly project(':inventoryBase')
     compileOnly project(':playerManagment')
     compileOnly 'net.citizensnpcs:citizens-main:' + rootProject.ext.citizens_version
+    compileOnly "org.mongodb:mongodb-driver-sync:${rootProject.ext.mongo_version}"
 }

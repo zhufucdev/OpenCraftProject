@@ -1,7 +1,7 @@
 package com.zhufu.opencraft
 
-import com.zhufu.opencraft.Everything.mPlugin
-import com.zhufu.opencraft.Everything.near
+import com.zhufu.opencraft.MainHandle.mPlugin
+import com.zhufu.opencraft.MainHandle.near
 import com.zhufu.opencraft.special_item.Portal
 import com.zhufu.opencraft.special_item.StatelessSpecialItem
 import com.zhufu.opencraft.util.toErrorMessage
@@ -37,7 +37,7 @@ object PortalHandler : Listener {
             } else {
                 i = 0
             }
-            Everything.cubes.filter { it.type == "TP" }.forEach {
+            MainHandle.cubes.filter { it.type == "TP" }.forEach {
                 it.from.world!!.apply {
                     val particle =
                         if (!it.data.getBoolean("isCoolDown", false)) Particle.PORTAL else Particle.SMOKE_NORMAL
@@ -71,7 +71,7 @@ object PortalHandler : Listener {
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent) {
         Bukkit.getScheduler().runTaskAsynchronously(mPlugin!!) { _ ->
-            for (cube in Everything.cubes) {
+            for (cube in MainHandle.cubes) {
                 if (cube.type != "TP")
                     continue
 
@@ -107,7 +107,7 @@ object PortalHandler : Listener {
     }
 
     private fun blockBreak(location: Location, player: Player): Boolean {
-        val game = Everything.index(location)
+        val game = MainHandle.index(location)
         if (game?.type == "TP" && (game.from.near(location) || game.to.near(location))) {
             val owner = player.owns(game) || player.isOp
             if (owner) {
@@ -135,7 +135,7 @@ object PortalHandler : Listener {
                         Particle.DustOptions(Color.FUCHSIA, 5f)
                     )
                 }
-                Everything.cubes.remove(game)
+                MainHandle.cubes.remove(game)
 
                 player.warn(getLang(player, "portal.tip"))
                 return true
@@ -198,7 +198,7 @@ object PortalHandler : Listener {
             } else {
                 val first = portalMap[event.player]!!.location
                 val second = event.blockPlaced.location
-                Everything.createTP(first, second, event.player.name)
+                MainHandle.createTP(first, second, event.player.name)
 
                 event.player.apply {
                     success(getter["portal.spawned"])

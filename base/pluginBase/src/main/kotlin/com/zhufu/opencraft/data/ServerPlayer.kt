@@ -1,6 +1,7 @@
 package com.zhufu.opencraft.data
 
 import com.google.common.cache.CacheBuilder
+import com.zhufu.opencraft.Base
 import com.zhufu.opencraft.util.Language
 import com.zhufu.opencraft.ServerStatics
 import com.zhufu.opencraft.player_community.Friendships
@@ -164,6 +165,11 @@ abstract class ServerPlayer(
             doc["lang"] = value
             update()
         }
+    val locale: Locale get() = when (userLanguage) {
+        Language.LANG_ZH -> Locale.SIMPLIFIED_CHINESE
+        Language.LANG_EN -> Locale.ENGLISH
+        else -> Base.locale
+    }
     val isUserLanguageSelected: Boolean
         get() = doc.contains("lang")
     var nickname: String?

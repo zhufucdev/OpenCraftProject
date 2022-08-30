@@ -230,6 +230,13 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
                     }
                 }
             )
+            setItem(
+                30,
+                ItemStack(Material.ITEM_FRAME).updateItemMeta<ItemMeta> {
+                    displayName(getter["ad.title"].toComponent().color(NamedTextColor.LIGHT_PURPLE))
+                    lore(listOf(getter["ad.click"].toTipMessage()))
+                }
+            )
         }
     }
 
@@ -294,6 +301,17 @@ class MenuInterface(plugin: Plugin, private val player: Player) :
             29 -> {
                 player.tip(getter["ui.others.armor.click"])
                 close()
+            }
+
+            30 -> {
+                val info = player.info()
+                if (info != null) {
+                    if (Advertisement.list().any { it.owner == info }) {
+                        AdvertisementManageUI(info, info.getter(), plugin, parentInventory = this).show()
+                    } else {
+                        AdvertisementEditUI(plugin, info, parentInventory = this).show()
+                    }
+                }
             }
         }
     }

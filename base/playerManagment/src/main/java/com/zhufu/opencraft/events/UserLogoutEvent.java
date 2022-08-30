@@ -8,10 +8,9 @@ import org.jetbrains.annotations.NotNull;
 public class UserLogoutEvent extends Event {
     private final Info info;
     private final boolean showMessage;
-    private final HandlerList handlerList = new HandlerList();
     private static final HandlerList handlers = new HandlerList();
 
-    public static HandlerList getHandlerList() {
+    public static @NotNull HandlerList getHandlerList() {
         return handlers;
     }
 
@@ -29,9 +28,8 @@ public class UserLogoutEvent extends Event {
         return showMessage;
     }
 
-    @NotNull
     @Override
-    public HandlerList getHandlers() {
-        return handlerList;
+    public @NotNull HandlerList getHandlers() {
+        return handlers;
     }
 }

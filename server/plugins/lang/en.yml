@@ -200,7 +200,7 @@ command:
     unknown: "unknown"
     failed: "failed"
     tooFewArgs: "Too few arguments(%s needed)."
-    noSucnItem: 'No such item: %s.'
+    noSuchItem: 'No such item: %s.'
     typeError: 'Type error, expecting %s.'
   done: "Done."
   unnamed: "Unnamed"
@@ -341,27 +341,27 @@ ui:
   friend:
     booting: 'Booting Friend List'
     title: 'Friend List'
-    check: 'Click to check.'
-    click: 'Click to interact.'
+    check: 'Click to check'
+    click: 'Click to interact'
     add: 'Add as friend'
     del: 'Delete from friends'
     send: 'Send friend request'
     count: 'He or she has %s friends.'
     transfer:
       title: 'Transfer'
-      click: 'Click to transfer.'
+      click: 'Click to transfer'
     msg:
       title: 'Send message'
       tip: 'Use /friend %s msg <Content> to leave a message.'
     inventory:
       title: 'Shared Inventory'
-      buy: 'Click to buy.'
-      check: 'Click to check.'
+      buy: 'Click to buy'
+      check: 'Click to check'
     share:
       title: 'Sharing Content'
-      click: 'Click to manage.'
-      start: 'Click to start sharing.'
-      stop: 'Click to stop sharing.'
+      click: 'Click to manage'
+      start: 'Click to start sharing'
+      stop: 'Click to stop sharing'
     point:
       title: 'Checkpoints'
       sharer: 'Sharer: %s'
@@ -717,7 +717,58 @@ bank:
     1: '---Here are all banks---'
     2: 'The nearest one is at %s.'
     none: 'No bank was found.'
-
 chart:
   award: "Congratulations! You've done a top job in yesterday's Daily Charts. You'll receive %s as a award."
   showOff: "Congratulations to %s1 on getting top %s3 in charts of %s2!"
+ad:
+  title: 'Server Ad'
+  click: 'Click to rent or manage'
+  unnamed: 'Unnamed Ad'
+  manage: 'Click to change the renting'
+  date: 'Starts at %s'
+  weight: 'Chance of this ad being displayed is %s%.'
+  rent: 'Rent'
+  deleted: 'Cancelled this ad'
+  duration:
+    title: 'Display Duration'
+    five: 'Five Seconds'
+    ten: 'Ten Seconds'
+    fifteen: 'Fifteen Seconds'
+  size:
+    title: 'Display Size'
+    small:
+      name: 'Small'
+      des: 'Only show on off hand'
+    adaptive:
+      name: 'Adaptive'
+      des: 'Show on main hand, unless both hands are not empty.'
+    large:
+      name: 'Large'
+      des: 'Always show on main hand'
+  bonus:
+    title: 'Bonus'
+    tip: 'The prise is %s.'
+    subtitle: 'Prise you want to pay extra to make this ad shown more frequently.'
+  url:
+    title: 'Url of the Image'
+    des: "Paste a direct link (HTTP/HTTPS) to the image. If you don't know what it is, contact the server operator."
+    tip: 'Use /pu rename <New URL> to fill the link.'
+  tip:
+    title: 'Renting Acknowledgement'
+    body: |
+      Keep the image 128×128 pixel in size, or it can be scaled.
+      You can change it or cancel the ad anytime.
+  summary:
+    weekly: 'This will cost you %s per week.'
+    once: 'This will cost you %s.'
+  selected: 'Selected'
+  cancel:
+    title: 'Stop Renting'
+    des: "You won't be charged for this ad anymore."
+  rename: 'Use /pu rename <New Name> to rename this ad.'
+  name: 'Current name is %s'
+  success: 'Rented this ad successfully'
+  error:
+    noImage: 'No image is set'
+    imageFailed: 'Failed to cache this image, please contact the server operator: %s'
+    protocol: 'Unsupported transportation protocol, please contact the server operator.'

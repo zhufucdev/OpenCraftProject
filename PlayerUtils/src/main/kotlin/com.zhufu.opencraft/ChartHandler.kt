@@ -25,7 +25,7 @@ object ChartHandler : Listener {
 
         if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) {
             val chart = Game.dailyChart
-            Everything.cubes.forEach {
+            MainHandle.cubes.forEach {
                 if (it.type == "CRT") {
                     spawnNPC(it, chart)
                 }
@@ -33,7 +33,7 @@ object ChartHandler : Listener {
 
             timer = Bukkit.getScheduler().runTaskTimer(plugin, Runnable {
                 val newChart = Game.dailyChart
-                Everything.cubes.forEach { cube ->
+                MainHandle.cubes.forEach { cube ->
                     if (cube.type == "CRT") {
                         CitizensAPI.getNPCRegistry().toList().forEach { npc ->
                             if (npc.data().has("temp")

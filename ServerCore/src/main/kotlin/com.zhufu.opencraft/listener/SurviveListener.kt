@@ -270,7 +270,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     val amountDropItem = (inventory.count { it != null } * dropInPercentage).roundToInt()
                     event.drops.clear()
                     for (i in 0 until amountDropItem) {
-                        fun newRandom() = Base.random.nextInt(inventory.size)
+                        fun newRandom() = random.nextInt(inventory.size)
                         var index = newRandom()
                         while (indexDropItem.contains(index) || inventory.getItem(index) == null)
                             index = newRandom()
@@ -286,8 +286,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                                 }, 5 * 20 * 60)
                             }
                         }
-                        event.entity.world.dropItemNaturally(event.entity.eyeLocation, item)
-                        inventory.clear(index)
+                        event.drops.add(item)
                     }
 
                     event.entity.info(getLang(event.entity, "insurance.applied"))
@@ -496,15 +495,14 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     PlayerManager.findInfoByPlayer(event.player)
                         ?.also {
                             event.isCancelled = true
-                            it.logout()
                             Bukkit.getPluginManager().callEvent(
                                 UserLogoutEvent(
                                     it,
                                     true
                                 )
                             )
+                            it.logout()
                         }
-                        ?.inventory?.getOrCreate(RESET)?.load(savePresent = true)
             }
 
             surviveWorld -> {

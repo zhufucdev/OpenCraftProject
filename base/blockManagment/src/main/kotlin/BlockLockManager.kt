@@ -248,7 +248,7 @@ object BlockLockManager {
 
     fun loadFromFile(dataFolder: File) {
         dataFolder.listFiles()?.forEach {
-            val parse = JsonParser().parse(it.readText()).asJsonObject
+            val parse = JsonParser.parseString(it.readText()).asJsonObject
             val r = BaseInfo.fromJson(parse)
             if (r == null) {
                 println("[BlockLockManager] Could not loading ${it.name}.")

@@ -2,17 +2,22 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.events.UserLoginEvent
 import com.zhufu.opencraft.events.UserLogoutEvent
+import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerItemHeldEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.MapMeta
 import org.bukkit.map.MapView
 import org.bukkit.plugin.Plugin
-import java.io.File
-import java.nio.file.Paths
 
 object AdvertisementHandler : Listener {
     private val displays = hashMapOf<Player, AdDisplay>()
@@ -23,9 +28,15 @@ object AdvertisementHandler : Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin)
     }
 
+    fun close() {
+        displays.keys.forEach { handlePlayerDismiss(it) }
+    }
+
     @EventHandler
     fun onPlayerLogin(event: UserLoginEvent) {
-        handlePlayerAd(event.player)
+        Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+            handlePlayerAd(event.player)
+        }, 100)
     }
 
     @EventHandler
@@ -33,87 +44,113 @@ object AdvertisementHandler : Listener {
         handlePlayerDismiss(event.info.player)
     }
 
-    private val ads: Map<File, Int>
-        get() = Paths.get("plugins", "ads")
-            .toFile()
-            .let {
-                if (!it.exists()) {
-                    it.mkdir()
-                    null
-                } else {
-                    it
-                }
-            }
-            ?.listFiles()
-            ?.mapNotNull {
-                if (it.isHidden)
-                    null
-                else
-                    it to (it.nameWithoutExtension.toIntOrNull() ?: return@mapNotNull null)
-            }
-            ?.toMap()
-            ?: mapOf()
+    @EventHandler
+    fun onPlayerSwapAd(event: PlayerSwapHandItemsEvent) {
+        if (displays.containsKey(event.player)) {
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler
+    fun onPlayerSwipeHotBar(event: PlayerItemHeldEvent) {
+        if (displays.containsKey(event.player)) {
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler
+    fun onPlayerDropAd(event: PlayerDropItemEvent) {
+        if (displays.containsKey(event.player)) {
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler
+    fun onPlayerClickAd(event: InventoryClickEvent) {
+        val player = Bukkit.getPlayer(event.whoClicked.uniqueId)!!
+        if (displays.containsKey(player)) {
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onPlayerDieWithAd(event: PlayerDeathEvent) {
+        event.drops.removeIf { NBTItem(it).getBoolean("ad") == true }
+    }
 
     private fun handlePlayerAd(player: Player) {
         if (displays.containsKey(player)) return
         val choice = kotlin.run {
-            val ads = ads.entries
-            if (ads.isEmpty()) {
+            val ads = Advertisement.list()
+            if (ads.firstOrNull() == null) {
                 return
             }
-            val weightSum = ads.sumOf { it.value }
+            val weightSum = ads.sumOf { it.weight }
             var min = ads.first()
-            var choice: File? = null
+            var choice: Advertisement? = null
             for (ad in ads) {
-                if (Base.trueByPercentages(ad.value.toFloat() / weightSum)) {
-                    choice = ad.key
+                if (Base.trueByPercentages((ad.weight / weightSum).toFloat())) {
+                    choice = ad
                     break
-                } else if (ad.value < min.value) {
+                } else if (ad.weight < min.weight) {
                     min = ad
                 }
             }
-            return@run choice ?: min.key
+            return@run choice ?: min
         }
-        val mapView = QRUtil.getImageMap(choice)
-        // record original status
-        val display = if (player.inventory.itemInOffHand.isEmpty) {
-            AdDisplay(null, true)
-        } else if (player.inventory.itemInMainHand.isEmpty) {
-            AdDisplay(null, false)
-        } else {
-            AdDisplay(player.inventory.itemInOffHand, true)
-        }
-        displays[player] = display
-        display.apply(player, mapView)
+        try {
+            val mapView = QRUtil.getImageMap(choice.image)
+            // record original status
+            val display = when (choice.size) {
+                Advertisement.Size.SMALL -> AdDisplay(player,true)
+                Advertisement.Size.ADAPTIVE ->
+                    if (player.inventory.let { it.itemInOffHand.isEmpty || it.itemInMainHand.isEmpty })
+                        AdDisplay(player, false)
+                    else
+                        AdDisplay(player, true)
+                Advertisement.Size.LARGE -> AdDisplay(player, false)
+            }
+            displays[player] = display
+            display.apply(mapView)
 
-        Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-            handlePlayerDismiss(player)
-        }, 200)
+            Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+                handlePlayerDismiss(player)
+            }, 200)
+        } catch (e: Exception) {
+            plugin.logger.warning("Failed to show ad image ${choice.name} to ${player.name}.")
+            e.printStackTrace()
+        }
     }
 
     private fun handlePlayerDismiss(player: Player) {
-        displays.remove(player)?.dismiss(player)
+        displays.remove(player)?.dismiss()
     }
 }
 
-class AdDisplay(private val originalItem: ItemStack?, private val isOffhand: Boolean) {
-    fun apply(player: Player, mapView: MapView) {
+class AdDisplay(val player: Player, private val isOffhand: Boolean) {
+    private val originalItems = player.inventory.let { it.itemInMainHand to it.itemInOffHand }
+    fun apply(mapView: MapView) {
         val map = ItemStack(Material.FILLED_MAP).updateItemMeta<MapMeta> {
             setMapView(mapView)
         }
+        val nbt = NBTItem(map, true)
+        nbt.setBoolean("ad", true)
 
         if (isOffhand) {
-            player.inventory.setItemInOffHand(map)
+            player.inventory.apply {
+                setItemInOffHand(map)
+                setItemInMainHand(null)
+            }
         } else {
-            player.inventory.setItemInOffHand(map)
+            player.inventory.apply {
+                setItemInMainHand(map)
+                setItemInOffHand(null)
+            }
         }
     }
 
-    fun dismiss(player: Player) {
-        if (isOffhand) {
-            player.inventory.setItemInOffHand(originalItem)
-        } else {
-            player.inventory.setItemInMainHand(originalItem)
-        }
+    fun dismiss() {
+        player.inventory.setItemInMainHand(originalItems.first)
+        player.inventory.setItemInOffHand(originalItems.second)
     }
 }

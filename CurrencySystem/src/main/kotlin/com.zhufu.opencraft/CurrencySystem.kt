@@ -431,5 +431,6 @@ class CurrencySystem : JavaPlugin() {
             if (it.data().get<Boolean?>("trade") == true)
                 it.destroy()
         }
+        AdvertisementHandler.close()
     }
 }
