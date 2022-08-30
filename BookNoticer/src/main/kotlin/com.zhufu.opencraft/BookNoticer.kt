@@ -12,6 +12,7 @@ import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.util.toComponent
 import com.zhufu.opencraft.util.toErrorMessage
 import com.zhufu.opencraft.util.toInfoMessage
+import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -57,7 +58,7 @@ class BookNoticer : JavaPlugin(), Listener {
         if (event.to?.world != lobby)
             return
         Bukkit.getScheduler().runTaskLater(this, Runnable {
-            getBook(event.player).show(event.player,true)
+            event.player.openBook(getBook(event.player))
         }, 5)
     }
 
@@ -88,7 +89,7 @@ class BookNoticer : JavaPlugin(), Listener {
                         return true
                     }
                     try {
-                        getBook(null).show(sender)
+                        sender.openBook(getBook(null))
                     } catch (e: Exception) {
                         sender.sendMessage("${e::class.simpleName}: ${e.localizedMessage}".toErrorMessage())
                         e.printStackTrace()
@@ -218,12 +219,12 @@ class BookNoticer : JavaPlugin(), Listener {
 
         Bukkit.getScheduler().runTaskLater(this, { _ ->
             server.onlinePlayers.forEach {
-                getBook(it).show(it)
+                it.openBook(getBook(it))
             }
         }, 50)
     }
 
-    private fun getBook(player: Player? = null): MyBook {
+    private fun getBook(player: Player? = null): Book {
         val format = SimpleDateFormat("yyyy/MM/dd")
         val dateMap = TreeMap<String, ArrayList<BookContener>> { a, b ->
             b.compareTo(a)
@@ -261,11 +262,11 @@ class BookNoticer : JavaPlugin(), Listener {
                 sb.append(lineSeparator)
             }
         }
-        return MyBook.BookBuilder()
-            .setAuthor(getter["book.author"])
-            .setTitle(getter["book.title"])
-            .setContent(sb.toString())
-            .build()
+        return Book.book(
+            getter["book.title"].toInfoMessage(),
+            getter["book.author"].toComponent(),
+            sb.toString().toComponent()
+        )
     }
 
     private fun saveBook() {
