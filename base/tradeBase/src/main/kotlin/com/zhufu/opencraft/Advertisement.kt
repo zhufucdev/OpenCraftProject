@@ -79,6 +79,7 @@ open class Advertisement(
             }
             val connection = url.openConnection()
             val image = ImageIO.read(connection.inputStream)
+            this.image.parentFile.takeUnless { it.exists() }?.mkdirs()
             ImageIO.write(image, "png", this.image)
             CacheResult.SUCCESS to null
         } catch (e: Exception) {
@@ -90,7 +91,7 @@ open class Advertisement(
 
     val unitPrise: Long get() = (duration.ticks * 5 * size.priseScale).roundToLong() + bonus
     val weight get() = unitPrise * 0.6 + bonus * 0.4
-    fun weigh(ads: List<Advertisement>): Double {
+    fun weigh(ads: Iterable<Advertisement>): Double {
         val sum = ads.sumOf { it.weight }
         return weight / sum
     }

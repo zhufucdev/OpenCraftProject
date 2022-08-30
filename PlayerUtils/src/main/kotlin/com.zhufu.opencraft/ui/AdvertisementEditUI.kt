@@ -113,7 +113,7 @@ class AdvertisementEditUI(
                         config.bonus = amount.toLong()
                         updateBonus()
                         Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-                            show()
+                            this@AdvertisementEditUI.show()
                         }, 3)
                         false
                     }

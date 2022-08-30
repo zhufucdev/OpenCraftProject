@@ -37,7 +37,7 @@ class AdvertisementManageUI(owner: Info, getter: Language.LangGetter, plugin: Pl
                     val date = DateTimeFormatter
                         .ofPattern("MM/dd hh:mm B", owner.locale)
                         .format(ad.startTime.atZone(Base.timeZone.toZoneId()))
-                    val weight = ad.weigh(list)
+                    val weight = ad.weigh(Advertisement.list())
                     lore(
                         listOf(
                             getter["ad.date", date].toComponent(),
