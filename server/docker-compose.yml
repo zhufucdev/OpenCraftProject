@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  database:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - oc_db:/data/db
+  debug_server:
+    image: amazoncorretto:17
+    depends_on:
+     - database
+    volumes:
+      - type: bind
+        source: .
+        target: /server
+    ports:
+      - "25568:25568"
+    command:
+      - bash
+      - /server/run.sh
+volumes:
+  oc_db:

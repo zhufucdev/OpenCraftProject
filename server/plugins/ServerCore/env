@@ -1,3 +1,4 @@
 diamondExchange: 60
 debug: true
 url: OCDev
+database: mongodb://database
