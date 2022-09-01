@@ -99,6 +99,13 @@ subprojects {
             from getJar(project)?.path ?: project.rootDir.path + '/build/libs/' + jarName
             into project.rootDir.path + '/server/plugins/'
         }
+
+        if (project.name != 'Updater' && project.name != 'CoreRuntime')
+            task hotReloadJar(type: Copy) {
+                dependsOn shadowJar
+                from getJar(project)?.path ?: project.rootDir.path + '/build/libs/' + jarName
+                into project.rootDir.path + '/server/new_plugins/'
+            }
     }
 
     if (project.name != 'CoreRuntime') {

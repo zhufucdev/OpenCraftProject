@@ -1,16 +1,13 @@
 package com.zhufu.opencraft
 
-import com.mongodb.client.model.Filters
 import com.zhufu.opencraft.api.Nameable
-import com.zhufu.opencraft.data.Database
 import com.zhufu.opencraft.data.ServerPlayer
-import org.bson.Document
 import org.bukkit.Bukkit
 import java.io.File
 import java.net.URL
 import java.nio.file.Paths
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 import javax.imageio.ImageIO
 import kotlin.math.roundToLong
 
@@ -22,6 +19,7 @@ open class Advertisement(
     var bonus: Long = 0,
     val owner: ServerPlayer,
     override var name: String = "",
+    var enabled: Boolean = true,
     val startTime: Instant = Instant.now(),
     var lastCharge: Instant = Instant.now(),
     var duration: Duration,
@@ -40,28 +38,21 @@ open class Advertisement(
     }
 
     fun time() = Advertisement(
-        id, bonus, owner, name, Instant.now(), Instant.now(), duration, size
+        id, bonus, owner, name, enabled, Instant.now(), Instant.now(), duration, size
     )
 
     /**
      * Sync to Database.
      */
     fun update() {
-        val bson = toBson()
-        val coll = Database.ads()
-        val filter = Filters.eq("_id", id)
-        if (coll.find(filter).first() == null) {
-            coll.insertOne(bson)
-        } else {
-            coll.findOneAndReplace(filter, bson)
-        }
+        syncImpl.update(this)
     }
 
     /**
      * Remove from Database.
      */
     fun cancel() {
-        Database.ads().deleteOne(Filters.eq("_id", id))
+        syncImpl.cancel(this)
     }
 
     val image: File get() = Paths.get("plugins", "ads", "$id.png").toFile()
@@ -89,45 +80,37 @@ open class Advertisement(
         }
     }
 
-    val unitPrise: Long get() = (duration.ticks * 5 * size.priseScale).roundToLong() + bonus
+    val unitPrise: Long
+        get() =
+            if (enabled)
+                (duration.ticks * 5 * size.priseScale).roundToLong() + bonus
+            else
+                0
     val weight get() = unitPrise * 0.6 + bonus * 0.4
     fun weigh(ads: Iterable<Advertisement>): Double {
         val sum = ads.sumOf { it.weight }
         return weight / sum
     }
 
-    private fun toBson() =
-        Document("_id", id)
-            .append("bonus", bonus)
-            .append("owner", owner.uuid)
-            .append("duration", duration.ticks)
-            .append("startTime", startTime.epochSecond)
-            .append("lastCharge", lastCharge.epochSecond)
-            .append("size", size.name)
-            .also {
-                name.takeIf { it.isNotEmpty() }?.let { n -> it.append("name", n) }
-            }
-
     public override fun clone(): Any {
-        return Advertisement(id, bonus, owner, name, startTime, lastCharge, duration, size)
+        return Advertisement(id, bonus, owner, name, enabled, startTime, lastCharge, duration, size)
     }
 
     companion object {
-        fun list(): Iterable<Advertisement> =
-            Database.ads().find()
-                .map {
-                    Advertisement(
-                        id = it.get("_id", UUID::class.java),
-                        name = it.getString("name") ?: "",
-                        bonus = it.getLong("bonus"),
-                        owner = ServerPlayer.of(uuid = it.get("owner", UUID::class.java)),
-                        duration = Duration.of(it.getLong("duration")),
-                        startTime = Instant.ofEpochSecond(it.getLong("startTime")),
-                        lastCharge = Instant.ofEpochSecond(it.getLong("lastCharge")),
-                        size = Size.valueOf(it.getString("size"))
-                    )
-                }
+        private lateinit var syncImpl: AdSync
+
+        fun setImpl(impl: AdSync) {
+            this.syncImpl = impl
+        }
+
+        fun list(): Iterable<Advertisement> = syncImpl.list()
     }
 }
 
 typealias CacheResultContent = Pair<Advertisement.CacheResult, Exception?>
+
+interface AdSync {
+    fun update(ad: Advertisement)
+    fun cancel(ad: Advertisement)
+    fun list(): Iterable<Advertisement>
+}

@@ -1,9 +1,14 @@
 package com.zhufu.opencraft
 
+import com.mongodb.client.model.Filters
+import com.zhufu.opencraft.data.Database
+import com.zhufu.opencraft.data.ServerPlayer
 import com.zhufu.opencraft.events.UserLoginEvent
 import com.zhufu.opencraft.events.UserLogoutEvent
+import com.zhufu.opencraft.player_community.MessagePool
 import com.zhufu.opencraft.util.toInfoMessage
 import de.tr7zw.nbtapi.NBTItem
+import org.bson.Document
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -19,14 +24,58 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.MapMeta
 import org.bukkit.map.MapView
 import org.bukkit.plugin.Plugin
+import java.text.DateFormat
+import java.time.Duration
+import java.time.Instant
+import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
-object AdvertisementHandler : Listener {
+object AdvertisementHandler : Listener, AdSync {
     private val displays = hashMapOf<Player, AdDisplay>()
     private lateinit var plugin: Plugin
 
     fun init(plugin: Plugin) {
         this.plugin = plugin
         Bukkit.getPluginManager().registerEvents(this, plugin)
+        Advertisement.setImpl(this)
+        list().forEach {
+            scheduleAdCost(it)
+        }
+    }
+
+    private fun scheduleAdCost(ad: Advertisement) {
+        val oneMonth = Duration.ofDays(30)
+        val nextCharge = Date.from(ad.lastCharge.plusMillis(oneMonth.toMillis()))
+        plugin.logger.info("Ad ${ad.id} scheduled at ${DateFormat.getInstance().format(nextCharge)} for charge.")
+        fixedRateTimer(
+            "ad-charge-timer",
+            startAt = nextCharge,
+            period = oneMonth.toMillis(),
+            action = {
+                val charge = ad.unitPrise
+                val adName = ad.name.takeUnless { it.isEmpty() } ?: "\${command.unnamed}"
+                ad.owner.currency - charge
+                if (ad.owner.currency < 0) {
+                    ad.owner.currency + charge
+                    ad.enabled = false
+                    ad.owner.messagePool.add(
+                        text = "\$warn\${ad.cancelled.poor,$adName",
+                        type = MessagePool.Type.System
+                    )
+                } else {
+                    ad.time().update()
+                    ad.owner.messagePool.add(
+                        text = "\$info\${ad.charged,$adName,$charge}",
+                        type = MessagePool.Type.System
+                    )
+                }.apply {
+                    recordTime()
+                    ad.owner.onlinePlayerInfo?.let {
+                        sendTo(it)
+                    }
+                }
+            }
+        )
     }
 
     fun close() {
@@ -126,6 +175,47 @@ object AdvertisementHandler : Listener {
 
     private fun handlePlayerDismiss(player: Player) {
         displays.remove(player)?.dismiss()
+    }
+
+    override fun update(ad: Advertisement) {
+        val bson = Document("_id", ad.id)
+            .append("bonus", ad.bonus)
+            .append("owner", ad.owner.uuid)
+            .append("duration", ad.duration.ticks)
+            .append("startTime", ad.startTime.epochSecond)
+            .append("lastCharge", ad.lastCharge.epochSecond)
+            .append("size", ad.size.name)
+            .also {
+                ad.name.takeIf { it.isNotEmpty() }?.let { n -> it.append("name", n) }
+            }
+        val coll = Database.ads()
+        val filter = Filters.eq("_id", ad.id)
+        if (coll.find(filter).first() == null) {
+            coll.insertOne(bson)
+            scheduleAdCost(ad)
+        } else {
+            coll.findOneAndReplace(filter, bson)
+        }
+    }
+
+    override fun list(): Iterable<Advertisement> =
+        Database.ads().find()
+            .map {
+                Advertisement(
+                    id = it.get("_id", UUID::class.java),
+                    name = it.getString("name") ?: "",
+                    bonus = it.getLong("bonus"),
+                    owner = ServerPlayer.of(uuid = it.get("owner", UUID::class.java)),
+                    enabled = it.getBoolean("enable") ?: true,
+                    duration = Advertisement.Duration.of(it.getLong("duration")),
+                    startTime = Instant.ofEpochSecond(it.getLong("startTime")),
+                    lastCharge = Instant.ofEpochSecond(it.getLong("lastCharge")),
+                    size = Advertisement.Size.valueOf(it.getString("size"))
+                )
+            }
+
+    override fun cancel(ad: Advertisement) {
+        Database.ads().deleteOne(Filters.eq("_id", ad.id))
     }
 }
 

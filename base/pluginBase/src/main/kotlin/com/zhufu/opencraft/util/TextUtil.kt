@@ -60,15 +60,15 @@ object TextUtil {
             val args = arrayListOf<String>()
             if (value.contains(',')) {
                 val parts = value.split(',')
-                value = parts.first()
+                value = parts.first().trim()
                 for (i in 1 until parts.size) {
-                    args.add(parts[i])
+                    args.add(parts[i].trim())
                 }
             }
             result = result.replaceRange(
                 index,
                 end + 1,
-                Language.got(getter.lang, value, args.toTypedArray())
+                Language.got(getter.lang, value, args.map { getCustomizedText(it, getter) }.toTypedArray())
             )
             index = result.indexOf("\${")
         }

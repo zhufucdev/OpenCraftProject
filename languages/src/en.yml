@@ -766,6 +766,10 @@ ad:
   cancel:
     title: 'Stop Renting'
     des: "You won't be charged for this ad anymore."
+    poor: |
+      Your ad %s was cancelled because you don't have enough money to cover the charge.
+      You can enable it again by a normal info update.
+  charged: 'Your Ad %s carried a monthly charge of %s.'
   rename: 'Use /pu rename <New Name> to rename this ad.'
   name: 'Current name is %s'
   success: 'Rented this ad successfully'

@@ -142,8 +142,10 @@ class AdvertisementEditUI(
                             config.apply {
                                 if (!editMode)
                                     time().update()
-                                else
+                                else {
+                                    enabled = true // to change debated state
                                     update()
+                                }
                                 // this can be reached when barely renaming the ad
                                 if (editMode && imageUrl.name.isNotEmpty())
                                     Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
