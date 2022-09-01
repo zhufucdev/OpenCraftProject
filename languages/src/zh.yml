@@ -747,6 +747,7 @@ ad:
   weight: '这则广告被展示的概率为%s%'
   deleted: '取消了这则广告'
   rent: '租凭'
+  display: '正在展示%s的广告'
   duration:
     title: '显示时长'
     five: '五秒'

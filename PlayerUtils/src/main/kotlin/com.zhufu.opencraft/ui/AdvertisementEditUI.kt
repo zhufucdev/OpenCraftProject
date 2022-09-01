@@ -139,10 +139,13 @@ class AdvertisementEditUI(
                 )
                     .setOnPayListener { success ->
                         if (success) {
-                            config.time().apply {
-                                update()
+                            config.apply {
+                                if (!editMode)
+                                    time().update()
+                                else
+                                    update()
                                 // this can be reached when barely renaming the ad
-                                if (isReady)
+                                if (editMode && imageUrl.name.isNotEmpty())
                                     Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
                                         postUpload(cacheImage(imageUrl.name))
                                     })

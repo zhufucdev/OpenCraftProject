@@ -2,6 +2,7 @@ package com.zhufu.opencraft
 
 import com.zhufu.opencraft.events.UserLoginEvent
 import com.zhufu.opencraft.events.UserLogoutEvent
+import com.zhufu.opencraft.util.toInfoMessage
 import de.tr7zw.nbtapi.NBTItem
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -112,6 +113,7 @@ object AdvertisementHandler : Listener {
             }
             displays[player] = display
             display.apply(mapView)
+            player.sendActionBar(player.getter()["ad.display", choice.owner.name].toInfoMessage())
 
             Bukkit.getScheduler().runTaskLater(plugin, Runnable {
                 handlePlayerDismiss(player)

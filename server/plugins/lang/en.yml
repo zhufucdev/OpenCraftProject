@@ -728,6 +728,7 @@ ad:
   date: 'Starts at %s'
   weight: 'Chance of this ad being displayed is %s%.'
   rent: 'Rent'
+  display: 'Showing Ad by %s'
   deleted: 'Cancelled this ad'
   duration:
     title: 'Display Duration'
