@@ -10,8 +10,10 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import java.nio.file.Paths
@@ -73,6 +75,7 @@ object PlayerLobbyManager : Listener {
         if (event.player.world != Base.spawnWorld || !event.player.isOp) return
         bedLocation = event.bed.location.toVector()
         val getter = event.player.getter()
+        event.isCancelled = true
         event.player.success(getter["lobby.spawnpointSet"])
     }
 

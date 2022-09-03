@@ -175,7 +175,7 @@ class PlayerLobby(val owner: OfflineInfo) {
         }
     }
 
-    fun visitBy(player: Player) {
+    fun visitBy(player: Player, increaseViews: Boolean = true) {
         Bukkit.getScheduler().runTaskAsynchronously(Base.pluginCore) { _ ->
             while (isInitializing) {
                 Thread.sleep(200)
@@ -221,7 +221,7 @@ class PlayerLobby(val owner: OfflineInfo) {
                     }
                 }
 
-                if (player.uniqueId != owner.uuid)
+                if (player.uniqueId != owner.uuid && increaseViews)
                     views++
             }
         }

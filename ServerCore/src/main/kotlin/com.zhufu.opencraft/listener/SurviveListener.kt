@@ -224,7 +224,12 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             return
         when (info!!.status) {
             InLobby -> {
-                info.inventory.getOrCreate(RESET).load()
+                val target = PlayerLobbyManager.targetOf(event.player)
+                if (target == null) {
+                    PlayerLobbyManager[info].visitBy(event.player)
+                } else {
+                    target.visitBy(event.player, false)
+                }
             }
 
             Surviving -> {
@@ -302,6 +307,8 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                     event.newTotalExp = 0
                 }
                 event.keepLevel = false
+            } else if (info.status == InLobby) {
+                event.keepInventory = true
             }
         }
     }
@@ -398,6 +405,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             val own = PlayerLobbyManager[info]
             if (own.contains(event.bed.location)) {
                 own.spawnPoint = event.bed.location
+                event.isCancelled = true
                 event.player.success(getter["lobby.spawnpointSet"])
             }
         }
