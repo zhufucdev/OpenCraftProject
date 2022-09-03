@@ -146,7 +146,7 @@ object NPCController : Listener {
         }, 0, 1)
     }
 
-    fun spawn(difficulty: Long) {
+    fun spawn(difficulty: Long, type: EntityType? = null) {
         Bukkit.getScheduler().callSyncMethod(mPlugin) {
             if (isCurrentBossAlive) {
                 currentNPC.storedLocation.chunk.removePluginChunkTicket(mPlugin)
@@ -160,23 +160,24 @@ object NPCController : Listener {
         damageMap.clear()
         totalDamage = 0F
         withOutEqu = false
-        currentType = when (random.nextInt(7)) {
-            0 -> EntityType.ZOMBIE
-            1 -> EntityType.SKELETON
-            2 -> EntityType.PIGLIN
-            3 -> {
-                withOutEqu = true
-                EntityType.SPIDER
-            }
+        currentType = type
+            ?: when (random.nextInt(7)) {
+                0 -> EntityType.ZOMBIE
+                1 -> EntityType.SKELETON
+                2 -> EntityType.ZOMBIFIED_PIGLIN
+                3 -> {
+                    withOutEqu = true
+                    EntityType.CAVE_SPIDER
+                }
 
-            4 -> EntityType.DROWNED
-            5 -> {
-                withOutEqu = true
-                EntityType.BLAZE
-            }
+                4 -> EntityType.DROWNED
+                5 -> {
+                    withOutEqu = true
+                    EntityType.BLAZE
+                }
 
-            else -> EntityType.WITHER_SKELETON
-        }
+                else -> EntityType.WITHER_SKELETON
+            }
         Bukkit.getScheduler().callSyncMethod(mPlugin) {
             currentNPC =
                 CitizensAPI.getNPCRegistry().createNPC(currentType, TextUtil.error("Server Boss # $difficulty"))
@@ -306,10 +307,10 @@ object NPCController : Listener {
     fun healthForSpecial() = -20000.0 / (difficulty + 39) + 500
     fun arrowSpeedForCurrent() = -100 / (difficulty + 99) + 1.6F
     fun arrowSpreadForCurrent() = 1002 / (difficulty + 166F) + 6
-    fun spinnerSpeedForCurrent() = 1025 / (difficulty + 40F)
+    fun spinnerSpeedForCurrent() = 1025 / (difficulty + 40F) + 14
     fun percentageToDropWeapon() = -100F / (difficulty + 249) + 0.8F
     fun percentageToDropEqui() = -100F / (difficulty + 999) + 0.2F
-    fun radiusForCurrent() = sin(difficulty / 3.0) + 16
+    fun radiusForCurrent() = sin(difficulty / 3.0) + 32
     fun arrowDamageForCurrent() = -1200.0 / (difficulty + 299) + 6
     fun littleBossMaxSpawnCount() = -1008.0 / (difficulty + 111) + 10
     fun expForCurrent() = 1200 * ln(difficulty + 3.0)

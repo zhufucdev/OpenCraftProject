@@ -1,8 +1,11 @@
 package com.zhufu.opencraft.lobby
 
-import com.zhufu.opencraft.*
+import com.zhufu.opencraft.Base
 import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.data.OfflineInfo
+import com.zhufu.opencraft.getter
+import com.zhufu.opencraft.success
+import com.zhufu.opencraft.tip
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
@@ -10,10 +13,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
-import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import java.nio.file.Paths

@@ -22,7 +22,9 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.projectiles.ProjectileSource
 import org.bukkit.util.Vector
+import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class TargetAI(
     val npc: NPC,
@@ -44,11 +46,12 @@ class TargetAI(
     var healthGiver: NPC? = null
     private var isSpinner = false
     private var isSkeleton = false
+    private var isSpider = false
     private var isArrowSphereShoot = false
     private var madness = 0
     private val damageByTarget = hashMapOf<Player, Double>()
-    private val shotSpeed = NPCController.spinnerSpeedForCurrent()
-    private val fireRate = NPCController.fireSpawnRateForCurrent()
+    private val shotSpeed by lazy { NPCController.spinnerSpeedForCurrent() }
+    private val fireRate by lazy { NPCController.fireSpawnRateForCurrent() }
     private val maxLittleSpawn = NPCController.littleBossMaxSpawnCount()
     private var tickShooting = 0
     override fun run(): BehaviorStatus {
@@ -74,7 +77,9 @@ class TargetAI(
                     return BehaviorStatus.SUCCESS
                 }
 
-                val distanceToTarget = target.location.distance(npc.entity.location)
+                val distanceToTarget =
+                    (target.location to npc.entity.location)
+                        .let { sqrt((it.first.x - it.second.x).pow(2) + (it.first.z - it.second.z).pow(2)) }
                 if (distanceToTarget > radius) {
                     updateTarget()
                     return if (this.target == null) {
@@ -84,19 +89,17 @@ class TargetAI(
                     }
                 }
 
-                if (npc.entity.world == npc.storedLocation.world)
-                    npc.entity.apply {
-                        if (target.isFlying) {
-                            NavigateUtility.targetFlyable(this, target)
-                            if (distanceToTarget > radius * 0.3) {
-                                NavigateUtility.dashTo(this, target.location, 0.2)
-                            }
-                        } else {
-                            setGravity(true)
-                        }
-                    }
+                npc.entity.apply {
+                    if (target.isFlying) {
+                        NavigateUtility.targetFlyable(this, target)
 
-                if (isSpinner && distanceToTarget <= 6) {
+                        NavigateUtility.dashTo(this, target.location, if (distanceToTarget > radius * 0.3) 0.5 else 0.1)
+                    } else {
+                        setGravity(true)
+                    }
+                }
+
+                if (isSpinner && distanceToTarget <= 10) {
                     if (tickShooting >= shotSpeed) {
                         fire()
                         tickShooting = 0
@@ -104,13 +107,13 @@ class TargetAI(
                     tickShooting++
                     BehaviorStatus.RUNNING
                 } else {
+                    if (npc.entity.isInsideVehicle) npc.entity.leaveVehicle()
                     if (navigator.entityTarget?.target != target) {
                         if (navigator.isNavigating) navigator.cancelNavigation()
 
                         navigator.setTarget(target, true)
                         NavigateUtility.dashTo(npc.entity, target.location, 0.3)
                     }
-                    if (npc.entity.isInsideVehicle) npc.entity.leaveVehicle()
                     if (difficulty >= 50) {
                         if ((npc.entity as LivingEntity).healthRate() <= 0.2) {
                             if (!isLittleSpawned
@@ -196,6 +199,7 @@ class TargetAI(
                     BehaviorStatus.RUNNING
                 }
             }
+
             else -> BehaviorStatus.FAILURE
         }
     }
@@ -204,11 +208,7 @@ class TargetAI(
         npc.entity.world.apply {
             fun direct() = target!!.location.toVector().subtract(npc.entity.location.toVector())
             val location = (npc.entity as LivingEntity).eyeLocation
-            val spawn = if (!isSkeleton) {
-                (spawnEntity(location, EntityType.FIREBALL) as Fireball).apply {
-                    direction = direct()
-                }
-            } else {
+            if (isSkeleton) {
                 spawnArrow(
                     location,
                     direct(),
@@ -216,9 +216,16 @@ class TargetAI(
                     NPCController.arrowSpreadForCurrent()
                 ).apply {
                     damage = NPCController.arrowDamageForCurrent()
+                    shooter = npc.entity as ProjectileSource
+                }
+            } else if (isSpider) {
+                ShootingWebHandler.spawn(location, direct())
+            } else {
+                (spawnEntity(location, EntityType.FIREBALL) as Fireball).apply {
+                    direction = direct()
+                    shooter = npc.entity as ProjectileSource
                 }
             }
-            spawn.shooter = npc.entity as ProjectileSource
         }
     }
 
@@ -236,13 +243,15 @@ class TargetAI(
         if (!npc.isSpawned) return false
         return if (!npc.entity.isDead) {
             updateTarget()
-            isSpinner = listOf(EntityType.BLAZE, EntityType.SKELETON).contains(npc.entity.type)
+            isSpinner = npc.entity.type in listOf(EntityType.BLAZE, EntityType.SKELETON, EntityType.CAVE_SPIDER)
+            var margin = 2.0
             if (isSpinner) {
                 isSkeleton = npc.entity.type == EntityType.SKELETON
-                npc.navigator.defaultParameters.distanceMargin(NPCController.radiusForCurrent())
-            } else {
-                npc.navigator.defaultParameters.distanceMargin(2.0)
+                isSpider = npc.entity.type == EntityType.CAVE_SPIDER
+                if (!isSpider)
+                    margin = 6.0
             }
+            npc.navigator.defaultParameters.distanceMargin(margin)
             true
         } else {
             false
@@ -254,7 +263,7 @@ class TargetAI(
     private fun updateTarget() {
         val old = target
         val newTarget = npc.entity?.getNearbyEntities(radius, radius, radius)
-            ?.firstOrNull { it.type == EntityType.PLAYER && !it.isInvulnerable }
+            ?.firstOrNull { it is Player && it.gameMode == GameMode.SURVIVAL && !it.isInvulnerable }
                 as Player?
         if (newTarget != null && newTarget != old) {
             damageByTarget[newTarget] = 0.0

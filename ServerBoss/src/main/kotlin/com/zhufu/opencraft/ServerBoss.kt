@@ -8,6 +8,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
@@ -28,6 +29,7 @@ class ServerBoss : JavaPlugin() {
 
     override fun onEnable() {
         NPCController.init(this)
+        ShootingWebHandler.init(this)
 
         fun setTimer() {
             timer = fixedRateTimer(
@@ -138,7 +140,11 @@ class ServerBoss : JavaPlugin() {
                             sender.error(getter["command.error.permission"])
                             return true
                         }
-                        NPCController.spawn(++spawnTime)
+                        if (args.size == 1) {
+                            NPCController.spawn(++spawnTime)
+                        } else {
+                            NPCController.spawn(++spawnTime, EntityType.valueOf(args[1].uppercase()))
+                        }
                     }
                     "difficulty" -> {
                         if (args.size == 1) {
