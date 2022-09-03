@@ -225,7 +225,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             return
         when (info!!.status) {
             InLobby -> {
-                val target = PlayerLobbyManager.targetOf(event.player) ?: PlayerLobbyManager[event.player]
+                val target = PlayerLobbyManager.targetOf(event.player) ?: PlayerLobbyManager[info]
                 event.respawnLocation = target.spawnPoint ?: PlayerLobby.defaultSpawnpoint
             }
 
@@ -279,16 +279,18 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
                         indexDropItem.add(index)
 
                         val item = inventory.getItem(index)!!
-                        val location = event.entity.eyeLocation
-                        Bukkit.getScheduler().callSyncMethod(plugin) {
-                            location.chunk.apply {
-                                addPluginChunkTicket(plugin)
-                                Bukkit.getScheduler().runTaskLater(plugin, { _ ->
-                                    removePluginChunkTicket(plugin)
-                                }, 5 * 20 * 60)
-                            }
-                        }
+                        inventory.setItem(index, null)
+
                         event.drops.add(item)
+                    }
+                    val location = event.entity.eyeLocation
+                    Bukkit.getScheduler().callSyncMethod(plugin) {
+                        location.chunk.apply {
+                            addPluginChunkTicket(plugin)
+                            Bukkit.getScheduler().runTaskLater(plugin, { _ ->
+                                removePluginChunkTicket(plugin)
+                            }, 5 * 20 * 60)
+                        }
                     }
 
                     event.entity.info(getLang(event.entity, "insurance.applied"))
