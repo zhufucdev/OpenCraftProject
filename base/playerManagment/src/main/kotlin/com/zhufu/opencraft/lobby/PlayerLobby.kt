@@ -185,7 +185,7 @@ class PlayerLobby(val owner: OfflineInfo) {
                     player.teleport(spawnPoint!!)
                 } else {
                     player.warn(player.getter()["lobby.warn.noSpawnpoint", owner.name])
-                    player.teleport(Location(Base.lobby, fromX.toDouble() + 16, 128.0, fromZ.toDouble() + 16))
+                    player.teleport(defaultSpawnpoint)
                 }
                 PlayerLobbyManager.targetMap[player] = this
                 val getter = player.getter()
@@ -244,5 +244,7 @@ class PlayerLobby(val owner: OfflineInfo) {
                 val last = PlayerLobbyManager.boundary.second.blockX
                 return (Math.floorDiv(abs(first - last), 16) + 1) * 16
             }
+
+        val defaultSpawnpoint get() = Location(Base.lobby, width / 2.0, 128.0, length / 2.0)
     }
 }

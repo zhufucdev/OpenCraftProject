@@ -13,6 +13,7 @@ import com.zhufu.opencraft.data.DualInventory.Companion.RESET
 import com.zhufu.opencraft.data.Info.GameStatus.*
 import com.zhufu.opencraft.events.UserLogoutEvent
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
+import com.zhufu.opencraft.lobby.PlayerLobby
 import com.zhufu.opencraft.lobby.PlayerLobbyManager
 import com.zhufu.opencraft.special_item.Coin
 import com.zhufu.opencraft.special_item.Insurance
@@ -224,12 +225,8 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             return
         when (info!!.status) {
             InLobby -> {
-                val target = PlayerLobbyManager.targetOf(event.player)
-                if (target == null) {
-                    PlayerLobbyManager[info].visitBy(event.player)
-                } else {
-                    target.visitBy(event.player, false)
-                }
+                val target = PlayerLobbyManager.targetOf(event.player) ?: PlayerLobbyManager[event.player]
+                event.respawnLocation = target.spawnPoint ?: PlayerLobby.defaultSpawnpoint
             }
 
             Surviving -> {
