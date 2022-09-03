@@ -12,10 +12,11 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.plugin.Plugin
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
-class TraderInventory(val player: Player) {
+class TraderInventory(val player: Player, private val plugin: Plugin) {
     private val getter = player.getter()
     private val donate: ItemStack = ItemStack(Material.GOLDEN_APPLE).updateItemMeta<ItemMeta> {
         displayName("捐赠".toSuccessMessage())
@@ -125,7 +126,7 @@ class TraderInventory(val player: Player) {
                     player,
                     SellingItemInfo(FlyWand(getter).froze(), price.roundToLong(), 1),
                     TradeManager.getNewID(),
-                    CurrencySystem.instance
+                    plugin
                 ).setOnPayListener { success ->
                     if (success) {
                         val info = player.info()!!
@@ -156,7 +157,7 @@ class TraderInventory(val player: Player) {
                     player,
                     SellingItemInfo(Portal(getter), Portal.PRICE.toLong(), 1),
                     TradeManager.getNewID(),
-                    CurrencySystem.instance
+                    plugin
                 ).setOnPayListener { success ->
                     val info = player.info()!!
                     if (success) {
@@ -182,7 +183,7 @@ class TraderInventory(val player: Player) {
                     player,
                     SellingItemInfo(insurance, Insurance.PRICE.toLong(), 1),
                     TradeManager.getNewID(),
-                    CurrencySystem.instance
+                    plugin
                 )
                     .setOnPayListener { success ->
                         if (success) {
@@ -209,7 +210,7 @@ class TraderInventory(val player: Player) {
 
             donate.displayName() -> {
                 player.closeInventory()
-                Bukkit.getScheduler().runTaskLater(CurrencySystem.instance, { _ ->
+                Bukkit.getScheduler().runTaskLater(plugin, { _ ->
                     QRUtil.sendToPlayer(CurrencySystem.donation, player)
                 }, 20)
             }

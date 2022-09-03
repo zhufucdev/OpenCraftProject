@@ -86,8 +86,6 @@ class CurrencySystem : JavaPlugin() {
                 }
             }
         var password = ""
-
-        lateinit var instance: CurrencySystem
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
