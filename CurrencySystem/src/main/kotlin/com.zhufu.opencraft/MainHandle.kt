@@ -258,7 +258,7 @@ object MainHandle : Listener {
                 PlayerManager.onPlayerOutOfDemo(info)
                 return
             }
-            inventoryMap.add(TraderInventory(event.clicker).apply { show() })
+            inventoryMap.add(TraderInventory(event.clicker, plugin).apply { show() })
         } else if (event.npc == CurrencySystem.npcBack) {
             val info = event.clicker.info()
             if (info == null) {

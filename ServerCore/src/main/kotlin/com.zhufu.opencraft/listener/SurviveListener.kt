@@ -35,6 +35,8 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
+import org.bukkit.event.entity.EntityPortalEnterEvent
+import org.bukkit.event.entity.EntityPortalEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
@@ -554,9 +556,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
         }
     }
 
-    @EventHandler
-    fun onPlayerEnterPortal(event: PlayerPortalEvent) {
-        var location = event.player.location
+    private fun handlePortal(entity: Entity, location: Location): Location? {
         val targets = ArrayList<Location>()
         for (x in -1..1) {
             for (y in -1..1) {
@@ -566,43 +566,55 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             }
         }
         val isNetherPortal = targets.any { it.block.type == Material.NETHER_PORTAL }
-        //event.useTravelAgent(isNetherPortal)
-        print("${event.player.name} entered a ${if (isNetherPortal) "nether" else "end"} portal")
-        when (event.player.world) {
+        return when (location.world) {
             surviveWorld -> {
                 if (isNetherPortal) {
-                    location.x /= 8
-                    location.z /= 8
-                    location.world = netherWorld
+                    location.toVector().divide(Vector(8, 8, 8)).toLocation(netherWorld)
                 } else {
-                    location = endWorld.spawnLocation
+                    endWorld.spawnLocation
                 }
             }
 
             netherWorld -> {
-                location.x *= 8
-                location.z *= 8
-                location.world = surviveWorld
+                location.toVector().multiply(8).toLocation(surviveWorld)
             }
 
             endWorld -> {
-                val info = PlayerManager.findInfoByPlayer(event.player)
-                if (info == null) {
-                    event.player.error(Language.getDefault("player.error.unknown"))
-                    return
+                if (entity is Player) {
+                    val info = PlayerManager.findInfoByPlayer(entity)
+                    if (info == null) {
+                        entity.error(Language.getDefault("player.error.unknown"))
+                        return null
+                    }
+                    info.survivalSpawn!!
+                } else {
+                    null
                 }
-                location = info.survivalSpawn!!
             }
 
-            lobby -> {
-                event.isCancelled = true
-                return
+            else -> {
+                return null
             }
         }
+    }
 
-        //if (isNetherPortal)
-        //    location = event.portalTravelAgent.findOrCreate(location)
-        event.to = location
+    @EventHandler
+    fun onPlayerEnterPortal(event: PlayerPortalEvent) {
+        val dest = handlePortal(event.player, event.from)
+        if (dest == null) {
+            event.isCancelled = true
+        } else {
+            event.to = dest
+        }
+    }
+
+    fun entityEnterPortal(event: EntityPortalEvent) {
+        val dest = handlePortal(event.entity, event.from)
+        if (dest == null) {
+            event.isCancelled = true
+        } else {
+            event.to = dest
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
