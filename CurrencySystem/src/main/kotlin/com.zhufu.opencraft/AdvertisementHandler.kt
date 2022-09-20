@@ -44,7 +44,7 @@ object AdvertisementHandler : Listener, AdSync {
     }
 
     private fun scheduleAdCost(ad: Advertisement) {
-        val oneMonth = Duration.ofDays(30)
+        val oneMonth = Duration.ofDays(7)
         val nextCharge = Date.from(ad.lastCharge.plusMillis(oneMonth.toMillis()))
         plugin.logger.info("Ad ${ad.id} scheduled at ${DateFormat.getInstance().format(nextCharge)} for charge.")
         fixedRateTimer(

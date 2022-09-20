@@ -2,6 +2,7 @@ package com.zhufu.opencraft
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.zhufu.opencraft.Base.Extend.toPrettyString
 import com.zhufu.opencraft.listener.EveryThing
 import com.zhufu.opencraft.operations.PlayerBlockOperation
 import com.zhufu.opencraft.util.toErrorMessage
@@ -16,7 +17,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import java.io.StringReader
 import java.lang.IllegalArgumentException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,7 +25,6 @@ import kotlin.collections.ArrayList
 class OperationFinder : JavaPlugin() {
     companion object {
         const val header = "§6§l-------以下是找到符合条件的操作-------"
-        fun Location.toPrettyString(): String = "${world!!.name}($x,$y,$z)"
     }
 
     private val everyThing = EveryThing(this)
@@ -38,7 +37,6 @@ class OperationFinder : JavaPlugin() {
         everyThing.stopMonitoring()
         OperationChecker.save()
     }
-
 
     private val format = SimpleDateFormat("yyyy/MM/dd/kk:mm:ss")
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -56,11 +54,11 @@ class OperationFinder : JavaPlugin() {
                     if (args.size == 1) {
                         sender.sendMessage(header)
                         OperationChecker.forEach { sender.sendMessage(it.toLocalMessage()) }
-                    } else if (args.size == 2) {
+                    } else if (args[1].startsWith('{')) {
                         sender.sendMessage("正在搜索".toInfoMessage())
                         val json: JsonObject
                         try {
-                            json = JsonParser.parseString(args.last()).asJsonObject
+                            json = JsonParser.parseString(args.drop(1).joinToString(" ")).asJsonObject
                         } catch (e: Exception) {
                             e.printStackTrace()
                             sender.sendMessage(e.localizedMessage)
@@ -75,8 +73,12 @@ class OperationFinder : JavaPlugin() {
                                             r = l["r"].asInt
                                         }
                                         Location(
-                                            if (l.has("w")) Bukkit.getWorld(l["w"].asString) else {
-                                                if (sender is Player) sender.location.world else {
+                                            if (l.has("w"))
+                                                Bukkit.getWorld(l["w"].asString)
+                                            else {
+                                                if (sender is Player)
+                                                    sender.location.world
+                                                else {
                                                     sender.sendMessage("只有玩家才能使用此命令".toErrorMessage())
                                                     sender.sendMessage("如果是控制台命令，请使用\"w\"标签指定世界名称".toTipMessage())
                                                     return true
@@ -99,64 +101,59 @@ class OperationFinder : JavaPlugin() {
                                         return true
                                     }
                                 } else null)
-                            ?.also { sender.sendMessage("位置选择器: ${it.toPrettyString()},r=$r".toInfoMessage()) }
+                            ?.also { sender.sendMessage("位置选择器: ${it.toPrettyString()}, r=$r".toInfoMessage()) }
 
-                        var specialSelector = ""
-                        val type: OperationChecker.OperationType? = (if (json.has("type")) {
+                        var argument = ""
+                        val type: OperationType? = (if (json.has("type")) {
                             val value = json["type"].asString
                             if (!value.contains('/'))
-                                OperationChecker.OperationType.valueOf(value.uppercase(Locale.getDefault()))
+                                OperationType.valueOf(value.uppercase(Locale.getDefault()))
                             else {
                                 val index = value.indexOf('/')
-                                specialSelector = value.substring(index + 1).uppercase(Locale.getDefault())
-                                if (specialSelector.isNotEmpty() && !Material.values()
-                                        .any { it.name == specialSelector }
+                                argument = value.substring(index + 1).uppercase(Locale.getDefault())
+                                if (argument.isNotEmpty() && !Material.values()
+                                        .any { it.name == argument }
                                 ) {
-                                    sender.sendMessage("找不到方块: $specialSelector".toErrorMessage())
+                                    sender.sendMessage("找不到方块: $argument".toErrorMessage())
                                     return true
                                 }
 
-                                OperationChecker.OperationType.valueOf(
+                                OperationType.valueOf(
                                     value.substring(0, index)
                                         .uppercase(Locale.getDefault())
                                 )
                             }
                         } else null)
-                            ?.also { sender.sendMessage("种类选择器: ${it.name}    特殊参数: $specialSelector".toInfoMessage()) }
+                            ?.also {
+                                sender.sendMessage(
+                                    ("种类选择器: ${it.name}    " +
+                                            "特殊参数: $argument").toInfoMessage()
+                                )
+                            }
 
                         Bukkit.getScheduler().runTaskAsynchronously(this) { _ ->
                             val material = when {
-                                type == OperationChecker.OperationType.BLOCK
+                                type == OperationType.BLOCK
                                         && try {
-                                    Material.valueOf(specialSelector);false
+                                    Material.valueOf(argument);false
                                 } catch (e: IllegalArgumentException) {
                                     true
                                 } -> return@runTaskAsynchronously
 
-                                type == OperationChecker.OperationType.BLOCK -> Material.valueOf(specialSelector)
+                                type == OperationType.BLOCK -> Material.valueOf(argument)
                                 else -> null
                             }
                             OperationChecker.forEach {
-                                val locationContent = (it.location != null && location != null
-                                        && it.location!!.world == location.world
-                                        && it.location!!.distance(location) <= r)
+                                val locationContent =
+                                    location == null
+                                            || (it.location != null
+                                            && it.location!!.world == location.world
+                                            && it.location!!.distance(location) <= r)
                                 val typeContent = type == null || (it.operationType == type
-                                        && if (type == OperationChecker.OperationType.BLOCK || specialSelector.isNotEmpty())
+                                        && if (type == OperationType.BLOCK || argument.isNotEmpty())
                                     (it as PlayerBlockOperation).block == material
                                 else true)
-                                val contentMap = listOf(
-                                    Pair(location != null, locationContent),
-                                    Pair(type != null, typeContent)
-                                )
-
-                                var isContent = true
-                                for (k in contentMap) {
-                                    if (k.first != k.second) {
-                                        isContent = false
-                                        break
-                                    }
-                                }
-                                if (isContent)
+                                if (locationContent && typeContent)
                                     sender.sendMessage(it.toLocalMessage())
                             }
                             sender.sendMessage("完成".toSuccessMessage())

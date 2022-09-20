@@ -1,16 +1,16 @@
 package com.zhufu.opencraft.operations
 
 import com.google.gson.JsonObject
-import com.zhufu.opencraft.OperationChecker
+import com.zhufu.opencraft.Base.Extend.toPrettyString
+import com.zhufu.opencraft.OperationType
+import com.zhufu.opencraft.PlayerOperation
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.entity.Player
-import java.text.SimpleDateFormat
 import java.util.*
 
-class PlayerMoveOperation(player: String, time: Long, var l: Location? = null) : OperationChecker.PlayerOperation(player, time) {
-    override val operationType: OperationChecker.OperationType
-        get() = OperationChecker.OperationType.MOVE
+class PlayerMoveOperation(player: String, time: Long, var l: Location? = null) : PlayerOperation(player, time) {
+    override val operationType: OperationType
+        get() = OperationType.MOVE
     override val data: JsonObject
         get() = JsonObject()
                 .also {
@@ -39,5 +39,5 @@ class PlayerMoveOperation(player: String, time: Long, var l: Location? = null) :
         this.l = Location(Bukkit.getWorld(world),x,y,z)
     }
 
-    override fun toLocalMessage(): String = "$player 于${format.format(Date(time))} 来到了世界 ${l?.world?.name} 中 (${l?.x},${l?.y},${l?.z})"
+    override fun toLocalMessage(): String = "$player 于${format.format(Date(time))} 来到了 ${l?.toPrettyString()}"
 }

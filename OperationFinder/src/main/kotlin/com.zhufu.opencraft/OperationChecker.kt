@@ -16,66 +16,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 object OperationChecker {
-    enum class OperationType {
-        MOVE, BLOCK, OPEN_INVENTORY
-    }
+    const val ANY_PLAYER = "\$anyPlayer"
 
-    abstract class PlayerOperation(val player: String, val time: Long) {
-
-        abstract val operationType: OperationType
-        abstract val data: JsonObject
-        abstract val location: Location?
-        abstract fun deserialize(data: JsonObject)
-
-        abstract fun toLocalMessage(): String
-
-        override fun toString(): String {
-            val sw = StringWriter()
-            val writer = JsonWriter(sw)
-            writer.beginObject()
-                .name("time").value(time)
-                .name("player").value(player)
-                .name("type").value(operationType.name)
-                .name("data").jsonValue(data.toString())
-                .endObject()
-            return sw.toString()
-        }
-
-        companion object {
-            fun fromJson(reader: JsonReader): PlayerOperation {
-                reader.beginObject()
-                var time = 0L
-                var player = ""
-                var type: OperationType? = null
-                var data = JsonObject()
-                while (reader.hasNext()) {
-                    when (reader.nextName()) {
-                        "time" -> time = reader.nextLong()
-                        "player" -> player = reader.nextString()
-                        "type" -> type = OperationType.valueOf(reader.nextString())
-                        "data" -> data = JsonParser().parse(reader).asJsonObject
-                    }
-                }
-                reader.endObject()
-                if (type == null) {
-                    throw IllegalArgumentException("Could not find Operation Type in Json!")
-                }
-                return when (type) {
-                    OperationType.MOVE -> PlayerMoveOperation(player, time).also { it.deserialize(data) }
-                    OperationType.BLOCK -> PlayerBlockOperation(player, time).also { it.deserialize(data) }
-                    OperationType.OPEN_INVENTORY -> PlayerOpenInventoryOperation(player, time).also {
-                        it.deserialize(
-                            data
-                        )
-                    }
-                }
-            }
-
-            val format = SimpleDateFormat("yyyy/MM/dd/HH:mm:ss")
-        }
-    }
-
-    const val anyPlayer = "\$anyPlayer"
     private val recentFifty = ArrayList<PlayerOperation>()
     private val log: File = File("plugins${File.separatorChar}OperationFinder${File.separatorChar}log.txt").also {
         if (!it.parentFile.exists()) it.parentFile.mkdirs()
@@ -112,9 +54,9 @@ object OperationChecker {
         while (t != -1) {
             line.append(t.toChar())
             if (t.toChar() == '\n') {
-                val element = OperationChecker.readLine(line.toString())
+                val element = readLine(line.toString())
                 if (element != null) {
-                    if (player == anyPlayer || element.player == player)
+                    if (player == ANY_PLAYER || element.player == player)
                         result.add(element)
                 }
                 line = StringBuilder()
@@ -122,7 +64,7 @@ object OperationChecker {
             t = localReader.read()
         }
 
-        if (player != anyPlayer)
+        if (player != ANY_PLAYER)
             recentFifty.forEach { if (it.player == player) result.add(it) }
         else result.addAll(recentFifty)
 
@@ -164,7 +106,7 @@ object OperationChecker {
         while (t != -1) {
             line.append(t.toChar())
             if (t.toChar() == '\n') {
-                val e = OperationChecker.readLine(line.toString())
+                val e = readLine(line.toString())
                 if (e != null)
                     return e
                 line = StringBuilder()
@@ -187,5 +129,61 @@ object OperationChecker {
 
     fun save() {
         recentFifty.forEach { log.appendText(it.toString() + System.lineSeparator()) }
+    }
+
+}
+
+enum class OperationType {
+    MOVE, BLOCK, OPEN_INVENTORY
+}
+
+abstract class PlayerOperation(val player: String, val time: Long) {
+
+    abstract val operationType: OperationType
+    abstract val data: JsonObject
+    abstract val location: Location?
+    abstract fun deserialize(data: JsonObject)
+
+    abstract fun toLocalMessage(): String
+
+    override fun toString(): String {
+        val sw = StringWriter()
+        val writer = JsonWriter(sw)
+        writer.beginObject()
+            .name("time").value(time)
+            .name("player").value(player)
+            .name("type").value(operationType.name)
+            .name("data").jsonValue(data.toString())
+            .endObject()
+        return sw.toString()
+    }
+
+    companion object {
+        fun fromJson(reader: JsonReader): PlayerOperation {
+            reader.beginObject()
+            var time = 0L
+            var player = ""
+            var type: OperationType? = null
+            var data = JsonObject()
+            while (reader.hasNext()) {
+                when (reader.nextName()) {
+                    "time" -> time = reader.nextLong()
+                    "player" -> player = reader.nextString()
+                    "type" -> type = OperationType.valueOf(reader.nextString())
+                    "data" -> data = JsonParser().parse(reader).asJsonObject
+                }
+            }
+            reader.endObject()
+            if (type == null) {
+                throw IllegalArgumentException("Could not find Operation Type in Json!")
+            }
+            return when (type) {
+                OperationType.MOVE -> PlayerMoveOperation(player, time).apply { deserialize(data) }
+                OperationType.BLOCK -> PlayerBlockOperation(player, time).apply { deserialize(data) }
+                OperationType.OPEN_INVENTORY -> PlayerOpenInventoryOperation(player, time).apply { deserialize(data) }
+            }
+        }
+
+        val format = SimpleDateFormat("yyyy/MM/dd/HH:mm:ss")
     }
 }
