@@ -1,6 +1,7 @@
 package com.zhufu.opencraft.listener
 
 import com.zhufu.opencraft.OperationChecker
+import com.zhufu.opencraft.operations.BlockOperationType
 import com.zhufu.opencraft.operations.PlayerBlockOperation
 import com.zhufu.opencraft.operations.PlayerMoveOperation
 import com.zhufu.opencraft.operations.PlayerOpenInventoryOperation
@@ -36,14 +37,14 @@ class EveryThing(val plugin: JavaPlugin) : Listener {
         OperationChecker.append(PlayerBlockOperation(event.player.name,
                 System.currentTimeMillis(),
                 event.block.type,event.block.location,
-                PlayerBlockOperation.BlockOperationType.BREAK))
+                BlockOperationType.BREAK))
     }
     @EventHandler
     fun onPlayerPlaceBlock(event: BlockPlaceEvent){
         OperationChecker.append(PlayerBlockOperation(event.player.name,
                 System.currentTimeMillis(),
                 event.block.type,event.block.location,
-                PlayerBlockOperation.BlockOperationType.PLACE))
+                BlockOperationType.PLACE))
     }
 
     @EventHandler
