@@ -43,7 +43,7 @@ class TradeInfo : Cloneable, Destroyable {
         this.item = SellingItemInfo.of(doc.get("item", Document::class.java))
         this.seller = doc.get("seller", UUID::class.java)
         this.buyer = doc.get("buyer", UUID::class.java)
-        this.faceLocation = Location.deserialize(doc.get("face", Document::class.java))
+        this.faceLocation = doc.get("face", Document::class.java)?.let { Location.deserialize(it) }
         this.isDestroyed = doc.getBoolean("destroyed", false)
         this.startTime = Instant.ofEpochSecond(doc.getLong("start"))
         this.endTime = doc.getLong("end")?.let { Instant.ofEpochSecond(it) }
@@ -142,7 +142,7 @@ class TradeInfo : Cloneable, Destroyable {
         .append("item", item.toDocument())
         .append("seller", seller)
         .append("buyer", buyer)
-        .append("face", faceLocation)
+        .append("face", faceLocation?.serialize()?.let { Document(it) })
         .append("destroyed", isDestroyed)
         .append("start", startTime.epochSecond)
         .append("end", endTime?.epochSecond)

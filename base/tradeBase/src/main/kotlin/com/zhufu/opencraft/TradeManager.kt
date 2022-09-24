@@ -98,14 +98,13 @@ object TradeManager {
                 }
             }
         }
-        add(
-            TradeInfo(SellingItemInfo(item = what, unitPrise, amount))
-                .apply {
-                    this.location = location
-                    setSeller(seller, ignoreInventoryItem, buyer != null)
-                    setBuyer(buyer?.uniqueId, item.amount)
-                }
-        )
+        val info = TradeInfo(SellingItemInfo(item = what, unitPrise, amount))
+        add(info)
+        info.apply {
+            this.location = location
+            setSeller(seller, ignoreInventoryItem, buyer != null)
+            setBuyer(buyer?.uniqueId, item.amount)
+        }
     }
 
     private fun add(tradeInfo: TradeInfo) {
