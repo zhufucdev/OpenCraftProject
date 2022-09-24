@@ -14,7 +14,7 @@ import kotlin.collections.ArrayList
 class VisitorInventory(plugin: Plugin, val player: Player) : PageInventory<VisitorInventory.VisitorAdapter>(
     "浏览商家".toComponent(),
     VisitorAdapter(),
-    54,
+    36,
     plugin
 ) {
     class VisitorAdapter : Adapter() {
