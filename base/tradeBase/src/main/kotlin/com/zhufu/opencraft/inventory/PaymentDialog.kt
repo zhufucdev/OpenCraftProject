@@ -14,13 +14,12 @@ import org.bukkit.plugin.Plugin
 class PaymentDialog(
     val player: HumanEntity,
     private val sellingItems: SellingItemInfo,
-    id: Int,
     plugin: Plugin,
     override val parentInventory: IntractableInventory? = null
 ) :
     IntractableInventory(plugin), Backable {
     override val inventory: Inventory =
-        Bukkit.createInventory(null, InventoryType.CHEST, "确认支付[uuid:$id]".toInfoMessage())
+        Bukkit.createInventory(null, InventoryType.CHEST, "确认支付".toInfoMessage())
     lateinit var confirmItem: ItemStack
     lateinit var cancelItem: ItemStack
     private val getter = player.getter()

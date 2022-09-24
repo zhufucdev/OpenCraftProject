@@ -36,9 +36,9 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
     private var confirmItem: ItemStack
     private var cancelItem: ItemStack
     private var giveSignItem: ItemStack
-    override var inventoryName: String = TextUtil.info("确认销售[uuid:$id]")
+    override var inventoryName: String = TextUtil.info("确认销售")
     override var inventory: Inventory = Bukkit.createInventory(null, InventoryType.CHEST, inventoryName)
-    var items = SellingItemInfo(itemSell, -1, itemSell.amount)
+    private var items = SellingItemInfo(itemSell, -1, itemSell.amount)
 
     init {
         inventory.addItem(itemSell)
@@ -134,8 +134,8 @@ class SetUpValidateInventory(baseLocation: Location, itemSell: ItemStack, privat
         }
         items.unitPrise = unitPrise
         if (!TradeManager.checkLimit(items)) {
-            TradeManager.sell(
-                seller = player.uniqueId.toString(),
+            TradeManager.trade(
+                seller = player.uniqueId,
                 what = items.item,
                 amount = items.amount,
                 unitPrise = line.toLong(),

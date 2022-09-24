@@ -7,7 +7,6 @@ import com.zhufu.opencraft.Base.tradeWorld
 import com.zhufu.opencraft.CurrencySystem.Companion.transMap
 import com.zhufu.opencraft.TradeManager.loadTradeCompass
 import com.zhufu.opencraft.TradeManager.plugin
-import com.zhufu.opencraft.TradeManager.printTradeError
 import com.zhufu.opencraft.data.DualInventory.Companion.RESET
 import com.zhufu.opencraft.data.Info
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
@@ -42,7 +41,6 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
-import java.io.File
 import java.time.Duration
 
 @Suppress("unused")
@@ -56,14 +54,6 @@ object MainHandle : Listener {
     val traderInventoryName =
         TextUtil.getColoredText("服务器商人", TextUtil.TextColor.AQUA, bold = true, underlined = false)
     val backNPCName = "生存模式".toInfoMessage()
-
-    /**
-     * Reload Event
-     */
-    @EventHandler
-    fun onServerReload(event: ServerReloadEvent) {
-        TradeManager.saveToFile(File(CurrencySystem.tradeRoot, "tradeInfos.json"))
-    }
 
     /**
      * Block Events
@@ -312,10 +302,7 @@ object MainHandle : Listener {
 
                 getPositionForLine(4) -> {
                     if (trader.selectedItem == null) {
-                        event.whoClicked.printTradeError(
-                            event.whoClicked.getter()["trade.error.notFound"],
-                            TradeManager.getNewID()
-                        )
+                        event.whoClicked.error(event.whoClicked.getter()["trade.error.notFound"])
                         return
                     }
                     trader.confirm()
@@ -397,7 +384,7 @@ fun showTutorial(player: Player) {
         val l2 = TradeTerritoryInfo(info)
         val center = l2.center
         val location2 =
-            Location(tradeWorld, center.x.toDouble(), tradeWorld.spawnLocation.y + 30, center.z.toDouble())
+            Location(tradeWorld, center.x, tradeWorld.spawnLocation.y + 30, center.z)
                 .setDirection(Vector(0, -90, 0))
         player.tplock(location2, 7 * 20)
         showTitle(

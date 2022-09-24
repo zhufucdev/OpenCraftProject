@@ -157,7 +157,6 @@ class CheckpointUI(val info: Info, plugin: Plugin, override val parentInventory:
                             3,
                             1
                         ),
-                        TradeManager.getNewID(),
                         plugin,
                         this
                     )

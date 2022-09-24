@@ -181,7 +181,6 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                     amount = 1,
                                                     unitPrise = 10
                                                 ),
-                                                id = TradeManager.getNewID(),
                                                 plugin = plugin
                                             )
                                                 .setOnPayListener { success ->
@@ -247,7 +246,6 @@ class FriendCommandExecutor(private val plugin: UserManager) : TabExecutor {
                                                     amount = 1,
                                                     unitPrise = amount
                                                 ),
-                                                id = TradeManager.getNewID(),
                                                 plugin = plugin
                                             )
                                                 .setOnPayListener { success ->

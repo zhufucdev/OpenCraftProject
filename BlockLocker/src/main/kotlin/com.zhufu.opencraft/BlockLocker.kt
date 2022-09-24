@@ -72,7 +72,6 @@ class BlockLocker : JavaPlugin(), Listener {
             PaymentDialog(
                 sender,
                 SellingItemInfo(ItemStack(Material.CHEST), unitPrise, results.size),
-                TradeManager.getNewID(),
                 this
             )
                 .setOnPayListener { success ->

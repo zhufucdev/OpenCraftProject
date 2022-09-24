@@ -87,7 +87,6 @@ class FlyWandInventory(val player: Player, val wand: FlyWand, plugin: Plugin) : 
                 PaymentDialog(
                     player,
                     SellingItemInfo(confirmItem.clone(), 100, time),
-                    TradeManager.getNewID(),
                     plugin,
                     this
                 )

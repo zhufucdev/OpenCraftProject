@@ -255,20 +255,19 @@ class InventoryInfo internal constructor(val name: String, val parent: DualInven
     fun addItem(item: ItemStack): Boolean {
         val inventory = doc.get("inventory", Document::class.java) ?: Document()
         val max = inventory.maxOfOrNull { it.key.toInt() }
-        fun msg(i: Int) {
+        fun msg() {
             doc["inventory"] = inventory
-            this.player?.success("物品已添加至您的${name}物品栏第${i + 1}格")
             update()
         }
         if (max == null) {
             inventory["0"] = item.serializeAsBytes()
-            msg(0)
+            msg()
             return true
         } else {
             for (i in 0..if (max < 35) max + 1 else 35) {
                 if (!inventory.containsKey(i.toString())) {
                     inventory[i.toString()] = item.serializeAsBytes()
-                    msg(i)
+                    msg()
                     return true
                 }
             }
@@ -300,5 +299,4 @@ class InventoryInfo internal constructor(val name: String, val parent: DualInven
     override fun hashCode(): Int {
         return name.hashCode()
     }
-
 }

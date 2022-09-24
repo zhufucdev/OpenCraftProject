@@ -125,7 +125,6 @@ class TraderInventory(val player: Player, private val plugin: Plugin) {
                 PaymentDialog(
                     player,
                     SellingItemInfo(FlyWand(getter).froze(), price.roundToLong(), 1),
-                    TradeManager.getNewID(),
                     plugin
                 ).setOnPayListener { success ->
                     if (success) {
@@ -156,7 +155,6 @@ class TraderInventory(val player: Player, private val plugin: Plugin) {
                 PaymentDialog(
                     player,
                     SellingItemInfo(Portal(getter), Portal.PRICE.toLong(), 1),
-                    TradeManager.getNewID(),
                     plugin
                 ).setOnPayListener { success ->
                     val info = player.info()!!
@@ -182,7 +180,6 @@ class TraderInventory(val player: Player, private val plugin: Plugin) {
                 PaymentDialog(
                     player,
                     SellingItemInfo(insurance, Insurance.PRICE.toLong(), 1),
-                    TradeManager.getNewID(),
                     plugin
                 )
                     .setOnPayListener { success ->
@@ -217,9 +214,7 @@ class TraderInventory(val player: Player, private val plugin: Plugin) {
         }
     }
 
-    var amount = 1
-        private set
-
+    private var amount = 1
     fun subtractOne() {
         inventory.setItem(
             getPositionForLine(4),
@@ -272,8 +267,8 @@ class TraderInventory(val player: Player, private val plugin: Plugin) {
     fun confirm() {
         PlayerManager.findInfoByPlayer(player)?.let { it.npcTradeCount ++ }
 
-        TradeManager.sell(
-            seller = "server",
+        TradeManager.trade(
+            seller = Base.serverID,
             what = ItemStack(this.selectedItem!!.type, 1),
             amount = this.amount * if (mode == 0.toShort()) -1 else 1,
             unitPrise = transMap[this.selectedItem!!.type]!!,

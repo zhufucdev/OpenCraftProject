@@ -8,7 +8,6 @@ import com.zhufu.opencraft.Base.tradeWorld
 import com.zhufu.opencraft.Game.env
 import com.zhufu.opencraft.events.PlayerTeleportedEvent
 import com.zhufu.opencraft.inventory.NPCExistence
-import com.zhufu.opencraft.inventory.NPCItemInventory
 import com.zhufu.opencraft.inventory.TradeValidateInventory
 import com.zhufu.opencraft.util.TextUtil
 import com.zhufu.opencraft.util.toErrorMessage
@@ -406,11 +405,6 @@ class CurrencySystem : JavaPlugin() {
         NPCExistence.setProducer { t, l ->
             TradeValidateInventory(t, l)
         }
-        try {
-            TradeManager.loadFromFile(File(tradeRoot, "tradeInfos.json"))
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
         MainHandle.init(this)
         QRUtil.init(this)
         BankManager.init(this)
@@ -422,9 +416,7 @@ class CurrencySystem : JavaPlugin() {
     }
 
     override fun onDisable() {
-        TradeManager.saveToFile(File(tradeRoot, "tradeInfos.json"))
         BankManager.onClose()
-        NPCItemInventory.npcList.forEach { it.destroy() }
         CitizensAPI.getNPCRegistry().toList().forEach {
             if (it.data().get<Boolean?>("trade") == true)
                 it.destroy()

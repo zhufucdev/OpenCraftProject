@@ -133,7 +133,6 @@ class AdvertisementEditUI(
                         prise,
                         1
                     ),
-                    TradeManager.getNewID(),
                     plugin,
                     this
                 )

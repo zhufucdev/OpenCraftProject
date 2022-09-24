@@ -16,11 +16,9 @@ import java.util.*
 object Database {
     lateinit var client: MongoClient
     private lateinit var db: MongoDatabase
-    lateinit var tag: MongoCollection<Document>
-        private set
-
-    lateinit var friendship: MongoCollection<Document>
-        private set
+    val tag: MongoCollection<Document> by lazy { db.getCollection("tags") }
+    val friendship: MongoCollection<Document> by lazy { db.getCollection("friendship") }
+    val trades: MongoCollection<Document> by lazy { db.getCollection("trades") }
 
     fun init(uri: String) {
         client = MongoClients.create(
@@ -31,9 +29,6 @@ object Database {
         )
         Bukkit.getLogger().info("Database connected to $uri")
         db = client.getDatabase("opencraft")
-
-        tag = db.getCollection("tags")
-        friendship = db.getCollection("friendship")
     }
 
     fun close() {
@@ -97,4 +92,7 @@ object Database {
 
     fun specialBlock() = find("sb", Base.serverID)
     fun ads() = find("ad", Base.serverID)
+    fun trade(id: UUID, update: Document) {
+        trades.findOneAndReplace(eq("_id", id), update)
+    }
 }

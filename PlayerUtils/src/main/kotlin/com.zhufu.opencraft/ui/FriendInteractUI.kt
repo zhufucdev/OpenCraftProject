@@ -178,7 +178,6 @@ class FriendInteractUI(
                                     amount = 1,
                                     unitPrise = 10
                                 ),
-                                id = TradeManager.getNewID(),
                                 plugin = plugin,
                                 parentInventory = this
                             )

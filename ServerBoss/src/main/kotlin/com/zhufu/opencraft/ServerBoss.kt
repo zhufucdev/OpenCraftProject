@@ -102,7 +102,6 @@ class ServerBoss : JavaPlugin() {
                                     unitPrise = 3,
                                     amount = 1
                                 ),
-                                id = TradeManager.getNewID(),
                                 plugin = this
                             )
                                 .setOnPayListener { success ->

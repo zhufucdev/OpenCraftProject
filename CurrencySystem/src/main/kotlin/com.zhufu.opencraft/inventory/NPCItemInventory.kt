@@ -18,7 +18,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.util.Vector
-import kotlin.collections.ArrayList
 
 abstract class NPCItemInventory(
     var baseLocation: Location,
@@ -26,12 +25,6 @@ abstract class NPCItemInventory(
     private val item: ItemStack,
     val plugin: JavaPlugin
 ) : Listener, NPCExistence {
-    companion object {
-        var id = 314
-        val npcList = ArrayList<NPC>()
-    }
-
-    val id: Int = ++Companion.id
     abstract val clickableNPC: NPC
     abstract var inventory: Inventory
     abstract var inventoryName: String
@@ -47,22 +40,12 @@ abstract class NPCItemInventory(
     private fun initNPC() {
         baseLocation = baseLocation.block.location
 
-        //Clean the old one
-        npcList.firstOrNull { it.id == id }?.destroy()
-
+        clickableNPC.data().set("trade", true)
         clickableNPC.getOrAddTrait(Equipment::class.java)
             .set(Equipment.EquipmentSlot.HAND, item)
         clickableNPC.spawn(baseLocation.clone().add(Vector(0.5, 0.0, 0.5)).apply {
             if (faceLocation != null) yaw = faceLocation.yaw - 180
         })
-        npcList.add(clickableNPC)
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) { _ ->
-            while (!clickableNPC.isSpawned) {
-                Thread.sleep(200)
-            }
-            if (faceLocation != null) clickableNPC.faceLocation(faceLocation)
-        }
     }
 
     open fun cancel(player: HumanEntity?) {
@@ -87,7 +70,7 @@ abstract class NPCItemInventory(
                 event.clicker.sendMessage("该物品已经被其他玩家占用".toErrorMessage())
                 return
             }
-            onInventoryOpen(event.clicker)
+            preInventoryOpen(event.clicker)
             event.clicker.openInventory(inventory)
             isOpened = true
         }
@@ -119,6 +102,6 @@ abstract class NPCItemInventory(
     fun validateInventory(inventory: Inventory): Boolean = inventory == this.inventory && inventory.location == null
 
     abstract fun onItemClick(event: InventoryClickEvent): Boolean
-    open fun onInventoryOpen(player: HumanEntity) {}
+    open fun preInventoryOpen(player: HumanEntity) {}
     open fun onInventoryClose(player: HumanEntity) {}
 }

@@ -28,7 +28,6 @@ class PayInputDialog(
                 amount = 1
             ),
             player = info.player,
-            id = TradeManager.getNewID(),
             plugin = plugin
         )
             .setOnPayListener { s ->
