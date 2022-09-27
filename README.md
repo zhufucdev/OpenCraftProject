@@ -1,5 +1,7 @@
 # OpenCraft
 
+<img src="./logo-full.png" width="300" alt="oc_logo">
+
 A Minecraft server with homemade plugins using Kotlin.
 
 # Getting Started
