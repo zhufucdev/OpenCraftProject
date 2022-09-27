@@ -16,42 +16,54 @@ import org.bukkit.scheduler.BukkitTask
 
 class EveryThing(val plugin: JavaPlugin) : Listener {
     private var monitorTask: BukkitTask? = null
-    fun startMonitoring(period: Long){
-        monitorTask = Bukkit.getScheduler().runTaskTimer(plugin, Runnable{
+    fun startMonitoring(period: Long) {
+        monitorTask = Bukkit.getScheduler().runTaskTimer(plugin, Runnable {
             monitorOnce()
-        },0L,period)
+        }, 0L, period)
     }
 
-    fun stopMonitoring(){
+    fun stopMonitoring() {
         monitorTask?.cancel()
     }
 
-    private fun monitorOnce(){
+    private fun monitorOnce() {
         plugin.server.onlinePlayers.forEach {
-            OperationChecker.append(PlayerMoveOperation(it.name,System.currentTimeMillis(),it.location))
+            OperationChecker.append(PlayerMoveOperation(it.name, System.currentTimeMillis(), it.location))
         }
     }
 
     @EventHandler
-    fun onPlayerBreakBlock(event: BlockBreakEvent){
-        OperationChecker.append(PlayerBlockOperation(event.player.name,
+    fun onPlayerBreakBlock(event: BlockBreakEvent) {
+        OperationChecker.append(
+            PlayerBlockOperation(
+                event.player.name,
                 System.currentTimeMillis(),
-                event.block.type,event.block.location,
-                BlockOperationType.BREAK))
-    }
-    @EventHandler
-    fun onPlayerPlaceBlock(event: BlockPlaceEvent){
-        OperationChecker.append(PlayerBlockOperation(event.player.name,
-                System.currentTimeMillis(),
-                event.block.type,event.block.location,
-                BlockOperationType.PLACE))
+                event.block.type, event.block.location,
+                BlockOperationType.BREAK
+            )
+        )
     }
 
     @EventHandler
-    fun onPlayerOpenInventory(event: InventoryOpenEvent){
-        OperationChecker.append(PlayerOpenInventoryOperation(event.player.name,
+    fun onPlayerPlaceBlock(event: BlockPlaceEvent) {
+        OperationChecker.append(
+            PlayerBlockOperation(
+                event.player.name,
+                System.currentTimeMillis(),
+                event.block.type, event.block.location,
+                BlockOperationType.PLACE
+            )
+        )
+    }
+
+    @EventHandler
+    fun onPlayerOpenInventory(event: InventoryOpenEvent) {
+        OperationChecker.append(
+            PlayerOpenInventoryOperation(
+                event.player.name,
                 System.currentTimeMillis(),
                 event.inventory
-        ))
+            )
+        )
     }
 }
