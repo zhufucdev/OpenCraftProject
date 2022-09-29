@@ -11,9 +11,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import kotlinx.serialization.Serializable
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.time.ZoneId
 import java.util.*
 
 val tokenManager = TokenManager()
@@ -22,7 +19,7 @@ val tokenManager = TokenManager()
 data class User(val id: String, val uuid: String)
 
 @Serializable
-data class LoginResult(val success: Boolean, val user: User)
+data class LoginResult(val success: Boolean, val user: User?)
 
 @Serializable
 data class TokenResult(val token: String, val spoil: Long)
@@ -33,6 +30,7 @@ data class LoginRequest(val id: String, val pwd: String, val token: String)
 fun Routing.api() {
     loginHandler()
     tokenAcquire()
+    heartbeat()
 }
 
 private fun Routing.loginHandler() {
@@ -56,20 +54,23 @@ private fun Routing.loginHandler() {
             } else {
                 val offlineInfo = OfflineInfo.findByName(req.id)
                 if (offlineInfo == null) {
-                    call.respond(HttpStatusCode.Unauthorized, "Player ${req.id} not found.")
+                    call.respond(HttpStatusCode.NotFound, "Player ${req.id} not found.")
                     return@post
                 }
 
                 RegisteredInfo(offlineInfo.uuid)
             }
-
-        token.user = info
-        call.respond(
-            LoginResult(
-                success = true,
-                user = User(req.id, info.uuid.toString())
+        if (info.matchPassword(req.pwd)) {
+            token.user = info
+            call.respond(
+                LoginResult(
+                    success = true,
+                    user = User(req.id, info.uuid.toString())
+                )
             )
-        )
+        } else {
+            call.respond(HttpStatusCode.Unauthorized, "Password and ID didn't match.")
+        }
     }
 }
 
@@ -82,5 +83,11 @@ private fun Routing.tokenAcquire() {
                 spoil = token.spoil.toInstant().toGMTDate().timestamp
             )
         )
+    }
+}
+
+private fun Routing.heartbeat() {
+    get("/heartbeat") {
+        call.respond("Alive")
     }
 }
