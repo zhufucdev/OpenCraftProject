@@ -55,9 +55,11 @@ object TradeManager {
 
     fun init(plugin: JavaPlugin) {
         TradeManager.plugin = plugin
-        forEach {
-            it.summonNPC()
-        }
+        Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+            forEach {
+                it.summonNPC()
+            }
+        }, 20)
     }
 
     fun forEach(l: (TradeInfo) -> Unit) = Database.trades.find().forEach {
