@@ -5,5 +5,11 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     api "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
     api "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttp_version}"
+    // Database
     api "org.mongodb:mongodb-driver-sync:${rootProject.ext.mongo_version}"
+    // Ktor Server
+    api "io.ktor:ktor-server-core:${rootProject.ext.ktor_version}"
+    api "io.ktor:ktor-server-netty:${rootProject.ext.ktor_version}"
+    api "io.ktor:ktor-server-content-negotiation:${rootProject.ext.ktor_version}"
+    api "io.ktor:ktor-serialization-kotlinx-json:${rootProject.ext.ktor_version}"
 }

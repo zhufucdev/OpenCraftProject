@@ -48,7 +48,7 @@ object Database {
         checkpoint(player).drop()
     }
 
-    fun tag(player: UUID, create: Boolean = true) = find(tag, player, create)!!
+    fun tag(player: UUID, create: Boolean = true) = find(tag, player, create)
     fun tag(name: String): Document? = tag.find(eq("name", name)).first()
 
     fun tag(player: UUID, update: Document) {

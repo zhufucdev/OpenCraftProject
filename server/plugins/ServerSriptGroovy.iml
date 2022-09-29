@@ -16,6 +16,22 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/ss_modules" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/WorldEdit/.archive-unpack" />
+      <excludeFolder url="file://$MODULE_DIR$/WorldEdit/assets" />
+      <excludeFolder url="file://$MODULE_DIR$/WorldEdit/schematics" />
+      <excludeFolder url="file://$MODULE_DIR$/WorldEdit/sessions" />
+      <excludeFolder url="file://$MODULE_DIR$/ads" />
+      <excludeFolder url="file://$MODULE_DIR$/BlockLocker" />
+      <excludeFolder url="file://$MODULE_DIR$/Citizens" />
+      <excludeFolder url="file://$MODULE_DIR$/CurrencySystem" />
+      <excludeFolder url="file://$MODULE_DIR$/OperationFinder" />
+      <excludeFolder url="file://$MODULE_DIR$/PlayerUtil" />
+      <excludeFolder url="file://$MODULE_DIR$/ServerBoss" />
+      <excludeFolder url="file://$MODULE_DIR$/Skinny" />
+      <excludeFolder url="file://$MODULE_DIR$/statics" />
+      <excludeFolder url="file://$MODULE_DIR$/tag" />
+      <excludeFolder url="file://$MODULE_DIR$/trade" />
+      <excludeFolder url="file://$MODULE_DIR$/tutorials" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

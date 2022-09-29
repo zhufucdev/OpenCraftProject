@@ -11,18 +11,8 @@ import net.kyori.adventure.text.TextComponent
 import java.io.File
 
 class WebOutputStream(private val parent: WebInfo): PlayerOutputStream() {
-    private val out
-            get() = parent.lastExchange?.responseBody
     override fun send(text: String) {
-        val content = text.toByteArray()
-        parent.lastExchange?.apply {
-            responseHeaders.add("Access-Control-Allow-Origin", "*")
-            sendResponseHeaders(200, content.size.toLong())
-        }
-        out?.apply{
-            write(content)
-            close()
-        }
+        TODO("Implementation")
     }
 
     override fun sendChat(sender: ChatInfo, regularText: String, translatedText: String, images: List<File>) {

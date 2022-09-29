@@ -1,6 +1,5 @@
 package com.zhufu.opencraft.data
 
-import com.sun.net.httpserver.HttpExchange
 import com.zhufu.opencraft.api.ChatInfo
 import com.zhufu.opencraft.api.ServerCaller
 import com.zhufu.opencraft.player_community.PlayerOutputStream
@@ -19,10 +18,8 @@ abstract class WebInfo(createNew: Boolean, uuid: UUID, nameToExtend: String? = n
     override val targetLang: String
         get() = userLanguage
 
-    var lastExchange: HttpExchange? = null
-    var exchanges = 0
-    var streamsReturned = 0
-
+    private var exchanges = 0
+    private var streamsReturned = 0
     override val playerOutputStream: PlayerOutputStream
         get() {
             streamsReturned++

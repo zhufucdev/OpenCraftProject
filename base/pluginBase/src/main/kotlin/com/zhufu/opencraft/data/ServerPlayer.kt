@@ -58,7 +58,7 @@ abstract class ServerPlayer(
         private val cache = hashMapOf<UUID, Document>()
         private fun tag(uuid: UUID, createNew: Boolean) =
             cache[uuid]
-                ?: Database.tag(uuid, createNew).also { cache[uuid] = it }
+                ?: Database.tag(uuid, createNew)!!.also { cache[uuid] = it }
     }
 
     val doc: Document = tag(uuid, createNew)

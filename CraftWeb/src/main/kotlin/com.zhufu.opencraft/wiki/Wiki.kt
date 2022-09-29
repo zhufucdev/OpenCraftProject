@@ -14,7 +14,7 @@ import kotlin.collections.HashMap
 import kotlin.concurrent.fixedRateTimer
 
 object Wiki {
-    val wikiRoot = File(CraftWeb.plugin.config.getString("wikiRoot")!!)
+    val wikiRoot: File get() = TODO()
     val wikiBackup = File(wikiRoot, "history").also { if (!it.exists()) it.mkdirs() }
     val backupTimeFormatter by lazy { SimpleDateFormat("@yyyy-MM-dd-HH:mm:ss") }
     private val lockers = HashMap<InetAddress, Pair<Long, String>>()
@@ -113,7 +113,7 @@ object Wiki {
             if (!file.exists()) {
                 if (!file.parentFile.exists()) file.parentFile.mkdirs()
                 file.createNewFile()
-                CraftWeb.logger.warning("Wiki info for $title doesn't exist. Generated automatically at ${file.path}.")
+                CraftWeb.instance.logger.warning("Wiki info for $title doesn't exist. Generated automatically at ${file.path}.")
                 JsonObject().also {
                     val writer = file.writer()
                     Gson().toJson(it, writer)
@@ -146,7 +146,7 @@ object Wiki {
                                     it.toRelativeString(wikiRoot).removeSuffix(".json")
                                 )
                             } catch (e: Exception) {
-                                CraftWeb.logger.warning("Failed to load wiki info for ${it.path} @ Wiki.forEach")
+                                CraftWeb.instance.logger.warning("Failed to load wiki info for ${it.path} @ Wiki.forEach")
                                 e.printStackTrace()
                             }
                     } else if (it.name != "images") {
@@ -167,7 +167,7 @@ object Wiki {
                         it.toRelativeString(wikiRoot).removeSuffix(".json")
                     )
                 } catch (e: Exception) {
-                    CraftWeb.logger.warning("Failed to load wiki info for ${it.path} @ Wiki.forEach")
+                    CraftWeb.instance.logger.warning("Failed to load wiki info for ${it.path} @ Wiki.forEach")
                 }
         }
     }

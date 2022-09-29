@@ -3,102 +3,42 @@ package com.zhufu.opencraft
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
-import com.sun.net.httpserver.HttpHandler
-import com.zhufu.opencraft.api.ServerCaller
 import com.zhufu.opencraft.util.Language
-import org.bukkit.configuration.ConfigurationSection
-import java.io.File
-import java.util.logging.Logger
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.routing.*
 
 class CraftWeb : JavaPlugin() {
-    private val instance = HttpsServer()
-    private val http = HttpServer()
-    private lateinit var handler: HttpHandler
-
-    companion object {
-        const val unknown = "unknown"
-        lateinit var logger: Logger
-        lateinit var plugin: JavaPlugin
-    }
+    private lateinit var engine: ApplicationEngine
+    private val port: Int
+        get() = config.getInt("port")
 
     override fun onEnable() {
-        Companion.logger = logger
-        plugin = this
-        config.apply {
-            if (!isSet("root")) {
-                val default = File(dataFolder, "web")
-                if (!default.exists()) default.mkdirs()
-                set("root", default.path)
-            }
-            if (!isSet("wikiRoot")){
-                val default = File(dataFolder, "wiki")
-                if (!default.exists()) default.mkdirs()
-                set("wikiRoot", default.path)
-            }
-            if (!isSet("keyPath"))
-                set("keyPath", File(dataFolder, "key.jks").path)
-            if (!isSet("httpPort"))
-                set("httpPort", 80)
-            if (!isSet("httpsPort"))
-                set("httpsPort", 443)
-            if (!isSet("key"))
-                set("key", "")
-            if (!isSet("uiWhiteList"))
-                set("uiWhiteList", listOf(""))
-            if (!isSet("hostName"))
-                set("hostName", "open-craft.cn")
-            if (!isSet("chatPackLossThreshold"))
-                set("chatPackLossThreshold", 10)
-            if (!isSet("playerDirMaxSize"))
-                set("playerDirMaxSize", 50 * 1024 * 1024)
-            if (!isSet("remotePort"))
-                set("remotePort", 2003)
-            saveConfig()
-        }
-        ServerCaller.set<ConfigurationSection>("GetWebConfig") {
-            return@set config
-        }
-
         try {
             init()
-            instance.start()
+            engine.start()
+            logger.info("Engine is running at port $port.")
         } catch (e: Exception) {
             logger.warning(Language.getDefault("web.error.whileInit", "HTTPS", e.javaClass.simpleName, e.message))
-        }
-        try {
-            initHttp()
-            http.start()
-        } catch (e: Exception) {
-            logger.warning(Language.getDefault("web.error.whileInit", "HTTP", e.javaClass.simpleName, e.message))
         }
     }
 
     override fun onDisable() {
-        if (instance.isInitialized) {
-            instance.stop(0)
-        }
-        if (http.isInitialized) {
-            http.stop(0)
-        }
+        engine.stop()
     }
 
     private fun init() {
-        handler = MajorHandler(File(config.getString("root")!!), File(config.getString("wikiRoot")!!), config)
-        instance.init(
-            key = File(config.getString("keyPath")!!),
-            password = config.getString("key")!!,
-            port = config.getInt("httpsPort"),
-            handler = handler,
-            executor = SimpleExecutor()
-        )
-    }
-
-    private fun initHttp() {
-        http.init(
-            port = config.getInt("httpPort"),
-            handler = handler,
-            executor = SimpleExecutor()
-        )
+        engine = embeddedServer(Netty, port) {
+            install(ContentNegotiation) {
+                json()
+            }
+            routing {
+                api()
+            }
+        }
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -110,38 +50,19 @@ class CraftWeb : JavaPlugin() {
             if (args.isEmpty()) {
                 sender.apply {
                     info(getter["web.header"])
-                    info(getter["web.${if (instance.isRunning) "running" else "stopped"}"])
-                    info(getter["web.rootPath", config.getString("root", unknown)])
-                    info(getter["web.keyPath", config.getString("keyPath", unknown)])
-                    info(getter["web.key", config.getString("key", unknown)])
-                    info(getter["web.httpPort", config.getInt("httpPort")])
-                    info(getter["web.httpsPort", config.getInt("httpsPort")])
+                    info(getter["web.${if (!engine.application.isEmpty) "running" else "stopped"}"])
+                    info(getter["web.httpsPort", config.getInt("port")])
                 }
             } else {
                 when (args.first()) {
                     "start" -> {
                         val s =
-                            if (!instance.isInitialized || !http.isInitialized) {
+                            if (!::engine.isInitialized) {
                                 try {
                                     init()
                                     true
                                 } catch (e: Exception) {
                                     sender.error(getter["web.error.whileInit", "HTTPS", e.javaClass.simpleName, e.message])
-                                    e.printStackTrace()
-                                    false
-                                } && try {
-                                    initHttp()
-                                    http.start()
-                                    true
-                                } catch (e: Exception) {
-                                    sender.error(
-                                        Language.getDefault(
-                                            "web.error.whileInit",
-                                            "HTTP",
-                                            e.javaClass.simpleName,
-                                            e.message
-                                        )
-                                    )
                                     e.printStackTrace()
                                     false
                                 }
@@ -152,7 +73,7 @@ class CraftWeb : JavaPlugin() {
                             return true
                         }
                         try {
-                            instance.start()
+                            engine.start()
                             sender.success(getter["web.started"])
                         } catch (e: Exception) {
                             sender.error(getter["web.error.whileStarting", "HTTPS", e.javaClass.simpleName, e.message])
@@ -160,15 +81,17 @@ class CraftWeb : JavaPlugin() {
                             sender.error(getter["command.error.failed"])
                         }
                     }
+
                     "stop" -> {
                         try {
-                            instance.stop(if (args.size >= 2) args[1].toIntOrNull() ?: 0 else 0)
+                            engine.stop(args.takeIf { it.size >= 2 }?.let { args[1].toLongOrNull() } ?: 0)
                             sender.success(getter["web.stopped"])
                         } catch (e: Exception) {
                             sender.error(getter["web.error.whileStopping", "HTTPS", e::class.simpleName, e.message])
                             sender.error(getter["command.error.failed"])
                         }
                     }
+
                     "reload" -> {
                         try {
                             reloadConfig()
@@ -177,21 +100,8 @@ class CraftWeb : JavaPlugin() {
                             sender.error(getter["web.error.whileInit", "HTTPS", e.javaClass.simpleName, e.message])
                             e.printStackTrace()
                         }
-                        try {
-                            initHttp()
-                            http.start()
-                        } catch (e: Exception) {
-                            sender.error(
-                                Language.getDefault(
-                                    "web.error.whileInit",
-                                    "HTTP",
-                                    e.javaClass.simpleName,
-                                    e.message
-                                )
-                            )
-                            e.printStackTrace()
-                        }
                     }
+
                     "set" -> {
                         if (args.size < 3) {
                             sender.error(getter["command.error.tooFewArgs", 3])
@@ -203,9 +113,7 @@ class CraftWeb : JavaPlugin() {
                             return true
                         }
                         val value: Any = when {
-                            name.contains("port", true)
-                                    || name == "chatPackLossThreshold"
-                                    || name == "playerDirMaxSize" -> {
+                            name.contains("port", true) -> {
                                 val t = args[2].toIntOrNull()
                                 if (t == null) {
                                     sender.error(getter["web.error.illegalArg", args[2], Int::class.simpleName])
@@ -213,13 +121,7 @@ class CraftWeb : JavaPlugin() {
                                 }
                                 t
                             }
-                            name == "uiWhiteList" -> {
-                                val t = ArrayList<String>()
-                                for (i in 2 until args.size) {
-                                    t.add(args[i])
-                                }
-                                t.toList()
-                            }
+
                             else -> args[2]
                         }
                         config.set(name, value)
@@ -248,17 +150,19 @@ class CraftWeb : JavaPlugin() {
                         }
                         return commands
                     }
+
                     args.first() == "set" && args.size < 3 -> {
                         val commands = ArrayList<String>()
-                        commands.addAll(config.getKeys(false))
-                        if (args.size == 2) {
-                            commands.removeAll { !it.startsWith(args.last()) }
-                        }
+                        commands.addAll(config.getKeys(false).filter { it.startsWith(args.last()) })
                         return commands
                     }
                 }
             }
         }
         return mutableListOf()
+    }
+
+    companion object {
+        lateinit var instance: CraftWeb
     }
 }

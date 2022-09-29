@@ -29,6 +29,7 @@ base/*/build
 /server/plugins/trade/
 /server/plugins/OperationFinder/
 /server/plugins/BlockLocker/
+/server/plugins/CraftWeb
 /server/plugins/PlayerUtil/
 /server/world_survive/
 /server/world/
@@ -38,3 +39,4 @@ base/*/build
 /server/plugins/WorldEdit/
 /server/plugins/ads/
 /server/new_plugins/
+/server/map-color-cache.dat

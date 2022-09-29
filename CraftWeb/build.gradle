@@ -1,8 +1,14 @@
 group 'com.zhufu.opencraft'
 version '1.0-SNAPSHOT'
 
+apply plugin: "org.jetbrains.kotlin.plugin.serialization"
+
 dependencies {
     compileOnly "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttp_version}"
+    compileOnly "io.ktor:ktor-server-core:${rootProject.ext.ktor_version}"
+    compileOnly "io.ktor:ktor-server-netty:${rootProject.ext.ktor_version}"
+    compileOnly "io.ktor:ktor-server-content-negotiation:${rootProject.ext.ktor_version}"
+    compileOnly "io.ktor:ktor-serialization-kotlinx-json:${rootProject.ext.ktor_version}"
     compileOnly project(':playerManagment')
     compileOnly project(':webBase')
 }

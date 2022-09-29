@@ -47,7 +47,7 @@ class Search {
     fun addCondition(condition: Condition) = conditions.add(condition)
     fun doSearch(): List<SearchResult> {
         val finalResults = arrayListOf<SearchResult>()
-        val allWeight = conditions.sumByDouble { it.weight.toDouble() }.toFloat()
+        val allWeight = conditions.sumOf { it.weight.toDouble() }.toFloat()
 
         Wiki.forEach { info, path ->
             val title = info["isImage"]?.asBoolean?.let { if (!it) info["title"]?.asString ?: return@forEach else path }
