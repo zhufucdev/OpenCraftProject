@@ -23,7 +23,7 @@ import javax.security.auth.DestroyFailedException
 import javax.security.auth.Destroyable
 
 abstract class ServerPlayer(
-    private val createNew: Boolean,
+    createNew: Boolean,
     val uuid: UUID,
     private val nameToExtend: String? = null
 ) : ServerOperator, Destroyable {

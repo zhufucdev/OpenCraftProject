@@ -17,6 +17,7 @@ class CraftWeb : JavaPlugin() {
         get() = config.getInt("port")
 
     override fun onEnable() {
+        instance = this
         try {
             init()
             engine.start()

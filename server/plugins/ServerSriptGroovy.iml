@@ -32,6 +32,7 @@
       <excludeFolder url="file://$MODULE_DIR$/tag" />
       <excludeFolder url="file://$MODULE_DIR$/trade" />
       <excludeFolder url="file://$MODULE_DIR$/tutorials" />
+      <excludeFolder url="file://$MODULE_DIR$/CraftWeb" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
