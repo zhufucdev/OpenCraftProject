@@ -3,8 +3,8 @@ import groovy.json.JsonSlurper
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.10'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.20'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.20'
 
     id "de.undercouch.download" version '4.0.2'
     id "io.github.http-builder-ng.http-plugin" version "0.1.1"
@@ -29,7 +29,7 @@ project.ext {
     we_version = '7.2.12-SNAPSHOT'
     okhttp_version = '4.10.0'
     mongo_version = '4.7.1'
-    ktor_version = '2.1.1'
+    ktor_version = '2.1.2'
 }
 
 task download(type: Download) {
