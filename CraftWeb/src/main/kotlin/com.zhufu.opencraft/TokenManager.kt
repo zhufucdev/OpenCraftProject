@@ -26,7 +26,14 @@ class TokenManager {
         return token
     }
 
+    /**
+     * Get an **valid** token using its [uuid].
+     */
     operator fun get(uuid: UUID) = tokens[uuid]
+
+    /**
+     * Make a token with [uuid] expire.
+     */
     operator fun minusAssign(uuid: UUID) {
         tokens.remove(uuid)
     }

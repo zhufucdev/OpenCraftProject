@@ -23,5 +23,5 @@ open class RegisteredInfo(uuid: UUID, createNew: Boolean = false) : WebInfo(crea
     override val displayName get() = "$name Web"
     override val targetLang: String get() = this.userLanguage
     override val face: File
-        get() = Paths.get("plugins", "avatar", "$uuid.png").toFile()
+        get() = Paths.get("plugins", "avatar", "$uuid.jpg").toFile()
 }

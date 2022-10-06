@@ -9,7 +9,7 @@ import java.io.File
 import java.net.InetAddress
 import java.util.*
 
-abstract class WebInfo(createNew: Boolean, uuid: UUID, nameToExtend: String? = null) :
+abstract class WebInfo(createNew: Boolean = false, uuid: UUID, nameToExtend: String? = null) :
     ServerPlayer(createNew, uuid, nameToExtend), ChatInfo {
     abstract val face: File
     override var doNotTranslate: Boolean = false
@@ -45,5 +45,11 @@ abstract class WebInfo(createNew: Boolean, uuid: UUID, nameToExtend: String? = n
 
     companion object {
         val users = HashMap<InetAddress, WebInfo>()
+
+        fun of(uuid: UUID) = if (RegisteredInfo.exists(uuid)) {
+            RegisteredInfo(uuid)
+        } else {
+            PreregisteredInfo(uuid)
+        }
     }
 }
