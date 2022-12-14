@@ -39,6 +39,7 @@
     <orderEntry type="module" module-name="OpenCraft.pluginBase.main" scope="PROVIDED" />
     <orderEntry type="module" module-name="OpenCraft.scripting.main" scope="PROVIDED" />
     <orderEntry type="module" module-name="OpenCraft.playerManagment.main" scope="PROVIDED" />
+    <orderEntry type="module" module-name="OpenCraft.tradeBase.main" />
     <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
@@ -61,5 +62,6 @@
     <orderEntry type="library" name="Gradle: net.kyori:adventure-text-serializer-legacy:4.11.0" level="project" />
     <orderEntry type="library" name="Gradle: net.kyori:adventure-text-serializer-plain:4.11.0" level="project" />
     <orderEntry type="library" name="Gradle: de.tr7zw:item-nbt-api-plugin:2.10.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.10" level="project" />
   </component>
 </module>
