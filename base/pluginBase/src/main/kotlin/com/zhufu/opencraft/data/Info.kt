@@ -123,7 +123,7 @@ class Info(val player: Player) : OfflineInfo(player.uniqueId, true), ChatInfo {
             else
                 failureList.add("chunk/server caller found nothing.")
 
-            statics!!.copyFrom(target.statics!!)
+            statics.copyFrom(target.statics)
         }
 
         try {

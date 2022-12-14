@@ -3,8 +3,8 @@ import groovy.json.JsonSlurper
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.20'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.22'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.22'
 
     id "de.undercouch.download" version '4.0.2'
     id "io.github.http-builder-ng.http-plugin" version "0.1.1"
@@ -23,13 +23,15 @@ java {
 }
 
 project.ext {
-    mcVersion = '1.19.2'
+    mcVersion = '1.19.3'
     serverPath = project.projectDir.path + '/server'
+    kt_version = '1.7.22'
     citizens_version = '2.0.30-SNAPSHOT'
-    we_version = '7.2.12-SNAPSHOT'
+    we_version = '7.2.13-SNAPSHOT'
     okhttp_version = '4.10.0'
     mongo_version = '4.7.1'
     ktor_version = '2.1.2'
+    nbt_version = '2.11.0'
 }
 
 task download(type: Download) {
@@ -77,9 +79,10 @@ subprojects {
 
     repositories {
         mavenCentral()
+        maven { url 'https://repo.alessiodp.com/releases/' }
         maven { url 'https://papermc.io/repo/repository/maven-public/' }
         maven { url 'https://libraries.minecraft.net/' }
-        maven { url 'https://repo.citizensnpcs.co/' }
+        maven { url 'https://maven.citizensnpcs.co/repo/' }
         maven { url 'https://repo.codemc.org/repository/maven-public/' }
         maven { url 'https://maven.enginehub.org/repo/' }
         maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
@@ -116,7 +119,7 @@ subprojects {
             if (!isBaseProject)
                 compileOnly project(':pluginBase')
             compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-            compileOnly "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
+            compileOnly "org.jetbrains.kotlin:kotlin-reflect:${rootProject.ext.kt_version}"
         }
     }
 }

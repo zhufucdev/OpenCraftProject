@@ -263,7 +263,7 @@ class Core : JavaPlugin(), Listener {
                 val getter = getLangGetter(info)
                 val isRound = count % 40 == 0
                 if (isRound) {
-                    info.statics!!.timeToday += 2
+                    info.statics.timeToday += 2
                     count = 1
                 }
 

@@ -624,9 +624,7 @@ class SurviveListener(private val plugin: JavaPlugin) : Listener {
             fun handlePlayer(damager: Player) {
                 damager.info()?.apply {
                     if (status == Surviving || status == MiniGaming) {
-                        statics?.let {
-                            it.damageToday += event.finalDamage
-                        }
+                        statics.damageToday += event.finalDamage
                         damageDone += event.finalDamage
                     }
                 }

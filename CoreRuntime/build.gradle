@@ -3,7 +3,7 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    api "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
+    api "org.jetbrains.kotlin:kotlin-reflect:${rootProject.ext.kt_version}"
     api "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttp_version}"
     // Database
     api "org.mongodb:mongodb-driver-sync:${rootProject.ext.mongo_version}"

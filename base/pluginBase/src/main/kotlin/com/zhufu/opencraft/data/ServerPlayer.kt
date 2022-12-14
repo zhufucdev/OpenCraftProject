@@ -116,7 +116,7 @@ abstract class ServerPlayer(
     var currency: Long
         get() = doc.getLong("currency") ?: 0
         set(value) {
-            statics?.setCurrency(value)
+            statics.setCurrency(value)
             doc["currency"] = value
             update()
         }

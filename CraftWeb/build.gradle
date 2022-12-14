@@ -9,6 +9,7 @@ dependencies {
     compileOnly "io.ktor:ktor-server-netty:${rootProject.ext.ktor_version}"
     compileOnly "io.ktor:ktor-server-content-negotiation:${rootProject.ext.ktor_version}"
     compileOnly "io.ktor:ktor-serialization-kotlinx-json:${rootProject.ext.ktor_version}"
+    compileOnly "org.mongodb:mongodb-driver-sync:${rootProject.ext.mongo_version}"
     compileOnly project(':playerManagment')
     compileOnly project(':webBase')
 }

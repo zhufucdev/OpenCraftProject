@@ -120,7 +120,7 @@ class PlayerStatics private constructor(val owner: ServerPlayer) {
         fun remove(uuid: UUID) = map.remove(uuid)
 
         fun contains(player: ServerPlayer) = map.containsKey(player.uuid)
-        fun from(player: ServerPlayer): PlayerStatics? {
+        fun from(player: ServerPlayer): PlayerStatics {
             val uuid = player.uuid
             if (map.containsKey(uuid)) {
                 return map[uuid]!!
