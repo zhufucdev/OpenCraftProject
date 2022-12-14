@@ -70,7 +70,8 @@ class TradeInfo : Cloneable, Destroyable {
     }
 
     fun summonNPC() {
-        validateInventory = NPCExistence.impl(this, faceLocation)
+        if (!isDestroyed && seller != Base.serverID)
+            validateInventory = NPCExistence.impl(this, faceLocation)
     }
 
     fun setBuyer(buyer: UUID?, howMany: Int = item.amount, cost: Boolean = false): Boolean {
@@ -82,8 +83,8 @@ class TradeInfo : Cloneable, Destroyable {
             return false
         val seller = seller ?: throw IllegalAccessError("Seller must be set.")
 
-        val player = Bukkit.getPlayer(buyer)
-        val info = player!!.info()
+        val player = Bukkit.getPlayer(buyer) ?: return false
+        val info = player.info()
         val getter = info.getter()
         if (info == null) {
             player.error(getter["player.error.unknown"])

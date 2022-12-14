@@ -74,10 +74,10 @@ object TradeManager {
         what: ItemStack,
         amount: Int,
         unitPrise: Long,
-        buyer: Player? = null,
+        buyer: UUID? = null,
         location: Location? = null,
         ignoreInventoryItem: Boolean = false
-    ) {
+    ): TradeInfo {
         if (seller != Base.serverID) {
             val sellerPlayer = Bukkit.getPlayer(seller)
             if (sellerPlayer != null) {
@@ -100,12 +100,11 @@ object TradeManager {
                 }
             }
         }
-        val info = TradeInfo(SellingItemInfo(item = what, unitPrise, amount))
-        add(info)
-        info.apply {
+        return TradeInfo(SellingItemInfo(item = what, unitPrise, amount)).apply {
             this.location = location
             setSeller(seller, ignoreInventoryItem, buyer != null)
-            setBuyer(buyer?.uniqueId, item.amount)
+            setBuyer(buyer, item.amount)
+            add(this)
         }
     }
 

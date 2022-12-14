@@ -272,7 +272,7 @@ class TraderInventory(val player: Player, private val plugin: Plugin) {
             what = ItemStack(this.selectedItem!!.type, 1),
             amount = this.amount * if (mode == 0.toShort()) -1 else 1,
             unitPrise = transMap[this.selectedItem!!.type]!!,
-            buyer = player
+            buyer = player.uniqueId
         )
 
         player.closeInventory()
